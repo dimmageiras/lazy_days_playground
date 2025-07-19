@@ -1,15 +1,14 @@
-import type { JSX } from "react";
+import type { JSX, PropsWithChildren } from "react";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Outlet } from "react-router";
 
-const queryClient = new QueryClient();
+import { ReactQueryConfig } from "./configs/react-query.config";
 
-const AppProviders = (): JSX.Element => {
+const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
+    <QueryClientProvider {...ReactQueryConfig}>
+      {children}
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

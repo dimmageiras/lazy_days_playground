@@ -1,0 +1,35 @@
+.home {
+  display: grid;
+  height: 0;
+  min-height: 100%;
+  overflow: hidden;
+
+  .background-image {
+    grid-area: 1 / 1;
+    margin-top: -4rem;
+    overflow: auto;
+    width: 100%;
+  }
+
+  .content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    grid-area: 1 / 1;
+    justify-content: center;
+
+    .title {
+      display: flex;
+      flex-direction: row;
+      font-family: Forum, sans-serif;
+      font-size: 6rem;
+      font-weight: 400;
+      justify-content: space-evenly;
+
+      .logo {
+        margin: 0.5rem 0 0;
+      }
+    }
+  }
+}

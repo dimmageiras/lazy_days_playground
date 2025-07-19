@@ -12,8 +12,8 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
         <Links />
       </head>
       <body>
-        {children}
-        <div id="dialog-portal" className="dialog-portal" />
+        <div id="app">{children}</div>
+        <dialog id="dialog" />
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -1,0 +1,37 @@
+html,
+body {
+  margin: 0;
+}
+
+body {
+  background-color: #d5ddd3;
+  color: #222a21;
+  font-family: Lato, sans-serif;
+  isolation: isolate;
+  line-height: 1.5;
+
+  header,
+  main {
+    isolation: isolate;
+  }
+
+  h1,
+  p {
+    margin: 0;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  #app {
+    display: grid;
+    grid-template-rows: 4rem 1fr 0rem;
+    height: 100vh;
+    isolation: isolate;
+  }
+
+  #dialog {
+    isolation: isolate;
+  }
+}
