@@ -1,0 +1,60 @@
+{
+  "name": "lazy_days_playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm typegen && react-router build",
+    "dev": "react-router dev",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\" --rule \"react-hooks/exhaustive-deps: off\"",
+    "lint:fix": "pnpm lint --fix",
+    "start": "vite preview",
+    "typecheck": "pnpm typegen && tsc",
+    "typegen": "react-router typegen"
+  },
+  "dependencies": {
+    "@react-router/node": "7.7.0",
+    "@react-router/serve": "7.7.0",
+    "@tanstack/react-query": "5.83.0",
+    "axios": "1.10.0",
+    "isbot": "5.1.28",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-hook-form": "7.60.0",
+    "react-router": "7.7.0",
+    "zod": "4.0.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.31.0",
+    "@react-router/dev": "7.7.0",
+    "@tanstack/eslint-plugin-query": "5.81.2",
+    "@tanstack/react-query-devtools": "5.83.0",
+    "@types/node": "20",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "@typescript-eslint/parser": "8.37.0",
+    "@typescript-eslint/utils": "8.37.0",
+    "eslint": "9.31.0",
+    "eslint-plugin-css-modules": "2.12.0",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "eslint-plugin-react-refresh": "0.4.20",
+    "eslint-plugin-security": "3.0.1",
+    "eslint-plugin-simple-import-sort": "12.1.1",
+    "globals": "16.3.0",
+    "jiti": "2.4.2",
+    "sass-embedded": "1.89.2",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.37.0",
+    "vite": "7.0.5",
+    "vite-plugin-checker": "0.10.0",
+    "vite-tsconfig-paths": "5.1.4"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ]
+  }
+}

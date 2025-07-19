@@ -1,0 +1,11 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.formatDocument": "explicit",
+    "source.organizeImports": "never",
+    "source.removeUnusedImports": "explicit"
+  },
+  "github-actions.use-enterprise": true,
+  "typescript.tsdk": "node_modules\\typescript\\lib"
+}
