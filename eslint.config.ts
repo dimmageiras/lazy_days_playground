@@ -138,6 +138,7 @@ export default tsEslint.config([
       "react-refresh/only-export-components": "error",
       "security/detect-non-literal-fs-filename": "off",
       "security/detect-object-injection": "error",
+      // Import order: types first, then external, internal (~), relative (.)
       "simple-import-sort/imports": [
         "error",
         {
@@ -158,7 +159,7 @@ export default tsEslint.config([
       },
     },
   },
-  // Disable CSS modules rules for test files
+  // Test files: disable CSS modules validation
   {
     files: ["**/*.test.{ts,tsx}"],
     rules: {
@@ -166,9 +167,9 @@ export default tsEslint.config([
       "css-modules/no-undef-class": "off",
     },
   },
-  // Allow default exports in config files, type declarations and project entry points
+  // Config files and entry points: allow default exports
   {
-    files: ["**/*.config.ts", "**/*.d.ts", "./src/routes.ts"],
+    files: ["**/*.config.ts", "**/*.d.ts", "src/root.tsx", "./src/routes.ts"],
     rules: {
       "no-restricted-exports": [
         "error",
@@ -176,7 +177,7 @@ export default tsEslint.config([
       ],
     },
   },
-  // Disallow fast refresh in root.tsx
+  // Root component: disable React-specific restrictions
   {
     files: ["src/root.tsx"],
     rules: {

@@ -1,6 +1,5 @@
 import type { JSX } from "react";
 
-import { GiFlowerPot } from "react-icons/gi";
 import { Link, useNavigate } from "react-router";
 
 import styles from "./NavBar.module.scss";
@@ -17,7 +16,10 @@ const NavBar = (): JSX.Element => {
       <div className={styles["content"]}>
         <div className={styles["left"]}>
           <Link className={styles["home-link"]} replace to="/">
-            <GiFlowerPot className={styles["logo"]} />
+            <iconify-icon
+              className={styles["logo"]}
+              icon="game-icons:flower-pot"
+            />
           </Link>
           <nav className={styles["nav-bar"]}>
             <Link className={styles["link"]} replace to="/treatments">

@@ -16,11 +16,11 @@
     "@react-router/serve": "7.7.0",
     "@tanstack/react-query": "5.83.0",
     "axios": "1.10.0",
+    "iconify-icon": "3.0.0",
     "isbot": "5.1.28",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "7.60.0",
-    "react-icons": "5.5.0",
     "react-router": "7.7.0",
     "zod": "4.0.5"
   },

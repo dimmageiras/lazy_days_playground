@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import type { HtmlLinkDescriptor } from "react-router";
+import type { LinkDescriptor } from "react-router";
 
 import { Outlet } from "react-router";
 
@@ -8,7 +8,7 @@ import "./root.scss";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import RootLayout from "./layouts/RootLayout";
 
-export const links = (): HtmlLinkDescriptor[] => [
+export const links = (): LinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -21,8 +21,8 @@ export const links = (): HtmlLinkDescriptor[] => [
   },
 ];
 
-export const Root = (): JSX.Element => {
+const Root = (): JSX.Element => {
   return <Outlet />;
 };
 
-export { ErrorBoundary, Root as default, RootLayout as Layout };
+export { ErrorBoundary, RootLayout as Layout, Root as default };
