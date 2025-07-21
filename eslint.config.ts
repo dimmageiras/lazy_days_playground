@@ -168,12 +168,19 @@ export default tsEslint.config([
   },
   // Allow default exports in config files, type declarations and project entry points
   {
-    files: ["**/*.config.ts", "**/*.d.ts", "./src/root.ts", "./src/routes.ts"],
+    files: ["**/*.config.ts", "**/*.d.ts", "./src/routes.ts"],
     rules: {
       "no-restricted-exports": [
         "error",
         { restrictDefaultExports: { direct: false } },
       ],
+    },
+  },
+  // Disallow fast refresh in root.tsx
+  {
+    files: ["src/root.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 ]) satisfies FlatConfig.ConfigArray;

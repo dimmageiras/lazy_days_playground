@@ -1,5 +1,7 @@
 html,
 body {
+  isolation: isolate;
+  line-height: 1.5;
   margin: 0;
 }
 
@@ -7,8 +9,6 @@ body {
   background-color: #d5ddd3;
   color: #222a21;
   font-family: Lato, sans-serif;
-  isolation: isolate;
-  line-height: 1.5;
 
   header,
   main {
@@ -32,6 +32,10 @@ body {
   }
 
   #dialog {
+    isolation: isolate;
+  }
+
+  #dev-tools {
     isolation: isolate;
   }
 }

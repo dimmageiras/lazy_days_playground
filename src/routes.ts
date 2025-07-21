@@ -9,9 +9,10 @@ const staff = route("/staff", "pages/Staff/index.ts");
 const treatments = route("/treatments", "pages/Treatments/index.ts");
 const userProfile = route("/profile", "pages/UserProfile/index.ts");
 
+const notTreatmentPages = [home, calendar, signin, staff, userProfile];
 const notTreatmentPageLayout = layout(
   "layouts/NotTreatmentPageLayout/index.ts",
-  [home, calendar, signin, staff, userProfile]
+  notTreatmentPages
 );
 
 const appLayout = layout("layouts/AppLayout/index.ts", [

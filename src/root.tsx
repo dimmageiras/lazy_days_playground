@@ -1,10 +1,12 @@
+import type { JSX } from "react";
 import type { HtmlLinkDescriptor } from "react-router";
 
-import { ErrorBoundary } from "~/components/ErrorBoundary";
-import { HydrateFallback } from "~/components/HydrateFallback";
-import RootLayout from "~/layouts/RootLayout";
+import { Outlet } from "react-router";
 
-import { App } from "./App";
+import "./root.scss";
+
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import RootLayout from "./layouts/RootLayout";
 
 export const links = (): HtmlLinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -19,10 +21,8 @@ export const links = (): HtmlLinkDescriptor[] => [
   },
 ];
 
-export { RootLayout as Layout };
+export const Root = (): JSX.Element => {
+  return <Outlet />;
+};
 
-export default App;
-
-export { ErrorBoundary };
-
-export { HydrateFallback };
+export { ErrorBoundary, Root as default, RootLayout as Layout };
