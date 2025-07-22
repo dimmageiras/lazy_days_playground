@@ -12,7 +12,6 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
       </head>
       <body>
         <div id="app">{children}</div>
-        <dialog id="dialog" />
         <ScrollRestoration />
         <Scripts />
       </body>
