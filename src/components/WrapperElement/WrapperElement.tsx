@@ -1,14 +1,13 @@
-import type { HtmlTags } from "html-tags";
+import type { CustomHtmlTags } from "html-tags";
 import htmlTags from "html-tags";
 import type { ElementType, JSX, PropsWithChildren } from "react";
 
-type WrapperElementProps<TWrapperElement extends HtmlTags> = PropsWithChildren<
-  JSX.IntrinsicElements[TWrapperElement]
-> & {
-  as: TWrapperElement;
-};
+type WrapperElementProps<TWrapperElement extends CustomHtmlTags> =
+  PropsWithChildren<JSX.IntrinsicElements[TWrapperElement]> & {
+    as: TWrapperElement;
+  };
 
-const WrapperElement = <TWrapperElement extends HtmlTags>({
+const WrapperElement = <TWrapperElement extends CustomHtmlTags>({
   children,
   as,
   ...props
