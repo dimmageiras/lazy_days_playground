@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 
 import splashImg from "~/assets/images/splash.jpg";
+import { IconifyIcon } from "~/components/IconifyIcon";
 
 import styles from "./Home.module.scss";
 
@@ -14,7 +15,7 @@ const Home = (): JSX.Element => {
       />
       <div className={styles["content"]}>
         <h1 className={styles["title"]}>
-          <iconify-icon
+          <IconifyIcon
             className={styles["logo"]}
             icon="game-icons:flower-pot"
           />

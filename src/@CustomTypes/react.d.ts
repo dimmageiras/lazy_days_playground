@@ -1,11 +1,11 @@
-import type { IconifyIconProperties } from "iconify-icon";
+import type { IconifyIconAttributes } from "iconify-icon";
 
 import "react";
 
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
-      "iconify-icon": IconifyIconProperties & {
+      readonly "iconify-icon": IconifyIconAttributes & {
         className?: string;
       };
     }

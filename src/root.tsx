@@ -7,8 +7,9 @@ import "./root.scss";
 
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import RootLayout from "./layouts/RootLayout";
+import { rootLoader } from "./loaders/root.loader";
 
-export const links = (): LinkDescriptor[] => [
+export const root = (): LinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -25,4 +26,9 @@ const Root = (): JSX.Element => {
   return <Outlet />;
 };
 
-export { ErrorBoundary, RootLayout as Layout, Root as default };
+export {
+  ErrorBoundary,
+  Root as default,
+  RootLayout as Layout,
+  rootLoader as loader,
+};

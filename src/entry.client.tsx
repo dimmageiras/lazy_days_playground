@@ -6,7 +6,7 @@ import "iconify-icon";
 
 import { AppProviders } from "./AppProviders";
 
-async function hydrate() {
+const hydrate = async () => {
   startTransition(() => {
     hydrateRoot(
       document,
@@ -17,7 +17,7 @@ async function hydrate() {
       </AppProviders>
     );
   });
-}
+};
 
 if (window.requestIdleCallback) {
   window.requestIdleCallback(hydrate);
