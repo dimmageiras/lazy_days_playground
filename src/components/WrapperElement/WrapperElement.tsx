@@ -2,14 +2,13 @@ import type { HtmlTags } from "html-tags";
 import htmlTags from "html-tags";
 import type { ElementType, JSX, PropsWithChildren } from "react";
 
-type WrapperTagElement = Exclude<HtmlTags, "math"> | "iconify-icon";
+type WrapperElementProps<TWrapperElement extends HtmlTags> = PropsWithChildren<
+  JSX.IntrinsicElements[TWrapperElement]
+> & {
+  as: TWrapperElement;
+};
 
-type WrapperElementProps<TWrapperElement extends WrapperTagElement> =
-  PropsWithChildren<JSX.IntrinsicElements[TWrapperElement]> & {
-    as: TWrapperElement;
-  };
-
-const WrapperElement = <TWrapperElement extends WrapperTagElement>({
+const WrapperElement = <TWrapperElement extends HtmlTags>({
   children,
   as,
   ...props
