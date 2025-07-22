@@ -126,7 +126,7 @@ export default tsEslint.config([
       "react/boolean-prop-naming": [
         "error",
         {
-          rule: "^(can|disable|has|is|should|show|strip|use)([A-Z]([A-Za-z0-9]+)?)?$",
+          rule: "^(can|disable|has|is|should|show|strip)([A-Z]([A-Za-z0-9]+)?)?$",
         },
       ],
       "react/function-component-definition": [
