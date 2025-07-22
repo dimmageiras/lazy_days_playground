@@ -3,6 +3,7 @@ import type { LinkDescriptor } from "react-router";
 import { Outlet } from "react-router";
 
 import "./root.scss";
+import "iconify-icon";
 
 import { AppProviders } from "./AppProviders";
 import { ErrorBoundary } from "./components/ErrorBoundary";

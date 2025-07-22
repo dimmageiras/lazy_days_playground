@@ -7,7 +7,7 @@
     "dev": "react-router dev",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\" --rule \"react-hooks/exhaustive-deps: off\"",
     "lint:fix": "pnpm lint --fix",
-    "start": "vite preview",
+    "start": "react-router-serve ./dist/server/index.js",
     "typecheck": "pnpm typegen && tsc",
     "typegen": "react-router typegen"
   },
