@@ -6,7 +6,7 @@ import "./root.scss";
 
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import RootLayout from "./layouts/RootLayout";
-import { rootLoader } from "./loaders/root.loader";
+import { rootLoader } from "./loaders/root";
 
 export const root = (): LinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
