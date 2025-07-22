@@ -16,8 +16,13 @@ body {
   }
 
   h1,
+  h2,
   p {
     margin: 0;
+  }
+
+  img {
+    max-width: 100%;
   }
 
   button {
@@ -26,7 +31,7 @@ body {
 
   #app {
     display: grid;
-    grid-template-rows: 4rem 1fr 0rem;
+    grid-template-rows: 4rem 1fr 0;
     height: 100vh;
     isolation: isolate;
   }

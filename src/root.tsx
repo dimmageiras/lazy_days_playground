@@ -9,7 +9,7 @@ import { AppProviders } from "./AppProviders";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import RootLayout from "./layouts/RootLayout";
 
-export const root = (): LinkDescriptor[] => [
+const links = (): LinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -30,4 +30,4 @@ const Root = (): JSX.Element => {
   );
 };
 
-export { ErrorBoundary, Root as default, RootLayout as Layout };
+export { ErrorBoundary, links, Root as default, RootLayout as Layout };
