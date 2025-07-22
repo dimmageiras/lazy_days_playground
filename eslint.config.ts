@@ -123,6 +123,12 @@ export default tsEslint.config([
           next: ["const", "let", "var"],
         },
       ],
+      "react/boolean-prop-naming": [
+        "error",
+        {
+          rule: "^(can|disable|has|is|should|show|strip|use)([A-Z]([A-Za-z0-9]+)?)?$",
+        },
+      ],
       "react/function-component-definition": [
         "error",
         { namedComponents: "arrow-function" },
