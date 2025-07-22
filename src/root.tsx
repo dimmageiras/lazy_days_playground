@@ -1,6 +1,5 @@
 import type { JSX } from "react";
 import type { LinkDescriptor } from "react-router";
-
 import { Outlet } from "react-router";
 
 import "./root.scss";

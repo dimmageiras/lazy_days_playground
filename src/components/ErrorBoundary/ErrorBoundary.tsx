@@ -1,6 +1,5 @@
 import type { Route } from "@Router/types/src/+types/root";
 import type { JSX } from "react";
-
 import { isRouteErrorResponse } from "react-router";
 
 const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps): JSX.Element => {

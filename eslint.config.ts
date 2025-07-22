@@ -1,8 +1,7 @@
-import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
-
 import pluginJS from "@eslint/js";
 import { plugin as pluginTanstackQuery } from "@tanstack/eslint-plugin-query";
 import tsParser from "@typescript-eslint/parser";
+import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
 import { globalIgnores } from "eslint/config";
 import * as pluginCSSModules from "eslint-plugin-css-modules";
 import pluginReact from "eslint-plugin-react";
@@ -138,17 +137,10 @@ export default tsEslint.config([
       "react-refresh/only-export-components": "error",
       "security/detect-non-literal-fs-filename": "off",
       "security/detect-object-injection": "error",
-      // Import order: types first, then external, internal (~), relative (.)
       "simple-import-sort/imports": [
         "error",
         {
-          groups: [
-            ["^@?\\w.*\\u0000$", "^@src.*\\u0000$", "^\\..*\\u0000$"],
-            ["^@?\\w"],
-            ["^\\u0000"],
-            ["^~"],
-            ["^\\."],
-          ],
+          groups: [["^@?\\w"], ["^@src", "^~"], ["^\\u0000"], ["^\\."]],
         },
       ],
       curly: ["error", "all"],

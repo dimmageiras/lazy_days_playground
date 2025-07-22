@@ -1,5 +1,4 @@
 import type { ElementType, JSX, PropsWithChildren } from "react";
-
 import { useRouteLoaderData } from "react-router";
 
 import type { WrapperTagElement } from "~/types/html-tags.type";

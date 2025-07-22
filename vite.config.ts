@@ -1,7 +1,6 @@
-import type { UserConfigFnObject } from "vite";
-
 import { reactRouter } from "@react-router/dev/vite";
 import { reactRouterDevTools } from "react-router-devtools";
+import type { UserConfigFnObject } from "vite";
 import { defineConfig } from "vite";
 import pluginChecker from "vite-plugin-checker";
 import pluginDevtoolsJson from "vite-plugin-devtools-json";

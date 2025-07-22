@@ -1,5 +1,4 @@
 import type { JSX, PropsWithChildren } from "react";
-
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
 const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
