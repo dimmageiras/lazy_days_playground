@@ -1,7 +1,8 @@
+import type { HtmlTags } from "html-tags";
+import htmlTags from "html-tags";
 import type { ElementType, JSX, PropsWithChildren } from "react";
-import { useRouteLoaderData } from "react-router";
 
-import type { WrapperTagElement } from "~/types/html-tags.type";
+type WrapperTagElement = Exclude<HtmlTags, "math"> | "iconify-icon";
 
 type WrapperElementProps<TWrapperElement extends WrapperTagElement> =
   PropsWithChildren<JSX.IntrinsicElements[TWrapperElement]> & {
@@ -13,12 +14,11 @@ const WrapperElement = <TWrapperElement extends WrapperTagElement>({
   as,
   ...props
 }: WrapperElementProps<TWrapperElement>): JSX.Element => {
-  const appLayoutLoaderData = useRouteLoaderData<{
-    htmlTags: WrapperTagElement[];
-  } | null>("root");
-  const validTags = appLayoutLoaderData?.htmlTags || [];
+  const validTags = (["iconify-icon", ...htmlTags] as const).filter(
+    (tag) => tag !== "math"
+  );
 
-  if (!validTags.length || (validTags.length && !validTags.includes(as))) {
+  if (!validTags.includes(as)) {
     throw new Error(`Invalid wrapper element: ${as}`);
   }
 

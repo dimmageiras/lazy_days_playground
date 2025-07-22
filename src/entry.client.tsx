@@ -4,17 +4,13 @@ import { HydratedRouter } from "react-router/dom";
 
 import "iconify-icon";
 
-import { AppProviders } from "./AppProviders";
-
 const hydrate = async () => {
   startTransition(() => {
     hydrateRoot(
       document,
-      <AppProviders>
-        <StrictMode>
-          <HydratedRouter />
-        </StrictMode>
-      </AppProviders>
+      <StrictMode>
+        <HydratedRouter />
+      </StrictMode>
     );
   });
 };

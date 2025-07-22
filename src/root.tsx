@@ -4,9 +4,9 @@ import { Outlet } from "react-router";
 
 import "./root.scss";
 
+import { AppProviders } from "./AppProviders";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import RootLayout from "./layouts/RootLayout";
-import { rootLoader } from "./loaders/root";
 
 export const root = (): LinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,12 +22,11 @@ export const root = (): LinkDescriptor[] => [
 ];
 
 const Root = (): JSX.Element => {
-  return <Outlet />;
+  return (
+    <AppProviders>
+      <Outlet />
+    </AppProviders>
+  );
 };
 
-export {
-  ErrorBoundary,
-  Root as default,
-  RootLayout as Layout,
-  rootLoader as loader,
-};
+export { ErrorBoundary, Root as default, RootLayout as Layout };
