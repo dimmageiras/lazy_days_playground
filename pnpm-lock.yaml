@@ -21,7 +21,7 @@ importers:
         specifier: 1.10.0
         version: 1.10.0
       html-tags:
-        specifier: ^5.0.0
+        specifier: 5.0.0
         version: 5.0.0
       iconify-icon:
         specifier: 3.0.0
