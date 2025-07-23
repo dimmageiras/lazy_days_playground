@@ -11,10 +11,10 @@ const LinkAs = {
 } as const;
 
 interface LinkWrapperProps {
-  activeClassName?: string | null;
+  activeClassName?: string;
   as?: keyof typeof LinkAs;
   children?: JSX.Element | string | null;
-  className?: string | null;
+  className?: string;
   hasTextDecorationOnHover?: boolean;
   shouldOpenInNewTab?: boolean;
   shouldReplace?: boolean;
@@ -22,10 +22,10 @@ interface LinkWrapperProps {
 }
 
 const LinkWrapper = ({
-  activeClassName = null,
+  activeClassName,
   as = "external",
   children = null,
-  className = null,
+  className,
   hasTextDecorationOnHover = false,
   shouldOpenInNewTab = false,
   shouldReplace = false,
