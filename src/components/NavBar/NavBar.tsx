@@ -1,47 +1,76 @@
 import type { JSX } from "react";
-import { Link, useNavigate } from "react-router";
+
+import { LinkWrapper } from "~/components/LinkWrapper";
 
 import styles from "./NavBar.module.scss";
 
 const NavBar = (): JSX.Element => {
-  const navigate = useNavigate();
-
-  const handleSignInClick = (): void => {
-    navigate("/signin", { replace: true });
-  };
-
   return (
     <header className={styles["header"]}>
       <div className={styles["content"]}>
         <div className={styles["left"]}>
-          <Link className={styles["home-link"]} replace to="/">
+          <LinkWrapper
+            as="navLink"
+            className={styles["home-link"]}
+            shouldReplace
+            to="/"
+          >
             <iconify-icon
               className={styles["logo"]}
               icon="game-icons:flower-pot"
             />
-          </Link>
+          </LinkWrapper>
           <nav className={styles["nav-bar"]}>
-            <Link className={styles["link"]} replace to="/treatments">
+            <LinkWrapper
+              as="navLink"
+              className={styles["link"]}
+              shouldReplace
+              to="/treatments"
+            >
               Treatments
-            </Link>
-            <Link className={styles["link"]} replace to="/staff">
+            </LinkWrapper>
+            <LinkWrapper
+              as="navLink"
+              className={styles["link"]}
+              shouldReplace
+              to="/staff"
+            >
               Staff
-            </Link>
-            <Link className={styles["link"]} replace to="/calendar">
+            </LinkWrapper>
+            <LinkWrapper
+              as="navLink"
+              className={styles["link"]}
+              shouldReplace
+              to="/calendar"
+            >
               Calendar
-            </Link>
+            </LinkWrapper>
           </nav>
         </div>
         <div className={styles["right"]}>
-          <Link className={styles["profile"]} replace to="/profile">
+          <LinkWrapper
+            as="internal"
+            className={styles["profile"]}
+            shouldReplace
+            to="/profile"
+          >
             User Profile
-          </Link>
+          </LinkWrapper>
           <button
             type="button"
             className={styles["sign-in"]}
-            onClick={handleSignInClick}
+            onClick={(event) => {
+              event.preventDefault();
+            }}
           >
-            Sign in
+            <LinkWrapper
+              as="internal"
+              className={styles["link"]}
+              shouldReplace
+              to="/signin"
+            >
+              Sign in
+            </LinkWrapper>
           </button>
         </div>
       </div>

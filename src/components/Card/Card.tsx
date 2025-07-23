@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import type { JSX } from "react";
 
+import { LinkWrapper } from "~/components/LinkWrapper";
+
 import styles from "./Card.module.scss";
 
 interface CardProps {
@@ -29,13 +31,23 @@ const Card = ({
           <img alt={name} className={styles["image"]} src={fileName} />
           <p className={styles["credit"]}>
             Photo by
-            <a className={styles["link"]} href={authorLink}>
+            <LinkWrapper
+              className={styles["link"]}
+              hasTextDecorationOnHover
+              shouldOpenInNewTab
+              to={authorLink}
+            >
               {authorName}
-            </a>
+            </LinkWrapper>
             from
-            <a className={styles["link"]} href={platformLink}>
+            <LinkWrapper
+              className={styles["link"]}
+              hasTextDecorationOnHover
+              shouldOpenInNewTab
+              to={platformLink}
+            >
               {platformName}
-            </a>
+            </LinkWrapper>
           </p>
         </div>
         <div className={styles["details"]}>

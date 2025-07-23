@@ -21,14 +21,6 @@ body {
     isolation: isolate;
   }
 
-  a {
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
   h1,
   h2,
   p {

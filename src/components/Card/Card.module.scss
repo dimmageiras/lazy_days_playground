@@ -37,13 +37,6 @@
 
         .link {
           color: inherit;
-          cursor: pointer;
-          outline-offset: 2px;
-          outline: 2px solid transparent;
-          transition-duration: 150ms;
-          transition-property: background-color, border-color, color, fill,
-            stroke, opacity, box-shadow, transform;
-          transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
         }
       }
     }
