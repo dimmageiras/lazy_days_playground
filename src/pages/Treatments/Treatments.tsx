@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 
+import { PageTitle } from "~/components/PageTitle";
+
 import { Treatment } from "./components";
 import facialImage from "./images/facial.jpg";
 import massageImage from "./images/massage.jpg";
@@ -58,7 +60,7 @@ const TREATMENTS = [
 const Treatments = (): JSX.Element => {
   return (
     <main className={styles["treatments"]}>
-      <h1 className={styles["title"]}>Available Treatments</h1>
+      <PageTitle pageTitle="Available Treatments" />
       <div className={styles["treatment-list"]}>
         {TREATMENTS.map((treatmentData) => (
           <Treatment key={treatmentData.id} treatmentData={treatmentData} />
