@@ -1,0 +1,13 @@
+.nav-item {
+  border-radius: 0.375rem;
+  color: #bbc5b9;
+  padding: 0.25rem 0.5rem;
+
+  &:hover {
+    color: #6e7c6a;
+  }
+
+  &.active {
+    text-decoration: underline;
+  }
+}

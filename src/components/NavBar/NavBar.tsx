@@ -2,6 +2,7 @@ import type { JSX } from "react";
 
 import { LinkWrapper } from "~/components/LinkWrapper";
 
+import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";
 
 const NavBar = (): JSX.Element => {
@@ -21,30 +22,7 @@ const NavBar = (): JSX.Element => {
             />
           </LinkWrapper>
           <nav className={styles["nav-bar"]}>
-            <LinkWrapper
-              as="navLink"
-              className={styles["link"]}
-              shouldReplace
-              to="/treatments"
-            >
-              Treatments
-            </LinkWrapper>
-            <LinkWrapper
-              as="navLink"
-              className={styles["link"]}
-              shouldReplace
-              to="/staff"
-            >
-              Staff
-            </LinkWrapper>
-            <LinkWrapper
-              as="navLink"
-              className={styles["link"]}
-              shouldReplace
-              to="/calendar"
-            >
-              Calendar
-            </LinkWrapper>
+            <NavItems />
           </nav>
         </div>
         <div className={styles["right"]}>
@@ -63,12 +41,7 @@ const NavBar = (): JSX.Element => {
               event.preventDefault();
             }}
           >
-            <LinkWrapper
-              as="internal"
-              className={styles["link"]}
-              shouldReplace
-              to="/signin"
-            >
+            <LinkWrapper as="internal" shouldReplace to="/signin">
               Sign in
             </LinkWrapper>
           </button>

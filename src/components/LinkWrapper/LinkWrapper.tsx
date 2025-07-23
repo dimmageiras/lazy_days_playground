@@ -11,9 +11,10 @@ const LinkAs = {
 } as const;
 
 interface LinkWrapperProps {
+  activeClassName?: string | null;
   as?: keyof typeof LinkAs;
-  children: JSX.Element | string;
-  className?: string;
+  children?: JSX.Element | string | null;
+  className?: string | null;
   hasTextDecorationOnHover?: boolean;
   shouldOpenInNewTab?: boolean;
   shouldReplace?: boolean;
@@ -21,9 +22,10 @@ interface LinkWrapperProps {
 }
 
 const LinkWrapper = ({
+  activeClassName = null,
   as = "external",
-  children,
-  className,
+  children = null,
+  className = null,
   hasTextDecorationOnHover = false,
   shouldOpenInNewTab = false,
   shouldReplace = false,
@@ -49,7 +51,15 @@ const LinkWrapper = ({
 
     case LinkAs.navLink:
       return (
-        <NavLink className={linkClassNames} replace={shouldReplace} to={to}>
+        <NavLink
+          className={({ isActive }): string =>
+            classNames(linkClassNames, {
+              [String(activeClassName)]: isActive,
+            })
+          }
+          replace={shouldReplace}
+          to={to}
+        >
           {children}
         </NavLink>
       );
