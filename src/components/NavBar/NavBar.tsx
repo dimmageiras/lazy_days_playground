@@ -1,8 +1,10 @@
 import type { JSX } from "react";
 
 import { LinkWrapper } from "~/components/LinkWrapper";
+import { LocationWrapper } from "~/components/LocationWrapper";
 
 import { NavItems } from "./components/NavItems";
+import { SignInButton } from "./components/SignInButton";
 import styles from "./NavBar.module.scss";
 
 const NavBar = (): JSX.Element => {
@@ -34,17 +36,9 @@ const NavBar = (): JSX.Element => {
           >
             User Profile
           </LinkWrapper>
-          <button
-            type="button"
-            className={styles["sign-in"]}
-            onClick={(event) => {
-              event.preventDefault();
-            }}
-          >
-            <LinkWrapper as="internal" shouldReplace to="/signin">
-              Sign in
-            </LinkWrapper>
-          </button>
+          <LocationWrapper to="/signin">
+            <SignInButton />
+          </LocationWrapper>
         </div>
       </div>
     </header>
