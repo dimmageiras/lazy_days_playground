@@ -2,16 +2,16 @@ import type { CustomHtmlTags } from "html-tags";
 import htmlTags from "html-tags";
 import type { ElementType, JSX, PropsWithChildren } from "react";
 
-type WrapperElementProps<TWrapperElement extends CustomHtmlTags> =
+type DynamicElementProps<TWrapperElement extends CustomHtmlTags> =
   PropsWithChildren<JSX.IntrinsicElements[TWrapperElement]> & {
     as: TWrapperElement;
   };
 
-const WrapperElement = <TWrapperElement extends CustomHtmlTags>({
+const DynamicElement = <TDynamicElement extends CustomHtmlTags>({
   children,
   as,
   ...props
-}: WrapperElementProps<TWrapperElement>): JSX.Element => {
+}: DynamicElementProps<TDynamicElement>): JSX.Element => {
   const validTags = (["iconify-icon", ...htmlTags] as const).filter(
     (tag) => tag !== "math"
   );
@@ -20,9 +20,9 @@ const WrapperElement = <TWrapperElement extends CustomHtmlTags>({
     throw new Error(`Invalid wrapper element: ${as}`);
   }
 
-  const Wrapper = as as ElementType;
+  const DynamicElement = as as ElementType;
 
-  return <Wrapper {...props}>{children}</Wrapper>;
+  return <DynamicElement {...props}>{children}</DynamicElement>;
 };
 
-export { WrapperElement };
+export { DynamicElement };

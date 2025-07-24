@@ -1,11 +1,11 @@
 import type { JSX } from "react";
 
-import { WrapperElement } from "~/components/WrapperElement";
+import { DynamicElement } from "~/components/DynamicElement";
 
 type IconifyIconProps = JSX.IntrinsicElements["iconify-icon"];
 
 const IconifyIcon = ({ icon, ...props }: IconifyIconProps): JSX.Element => {
-  return <WrapperElement icon={icon} as="iconify-icon" {...props} />;
+  return <DynamicElement icon={icon} as="iconify-icon" {...props} />;
 };
 
 export { IconifyIcon };
