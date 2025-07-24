@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 
-import { LinkWrapper } from "~/components/LinkWrapper";
 import { LocationWrapper } from "~/components/LocationWrapper";
+import { RouterLink } from "~/components/RouterLink";
 
 import { NavItems } from "./components/NavItems";
 import { SignInButton } from "./components/SignInButton";
@@ -12,7 +12,7 @@ const NavBar = (): JSX.Element => {
     <header className={styles["header"]}>
       <div className={styles["content"]}>
         <div className={styles["left"]}>
-          <LinkWrapper
+          <RouterLink
             as="navLink"
             className={styles["home-link"]}
             shouldReplace
@@ -22,20 +22,20 @@ const NavBar = (): JSX.Element => {
               className={styles["logo"]}
               icon="game-icons:flower-pot"
             />
-          </LinkWrapper>
+          </RouterLink>
           <nav className={styles["nav-bar"]}>
             <NavItems />
           </nav>
         </div>
         <div className={styles["right"]}>
-          <LinkWrapper
+          <RouterLink
             as="internal"
             className={styles["profile"]}
             shouldReplace
             to="/profile"
           >
             User Profile
-          </LinkWrapper>
+          </RouterLink>
           <LocationWrapper to="/signin">
             <SignInButton />
           </LocationWrapper>

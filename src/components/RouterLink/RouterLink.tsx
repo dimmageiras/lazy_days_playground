@@ -2,7 +2,7 @@ import classNames from "classnames";
 import type { JSX } from "react";
 import { Link, NavLink } from "react-router";
 
-import styles from "./LinkWrapper.module.scss";
+import styles from "./RouterLink.module.scss";
 
 const LinkAs = {
   external: 1,
@@ -10,7 +10,7 @@ const LinkAs = {
   navLink: 3,
 } as const;
 
-interface LinkWrapperProps {
+interface RouterLinkProps {
   activeClassName?: string;
   as?: keyof typeof LinkAs;
   children?: JSX.Element | string | null;
@@ -21,7 +21,7 @@ interface LinkWrapperProps {
   to: string;
 }
 
-const LinkWrapper = ({
+const RouterLink = ({
   activeClassName,
   as = "external",
   children = null,
@@ -30,7 +30,7 @@ const LinkWrapper = ({
   shouldOpenInNewTab = false,
   shouldReplace = false,
   to,
-}: LinkWrapperProps): JSX.Element => {
+}: RouterLinkProps): JSX.Element => {
   const convertedType = Reflect.get(LinkAs, as);
 
   const linkClassNames = classNames(
@@ -79,4 +79,4 @@ const LinkWrapper = ({
   }
 };
 
-export { LinkWrapper };
+export { RouterLink };

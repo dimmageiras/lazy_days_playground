@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { JSX } from "react";
 
-import { LinkWrapper } from "~/components/LinkWrapper";
+import { RouterLink } from "~/components/RouterLink";
 
 import styles from "./Card.module.scss";
 
@@ -31,23 +31,23 @@ const Card = ({
           <img alt={name} className={styles["image"]} src={fileName} />
           <p className={styles["credit"]}>
             Photo by
-            <LinkWrapper
+            <RouterLink
               className={styles["link"]}
               hasTextDecorationOnHover
               shouldOpenInNewTab
               to={authorLink}
             >
               {authorName}
-            </LinkWrapper>
+            </RouterLink>
             from
-            <LinkWrapper
+            <RouterLink
               className={styles["link"]}
               hasTextDecorationOnHover
               shouldOpenInNewTab
               to={platformLink}
             >
               {platformName}
-            </LinkWrapper>
+            </RouterLink>
           </p>
         </div>
         <div className={styles["details"]}>

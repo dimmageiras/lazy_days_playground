@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { LinkWrapper } from "~/components/LinkWrapper";
+import { RouterLink } from "~/components/RouterLink";
 
 import styles from "./NavItems.module.scss";
 
@@ -22,7 +22,7 @@ const NavItems = (): JSX.Element[] => {
 
   return navItems.map((item): JSX.Element => {
     return (
-      <LinkWrapper
+      <RouterLink
         activeClassName={styles["active"]}
         as="navLink"
         className={styles["nav-item"]}
@@ -31,7 +31,7 @@ const NavItems = (): JSX.Element[] => {
         to={item.to}
       >
         {item.label}
-      </LinkWrapper>
+      </RouterLink>
     );
   });
 };
