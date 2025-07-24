@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 
+import { ListRenderer } from "~/components/ListRenderer";
+
 import { TreatmentCard } from "./components/TreatmentCard";
 
 interface TreatmentCardsProps {
@@ -18,10 +20,16 @@ interface TreatmentCardsProps {
   }[];
 }
 
-const TreatmentCards = ({ treatments }: TreatmentCardsProps): JSX.Element[] => {
-  return treatments.map((treatmentData) => (
-    <TreatmentCard key={treatmentData.id} treatmentData={treatmentData} />
-  ));
+const TreatmentCards = ({ treatments }: TreatmentCardsProps): JSX.Element => {
+  return (
+    <ListRenderer
+      data={treatments}
+      getKey={(treatment) => treatment.id}
+      renderComponent={({ data }): JSX.Element => {
+        return <TreatmentCard treatmentData={data} />;
+      }}
+    />
+  );
 };
 
 export { TreatmentCards };

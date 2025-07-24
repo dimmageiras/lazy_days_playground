@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 
+import { ListRenderer } from "~/components/ListRenderer";
+
 import { StaffCard } from "./components/StaffCard";
 
 interface StaffCardsProps {
@@ -17,10 +19,16 @@ interface StaffCardsProps {
   }[];
 }
 
-const StaffCards = ({ staff }: StaffCardsProps): JSX.Element[] => {
-  return staff.map((staffMemberData) => (
-    <StaffCard key={staffMemberData.id} staffMemberData={staffMemberData} />
-  ));
+const StaffCards = ({ staff }: StaffCardsProps): JSX.Element => {
+  return (
+    <ListRenderer
+      data={staff}
+      renderComponent={({ data }): JSX.Element => {
+        return <StaffCard staffMemberData={data} />;
+      }}
+      getKey={(staffMember) => staffMember.id}
+    />
+  );
 };
 
 export { StaffCards };
