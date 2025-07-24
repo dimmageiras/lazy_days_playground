@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 
+import { IconifyIcon } from "~/components/IconifyIcon";
 import { NavigationWrapper } from "~/components/NavigationWrapper";
 import { RouterLink } from "~/components/RouterLink";
 
@@ -17,7 +18,7 @@ const NavBar = (): JSX.Element => {
             shouldReplace
             to="/"
           >
-            <iconify-icon
+            <IconifyIcon
               className={styles["logo"]}
               icon="game-icons:flower-pot"
             />
