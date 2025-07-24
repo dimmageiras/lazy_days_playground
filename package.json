@@ -12,8 +12,8 @@
     "typegen": "react-router typegen"
   },
   "dependencies": {
-    "@react-router/node": "7.7.0",
-    "@react-router/serve": "7.7.0",
+    "@react-router/node": "7.7.1",
+    "@react-router/serve": "7.7.1",
     "@tanstack/react-query": "5.83.0",
     "axios": "1.11.0",
     "classnames": "2.5.1",
@@ -25,7 +25,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "7.61.1",
-    "react-router": "7.7.0",
+    "react-router": "7.7.1",
     "uuid": "11.1.0",
     "zod": "4.0.8",
     "zustand": "5.0.6",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.31.0",
-    "@react-router/dev": "7.7.0",
+    "@react-router/dev": "7.7.1",
     "@redux-devtools/extension": "3.3.0",
     "@tanstack/eslint-plugin-query": "5.81.2",
     "@tanstack/react-query-devtools": "5.83.0",
@@ -51,7 +51,7 @@
     "eslint-plugin-security": "3.0.1",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "globals": "16.3.0",
-    "jiti": "2.5.0",
+    "jiti": "2.5.1",
     "react-router-devtools": "5.0.6",
     "sass-embedded": "1.89.2",
     "type-fest": "4.41.0",
