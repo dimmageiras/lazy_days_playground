@@ -36,7 +36,7 @@ const NavBar = (): JSX.Element => {
           >
             User Profile
           </RouterLink>
-          <NavigationWrapper to="/signin">
+          <NavigationWrapper shouldReplace to="/signin">
             {(navigateTo) => (
               <button
                 className={styles["sign-in"]}
