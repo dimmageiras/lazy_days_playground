@@ -1,8 +1,8 @@
 import type { JSX } from "react";
 import { Outlet } from "react-router";
 
-const NotTreatmentPageLayout = (): JSX.Element => {
+const StandardPageLayout = (): JSX.Element => {
   return <Outlet />;
 };
 
-export { NotTreatmentPageLayout };
+export { StandardPageLayout };
