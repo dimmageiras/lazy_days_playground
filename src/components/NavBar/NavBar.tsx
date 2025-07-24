@@ -1,10 +1,9 @@
 import type { JSX } from "react";
 
-import { LocationWrapper } from "~/components/LocationWrapper";
+import { NavigationWrapper } from "~/components/NavigationWrapper";
 import { RouterLink } from "~/components/RouterLink";
 
 import { NavItems } from "./components/NavItems";
-import { SignInButton } from "./components/SignInButton";
 import styles from "./NavBar.module.scss";
 
 const NavBar = (): JSX.Element => {
@@ -36,9 +35,17 @@ const NavBar = (): JSX.Element => {
           >
             User Profile
           </RouterLink>
-          <LocationWrapper to="/signin">
-            <SignInButton />
-          </LocationWrapper>
+          <NavigationWrapper to="/signin">
+            {(navigateTo) => (
+              <button
+                className={styles["sign-in"]}
+                onClick={navigateTo}
+                type="button"
+              >
+                Sign in
+              </button>
+            )}
+          </NavigationWrapper>
         </div>
       </div>
     </header>

@@ -1,16 +1,16 @@
 import type { JSX } from "react";
-import { cloneElement, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useNavigate } from "react-router";
 
-interface LocationWrapperProps {
-  children: JSX.Element;
+interface NavigationWrapperProps {
+  children: (navigateTo: () => void) => JSX.Element;
   to: string;
 }
 
-const LocationWrapper = ({
+const NavigationWrapper = ({
   children,
   to,
-}: LocationWrapperProps): JSX.Element => {
+}: NavigationWrapperProps): JSX.Element => {
   const navigate = useNavigate();
 
   const navigateTo = useCallback((): void => {
@@ -18,11 +18,11 @@ const LocationWrapper = ({
   }, [navigate, to]);
 
   const memoizedChildren = useMemo(
-    () => cloneElement(children, { navigateTo }),
+    () => children(navigateTo),
     [children, navigateTo]
   );
 
   return <>{memoizedChildren}</>;
 };
 
-export { LocationWrapper };
+export { NavigationWrapper };
