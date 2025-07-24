@@ -1,11 +1,9 @@
 import classNames from "classnames";
-import type { HTMLAttributes, JSX, RefAttributes } from "react";
+import type { ComponentPropsWithRef, JSX } from "react";
 
 import styles from "./PageTitle.module.scss";
 
-interface PageTitleProps
-  extends HTMLAttributes<HTMLHeadingElement>,
-    RefAttributes<HTMLHeadingElement> {
+interface PageTitleProps extends ComponentPropsWithRef<"h2"> {
   pageTitle: string;
 }
 

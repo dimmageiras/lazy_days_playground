@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type { ChangeEvent, JSX } from "react";
+import type { ChangeEvent, JSX, Ref } from "react";
 import { useRef } from "react";
 
 import styles from "./RadioButton.module.scss";
@@ -7,6 +7,7 @@ import styles from "./RadioButton.module.scss";
 interface RadioButtonProps {
   id: string;
   className?: string;
+  inputRef?: Ref<HTMLInputElement>;
   isChecked: boolean;
   label: string;
   name: string;
@@ -17,6 +18,7 @@ interface RadioButtonProps {
 const RadioButton = ({
   id,
   className,
+  inputRef,
   isChecked = false,
   label,
   name,
@@ -65,6 +67,7 @@ const RadioButton = ({
         onBlur={handleBlur}
         onChange={onChange}
         onFocus={handleFocus}
+        ref={inputRef}
         type="radio"
         value={value}
       />

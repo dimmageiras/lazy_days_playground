@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type { JSX } from "react";
+import type { JSX, Ref } from "react";
 import { Link, NavLink } from "react-router";
 
 import styles from "./RouterLink.module.scss";
@@ -16,6 +16,7 @@ interface RouterLinkProps {
   children?: JSX.Element | string | null;
   className?: string;
   hasTextDecorationOnHover?: boolean;
+  ref?: Ref<HTMLAnchorElement | null>;
   shouldOpenInNewTab?: boolean;
   shouldReplace?: boolean;
   to: string;
@@ -27,6 +28,7 @@ const RouterLink = ({
   children = null,
   className,
   hasTextDecorationOnHover = false,
+  ref,
   shouldOpenInNewTab = false,
   shouldReplace = false,
   to,
@@ -44,7 +46,12 @@ const RouterLink = ({
   switch (convertedType) {
     case LinkAs.internal:
       return (
-        <Link className={linkClassNames} replace={shouldReplace} to={to}>
+        <Link
+          className={linkClassNames}
+          ref={ref}
+          replace={shouldReplace}
+          to={to}
+        >
           {children}
         </Link>
       );
@@ -57,6 +64,7 @@ const RouterLink = ({
               [String(activeClassName)]: isActive,
             })
           }
+          ref={ref}
           replace={shouldReplace}
           to={to}
         >
@@ -70,6 +78,7 @@ const RouterLink = ({
         <a
           className={linkClassNames}
           href={to}
+          ref={ref}
           rel="noopener noreferrer"
           {...(shouldOpenInNewTab && { target: "_blank" })}
         >

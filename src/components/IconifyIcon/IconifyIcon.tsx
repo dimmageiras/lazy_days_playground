@@ -1,8 +1,8 @@
-import type { JSX } from "react";
+import { type ComponentPropsWithRef, type JSX } from "react";
 
 import { DynamicElement } from "~/components/DynamicElement";
 
-type IconifyIconProps = JSX.IntrinsicElements["iconify-icon"];
+type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
 
 const IconifyIcon = ({ icon, ...props }: IconifyIconProps): JSX.Element => {
   return <DynamicElement icon={icon} as="iconify-icon" {...props} />;
