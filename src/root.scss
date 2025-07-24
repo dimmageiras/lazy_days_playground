@@ -36,8 +36,15 @@ body {
     display: block;
   }
 
-  button {
+  button,
+  input {
     font-family: inherit;
+    padding: 0;
+  }
+
+  button {
+    border: none;
+    cursor: pointer;
   }
 
   #app {
