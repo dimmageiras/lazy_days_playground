@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { Card } from "~/components/Card";
 
-interface TreatmentProps {
+interface TreatmentCardProps {
   treatmentData: {
     description: string;
     image: {
@@ -16,9 +16,9 @@ interface TreatmentProps {
   };
 }
 
-const Treatment = ({
+const TreatmentCard = ({
   treatmentData: { description, image, name },
-}: TreatmentProps): JSX.Element => {
+}: TreatmentCardProps): JSX.Element => {
   return (
     <Card
       description={description}
@@ -29,4 +29,4 @@ const Treatment = ({
   );
 };
 
-export { Treatment };
+export { TreatmentCard };
