@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { PageTitle } from "~/components/PageTitle";
 
-import { StaffMember } from "./components/StaffMember";
+import { StaffCards } from "./components/StaffCards";
 import { TreatmentFilter } from "./components/TreatmentFilter";
 import divyaImage from "./images/divya.jpg";
 import mateoImage from "./images/mateo.jpg";
@@ -70,12 +70,7 @@ const Staff = (): JSX.Element => {
     <main className={styles["staff"]}>
       <PageTitle pageTitle="Our Staff" />
       <div className={styles["staff-list"]}>
-        {staff.map((staffMemberData) => (
-          <StaffMember
-            key={staffMemberData.id}
-            staffMemberData={staffMemberData}
-          />
-        ))}
+        <StaffCards staff={staff} />
       </div>
       <TreatmentFilter />
     </main>

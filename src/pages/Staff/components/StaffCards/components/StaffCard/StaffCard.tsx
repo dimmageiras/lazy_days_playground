@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { Card } from "~/components/Card";
 
-interface StaffMemberProps {
+interface StaffCardProps {
   staffMemberData: {
     image: {
       authorLink: string;
@@ -16,12 +16,12 @@ interface StaffMemberProps {
   };
 }
 
-const StaffMember = ({
+const StaffCard = ({
   staffMemberData: { image, name, treatmentNames },
-}: StaffMemberProps): JSX.Element => {
+}: StaffCardProps): JSX.Element => {
   const description = treatmentNames.join(", ");
 
   return <Card description={description} image={image} name={name} />;
 };
 
-export { StaffMember };
+export { StaffCard };
