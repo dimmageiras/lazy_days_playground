@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { Card } from "~/components/Card";
+import { MediaCard } from "~/components/MediaCard";
 
 interface TreatmentCardProps {
   treatmentData: {
@@ -20,7 +20,7 @@ const TreatmentCard = ({
   treatmentData: { description, image, name },
 }: TreatmentCardProps): JSX.Element => {
   return (
-    <Card
+    <MediaCard
       description={description}
       descriptionAlign="left"
       image={image}

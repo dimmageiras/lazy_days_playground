@@ -3,9 +3,9 @@ import type { JSX } from "react";
 
 import { RouterLink } from "~/components/RouterLink";
 
-import styles from "./Card.module.scss";
+import styles from "./MediaCard.module.scss";
 
-interface CardProps {
+interface MediaCardProps {
   description: string;
   descriptionAlign?: "left" | "center";
   image: {
@@ -18,12 +18,12 @@ interface CardProps {
   name: string;
 }
 
-const Card = ({
+const MediaCard = ({
   description,
   descriptionAlign = "center",
   image: { authorLink, authorName, fileName, platformLink, platformName },
   name,
-}: CardProps): JSX.Element => {
+}: MediaCardProps): JSX.Element => {
   return (
     <div className={styles["card"]}>
       <div className={styles["content"]}>
@@ -66,4 +66,4 @@ const Card = ({
   );
 };
 
-export { Card };
+export { MediaCard };

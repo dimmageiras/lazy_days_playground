@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { Card } from "~/components/Card";
+import { MediaCard } from "~/components/MediaCard";
 
 interface StaffCardProps {
   staffMemberData: {
@@ -21,7 +21,7 @@ const StaffCard = ({
 }: StaffCardProps): JSX.Element => {
   const description = treatmentNames.join(", ");
 
-  return <Card description={description} image={image} name={name} />;
+  return <MediaCard description={description} image={image} name={name} />;
 };
 
 export { StaffCard };
