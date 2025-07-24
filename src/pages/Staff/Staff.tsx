@@ -3,6 +3,7 @@ import type { JSX } from "react";
 import { PageTitle } from "~/components/PageTitle";
 
 import { StaffMember } from "./components/StaffMember";
+import { TreatmentFilter } from "./components/TreatmentFilter";
 import divyaImage from "./images/divya.jpg";
 import mateoImage from "./images/mateo.jpg";
 import michaelImage from "./images/michael.jpg";
@@ -76,6 +77,7 @@ const Staff = (): JSX.Element => {
           />
         ))}
       </div>
+      <TreatmentFilter />
     </main>
   );
 };
