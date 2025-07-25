@@ -3,7 +3,6 @@ import { reactRouterDevTools } from "react-router-devtools";
 import type { UserConfigFnObject } from "vite";
 import { defineConfig, loadEnv } from "vite";
 import pluginChecker from "vite-plugin-checker";
-import pluginDevtoolsJson from "vite-plugin-devtools-json";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig(({ mode }) => {
@@ -15,7 +14,6 @@ export default defineConfig(({ mode }) => {
       hasReactRouterDevTools && reactRouterDevTools(),
       reactRouter(),
       tsConfigPaths(),
-      pluginDevtoolsJson(),
       pluginChecker({
         eslint: {
           dev: {
