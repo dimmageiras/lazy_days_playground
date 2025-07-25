@@ -6,9 +6,25 @@
   position: relative;
   vertical-align: top;
 
+  &:hover,
+  &:focus-within {
+    &::after {
+      background-color: rgba(159, 159, 159, 0.1);
+      border-radius: 3.125rem;
+      content: "";
+      display: block;
+      height: calc(100% + 0.5rem);
+      left: -0.75rem;
+      position: absolute;
+      padding: 0.25rem 0.75rem;
+      top: -0.25rem;
+      width: calc(100% + 1.5rem);
+    }
+  }
+
   .input {
     border: none;
-    clip: rect(0rem, 0rem, 0rem, 0rem);
+    clip: rect(0, 0, 0, 0);
     height: 0.0625rem;
     line-height: inherit;
     margin: -0.0625rem;

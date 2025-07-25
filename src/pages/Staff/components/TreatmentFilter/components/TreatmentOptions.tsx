@@ -42,7 +42,7 @@ const TreatmentOptions = (): JSX.Element => {
   return (
     <>
       <RadioButton
-        id="radia-all"
+        id="radio-all"
         isChecked={selectedTreatment === "all"}
         label="All"
         name="treatment"
