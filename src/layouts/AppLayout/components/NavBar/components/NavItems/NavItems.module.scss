@@ -8,5 +8,11 @@
 
   &.active {
     text-decoration: underline;
+    text-underline-offset: 0.25rem;
+
+    &::before,
+    &::after {
+      content: "\00a0";
+    }
   }
 }
