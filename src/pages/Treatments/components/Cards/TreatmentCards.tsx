@@ -2,9 +2,9 @@ import type { JSX } from "react";
 
 import { ListRenderer } from "~/components/ListRenderer";
 
-import { TreatmentCard } from "./components/TreatmentCard";
+import { Card } from "./components/Card";
 
-interface TreatmentCardsProps {
+interface CardsProps {
   treatments: {
     id: number;
     name: string;
@@ -20,16 +20,16 @@ interface TreatmentCardsProps {
   }[];
 }
 
-const TreatmentCards = ({ treatments }: TreatmentCardsProps): JSX.Element => {
+const Cards = ({ treatments }: CardsProps): JSX.Element => {
   return (
     <ListRenderer
       data={treatments}
       getKey={(treatment) => treatment.id}
       renderComponent={({ data }): JSX.Element => {
-        return <TreatmentCard treatmentData={data} />;
+        return <Card treatmentData={data} />;
       }}
     />
   );
 };
 
-export { TreatmentCards };
+export { Cards };

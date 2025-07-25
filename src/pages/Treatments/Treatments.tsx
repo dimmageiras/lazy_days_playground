@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { PageTitle } from "~/components/PageTitle";
 
-import { TreatmentCards } from "./components/TreatmentCards/TreatmentCards";
+import { Cards } from "./components/Cards/TreatmentCards";
 import facialImage from "./images/facial.jpg";
 import massageImage from "./images/massage.jpg";
 import scrubImage from "./images/scrub.jpg";
@@ -62,7 +62,7 @@ const Treatments = (): JSX.Element => {
     <main className={styles["treatments"]}>
       <PageTitle pageTitle="Available Treatments" />
       <div className={styles["treatment-list"]}>
-        <TreatmentCards treatments={TREATMENTS} />
+        <Cards treatments={TREATMENTS} />
       </div>
     </main>
   );

@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { MediaCard } from "~/components/MediaCard";
 
-interface TreatmentCardProps {
+interface CardProps {
   treatmentData: {
     description: string;
     image: {
@@ -16,9 +16,9 @@ interface TreatmentCardProps {
   };
 }
 
-const TreatmentCard = ({
+const Card = ({
   treatmentData: { description, image, name },
-}: TreatmentCardProps): JSX.Element => {
+}: CardProps): JSX.Element => {
   return (
     <MediaCard
       description={description}
@@ -29,4 +29,4 @@ const TreatmentCard = ({
   );
 };
 
-export { TreatmentCard };
+export { Card };
