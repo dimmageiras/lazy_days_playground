@@ -1,4 +1,4 @@
-import camelcase from "lodash/camelcase";
+import lodash from "lodash";
 import type { JSX } from "react";
 import { useState } from "react";
 import type { CamelCase } from "type-fest";
@@ -29,8 +29,10 @@ const TreatmentOptions = (): JSX.Element => {
   const [selectedTreatment, setSelectedTreatment] =
     useState<TreatmentNames>("all");
 
+  const { camelCase } = lodash;
+
   const camelcaseTreatmentNames = TREATMENTS.map(
-    (treatment) => camelcase(treatment.name) as CamelCaseTreatmentNames
+    (treatment) => camelCase(treatment.name) as CamelCaseTreatmentNames
   );
 
   const handleTreatmentChange = (treatment: TreatmentNames) => {
