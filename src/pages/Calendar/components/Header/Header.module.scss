@@ -1,0 +1,25 @@
+.header {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2.5rem;
+
+  .month-navigation {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-content: center;
+
+    .page-title {
+      min-width: 40%;
+    }
+  }
+
+  .checkbox {
+    align-self: center;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+  }
+}
