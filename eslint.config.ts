@@ -139,6 +139,7 @@ export default tsEslint.config([
         { allow: "as-needed", extensions: [".tsx"] },
       ],
       "react/jsx-no-leaked-render": ["error", { validStrategies: ["ternary"] }],
+      "react/prop-types": "off",
       "react/self-closing-comp": "error",
       "react-refresh/only-export-components": "error",
       "security/detect-non-literal-fs-filename": "off",

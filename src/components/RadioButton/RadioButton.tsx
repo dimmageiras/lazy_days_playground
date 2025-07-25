@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import type { ChangeEvent, JSX, Ref } from "react";
-import { useRef } from "react";
 
 import styles from "./RadioButton.module.scss";
 
@@ -25,38 +24,10 @@ const RadioButton = ({
   onChange,
   value,
 }: RadioButtonProps): JSX.Element => {
-  const indicatorRef = useRef<HTMLSpanElement>(null);
-
-  const handleBlur = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.removeAttribute("data-focus");
-    }
-  };
-
-  const handleFocus = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.setAttribute("data-focus", "");
-    }
-  };
-
-  const handleMouseEnter = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.setAttribute("data-hover", "");
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.removeAttribute("data-hover");
-    }
-  };
-
   return (
     <label
       className={classNames(styles["radio-button"], className)}
       htmlFor={id}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       {...(isChecked && { "data-checked": "" })}
     >
       <input
@@ -64,18 +35,10 @@ const RadioButton = ({
         className={styles["input"]}
         id={id}
         name={name}
-        onBlur={handleBlur}
         onChange={onChange}
-        onFocus={handleFocus}
         ref={inputRef}
         type="radio"
         value={value}
-      />
-      <span
-        aria-hidden="true"
-        className={styles["indicator"]}
-        ref={indicatorRef}
-        {...(isChecked && { "data-checked": "" })}
       />
       <span
         className={styles["label"]}

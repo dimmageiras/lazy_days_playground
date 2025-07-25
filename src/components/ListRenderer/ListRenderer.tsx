@@ -1,25 +1,30 @@
-import type { ComponentType, JSX } from "react";
+import type { JSX } from "react";
+import { Fragment } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 interface ListRendererProps<TItem> {
   data: TItem[] | readonly TItem[];
-  getKey?: (item: TItem) => string | number;
-  renderComponent: ComponentType<{
-    data: TItem;
-    index: number;
-    key?: string | number;
-  }>;
+  getKey?: (item: TItem) => number | string;
+  renderComponent: (props: { data: TItem; index: number }) => JSX.Element;
 }
 
 const ListRenderer = <TItem,>({
   data,
   getKey,
-  renderComponent: RenderComponent,
+  renderComponent,
 }: ListRendererProps<TItem>): JSX.Element[] => {
-  return data.map((item: TItem, index: number) => {
-    const key = getKey ? getKey(item) : uuidv4();
+  if (!Array.isArray(data)) {
+    console.error("ListRenderer: data prop must be an array");
 
-    return <RenderComponent data={item} index={index} key={key} />;
+    return [];
+  }
+
+  return data.map((item: TItem, index: number): JSX.Element => {
+    const key = getKey?.(item) ?? uuidv4();
+
+    return (
+      <Fragment key={key}>{renderComponent({ data: item, index })}</Fragment>
+    );
   });
 };
 

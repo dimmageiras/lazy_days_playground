@@ -31,44 +31,33 @@ const TreatmentOptions = (): JSX.Element => {
 
   const { camelCase } = lodash;
 
-  const camelcaseTreatmentNames = TREATMENTS.map(
-    (treatment) => camelCase(treatment.name) as CamelCaseTreatmentNames
-  );
+  const treatmentOptions = [{ id: 0, name: "All" }, ...TREATMENTS] as const;
 
   const handleTreatmentChange = (treatment: TreatmentNames) => {
     setSelectedTreatment(treatment);
   };
 
   return (
-    <>
-      <RadioButton
-        id="radio-all"
-        isChecked={selectedTreatment === "all"}
-        label="All"
-        name="treatment"
-        onChange={() => handleTreatmentChange("all")}
-        value="all"
-      />
-      <ListRenderer
-        data={TREATMENTS}
-        getKey={(treatment) => treatment.id}
-        renderComponent={({ data, index }): JSX.Element => {
-          const treatmentValue = Reflect.get(camelcaseTreatmentNames, index);
+    <ListRenderer
+      data={treatmentOptions}
+      getKey={(treatment) => treatment.id}
+      renderComponent={({ data: treatmentOption }): JSX.Element => {
+        const treatmentValue = camelCase(
+          treatmentOption.name
+        ) as CamelCaseTreatmentNames;
 
-          return (
-            <RadioButton
-              id={`radio-${treatmentValue}`}
-              isChecked={selectedTreatment === treatmentValue}
-              key={data.id}
-              label={data.name}
-              name="treatment"
-              onChange={() => handleTreatmentChange(treatmentValue)}
-              value={treatmentValue}
-            />
-          );
-        }}
-      />
-    </>
+        return (
+          <RadioButton
+            id={`radio-${treatmentValue}`}
+            isChecked={selectedTreatment === treatmentValue}
+            label={treatmentOption.name}
+            name="treatment"
+            onChange={() => handleTreatmentChange(treatmentValue)}
+            value={treatmentValue}
+          />
+        );
+      }}
+    />
   );
 };
 
