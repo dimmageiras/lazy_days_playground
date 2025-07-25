@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { MediaCard } from "~/components/MediaCard";
 
-interface StaffCardProps {
+interface CardProps {
   staffMemberData: {
     image: {
       authorLink: string;
@@ -16,12 +16,12 @@ interface StaffCardProps {
   };
 }
 
-const StaffCard = ({
+const Card = ({
   staffMemberData: { image, name, treatmentNames },
-}: StaffCardProps): JSX.Element => {
+}: CardProps): JSX.Element => {
   const description = treatmentNames.join(", ");
 
   return <MediaCard description={description} image={image} name={name} />;
 };
 
-export { StaffCard };
+export { Card };

@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { PageTitle } from "~/components/PageTitle";
 
-import { StaffCards } from "./components/StaffCards";
+import { Cards } from "./components/Cards";
 import { TreatmentFilter } from "./components/TreatmentFilter";
 import divyaImage from "./images/divya.jpg";
 import mateoImage from "./images/mateo.jpg";
@@ -70,7 +70,7 @@ const Staff = (): JSX.Element => {
     <main className={styles["staff"]}>
       <PageTitle pageTitle="Our Staff" />
       <div className={styles["staff-list"]}>
-        <StaffCards staff={staff} />
+        <Cards staff={staff} />
       </div>
       <TreatmentFilter />
     </main>

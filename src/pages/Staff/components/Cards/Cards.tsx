@@ -2,9 +2,9 @@ import type { JSX } from "react";
 
 import { ListRenderer } from "~/components/ListRenderer";
 
-import { StaffCard } from "./components/StaffCard";
+import { Card } from "./components/Card";
 
-interface StaffCardsProps {
+interface CardsProps {
   staff: {
     id: number;
     name: string;
@@ -19,16 +19,16 @@ interface StaffCardsProps {
   }[];
 }
 
-const StaffCards = ({ staff }: StaffCardsProps): JSX.Element => {
+const Cards = ({ staff }: CardsProps): JSX.Element => {
   return (
     <ListRenderer
       data={staff}
       renderComponent={({ data }): JSX.Element => {
-        return <StaffCard staffMemberData={data} />;
+        return <Card staffMemberData={data} />;
       }}
       getKey={(staffMember) => staffMember.id}
     />
   );
 };
 
-export { StaffCards };
+export { Cards };
