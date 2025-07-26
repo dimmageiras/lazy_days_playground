@@ -7,12 +7,30 @@
   }
 
   &.active {
+    padding-top: 0.3rem;
     text-decoration: underline;
-    text-underline-offset: 0.25rem;
+    text-decoration-thickness: 0.1rem;
+    text-underline-offset: 0.3rem;
 
     &::before,
     &::after {
+      background-color: transparent;
+      border: none;
+      color: inherit;
       content: "\00a0";
+      display: inline;
+      font-family: Arial;
+      font-size: 1rem;
+      font-style: normal;
+      font-weight: 400;
+      letter-spacing: 0.2rem;
+      line-height: inherit;
+      margin: 0 calc(-0.2rem - 1ch / 14);
+      padding: 0;
+      position: static;
+      text-decoration: inherit;
+      text-transform: none;
+      vertical-align: baseline;
     }
   }
 }
