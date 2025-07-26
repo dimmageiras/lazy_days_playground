@@ -1,10 +1,10 @@
-import lodash from "lodash";
 import type { JSX } from "react";
 import { useState } from "react";
 import type { CamelCase } from "type-fest";
 
 import { ListRenderer } from "~/components/ListRenderer";
 import { RadioButton } from "~/components/RadioButton";
+import { StringManipulationHelper } from "~/helpers/string-manipulation.helper";
 
 const TREATMENTS = [
   {
@@ -29,7 +29,7 @@ const TreatmentOptions = (): JSX.Element => {
   const [selectedTreatment, setSelectedTreatment] =
     useState<TreatmentNames>("all");
 
-  const { camelCase } = lodash;
+  const { safeCamelCase } = StringManipulationHelper;
 
   const treatmentOptions = [{ id: 0, name: "All" }, ...TREATMENTS] as const;
 
@@ -42,9 +42,7 @@ const TreatmentOptions = (): JSX.Element => {
       data={treatmentOptions}
       getKey={(treatment) => treatment.id}
       renderComponent={({ data: treatmentOption }): JSX.Element => {
-        const treatmentValue = camelCase(
-          treatmentOption.name
-        ) as CamelCaseTreatmentNames;
+        const treatmentValue = safeCamelCase(treatmentOption.name);
 
         return (
           <RadioButton
