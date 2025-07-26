@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { PageTitle } from "~/components/PageTitle";
 
-import { Cards } from "./components/Cards/TreatmentCards";
+import { Cards } from "./components/Cards/Cards";
 import facialImage from "./images/facial.jpg";
 import massageImage from "./images/massage.jpg";
 import scrubImage from "./images/scrub.jpg";
@@ -61,9 +61,12 @@ const Treatments = (): JSX.Element => {
   return (
     <main className={styles["treatments"]}>
       <PageTitle pageTitle="Available Treatments" />
-      <div className={styles["treatment-list"]}>
+      <section
+        aria-label="Treatment options"
+        className={styles["treatment-list"]}
+      >
         <Cards treatments={TREATMENTS} />
-      </div>
+      </section>
     </main>
   );
 };

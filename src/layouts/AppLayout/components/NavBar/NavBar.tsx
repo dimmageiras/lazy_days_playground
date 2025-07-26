@@ -13,22 +13,25 @@ const NavBar = (): JSX.Element => {
       <div className={styles["content"]}>
         <div className={styles["left"]}>
           <RouterLink
+            aria-label="Lazy Days Spa - Home"
             as="navLink"
             className={styles["home-link"]}
             shouldReplace
             to="/"
           >
             <IconifyIcon
+              aria-hidden="true"
               className={styles["logo"]}
               icon="game-icons:flower-pot"
             />
           </RouterLink>
-          <nav className={styles["nav-bar"]}>
+          <nav aria-label="Main navigation" className={styles["nav-bar"]}>
             <NavItems />
           </nav>
         </div>
         <div className={styles["right"]}>
           <RouterLink
+            aria-label="User Profile"
             as="internal"
             className={styles["profile"]}
             shouldReplace
@@ -39,6 +42,7 @@ const NavBar = (): JSX.Element => {
           <NavigationWrapper shouldReplace to="/signin">
             {(navigateTo) => (
               <button
+                aria-label="Sign in"
                 className={styles["sign-in"]}
                 onClick={navigateTo}
                 type="button"

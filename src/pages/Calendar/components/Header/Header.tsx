@@ -1,4 +1,5 @@
-import { type JSX, useState } from "react";
+import type { JSX } from "react";
+import { useState } from "react";
 
 import { CheckBox } from "~/components/CheckBox";
 import { PageTitle } from "~/components/PageTitle";
@@ -10,22 +11,35 @@ const Header = (): JSX.Element => {
   const [isOnlyShowAvailable, setIsOnlyShowAvailable] = useState(false);
 
   return (
-    <div className={styles["header"]}>
-      <div className={styles["month-navigation"]}>
+    <header className={styles["header"]}>
+      <section
+        aria-label="Calendar navigation"
+        className={styles["month-navigation"]}
+      >
         <MonthNavigation>
-          <PageTitle className={styles["page-title"]} pageTitle="Calendar" />
+          <PageTitle
+            aria-label="Current month and year"
+            className={styles["page-title"]}
+            pageTitle="Calendar"
+          />
         </MonthNavigation>
+      </section>
+      <div
+        aria-label="Calendar filters"
+        className={styles["filter-controls"]}
+        role="group"
+      >
+        <CheckBox
+          aria-label="Only show available"
+          id="only-show-available"
+          isChecked={isOnlyShowAvailable}
+          label="Only show available"
+          name="only-show-available"
+          onChange={() => setIsOnlyShowAvailable(!isOnlyShowAvailable)}
+          value="only-show-available"
+        />
       </div>
-      <CheckBox
-        className={styles["checkbox"]}
-        id="only-show-available"
-        isChecked={isOnlyShowAvailable}
-        label="Only show available"
-        name="only-show-available"
-        onChange={() => setIsOnlyShowAvailable(!isOnlyShowAvailable)}
-        value="only-show-available"
-      />
-    </div>
+    </header>
   );
 };
 

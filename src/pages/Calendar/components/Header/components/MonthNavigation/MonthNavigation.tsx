@@ -12,6 +12,7 @@ const MonthNavigation = ({ children }: PropsWithChildren): JSX.Element => {
   return (
     <>
       <button
+        aria-label="Go to previous month"
         className={classNames(
           styles["month-navigation-button"],
           styles["previous"]
@@ -22,7 +23,11 @@ const MonthNavigation = ({ children }: PropsWithChildren): JSX.Element => {
         <IconifyIcon icon="typcn:arrow-left-thick" />
       </button>
       {children}
-      <button className={styles["month-navigation-button"]} type="button">
+      <button
+        aria-label="Go to next month"
+        className={styles["month-navigation-button"]}
+        type="button"
+      >
         <IconifyIcon icon="typcn:arrow-right-thick" />
       </button>
     </>

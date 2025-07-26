@@ -24,7 +24,7 @@ const Cards = ({ staff }: CardsProps): JSX.Element => {
     <ListRenderer
       data={staff}
       renderComponent={({ data }): JSX.Element => {
-        return <Card staffMemberData={data} />;
+        return <Card aria-label={data.name} staffMemberData={data} />;
       }}
       getKey={(staffMember) => staffMember.id}
     />

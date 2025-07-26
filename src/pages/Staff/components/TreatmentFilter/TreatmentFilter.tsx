@@ -5,9 +5,13 @@ import styles from "./TreatmentFilter.module.scss";
 
 const TreatmentFilter = (): JSX.Element => {
   return (
-    <div className={styles["treatment-filter"]} role="radiogroup">
-      <div className={styles["filters"]}>
-        <h2>Filter by treatment:</h2>
+    <div
+      aria-label="Treatment filter"
+      className={styles["treatment-filter"]}
+      role="radiogroup"
+    >
+      <div aria-label="Treatment filter options" className={styles["filters"]}>
+        <h2 aria-label="Filter by treatment">Filter by treatment:</h2>
         <TreatmentOptions />
       </div>
     </div>

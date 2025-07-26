@@ -46,6 +46,7 @@ const TreatmentOptions = (): JSX.Element => {
 
         return (
           <RadioButton
+            aria-label={treatmentOption.name}
             id={`radio-${treatmentValue}`}
             isChecked={selectedTreatment === treatmentValue}
             label={treatmentOption.name}

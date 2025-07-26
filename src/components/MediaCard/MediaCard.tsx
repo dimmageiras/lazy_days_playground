@@ -25,11 +25,11 @@ const MediaCard = ({
   name,
 }: MediaCardProps): JSX.Element => {
   return (
-    <div className={styles["card"]}>
+    <article className={styles["card"]}>
       <div className={styles["content"]}>
-        <div className={styles["image-container"]}>
+        <figure className={styles["image-container"]}>
           <img alt={name} className={styles["image"]} src={fileName} />
-          <p className={styles["credit"]}>
+          <figcaption className={styles["credit"]}>
             Photo by
             <RouterLink
               className={styles["link"]}
@@ -48,8 +48,8 @@ const MediaCard = ({
             >
               {platformName}
             </RouterLink>
-          </p>
-        </div>
+          </figcaption>
+        </figure>
         <div className={styles["details"]}>
           <h2 className={styles["name"]}>{name}</h2>
           <p
@@ -62,7 +62,7 @@ const MediaCard = ({
           </p>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

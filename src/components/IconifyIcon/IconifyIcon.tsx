@@ -1,4 +1,4 @@
-import { type ComponentPropsWithRef, type JSX } from "react";
+import type { ComponentPropsWithRef, JSX } from "react";
 
 import { DynamicElement } from "~/components/DynamicElement";
 

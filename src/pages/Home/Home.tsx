@@ -16,6 +16,7 @@ const Home = (): JSX.Element => {
       <div className={styles["content"]}>
         <h1 className={styles["title"]}>
           <IconifyIcon
+            aria-hidden="true"
             className={styles["logo"]}
             icon="game-icons:flower-pot"
           />
