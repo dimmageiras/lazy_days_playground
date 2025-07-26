@@ -1,6 +1,7 @@
 import classNames from "classnames";
-import type { ChangeEvent, Ref } from "react";
-import { type JSX, useRef } from "react";
+import type { ChangeEvent, JSX, Ref } from "react";
+
+import { IconifyIcon } from "~/components/IconifyIcon";
 
 import styles from "./CheckBox.module.scss";
 
@@ -25,38 +26,10 @@ const CheckBox = ({
   onChange,
   value,
 }: CheckBoxProps): JSX.Element => {
-  const indicatorRef = useRef<HTMLSpanElement>(null);
-
-  const handleBlur = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.removeAttribute("data-focus");
-    }
-  };
-
-  const handleFocus = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.setAttribute("data-focus", "");
-    }
-  };
-
-  const handleMouseEnter = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.setAttribute("data-hover", "");
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (indicatorRef.current) {
-      indicatorRef.current.removeAttribute("data-hover");
-    }
-  };
-
   return (
     <label
       className={classNames(styles["check-box"], className)}
       htmlFor={id}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       {...(isChecked && { "data-checked": "" })}
     >
       <input
@@ -64,31 +37,18 @@ const CheckBox = ({
         className={styles["input"]}
         id={id}
         name={name}
-        onBlur={handleBlur}
         onChange={onChange}
-        onFocus={handleFocus}
         ref={inputRef}
         type="checkbox"
         value={value}
       />
-      <span
-        aria-hidden="true"
-        className={styles["indicator"]}
-        ref={indicatorRef}
-        {...(isChecked && { "data-checked": "" })}
-      >
-        {isChecked ? (
-          <div>
-            <></>
-          </div>
-        ) : null}
-      </span>
-      <span
-        className={styles["label"]}
-        {...(isChecked && { "data-checked": "" })}
-      >
-        {label}
-      </span>
+      {isChecked ? (
+        <IconifyIcon
+          className={styles["image"]}
+          icon="streamline-sharp:check-solid"
+        />
+      ) : null}
+      <span className={styles["label"]}>{label}</span>
     </label>
   );
 };
