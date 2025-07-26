@@ -10,15 +10,12 @@
     box-shadow: 0 1.5625rem 3.125rem -0.75rem rgba(0, 0, 0, 0.25);
     max-width: 20.625rem;
     padding: 1.5rem;
-    position: relative;
     width: 100%;
-    z-index: 1;
 
     .image-container {
       border-radius: 0.5rem;
       height: 14.375rem;
       margin-top: calc(3rem * -1);
-      position: relative;
 
       .image {
         border-radius: 0.5rem;
