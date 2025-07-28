@@ -67,12 +67,12 @@ const staff = [
 
 const Staff = (): JSX.Element => {
   return (
-    <main className={styles["staff"]}>
-      <PageTitle pageTitle="Our Staff" />
+    <main aria-label="Staff" className={styles["staff"]}>
+      <PageTitle aria-label="Page title" pageTitle="Our Staff" />
       <section aria-label="Staff members" className={styles["staff-list"]}>
         <Cards staff={staff} />
       </section>
-      <aside>
+      <aside aria-label="Treatment filter">
         <TreatmentFilter />
       </aside>
     </main>

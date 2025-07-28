@@ -59,8 +59,8 @@ const TREATMENTS = [
 
 const Treatments = (): JSX.Element => {
   return (
-    <main className={styles["treatments"]}>
-      <PageTitle pageTitle="Available Treatments" />
+    <main aria-label="Treatments" className={styles["treatments"]}>
+      <PageTitle aria-label="Page title" pageTitle="Available Treatments" />
       <section
         aria-label="Treatment options"
         className={styles["treatment-list"]}

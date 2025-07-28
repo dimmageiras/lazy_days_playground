@@ -7,14 +7,15 @@ import styles from "./Home.module.scss";
 
 const Home = (): JSX.Element => {
   return (
-    <main className={styles["home"]}>
+    <main aria-label="Home" className={styles["home"]}>
       <img
+        aria-hidden="true"
         className={styles["background-image"]}
         src={splashImg}
         alt="Background Image"
       />
       <div className={styles["content"]}>
-        <h1 className={styles["title"]}>
+        <h1 aria-label="Company title" className={styles["title"]}>
           <IconifyIcon
             aria-hidden="true"
             className={styles["logo"]}
@@ -22,8 +23,8 @@ const Home = (): JSX.Element => {
           />
           Lazy Days Spa
         </h1>
-        <p>Hours: limited</p>
-        <p>Address: nearby</p>
+        <p aria-label="Hours">Hours: limited</p>
+        <p aria-label="Address">Address: nearby</p>
       </div>
     </main>
   );

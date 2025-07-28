@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 const Signin = (): JSX.Element => {
   return (
-    <main>
+    <main aria-label="Signin">
       <></>
     </main>
   );
