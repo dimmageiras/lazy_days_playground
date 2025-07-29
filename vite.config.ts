@@ -1,17 +1,14 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { reactRouterDevTools } from "react-router-devtools";
 import type { UserConfigFnObject } from "vite";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-  const hasReactRouterDevTools = env.VITE_HAS_REACT_ROUTER_DEV_TOOLS === "true";
-
+export default defineConfig(({ mode: _mode }) => {
   return {
     plugins: [
-      hasReactRouterDevTools && reactRouterDevTools(),
+      reactRouterDevTools(),
       reactRouter(),
       tsConfigPaths(),
       pluginChecker({
