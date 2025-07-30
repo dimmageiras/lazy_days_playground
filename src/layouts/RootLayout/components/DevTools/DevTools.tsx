@@ -1,0 +1,58 @@
+import classNames from "classnames";
+import type { JSX } from "react";
+import { useState } from "react";
+import { useStoreState } from "zustand-x";
+
+import { IconifyIcon } from "~/components/IconifyIcon";
+import { useClickOutside } from "~/hooks/useClickOutside";
+import { devToolsStore } from "~/root/components/DevTools/stores/devToolsStore";
+
+const DevTools = (): JSX.Element => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isRQDTOpen, setIsRQDTOpen] = useStoreState(
+    devToolsStore,
+    "isRQDTOpen"
+  );
+  const devToolsBubbleRef = useClickOutside<HTMLDivElement>(() => {
+    if (isExpanded) {
+      setIsExpanded(false);
+    }
+  });
+
+  const iconRotation = isExpanded ? "0deg" : "180deg";
+
+  return (
+    <div className={classNames({ visible: !isRQDTOpen })} id="dev-tools">
+      <button
+        className="dev-tools-toggle"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <IconifyIcon icon="ooui:expand" rotate={iconRotation} />
+      </button>
+      <div
+        className={classNames("dev-tools-bubble", {
+          visible: isExpanded,
+        })}
+        ref={devToolsBubbleRef}
+      >
+        <div className="bubble-content">
+          <div
+            className="tqdt-button-container"
+            id="tqdt-button-container"
+            onClick={(event) => {
+              const container = event.currentTarget;
+              const firstChild = container.firstChild?.childNodes[1];
+
+              if (firstChild && firstChild instanceof HTMLButtonElement) {
+                firstChild.click();
+                setIsRQDTOpen(true);
+              }
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export { DevTools };
