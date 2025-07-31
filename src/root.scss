@@ -112,6 +112,8 @@ body {
 
       .bubble-content {
         color: #bbc5b9;
+        display: flex;
+        flex-direction: column;
       }
     }
   }

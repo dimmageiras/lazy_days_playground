@@ -4,17 +4,12 @@
 
 import { devToolsStore } from "~/root/components/DevTools/stores/devToolsStore";
 
-// Constants
-const BUTTON_SELECTOR = ".tsqd-open-btn-container";
-const CONTAINER_ID = "tqdt-button-container";
-const PANEL_SELECTOR = ".tsqd-main-panel";
-
 /**
  * Observes DOM changes to detect TanStack Query DevTools panel visibility
  * Monitors the document body for changes and updates the store state when the panel opens or closes
  * @returns Cleanup function to disconnect the MutationObserver and prevent memory leaks
  */
-const observeDevToolsPanel = (): (() => void) => {
+const observeDevToolsPanel = (panelSelector: string): (() => void) => {
   let observer: MutationObserver | null = null;
 
   const destroy = () => {
@@ -25,7 +20,7 @@ const observeDevToolsPanel = (): (() => void) => {
   };
 
   observer = new MutationObserver(() => {
-    const panel = document.querySelector(PANEL_SELECTOR);
+    const panel = document.querySelector(panelSelector);
 
     if (panel) {
       devToolsStore?.set("isRQDTOpen", true);
@@ -47,7 +42,7 @@ const observeDevToolsPanel = (): (() => void) => {
  * Automatically removes duplicate buttons when they appear in the container
  * @returns Cleanup function to disconnect the MutationObserver and prevent memory leaks
  */
-const observeDuplicateButtons = (): (() => void) => {
+const observeDuplicateButtons = (containerSelector: string): (() => void) => {
   let observer: MutationObserver | null = null;
 
   const destroy = () => {
@@ -57,9 +52,9 @@ const observeDuplicateButtons = (): (() => void) => {
     }
   };
 
-  const cleanupDuplicates = () => {
-    const container = document.getElementById(CONTAINER_ID);
+  const container = document.querySelector(containerSelector);
 
+  const cleanupDuplicates = () => {
     if (!container) {
       return;
     }
@@ -81,8 +76,6 @@ const observeDuplicateButtons = (): (() => void) => {
     cleanupDuplicates();
   });
 
-  const container = document.getElementById(CONTAINER_ID);
-
   if (container) {
     observer.observe(container, {
       childList: true,
@@ -93,38 +86,7 @@ const observeDuplicateButtons = (): (() => void) => {
   return destroy;
 };
 
-/**
- * Sets up TanStack Query DevTools button positioning with automatic detection
- * Observes DOM changes until successful positioning
- * @returns Cleanup function to disconnect the observer
- */
-const setupTanstackButton = (): (() => void) => {
-  let observer: MutationObserver | null = null;
-
-  const destroy = () => {
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
-  };
-
-  observer = new MutationObserver(() => {
-    const button = document.querySelector(BUTTON_SELECTOR);
-    const container = document.getElementById(CONTAINER_ID);
-
-    if (button && container) {
-      container.appendChild(button);
-      destroy();
-    }
-  });
-
-  observer.observe(document.body, { childList: true, subtree: true });
-
-  return destroy;
-};
-
 export const TQDTHelper = {
   observeDevToolsPanel,
   observeDuplicateButtons,
-  setupTanstackButton,
 };

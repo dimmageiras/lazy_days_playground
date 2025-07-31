@@ -58,6 +58,7 @@ const DevTools = (): JSX.Element => {
               }
             }}
           />
+          <div className="rrdt-button-container" id="rrdt-button-container" />
         </div>
       </div>
     </div>
