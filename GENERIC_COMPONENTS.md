@@ -330,7 +330,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 - Components use CSS Modules for scoped styling
 - Add custom classes via `className` prop when needed
 - Follow the existing design system patterns
-- **Prefer CSS Grid over absolute/relative positioning** for layout control
+- **Prefer pure CSS Grid over absolute/relative positioning** for layout control
   - Use `display: grid` with `grid-template-columns/rows` for structured layouts
   - Leverage `grid-area` for precise element placement
   - See examples in `CheckBox`, `RadioButton`, and `Calendar/Header` components
