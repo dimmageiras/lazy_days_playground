@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { JSX } from "react";
-import { useState } from "react";
-import { useStoreState } from "zustand-x";
+import { useRef, useState } from "react";
+import { useStoreValue } from "zustand-x";
 
 import { IconifyIcon } from "~/components/IconifyIcon";
 import { useClickOutside } from "~/hooks/useClickOutside";
@@ -9,23 +9,33 @@ import { devToolsStore } from "~/root/components/DevTools/stores/devToolsStore";
 
 const DevTools = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isRQDTOpen, setIsRQDTOpen] = useStoreState(
-    devToolsStore,
-    "isRQDTOpen"
+  const isRQDTOpen = useStoreValue(devToolsStore, "isRQDTOpen");
+  const devToolsBubbleRef = useRef<HTMLDivElement>(null);
+  const devToolsToggleRef = useRef<HTMLButtonElement>(null);
+  const devToolsRef = useClickOutside<HTMLDivElement>(
+    () => {
+      if (isExpanded) {
+        setIsExpanded(false);
+      }
+    },
+    undefined,
+    [devToolsBubbleRef.current, devToolsToggleRef.current]
   );
-  const devToolsBubbleRef = useClickOutside<HTMLDivElement>(() => {
-    if (isExpanded) {
-      setIsExpanded(false);
-    }
-  });
 
   const iconRotation = isExpanded ? "0deg" : "180deg";
 
   return (
-    <div className={classNames({ visible: !isRQDTOpen })} id="dev-tools">
+    <div
+      className={classNames({ visible: !isRQDTOpen })}
+      id="dev-tools"
+      ref={devToolsRef}
+    >
       <button
         className="dev-tools-toggle"
-        onClick={() => setIsExpanded(!isExpanded)}
+        ref={devToolsToggleRef}
+        onClick={() => {
+          setIsExpanded(!isExpanded);
+        }}
       >
         <IconifyIcon icon="ooui:expand" rotate={iconRotation} />
       </button>
@@ -45,7 +55,6 @@ const DevTools = (): JSX.Element => {
 
               if (firstChild && firstChild instanceof HTMLButtonElement) {
                 firstChild.click();
-                setIsRQDTOpen(true);
               }
             }}
           />
