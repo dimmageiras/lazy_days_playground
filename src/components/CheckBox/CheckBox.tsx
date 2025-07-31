@@ -5,17 +5,56 @@ import { IconifyIcon } from "~/components/IconifyIcon";
 
 import styles from "./CheckBox.module.scss";
 
+/**
+ * Props interface for the CheckBox component
+ */
 interface CheckBoxProps {
+  /** Unique identifier for the checkbox */
   id: string;
+  /** Additional CSS classes */
   className?: string;
+  /** Ref for the input element */
   inputRef?: Ref<HTMLInputElement>;
+  /** Checked state */
   isChecked: boolean;
+  /** Label text */
   label: string;
+  /** Form field name */
   name: string;
+  /** Change handler */
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  /** Form field value */
   value: string;
 }
 
+/**
+ * A styled checkbox component with custom check mark icon and consistent form handling.
+ *
+ * @example
+ * ```tsx
+ * const [isSubscribed, setIsSubscribed] = useState(false);
+ *
+ * <CheckBox
+ *   id="newsletter-subscription"
+ *   isChecked={isSubscribed}
+ *   label="Subscribe to newsletter"
+ *   name="newsletter"
+ *   value="subscribed"
+ *   onChange={(e) => setIsSubscribed(e.target.checked)}
+ * />
+ * ```
+ *
+ * @param props - The CheckBox component props
+ * @param props.id - Unique identifier for the checkbox
+ * @param props.className - Additional CSS classes
+ * @param props.inputRef - Ref for the input element
+ * @param props.isChecked - Checked state (defaults to false)
+ * @param props.label - Label text
+ * @param props.name - Form field name
+ * @param props.onChange - Change handler
+ * @param props.value - Form field value
+ * @returns JSX.Element - The rendered checkbox component
+ */
 const CheckBox = ({
   id,
   className,
