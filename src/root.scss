@@ -19,11 +19,6 @@ body {
   grid-template-rows: 1fr 0;
   height: 100vh;
 
-  & > header,
-  & > main {
-    isolation: isolate;
-  }
-
   figure,
   h1,
   h2,
@@ -61,6 +56,15 @@ body {
     grid-row: 1 / -1;
     grid-template-rows: 4rem 1fr;
     isolation: isolate;
+
+    & > header,
+    & > main {
+      isolation: isolate;
+    }
+
+    & > main {
+      overflow-y: auto;
+    }
   }
 
   #dev-tools {
