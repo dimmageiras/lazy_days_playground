@@ -46,6 +46,7 @@ const DevTools = (): JSX.Element => {
         ref={devToolsBubbleRef}
       >
         <div className="bubble-content">
+          <div className="rrdt-button-container" id="rrdt-button-container" />
           <div
             className="tqdt-button-container"
             id="tqdt-button-container"
@@ -58,7 +59,6 @@ const DevTools = (): JSX.Element => {
               }
             }}
           />
-          <div className="rrdt-button-container" id="rrdt-button-container" />
         </div>
       </div>
     </div>
