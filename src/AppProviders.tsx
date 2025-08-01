@@ -3,15 +3,14 @@ import type { JSX, PropsWithChildren } from "react";
 
 import { ReactQueryConfig } from "~/configs/react-query.config";
 
+import { IS_DEVELOPMENT } from "./constants/env.constants";
 import { DevTools } from "./root/components/DevTools";
 
 const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
-  const isDevMode = import.meta.env.DEV;
-
   return (
     <QueryClientProvider {...ReactQueryConfig}>
       {children}
-      {isDevMode ? <DevTools /> : null}
+      {IS_DEVELOPMENT ? <DevTools /> : null}
     </QueryClientProvider>
   );
 };

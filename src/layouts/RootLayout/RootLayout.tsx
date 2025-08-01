@@ -1,11 +1,11 @@
 import type { JSX, PropsWithChildren } from "react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
+import { IS_DEVELOPMENT } from "~/constants/env.constants";
+
 import { DevTools } from "./components/DevTools";
 
 const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
-  const isDevMode = import.meta.env.DEV;
-
   return (
     <html lang="en">
       <head>
@@ -16,7 +16,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
       </head>
       <body>
         <div id="app">{children}</div>
-        {isDevMode ? <DevTools /> : null}
+        {IS_DEVELOPMENT ? <DevTools /> : null}
         <ScrollRestoration />
         <Scripts />
       </body>

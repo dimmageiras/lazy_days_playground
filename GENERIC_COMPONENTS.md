@@ -280,7 +280,7 @@ A type-safe component for rendering dynamic HTML elements, including custom elem
 
 ### ListRenderer
 
-A utility component for efficiently rendering lists with automatic key generation and error handling.
+A utility component for efficiently rendering lists with automatic key generation and error handling. Optimized to prevent unnecessary re-renders of individual list items when data hasn't changed.
 
 **Props:**
 
@@ -343,7 +343,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 
 ### 4. **Performance**
 
-- `ListRenderer` uses React keys for efficient re-rendering
+- `ListRenderer` uses memoized individual items and stable keys to prevent unnecessary re-renders
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
 - `IconifyIcon` is memoized to prevent unnecessary re-renders when props haven't changed
 - `DynamicElement` helper functions are memoized for optimal performance

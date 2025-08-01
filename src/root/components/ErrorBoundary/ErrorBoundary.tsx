@@ -2,6 +2,8 @@ import type { Route } from "@Router/types/src/+types/root";
 import type { JSX } from "react";
 import { isRouteErrorResponse } from "react-router";
 
+import { IS_DEVELOPMENT } from "~/constants/env.constants";
+
 const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps): JSX.Element => {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
@@ -13,7 +15,7 @@ const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps): JSX.Element => {
       error.status === 404
         ? "The requested page could not be found."
         : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
+  } else if (IS_DEVELOPMENT && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }

@@ -1,75 +1,74 @@
-import type { JSX } from "react";
-import { Fragment } from "react";
+import type { ComponentProps, JSX } from "react";
+import { Fragment, useCallback, useMemo, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-/**
- * Props interface for the ListRenderer component
- * @template TItem - The type of items in the data array
- */
-interface ListRendererProps<TItem> {
-  /** Array of items to render */
-  data: TItem[] | readonly TItem[];
-  /** Optional key extraction function (falls back to UUID) */
-  getKey?: (item: TItem) => number | string;
-  /** Render function for each item */
-  renderComponent: (props: { data: TItem; index: number }) => JSX.Element;
-}
+import { IS_DEVELOPMENT } from "~/constants/env.constants";
+import { ArrayUtilitiesHelper } from "~/helpers/array-utilities.helper";
+import { ObjectUtilitiesHelper } from "~/helpers/object-utilities.helper";
 
-/**
- * A utility component for efficiently rendering lists with automatic key generation and error handling.
- *
- * @example
- * ```tsx
- * // Simple list rendering
- * <ListRenderer
- *   data={users}
- *   renderComponent={({ data: user, index }) => (
- *     <div key={user.id}>
- *       {index + 1}. {user.name}
- *     </div>
- *   )}
- *   getKey={(user) => user.id}
- * />
- *
- * // Complex list with custom components
- * <ListRenderer
- *   data={products}
- *   renderComponent={({ data: product }) => (
- *     <MediaCard
- *       name={product.name}
- *       description={product.description}
- *       image={product.image}
- *     />
- *   )}
- *   getKey={(product) => product.sku}
- * />
- * ```
- *
- * @template TItem - The type of items in the data array
- * @param props - The ListRenderer component props
- * @param props.data - Array of items to render
- * @param props.getKey - Optional key extraction function (falls back to UUID)
- * @param props.renderComponent - Render function for each item that receives data and index
- * @returns JSX.Element[] - Array of rendered JSX elements
- */
+import { ListItem } from "./components/ListItem";
+import type { ListRendererWrapper } from "./ListRendererWrapper";
+
 const ListRenderer = <TItem,>({
   data,
   getKey,
   renderComponent,
-}: ListRendererProps<TItem>): JSX.Element[] => {
-  if (!Array.isArray(data)) {
-    console.error("ListRenderer: data prop must be an array");
+}: ComponentProps<typeof ListRendererWrapper<TItem>>): JSX.Element[] => {
+  const keyMap = useRef(new WeakMap<WeakKey, string>());
 
-    return [];
-  }
+  const generateStableKey = useCallback(
+    (item: TItem, index: number): string => {
+      if (getKey) {
+        return String(getKey(item));
+      }
 
-  return data.map((item: TItem, index: number): JSX.Element => {
-    const key = getKey?.(item) ?? uuidv4();
+      if (IS_DEVELOPMENT) {
+        console.warn(
+          "Performance warning: No getKey function provided. Generating UUID or stringified item as key for item:",
+          item,
+          "Consider providing a getKey function for better performance."
+        );
+      }
 
-    return (
-      <Fragment key={key}>{renderComponent({ data: item, index })}</Fragment>
-    );
-  });
+      const { isArray } = ArrayUtilitiesHelper;
+      const { isObject } = ObjectUtilitiesHelper;
+
+      const stringifiedItem = `${index}-${item}`;
+
+      if (isArray(item) || isObject(item)) {
+        if (!keyMap.current.has(item)) {
+          keyMap.current.set(item, uuidv4());
+        }
+
+        const key = keyMap.current.get(item);
+
+        if (key) {
+          return key;
+        }
+      }
+
+      return stringifiedItem;
+    },
+    [getKey]
+  );
+
+  const renderedItems = useMemo(() => {
+    return data.map((item: TItem, index: number): JSX.Element => {
+      const key = generateStableKey(item, index);
+
+      return (
+        <Fragment key={key}>
+          <ListItem
+            data={item}
+            index={index}
+            renderComponent={renderComponent}
+          />
+        </Fragment>
+      );
+    });
+  }, [data, generateStableKey, renderComponent]);
+
+  return renderedItems;
 };
 
 export { ListRenderer };

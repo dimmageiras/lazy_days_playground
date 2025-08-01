@@ -2,7 +2,7 @@
   display: grid;
   height: 0;
   min-height: 100%;
-  overflow: hidden;
+  overflow: hidden !important;
 
   .background-image {
     grid-area: 1 / 1;
