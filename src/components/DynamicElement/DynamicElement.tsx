@@ -1,11 +1,12 @@
 import type { CustomHtmlTags } from "html-tags";
-import htmlTags from "html-tags";
 import type {
   ComponentPropsWithRef,
   ElementType,
   JSX,
   PropsWithChildren,
 } from "react";
+
+import { DynamicElementHelper } from "./helpers/dynamic-element.helper";
 
 /**
  * Props type for the DynamicElement component
@@ -19,6 +20,7 @@ type DynamicElementProps<TWrapperElement extends CustomHtmlTags> =
 
 /**
  * A type-safe component for rendering dynamic HTML elements, including custom elements like iconify-icon.
+ * Uses memoized tag validation for optimal performance.
  *
  * @example
  * ```tsx
@@ -43,15 +45,15 @@ type DynamicElementProps<TWrapperElement extends CustomHtmlTags> =
  * @param props.props - All props corresponding to the specified HTML element are supported
  * @returns JSX.Element - The rendered dynamic element
  * @throws {Error} When an invalid wrapper element is provided
+ * @performance Tag validation uses memoized helper function to avoid recomputing valid tags list
  */
 const DynamicElement = <TDynamicElement extends CustomHtmlTags>({
   children,
   as,
   ...props
 }: DynamicElementProps<TDynamicElement>): JSX.Element => {
-  const customTags: CustomHtmlTags[] = (
-    ["iconify-icon", ...htmlTags] as const
-  ).filter((tag) => tag !== "math");
+  const { getCustomTags } = DynamicElementHelper;
+  const customTags: CustomHtmlTags[] = getCustomTags();
 
   if (!customTags.includes(as)) {
     throw new Error(`Invalid wrapper element: ${as}`);

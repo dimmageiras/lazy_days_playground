@@ -217,7 +217,7 @@ A card component designed for displaying media content with image, title, descri
 
 ### IconifyIcon
 
-A wrapper component for Iconify icons with type safety and consistent integration.
+A wrapper component for Iconify icons with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
@@ -345,6 +345,8 @@ A utility component for efficiently rendering lists with automatic key generatio
 
 - `ListRenderer` uses React keys for efficient re-rendering
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
+- `IconifyIcon` is memoized to prevent unnecessary re-renders when props haven't changed
+- `DynamicElement` helper functions are memoized for optimal performance
 - Components are designed to minimize unnecessary re-renders
 
 ### 5. **Consistency**

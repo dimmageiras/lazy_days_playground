@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, JSX } from "react";
+import { memo } from "react";
 
 import { DynamicElement } from "~/components/DynamicElement";
 
@@ -10,6 +11,7 @@ type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
 
 /**
  * A wrapper component for Iconify icons with type safety and consistent integration.
+ * This component is memoized to prevent unnecessary re-renders when props haven't changed.
  *
  * @example
  * ```tsx
@@ -37,9 +39,12 @@ type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
  * @param props.inline - Changes vertical alignment
  * @param props.props - All other standard iconify-icon element props are supported
  * @returns JSX.Element - The rendered iconify-icon element
+ * @performance Memoized component that only re-renders when props change
  */
 const IconifyIcon = ({ icon, ...props }: IconifyIconProps): JSX.Element => {
   return <DynamicElement icon={icon} as="iconify-icon" {...props} />;
 };
 
-export { IconifyIcon };
+const MemoizedIconifyIcon = memo(IconifyIcon);
+
+export { MemoizedIconifyIcon as IconifyIcon };
