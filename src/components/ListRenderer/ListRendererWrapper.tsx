@@ -10,7 +10,7 @@ export interface ListRendererProps<TItem> {
   /** Array of items to render */
   data: TItem[] | readonly TItem[];
   /** Optional key extraction function (falls back to UUID) */
-  getKey?: (item: TItem) => number | string;
+  getKey?: (item: TItem, index: number) => number | string;
   /** Render function for each item */
   renderComponent: (props: { data: TItem; index: number }) => JSX.Element;
 }
@@ -24,17 +24,18 @@ export interface ListRendererProps<TItem> {
  * // Simple list rendering
  * <ListRenderer
  *   data={users}
+ *   getKey={(user, index) => user.id}
  *   renderComponent={({ data: user, index }) => (
  *     <div key={user.id}>
  *       {index + 1}. {user.name}
  *     </div>
  *   )}
- *   getKey={(user) => user.id}
  * />
  *
  * // Complex list with custom components
  * <ListRenderer
  *   data={products}
+ *   getKey={(product, index) => product.sku}
  *   renderComponent={({ data: product }) => (
  *     <MediaCard
  *       name={product.name}
@@ -42,7 +43,6 @@ export interface ListRendererProps<TItem> {
  *       image={product.image}
  *     />
  *   )}
- *   getKey={(product) => product.sku}
  * />
  * ```
  *

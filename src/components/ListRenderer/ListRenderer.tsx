@@ -1,5 +1,5 @@
 import type { ComponentProps, JSX } from "react";
-import { Fragment, useCallback, useMemo, useRef } from "react";
+import { Fragment, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { IS_DEVELOPMENT } from "~/constants/env.constants";
@@ -16,57 +16,48 @@ const ListRenderer = <TItem,>({
 }: ComponentProps<typeof ListRendererWrapper<TItem>>): JSX.Element[] => {
   const keyMap = useRef(new WeakMap<WeakKey, string>());
 
-  const generateStableKey = useCallback(
-    (item: TItem, index: number): string => {
-      if (getKey) {
-        return String(getKey(item));
-      }
+  const generateStableKey = (item: TItem, index: number): string => {
+    if (getKey) {
+      return String(getKey(item, index));
+    }
 
-      if (IS_DEVELOPMENT) {
-        console.warn(
-          "Performance warning: No getKey function provided. Generating UUID or stringified item as key for item:",
-          item,
-          "Consider providing a getKey function for better performance."
-        );
-      }
-
-      const { isArray } = ArrayUtilitiesHelper;
-      const { isObject } = ObjectUtilitiesHelper;
-
-      const stringifiedItem = `${index}-${item}`;
-
-      if (isArray(item) || isObject(item)) {
-        if (!keyMap.current.has(item)) {
-          keyMap.current.set(item, uuidv4());
-        }
-
-        const key = keyMap.current.get(item);
-
-        if (key) {
-          return key;
-        }
-      }
-
-      return stringifiedItem;
-    },
-    [getKey]
-  );
-
-  const renderedItems = useMemo(() => {
-    return data.map((item: TItem, index: number): JSX.Element => {
-      const key = generateStableKey(item, index);
-
-      return (
-        <Fragment key={key}>
-          <ListItem
-            data={item}
-            index={index}
-            renderComponent={renderComponent}
-          />
-        </Fragment>
+    if (IS_DEVELOPMENT) {
+      console.warn(
+        "Performance warning: No getKey function provided. Generating UUID or stringified item as key for item:",
+        item,
+        "Consider providing a getKey function for better performance."
       );
-    });
-  }, [data, generateStableKey, renderComponent]);
+    }
+
+    const { isArray } = ArrayUtilitiesHelper;
+    const { isObject } = ObjectUtilitiesHelper;
+
+    const stringifiedItem = `${index}-${item}`;
+
+    if (isArray(item) || isObject(item)) {
+      if (!keyMap.current.has(item)) {
+        keyMap.current.set(item, uuidv4());
+      }
+
+      const key = keyMap.current.get(item);
+
+      if (key) {
+        return key;
+      }
+    }
+
+    return stringifiedItem;
+  };
+
+  const renderedItems = data.map((item: TItem, index: number): JSX.Element => {
+    const key = generateStableKey(item, index);
+
+    return (
+      <Fragment key={key}>
+        <ListItem data={item} index={index} renderComponent={renderComponent} />
+      </Fragment>
+    );
+  });
 
   return renderedItems;
 };

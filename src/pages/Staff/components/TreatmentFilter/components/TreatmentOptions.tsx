@@ -40,7 +40,7 @@ const TreatmentOptions = (): JSX.Element => {
   return (
     <ListRenderer
       data={treatmentOptions}
-      getKey={(treatment) => treatment.id}
+      getKey={(treatment): number => treatment.id}
       renderComponent={({ data: treatmentOption }): JSX.Element => {
         const treatmentValue = safeCamelCase(treatmentOption.name);
 

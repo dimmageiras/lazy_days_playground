@@ -24,7 +24,7 @@ const Cards = ({ treatments }: CardsProps): JSX.Element => {
   return (
     <ListRenderer
       data={treatments}
-      getKey={(treatment) => treatment.id}
+      getKey={(treatment): number => treatment.id}
       renderComponent={({ data }): JSX.Element => {
         return <Card aria-label={data.name} treatmentData={data} />;
       }}

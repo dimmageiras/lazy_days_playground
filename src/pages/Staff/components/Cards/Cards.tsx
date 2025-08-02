@@ -23,10 +23,10 @@ const Cards = ({ staff }: CardsProps): JSX.Element => {
   return (
     <ListRenderer
       data={staff}
+      getKey={(staffMember): number => staffMember.id}
       renderComponent={({ data }): JSX.Element => {
         return <Card aria-label={data.name} staffMemberData={data} />;
       }}
-      getKey={(staffMember) => staffMember.id}
     />
   );
 };
