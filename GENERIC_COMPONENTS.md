@@ -6,8 +6,8 @@ This document provides a comprehensive guide to all generic components available
 
 ### 🧭 [Navigation & Routing Components](#navigation--routing-components)
 
-1. [RouterLink](#routerlink)
-2. [NavigationWrapper](#navigationwrapper)
+1. [NavigationWrapper](#navigationwrapper)
+2. [RouterLink](#routerlink)
 
 ### 📝 [Form Components](#form-components)
 
@@ -16,18 +16,41 @@ This document provides a comprehensive guide to all generic components available
 
 ### 🎨 [UI & Display Components](#ui--display-components)
 
-1. [PageTitle](#pagetitle)
+1. [IconifyIcon](#iconifyicon)
 2. [MediaCard](#mediacard)
-3. [IconifyIcon](#iconifyicon)
+3. [PageTitle](#pagetitle)
 
 ### 🔧 [Utility Components](#utility-components)
 
-1. [DynamicElement](#dynamicelement)
-2. [ListRenderer](#listrenderer)
+1. [ClientOnly](#clientonly)
+2. [DynamicElement](#dynamicelement)
+3. [ListRenderer](#listrenderer)
 
 ---
 
 ## Navigation & Routing Components
+
+### NavigationWrapper
+
+A render prop component that provides navigation functionality to child components, useful for creating custom clickable elements.
+
+**Props:**
+
+- `children: (navigateTo: () => void) => JSX.Element` - Render function that receives navigation callback
+- `to: string` - Destination route
+- `shouldReplace?: boolean` - Replace current history entry (default: false)
+
+**Usage Example:**
+
+```tsx
+<NavigationWrapper to="/settings" shouldReplace>
+  {(navigateTo) => (
+    <button onClick={navigateTo} className="custom-button">
+      Go to Settings
+    </button>
+  )}
+</NavigationWrapper>
+```
 
 ### RouterLink
 
@@ -66,28 +89,6 @@ A flexible link component that handles both internal routing and external links 
 >
   Profile
 </RouterLink>
-```
-
-### NavigationWrapper
-
-A render prop component that provides navigation functionality to child components, useful for creating custom clickable elements.
-
-**Props:**
-
-- `children: (navigateTo: () => void) => JSX.Element` - Render function that receives navigation callback
-- `to: string` - Destination route
-- `shouldReplace?: boolean` - Replace current history entry (default: false)
-
-**Usage Example:**
-
-```tsx
-<NavigationWrapper to="/settings" shouldReplace>
-  {(navigateTo) => (
-    <button onClick={navigateTo} className="custom-button">
-      Go to Settings
-    </button>
-  )}
-</NavigationWrapper>
 ```
 
 ---
@@ -166,20 +167,36 @@ const [selectedPlan, setSelectedPlan] = useState('');
 
 ## UI & Display Components
 
-### PageTitle
+### IconifyIcon
 
-A consistent page title component that renders as an h2 element with standardized styling.
+A wrapper component for Iconify icons with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
-- `pageTitle: string` - The title text to display
-- `className?: string` - Additional CSS classes
-- All other standard h2 props are supported
+- `icon: string` - Iconify icon name (e.g., "streamline-sharp:check-solid")
+- `width?: string | number` - Icon width
+- `height?: string | number` - Icon height
+- `flip?: string` - Flip icon ("horizontal", "vertical", or "horizontal,vertical")
+- `rotate?: string | number` - Rotate icon (e.g., "90deg", "180deg")
+- `inline?: boolean` - Changes vertical alignment
+- All other standard iconify-icon element props are supported
 
 **Usage Example:**
 
 ```tsx
-<PageTitle pageTitle="User Dashboard" className="custom-title-style" />
+<IconifyIcon
+  icon="material-symbols:home"
+  className="nav-icon"
+  width="24"
+  height="24"
+/>
+
+// With transformations
+<IconifyIcon
+  icon="bi:arrow-right"
+  rotate="90deg"
+  flip="horizontal"
+/>
 ```
 
 ### MediaCard
@@ -215,41 +232,41 @@ A card component designed for displaying media content with image, title, descri
 />
 ```
 
-### IconifyIcon
+### PageTitle
 
-A wrapper component for Iconify icons with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
+A consistent page title component that renders as an h2 element with standardized styling.
 
 **Props:**
 
-- `icon: string` - Iconify icon name (e.g., "streamline-sharp:check-solid")
-- `width?: string | number` - Icon width
-- `height?: string | number` - Icon height
-- `flip?: string` - Flip icon ("horizontal", "vertical", or "horizontal,vertical")
-- `rotate?: string | number` - Rotate icon (e.g., "90deg", "180deg")
-- `inline?: boolean` - Changes vertical alignment
-- All other standard iconify-icon element props are supported
+- `pageTitle: string` - The title text to display
+- `className?: string` - Additional CSS classes
+- All other standard h2 props are supported
 
 **Usage Example:**
 
 ```tsx
-<IconifyIcon
-  icon="material-symbols:home"
-  className="nav-icon"
-  width="24"
-  height="24"
-/>
-
-// With transformations
-<IconifyIcon
-  icon="bi:arrow-right"
-  rotate="90deg"
-  flip="horizontal"
-/>
+<PageTitle pageTitle="User Dashboard" className="custom-title-style" />
 ```
 
 ---
 
 ## Utility Components
+
+### ClientOnly
+
+Renders its children **only after** the component has mounted on the client. This avoids SSR-mismatch warnings when a child needs browser-only APIs (e.g. `window`, `document`, chart libraries).
+
+**Props:**
+
+— `children: ReactNode` – elements to render once mounted
+
+**Usage Example:**
+
+```tsx
+<ClientOnly>
+  <HeavyChart data={data} />
+</ClientOnly>
+```
 
 ### DynamicElement
 

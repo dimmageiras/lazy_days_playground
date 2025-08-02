@@ -24,7 +24,7 @@ const NavItems = (): JSX.Element => {
   return (
     <ListRenderer
       data={NAV_ITEMS}
-      getKey={(item) => item.label}
+      getKey={(item): string => item.label}
       renderComponent={({ data }): JSX.Element => {
         return (
           <RouterLink

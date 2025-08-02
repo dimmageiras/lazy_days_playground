@@ -1,10 +1,14 @@
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 import { memo } from "react";
 
+import type { ListRenderer } from "~/components/ListRenderer";
+
+type ListRenderer<TItem> = ComponentProps<typeof ListRenderer<TItem>>;
+
 interface ListItemProps<TItem> {
-  data: TItem;
+  data: ListRenderer<TItem>["data"][number];
   index: number;
-  renderComponent: (props: { data: TItem; index: number }) => JSX.Element;
+  renderComponent: ListRenderer<TItem>["renderComponent"];
 }
 
 const ListItem: <TItem>(props: ListItemProps<TItem>) => JSX.Element = <TItem>({

@@ -3,6 +3,22 @@ import { useEffect, useRef } from "react";
 
 const DEFAULT_EVENTS = ["mousedown", "touchstart"];
 
+/**
+ * useClickOutside – runs a callback when the user clicks or touches
+ * anywhere outside the supplied element.
+ *
+ * @param callback - Callback invoked on outside interaction.
+ * @param events - Events to listen for.
+ * @param nodes - Nodes to check if the click is outside of.
+ *
+ * @example
+ * ```tsx
+ * const ref = useRef<HTMLDivElement>(null);
+ * useClickOutside(ref, () => setOpen(false));
+ *
+ * return <div ref={ref}>…</div>;
+ * ```
+ */
 const useClickOutside = <T extends HTMLElement>(
   callback: () => void,
   events?: string[] | null,
