@@ -5,7 +5,7 @@ import { useStoreValue } from "zustand-x";
 
 import { IconifyIcon } from "~/components/IconifyIcon";
 import { useClickOutside } from "~/hooks/useClickOutside";
-import { devToolsStore } from "~/root/components/DevTools/stores/devToolsStore";
+import { devToolsStore } from "~/root/components/DevTools/stores/dev-tools.store";
 
 const DevTools = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useState(false);

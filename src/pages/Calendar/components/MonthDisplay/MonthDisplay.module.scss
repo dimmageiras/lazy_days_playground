@@ -1,0 +1,6 @@
+.month-display {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(7, 1fr);
+  margin: 1.25rem 2.5rem;
+}

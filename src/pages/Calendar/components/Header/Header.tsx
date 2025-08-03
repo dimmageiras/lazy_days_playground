@@ -1,17 +1,30 @@
 import type { JSX } from "react";
-import { useState } from "react";
+import { useStoreState, useTrackedStore } from "zustand-x";
 
 import { CheckBox } from "~/components/CheckBox";
 import { PageTitle } from "~/components/PageTitle";
+import { CalendarUtilitiesHelper } from "~/helpers/calendar-utilities.helper";
+import { calendarStore } from "~/pages/Calendar/stores/calendar.store";
 
 import { MonthNavigation } from "./components/MonthNavigation";
 import styles from "./Header.module.scss";
 
 const Header = (): JSX.Element => {
-  const [isOnlyShowAvailable, setIsOnlyShowAvailable] = useState(false);
+  const [showAvailable, setShowAvailable] = useStoreState(
+    calendarStore,
+    "showOnlyAvailableAppointments"
+  );
+  const { selectedMonth } = useTrackedStore(calendarStore);
+
+  const { getMonthYearDetails } = CalendarUtilitiesHelper;
+
+  const currentMonthYear = getMonthYearDetails(selectedMonth);
+
+  const { monthName, year } = currentMonthYear;
+  const pageTitle = `${monthName} ${year}`;
 
   return (
-    <header className={styles["header"]}>
+    <div className={styles["header"]}>
       <section
         aria-label="Calendar navigation"
         className={styles["month-navigation"]}
@@ -20,7 +33,7 @@ const Header = (): JSX.Element => {
           <PageTitle
             aria-label="Current month and year"
             className={styles["page-title"]}
-            pageTitle="Calendar"
+            pageTitle={pageTitle}
           />
         </MonthNavigation>
       </section>
@@ -32,14 +45,14 @@ const Header = (): JSX.Element => {
         <CheckBox
           aria-label="Only show available"
           id="only-show-available"
-          isChecked={isOnlyShowAvailable}
+          isChecked={showAvailable}
           label="Only show available"
           name="only-show-available"
-          onChange={() => setIsOnlyShowAvailable(!isOnlyShowAvailable)}
+          onChange={() => setShowAvailable(!showAvailable)}
           value="only-show-available"
         />
       </div>
-    </header>
+    </div>
   );
 };
 

@@ -1,8 +1,6 @@
 import type { CustomHtmlTags } from "html-tags";
 import htmlTags from "html-tags";
-import lodash from "lodash";
-
-const { memoize } = lodash;
+import memoize from "lodash/memoize";
 
 /**
  * Returns an array of valid custom HTML tags including standard HTML tags and custom elements.

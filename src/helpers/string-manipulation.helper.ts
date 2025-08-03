@@ -1,7 +1,5 @@
-import lodash from "lodash";
+import camelCase from "lodash/camelCase";
 import type { CamelCase } from "type-fest";
-
-const { camelCase } = lodash;
 
 /**
  * Safely converts a string to camelCase while preserving type-level information
