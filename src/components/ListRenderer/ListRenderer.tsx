@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { ListRendererBase } from "./ListRendererBase";
+import { ListRendererBase } from "./components/ListRendererBase/ListRendererBase";
 
 /**
  * Props interface for the ListRenderer component
@@ -58,7 +58,7 @@ const ListRenderer = <TItem,>({
   data,
   getKey,
   renderComponent,
-}: ListRendererProps<TItem>): JSX.Element | null => {
+}: ListRendererProps<TItem>): JSX.Element => {
   if (!Array.isArray(data)) {
     throw new Error("ListRenderer: data prop must be an array");
   }

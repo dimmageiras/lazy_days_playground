@@ -2,7 +2,7 @@ import classNames from "classnames";
 import type { JSX, Ref } from "react";
 import { Link, NavLink } from "react-router";
 
-import { LINK_AS } from "./router-link.constants";
+import { LINK_AS } from "./constants/router-link.constants";
 import styles from "./RouterLink.module.scss";
 
 /**

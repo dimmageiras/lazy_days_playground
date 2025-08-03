@@ -42,7 +42,7 @@ type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
  * @performance Memoized component that only re-renders when props change
  */
 const IconifyIcon = ({ icon, ...props }: IconifyIconProps): JSX.Element => {
-  return <DynamicElement icon={icon} as="iconify-icon" {...props} />;
+  return <DynamicElement as="iconify-icon" icon={icon} {...props} />;
 };
 
 const MemoizedIconifyIcon = memo(IconifyIcon);

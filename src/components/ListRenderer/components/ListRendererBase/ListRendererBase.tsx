@@ -2,12 +2,11 @@ import type { ComponentProps, JSX } from "react";
 import { Fragment, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import type { ListRenderer } from "~/components/ListRenderer";
+import { ListItem } from "~/components/ListRenderer/components/ListRendererBase/components/ListItem";
 import { IS_DEVELOPMENT } from "~/constants/env.constants";
 import { ArrayUtilitiesHelper } from "~/helpers/array-utilities.helper";
 import { ObjectUtilitiesHelper } from "~/helpers/object-utilities.helper";
-
-import { ListItem } from "./components/ListItem";
-import type { ListRenderer } from "./ListRenderer";
 
 const ListRendererBase = <TItem,>({
   data,
