@@ -20,6 +20,10 @@
   vertical-align: middle;
   white-space: nowrap;
 
+  &:hover {
+    background: #e2e8f0;
+  }
+
   &.previous {
     &:disabled {
       box-shadow: none;

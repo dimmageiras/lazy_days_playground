@@ -37,7 +37,11 @@ const DevTools = (): JSX.Element => {
           setIsExpanded(!isExpanded);
         }}
       >
-        <IconifyIcon icon="ooui:expand" rotate={iconRotation} />
+        <IconifyIcon
+          className="dev-tools-toggle-icon"
+          icon="ooui:expand"
+          rotate={iconRotation}
+        />
       </button>
       <div
         className={classNames("dev-tools-bubble", {

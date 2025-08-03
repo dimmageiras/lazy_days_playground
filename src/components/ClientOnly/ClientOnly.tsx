@@ -1,3 +1,7 @@
+import type { JSX, PropsWithChildren } from "react";
+
+import { useMounted } from "~/hooks/useMounted";
+
 /**
  * ClientOnly – renders its children only after the component has mounted
  * on the client.  Useful for deferring browser-only code (e.g. chart
@@ -15,10 +19,6 @@
  * a `useEffect`, so nothing is rendered during the server pass or the
  * very first client render.
  */
-import type { JSX, PropsWithChildren } from "react";
-
-import { useMounted } from "~/hooks/useMounted";
-
 const ClientOnly = ({ children }: PropsWithChildren): JSX.Element | null => {
   const isMounted = useMounted();
 

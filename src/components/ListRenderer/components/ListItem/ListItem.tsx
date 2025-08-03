@@ -11,12 +11,12 @@ interface ListItemProps<TItem> {
   renderComponent: ListRenderer<TItem>["renderComponent"];
 }
 
-const ListItem: <TItem>(props: ListItemProps<TItem>) => JSX.Element = <TItem>({
+const ListItem = <TItem,>({
   data,
   index,
   renderComponent,
 }: ListItemProps<TItem>) => {
-  return renderComponent({ data, index });
+  return <>{renderComponent({ data, index })}</>;
 };
 
 const MemoizedListItem = memo(ListItem) as <TItem>(
