@@ -1,65 +1,75 @@
-import type { ComponentProps, JSX } from "react";
-import { Fragment, useRef } from "react";
-import { v4 as uuidv4 } from "uuid";
+import type { JSX } from "react";
 
-import { IS_DEVELOPMENT } from "~/constants/env.constants";
-import { ArrayUtilitiesHelper } from "~/helpers/array-utilities.helper";
-import { ObjectUtilitiesHelper } from "~/helpers/object-utilities.helper";
+import { ListRendererBase } from "./ListRendererBase";
 
-import { ListItem } from "./components/ListItem";
-import type { ListRendererWrapper } from "./ListRendererWrapper";
+/**
+ * Props interface for the ListRenderer component
+ * @template TItem - The type of items in the data array
+ */
+export interface ListRendererProps<TItem> {
+  /** Array of items to render */
+  data: TItem[] | readonly TItem[];
+  /** Optional key extraction function (falls back to UUID) */
+  getKey?: (item: TItem, index: number) => number | string;
+  /** Render function for each item */
+  renderComponent: (props: { data: TItem; index: number }) => JSX.Element;
+}
 
+/**
+ * A utility component for efficiently rendering lists with automatic key generation and error handling.
+ * Optimized to prevent unnecessary re-renders of individual list items when data hasn't changed.
+ *
+ * @example
+ * ```tsx
+ * // Simple list rendering
+ * <ListRenderer
+ *   data={users}
+ *   getKey={(user, index) => user.id}
+ *   renderComponent={({ data: user, index }) => (
+ *     <div key={user.id}>
+ *       {index + 1}. {user.name}
+ *     </div>
+ *   )}
+ * />
+ *
+ * // Complex list with custom components
+ * <ListRenderer
+ *   data={products}
+ *   getKey={(product, index) => product.sku}
+ *   renderComponent={({ data: product }) => (
+ *     <MediaCard
+ *       name={product.name}
+ *       description={product.description}
+ *       image={product.image}
+ *     />
+ *   )}
+ * />
+ * ```
+ *
+ * @template TItem - The type of items in the data array
+ * @param props - The ListRenderer component props
+ * @param props.data - Array of items to render
+ * @param props.getKey - Optional key extraction function (falls back to UUID)
+ * @param props.renderComponent - Render function for each item that receives data and index
+ * @returns JSX.Element[] - Array of rendered JSX elements
+ * @performance Uses memoized list items and stable keys to minimize re-renders
+ */
 const ListRenderer = <TItem,>({
   data,
   getKey,
   renderComponent,
-}: ComponentProps<typeof ListRendererWrapper<TItem>>): JSX.Element[] => {
-  const keyMap = useRef(new WeakMap<WeakKey, string>());
+}: ListRendererProps<TItem>): JSX.Element | null => {
+  if (!Array.isArray(data)) {
+    throw new Error("ListRenderer: data prop must be an array");
+  }
 
-  const generateStableKey = (item: TItem, index: number): string => {
-    if (getKey) {
-      return String(getKey(item, index));
-    }
-
-    if (IS_DEVELOPMENT) {
-      console.warn(
-        "Performance warning: No getKey function provided. Generating UUID or stringified item as key for item:",
-        item,
-        "Consider providing a getKey function for better performance."
-      );
-    }
-
-    const { isArray } = ArrayUtilitiesHelper;
-    const { isObject } = ObjectUtilitiesHelper;
-
-    const stringifiedItem = `${index}-${item}`;
-
-    if (isArray(item) || isObject(item)) {
-      if (!keyMap.current.has(item)) {
-        keyMap.current.set(item, uuidv4());
-      }
-
-      const key = keyMap.current.get(item);
-
-      if (key) {
-        return key;
-      }
-    }
-
-    return stringifiedItem;
-  };
-
-  const renderedItems = data.map((item: TItem, index: number): JSX.Element => {
-    const key = generateStableKey(item, index);
-
-    return (
-      <Fragment key={key}>
-        <ListItem data={item} index={index} renderComponent={renderComponent} />
-      </Fragment>
-    );
-  });
-
-  return renderedItems;
+  return (
+    <ListRendererBase
+      data={data}
+      getKey={getKey}
+      renderComponent={renderComponent}
+    />
+  );
 };
 
 export { ListRenderer };

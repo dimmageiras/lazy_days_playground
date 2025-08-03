@@ -1,3 +1,3 @@
-import { ListRendererWrapper } from "./ListRendererWrapper";
+import { ListRenderer } from "./ListRenderer";
 
-export { ListRendererWrapper as ListRenderer };
+export { ListRenderer };
