@@ -1,7 +1,7 @@
 import type { Config } from "@react-router/dev/config";
 
 export default {
-  appDirectory: "src",
+  appDirectory: "client",
   buildDirectory: "dist",
   future: {
     unstable_optimizeDeps: true,

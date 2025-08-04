@@ -380,7 +380,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 
 When creating new generic components:
 
-1. **Location**: Place in `src/components/ComponentName/`
+1. **Location**: Place in `client/components/ComponentName/`
 2. **Structure**: Include `index.ts`, `ComponentName.tsx`, and `ComponentName.module.scss`
 3. **TypeScript**: Use proper interfaces and generic types where appropriate
 4. **Testing**: Ensure components work in isolation and with various prop combinations

@@ -90,13 +90,13 @@ export default tsEslint.config([
         {
           patterns: [
             {
-              message: "Please use ~/ instead of ../",
+              message: "Please use @Client instead of ../",
               regex: "\\.\\.\\/(?!.*\\.module\\.scss).*",
             },
             {
               message:
-                "SCSS files should use ./ (same directory) instead of ~/",
-              regex: "^~\\/.*\\.module\\.scss$",
+                "SCSS files should use ./ (same directory) instead of @Client",
+              regex: "^@Client\\/.*\\.module\\.scss$",
             },
             {
               message:
@@ -147,7 +147,12 @@ export default tsEslint.config([
       "simple-import-sort/imports": [
         "error",
         {
-          groups: [["^@?\\w"], ["^@src", "^~"], ["^\\u0000"], ["^\\."]],
+          groups: [
+            ["^@?\\w"],
+            ["^@Client", "^@Server", "^@Shared"],
+            ["^\\u0000"],
+            ["^\\."],
+          ],
         },
       ],
       curly: ["error", "all"],
@@ -168,7 +173,12 @@ export default tsEslint.config([
   },
   // Config files and entry points: allow default exports
   {
-    files: ["**/*.config.ts", "**/*.d.ts", "src/root.tsx", "./src/routes.ts"],
+    files: [
+      "**/*.config.ts",
+      "**/*.d.ts",
+      "client/root.tsx",
+      "client/routes.ts",
+    ],
     rules: {
       "no-restricted-exports": [
         "error",
@@ -178,7 +188,7 @@ export default tsEslint.config([
   },
   // Root component: disable React-specific restrictions
   {
-    files: ["src/root.tsx"],
+    files: ["client/root.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },
