@@ -178,6 +178,7 @@ export default tsEslint.config([
       "**/*.d.ts",
       "client/root.tsx",
       "client/routes.ts",
+      "server/**/*.ts",
     ],
     rules: {
       "no-restricted-exports": [
