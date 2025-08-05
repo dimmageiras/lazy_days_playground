@@ -36,7 +36,7 @@
     "baseUrl": "." /* Specify the base directory to resolve non-relative module names. */,
     "paths": {
       "@Client/*": ["client/*"],
-      "@Router/*": [".react-router/*"],
+      "@Router/*": ["react-router/*"],
       "@Server/*": ["server/*"],
       "@Shared/*": ["shared/*"]
     } /* Specify a set of entries that re-map imports to additional lookup locations. */,
@@ -126,8 +126,8 @@
   },
   "include": [
     "**/*",
-    "**/.server/**/*",
     "**/.client/**/*",
+    "**/.server/**/*",
     ".react-router/types/**/*"
   ]
 }
