@@ -5,7 +5,6 @@
  * @param containerSelector - CSS selector for the target container where the button should be moved
  * @returns Cleanup function to disconnect the MutationObserver
  */
-
 const setupDevToolsButton = (
   buttonSelector: string,
   containerSelector: string
