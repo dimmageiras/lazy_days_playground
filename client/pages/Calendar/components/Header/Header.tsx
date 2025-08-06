@@ -1,10 +1,10 @@
 import type { JSX } from "react";
 import { useStoreState, useTrackedStore } from "zustand-x";
 
-import { CheckBox } from "@Client/components/CheckBox";
-import { PageTitle } from "@Client/components/PageTitle";
-import { CalendarUtilitiesHelper } from "@Client/helpers/calendar-utilities.helper";
-import { calendarStore } from "@Client/pages/Calendar/stores/calendar.store";
+import { CheckBox } from "@client/components/CheckBox";
+import { PageTitle } from "@client/components/PageTitle";
+import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
 import { MonthNavigation } from "./components/MonthNavigation";
 import styles from "./Header.module.scss";

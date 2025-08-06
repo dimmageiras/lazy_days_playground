@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { ListRenderer } from "@Client/components/ListRenderer";
+import { ListRenderer } from "@client/components/ListRenderer";
 
 import { Card } from "./components/Card";
 

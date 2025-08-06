@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { MediaCard } from "@Client/components/MediaCard";
+import { MediaCard } from "@client/components/MediaCard";
 
 interface CardProps {
   treatmentData: {

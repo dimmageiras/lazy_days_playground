@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { PageTitle } from "@Client/components/PageTitle";
+import { PageTitle } from "@client/components/PageTitle";
 
 import { Cards } from "./components/Cards/Cards";
 import facialImage from "./images/facial.jpg";

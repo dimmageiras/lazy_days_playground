@@ -2,7 +2,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { JSX } from "react";
 import { useLayoutEffect } from "react";
 
-import { TQDTHelper } from "@Client/root/components/DevTools/helpers/tqdt.helper";
+import { TQDTHelper } from "@client/root/components/DevTools/helpers/tqdt.helper";
 
 import "./DevTools.module.scss";
 

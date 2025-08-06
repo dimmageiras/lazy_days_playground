@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { JSX } from "react";
 
-import { RouterLink } from "@Client/components/RouterLink";
+import { RouterLink } from "@client/components/RouterLink";
 
 import styles from "./MediaCard.module.scss";
 

@@ -1,6 +1,6 @@
 import type { ComponentPropsWithRef, JSX } from "react";
 
-import { DynamicElement } from "@Client/components/DynamicElement";
+import { DynamicElement } from "@client/components/DynamicElement";
 
 /**
  * Props type for the IconifyIcon component

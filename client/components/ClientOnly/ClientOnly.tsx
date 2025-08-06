@@ -1,6 +1,6 @@
 import type { JSX, PropsWithChildren } from "react";
 
-import { useMounted } from "@Client/hooks/useMounted";
+import { useMounted } from "@client/hooks/useMounted";
 
 /**
  * ClientOnly – renders its children only after the component has mounted

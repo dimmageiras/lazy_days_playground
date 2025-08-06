@@ -2,7 +2,7 @@
  * Helper functions for managing TanStack Query DevTools button DOM manipulation
  */
 
-import { devToolsStore } from "@Client/root/components/DevTools/stores/dev-tools.store";
+import { devToolsStore } from "@client/root/components/DevTools/stores/dev-tools.store";
 
 /**
  * Observes DOM changes to detect TanStack Query DevTools panel visibility

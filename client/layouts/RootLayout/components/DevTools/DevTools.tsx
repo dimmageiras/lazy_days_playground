@@ -3,9 +3,9 @@ import type { JSX } from "react";
 import { useRef, useState } from "react";
 import { useStoreValue } from "zustand-x";
 
-import { IconifyIcon } from "@Client/components/IconifyIcon";
-import { useClickOutside } from "@Client/hooks/useClickOutside";
-import { devToolsStore } from "@Client/root/components/DevTools/stores/dev-tools.store";
+import { IconifyIcon } from "@client/components/IconifyIcon";
+import { useClickOutside } from "@client/hooks/useClickOutside";
+import { devToolsStore } from "@client/root/components/DevTools/stores/dev-tools.store";
 
 const DevTools = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useState(false);

@@ -1,11 +1,11 @@
 import type { JSX } from "react";
 import { useTrackedStore } from "zustand-x";
 
-import { ListRenderer } from "@Client/components/ListRenderer";
-import { CalendarUtilitiesHelper } from "@Client/helpers/calendar-utilities.helper";
-import type { Appointment } from "@Client/pages/Calendar/constants";
-import { APPOINTMENTS } from "@Client/pages/Calendar/constants";
-import { calendarStore } from "@Client/pages/Calendar/stores/calendar.store";
+import { ListRenderer } from "@client/components/ListRenderer";
+import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import type { Appointment } from "@client/pages/Calendar/constants";
+import { APPOINTMENTS } from "@client/pages/Calendar/constants";
+import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
 import { DateBox } from "./components/DateBox";
 import styles from "./MonthDisplay.module.scss";

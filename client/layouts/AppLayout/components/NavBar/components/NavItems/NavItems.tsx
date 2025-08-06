@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 
-import { ListRenderer } from "@Client/components/ListRenderer";
-import { RouterLink } from "@Client/components/RouterLink";
+import { ListRenderer } from "@client/components/ListRenderer";
+import { RouterLink } from "@client/components/RouterLink";
 
 import styles from "./NavItems.module.scss";
 

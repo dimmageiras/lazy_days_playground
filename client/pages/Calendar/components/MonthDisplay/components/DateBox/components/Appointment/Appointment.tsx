@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import type { JSX } from "react";
 
-import type { Appointment as AppointmentType } from "@Client/pages/Calendar/constants";
+import type { Appointment as AppointmentType } from "@client/pages/Calendar/constants";
 
 import styles from "./Appointment.module.scss";
 

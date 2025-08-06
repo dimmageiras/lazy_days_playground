@@ -1,10 +1,10 @@
 import type { JSX } from "react";
 import { useTrackedStore } from "zustand-x";
 
-import { ListRenderer } from "@Client/components/ListRenderer";
-import { CalendarUtilitiesHelper } from "@Client/helpers/calendar-utilities.helper";
-import type { Appointment as AppointmentType } from "@Client/pages/Calendar/constants";
-import { calendarStore } from "@Client/pages/Calendar/stores/calendar.store";
+import { ListRenderer } from "@client/components/ListRenderer";
+import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import type { Appointment as AppointmentType } from "@client/pages/Calendar/constants";
+import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
 import { Appointment } from "./components/Appointment";
 import styles from "./DateBox.module.scss";

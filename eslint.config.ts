@@ -90,13 +90,13 @@ export default tsEslint.config([
         {
           patterns: [
             {
-              message: "Please use @Client instead of ../",
+              message: "Please use @client instead of ../",
               regex: "\\.\\.\\/(?!.*\\.module\\.scss).*",
             },
             {
               message:
-                "SCSS files should use ./ (same directory) instead of @Client",
-              regex: "^@Client\\/.*\\.module\\.scss$",
+                "SCSS files should use ./ (same directory) instead of @client",
+              regex: "^@client\\/.*\\.module\\.scss$",
             },
             {
               message:
@@ -149,7 +149,7 @@ export default tsEslint.config([
         {
           groups: [
             ["^@?\\w"],
-            ["^@Client", "^@Server", "^@Shared"],
+            ["^@client", "^@server", "^@shared"],
             ["^\\u0000"],
             ["^\\."],
           ],

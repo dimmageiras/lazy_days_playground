@@ -1,7 +1,7 @@
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
 
-import type { MonthYear } from "@Client/types/calendar.type";
+import type { MonthYear } from "@client/types/calendar.type";
 
 /**
  * Extracts detailed month and year information from a given date.

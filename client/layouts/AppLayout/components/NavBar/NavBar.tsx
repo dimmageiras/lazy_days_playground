@@ -1,8 +1,8 @@
 import type { JSX } from "react";
 
-import { IconifyIcon } from "@Client/components/IconifyIcon";
-import { NavigationWrapper } from "@Client/components/NavigationWrapper";
-import { RouterLink } from "@Client/components/RouterLink";
+import { IconifyIcon } from "@client/components/IconifyIcon";
+import { NavigationWrapper } from "@client/components/NavigationWrapper";
+import { RouterLink } from "@client/components/RouterLink";
 
 import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";

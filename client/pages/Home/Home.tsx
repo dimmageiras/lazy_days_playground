@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 
-import splashImg from "@Client/assets/images/splash.jpg";
-import { IconifyIcon } from "@Client/components/IconifyIcon";
+import splashImg from "@client/assets/images/splash.jpg";
+import { IconifyIcon } from "@client/components/IconifyIcon";
 
 import styles from "./Home.module.scss";
 

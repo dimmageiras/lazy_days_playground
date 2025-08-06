@@ -3,9 +3,9 @@ import dayjs from "dayjs";
 import { type JSX, type PropsWithChildren } from "react";
 import { useStoreState } from "zustand-x";
 
-import { IconifyIcon } from "@Client/components/IconifyIcon";
-import { CalendarUtilitiesHelper } from "@Client/helpers/calendar-utilities.helper";
-import { calendarStore } from "@Client/pages/Calendar/stores/calendar.store";
+import { IconifyIcon } from "@client/components/IconifyIcon";
+import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
 import styles from "./MonthNavigation.module.scss";
 

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { ChangeEvent, JSX, Ref } from "react";
 
-import { IconifyIcon } from "@Client/components/IconifyIcon";
+import { IconifyIcon } from "@client/components/IconifyIcon";
 
 import styles from "./CheckBox.module.scss";
 

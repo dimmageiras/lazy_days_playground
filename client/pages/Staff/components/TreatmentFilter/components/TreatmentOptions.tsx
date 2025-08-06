@@ -2,9 +2,9 @@ import type { JSX } from "react";
 import { useState } from "react";
 import type { CamelCase } from "type-fest";
 
-import { ListRenderer } from "@Client/components/ListRenderer";
-import { RadioButton } from "@Client/components/RadioButton";
-import { StringManipulationHelper } from "@Client/helpers/string-manipulation.helper";
+import { ListRenderer } from "@client/components/ListRenderer";
+import { RadioButton } from "@client/components/RadioButton";
+import { StringManipulationHelper } from "@client/helpers/string-manipulation.helper";
 
 const TREATMENTS = [
   {

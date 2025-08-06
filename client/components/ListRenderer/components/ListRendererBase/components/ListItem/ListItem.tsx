@@ -1,7 +1,7 @@
 import type { ComponentProps, JSX } from "react";
 import { memo } from "react";
 
-import type { ListRenderer } from "@Client/components/ListRenderer";
+import type { ListRenderer } from "@client/components/ListRenderer";
 
 type ListRenderer<TItem> = ComponentProps<typeof ListRenderer<TItem>>;
 
