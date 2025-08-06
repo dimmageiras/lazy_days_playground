@@ -10,13 +10,13 @@ import styles from "./RouterLink.module.scss";
  */
 interface RouterLinkProps {
   /** CSS class for active NavLink */
-  activeClassName?: string;
+  activeClassName?: string | undefined;
   /** Link type (default: 'external') */
   as?: keyof typeof LINK_AS;
   /** Link content */
   children?: JSX.Element | string | null;
   /** Additional CSS classes */
-  className?: string;
+  className?: string | undefined;
   /** Show underline on hover (default: false) */
   hasTextDecorationOnHover?: boolean;
   /** Ref for the anchor element */

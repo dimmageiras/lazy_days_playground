@@ -10,7 +10,7 @@ export interface ListRendererProps<TItem> {
   /** Array of items to render */
   data: TItem[] | readonly TItem[];
   /** Optional key extraction function (falls back to UUID) */
-  getKey?: (item: TItem, index: number) => number | string;
+  getKey?: ((item: TItem, index: number) => number | string) | undefined;
   /** Render function for each item */
   renderComponent: (props: { data: TItem; index: number }) => JSX.Element;
 }
