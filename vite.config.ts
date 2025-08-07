@@ -5,10 +5,14 @@ import { defineConfig } from "vite";
 import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig(({ mode: _mode }) => {
+import { MODES } from "./shared/constants/root-env.constants.ts";
+
+export default defineConfig(({ mode }) => {
+  const isDev = mode === MODES.DEVELOPMENT;
+
   return {
     plugins: [
-      reactRouterDevTools(),
+      isDev && reactRouterDevTools(),
       reactRouter(),
       tsConfigPaths(),
       !process.env.VITEST &&

@@ -1,0 +1,30 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
+import type { Options } from "pino-http";
+import pino from "pino-http";
+
+import { LOG_LEVEL, MODE } from "../../shared/constants/root-env.constants.ts";
+
+const loggerOptions: Record<
+  typeof MODE,
+  Options<IncomingMessage, ServerResponse<IncomingMessage>, never>
+> = {
+  development: {
+    level: LOG_LEVEL ?? "info",
+    autoLogging: false,
+    transport: {
+      target: "pino-pretty",
+      options: {
+        translateTime: "HH:MM:ss",
+        ignore: "pid,hostname",
+      },
+    },
+  },
+  production: {
+    level: LOG_LEVEL ?? "info",
+  },
+};
+
+const opts = Reflect.get(loggerOptions, MODE);
+const log = pino(opts).logger;
+
+export { log };

@@ -8,5 +8,6 @@ export default {
     unstable_splitRouteModules: true,
     unstable_viteEnvironmentApi: true,
   },
+  serverBuildFile: "index.js",
   ssr: true,
 } satisfies Config;

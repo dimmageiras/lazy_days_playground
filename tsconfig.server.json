@@ -2,9 +2,9 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "./build/fastify",
+    "outDir": "./dist/fastify",
     "types": []
   },
-  "exclude": ["node_modules", "client/**/*"],
-  "include": ["server/**/*.ts", "shared/types/**/*.ts"]
+  "include": ["./server/**/*.ts", "./shared/types/**/*.ts"],
+  "exclude": ["./node_modules", "./client/**/*"]
 }

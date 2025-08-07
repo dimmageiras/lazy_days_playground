@@ -4,9 +4,9 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { ListRenderer } from "@client/components/ListRenderer";
 import { ListItem } from "@client/components/ListRenderer/components/ListRendererBase/components/ListItem";
-import { IS_DEVELOPMENT } from "@client/constants/env.constants";
 import { ArrayUtilitiesHelper } from "@client/helpers/array-utilities.helper";
 import { ObjectUtilitiesHelper } from "@client/helpers/object-utilities.helper";
+import { IS_DEVELOPMENT } from "@shared/constants/root-env.constants";
 
 const ListRendererBase = <TItem,>({
   data,

@@ -2,7 +2,7 @@ import type { Route } from "@rr/types/client/+types/root";
 import type { JSX } from "react";
 import { isRouteErrorResponse } from "react-router";
 
-import { IS_DEVELOPMENT } from "@client/constants/env.constants";
+import { IS_DEVELOPMENT } from "@shared/constants/root-env.constants";
 
 const ErrorBoundary = ({ error }: Route.ErrorBoundaryProps): JSX.Element => {
   let message = "Oops!";

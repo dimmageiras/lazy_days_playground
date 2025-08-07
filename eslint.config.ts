@@ -28,7 +28,6 @@ export default tsEslint.config([
       pluginReactRefresh.configs.vite,
       ...pluginTanstackQuery.configs["flat/recommended"],
     ],
-    files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: "latest",
       globals: {
@@ -84,27 +83,6 @@ export default tsEslint.config([
       "no-restricted-exports": [
         "error",
         { restrictDefaultExports: { direct: true } },
-      ],
-      "no-restricted-imports": [
-        "error",
-        {
-          patterns: [
-            {
-              message: "Please use @client instead of ../",
-              regex: "\\.\\.\\/(?!.*\\.module\\.scss).*",
-            },
-            {
-              message:
-                "SCSS files should use ./ (same directory) instead of @client",
-              regex: "^@client\\/.*\\.module\\.scss$",
-            },
-            {
-              message:
-                "SCSS files should use ./ (same directory) instead of ../",
-              regex: "\\.\\.\\/(.*\\.module\\.scss).*",
-            },
-          ],
-        },
       ],
       "no-use-before-define": "error",
       "padding-line-between-statements": [
@@ -192,6 +170,33 @@ export default tsEslint.config([
     files: ["client/root.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
+    },
+  },
+  // Client files: enable restricted imports
+  {
+    files: ["client/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              message: "Please use @client or @shared instead of ../",
+              regex: "\\.\\.\\/(?!.*\\.module\\.scss).*",
+            },
+            {
+              message:
+                "SCSS files should use ./ (same directory) instead of @client",
+              regex: "^@client\\/.*\\.module\\.scss$",
+            },
+            {
+              message:
+                "SCSS files should use ./ (same directory) instead of ../",
+              regex: "\\.\\.\\/(.*\\.module\\.scss).*",
+            },
+          ],
+        },
+      ],
     },
   },
 ]) satisfies FlatConfig.ConfigArray;
