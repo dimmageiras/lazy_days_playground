@@ -102,7 +102,7 @@ A styled checkbox component with custom check mark icon and consistent form hand
 **Props:**
 
 - `id: string` - Unique identifier for the checkbox
-- `isChecked: boolean` - Checked state
+- `isChecked: boolean` - Checked state (default: false)
 - `label: string` - Label text
 - `name: string` - Form field name
 - `value: string` - Form field value
@@ -132,7 +132,7 @@ A styled radio button component with consistent form handling and visual feedbac
 **Props:**
 
 - `id: string` - Unique identifier for the radio button
-- `isChecked: boolean` - Checked state
+- `isChecked: boolean` - Checked state (default: false)
 - `label: string` - Label text
 - `name: string` - Form field name (should be same for grouped radio buttons)
 - `value: string` - Form field value
@@ -303,7 +303,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 
 - `data: TItem[] | readonly TItem[]` - Array of items to render
 - `renderComponent: (props: { data: TItem; index: number }) => JSX.Element` - Render function for each item
-- `getKey?: (item: TItem) => number | string` - Optional key extraction function (falls back to UUID)
+- `getKey?: (item: TItem, index: number) => number | string` - Optional key extraction function (falls back to UUID)
 
 **Usage Examples:**
 
@@ -360,7 +360,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 
 ### 4. **Performance**
 
-- `ListRenderer` uses memoized individual items and stable keys to prevent unnecessary re-renders
+- `ListRenderer` uses stable keys to prevent unnecessary re-renders
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
 - `IconifyIcon` is memoized to prevent unnecessary re-renders when props haven't changed
 - `DynamicElement` helper functions are memoized for optimal performance

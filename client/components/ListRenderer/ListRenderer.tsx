@@ -26,7 +26,7 @@ export interface ListRendererProps<TItem> {
  *   data={users}
  *   getKey={(user, index) => user.id}
  *   renderComponent={({ data: user, index }) => (
- *     <div key={user.id}>
+ *     <div>
  *       {index + 1}. {user.name}
  *     </div>
  *   )}

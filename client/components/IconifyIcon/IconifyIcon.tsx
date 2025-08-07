@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, JSX } from "react";
+import { memo } from "react";
 
 import { DynamicElement } from "@client/components/DynamicElement";
 
@@ -40,9 +41,11 @@ type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
  * @returns JSX.Element - The rendered iconify-icon element
  * @performance Memoized component that only re-renders when props change
  */
-const IconifyIcon = ({ icon, ...props }: IconifyIconProps): JSX.Element => {
-  return <DynamicElement as="iconify-icon" icon={icon} {...props} />;
-};
+const IconifyIcon = memo(
+  ({ icon, ...props }: IconifyIconProps): JSX.Element => {
+    return <DynamicElement as="iconify-icon" icon={icon} {...props} />;
+  }
+);
 
 IconifyIcon.displayName = "IconifyIcon";
 
