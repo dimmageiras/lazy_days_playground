@@ -8,24 +8,24 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import { MODES } from "./shared/constants/root-env.constants.ts";
 
 export default defineConfig(({ mode }) => {
-  const isDev = mode === MODES.DEVELOPMENT;
+  const isDev = mode === MODES.DEVELOPMENT && !process.env.VITEST;
 
   return {
     plugins: [
-      isDev && reactRouterDevTools(),
+      reactRouterDevTools(),
       reactRouter(),
       tsConfigPaths(),
-      !process.env.VITEST &&
+      isDev &&
         pluginChecker({
           eslint: {
             dev: {
               logLevel: ["error"],
             },
             lintCommand: `eslint . \
-        --report-unused-disable-directives \
-        --max-warnings 0 \
-        --rule "no-console: ['error', { allow: ['error', 'info', 'warn'] }]" \
-        --rule "react-hooks/exhaustive-deps: off"`,
+    --report-unused-disable-directives \
+    --max-warnings 0 \
+    --rule "no-console: ['error', { allow: ['error', 'info', 'warn'] }]" \
+    --rule "react-hooks/exhaustive-deps: off"`,
             useFlatConfig: true,
           },
           // TODO: Enable overlay when an update that fixes the issue is released
