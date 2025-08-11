@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type { JSX } from "react";
+import { type JSX, memo } from "react";
 
 import { RouterLink } from "@client/components/RouterLink";
 
@@ -13,6 +13,8 @@ interface MediaCardProps {
   description: string;
   /** Text alignment for description (default: 'center') */
   descriptionAlign?: "left" | "center";
+  /** Whether the card is hidden */
+  isHidden?: boolean;
   /** Image configuration */
   image: {
     /** Link to author profile */
@@ -32,6 +34,7 @@ interface MediaCardProps {
 
 /**
  * A card component designed for displaying media content with image, title, description, and image attribution.
+ * This component is memoized to prevent unnecessary re-renders when props haven't changed.
  *
  * @example
  * ```tsx
@@ -60,53 +63,63 @@ interface MediaCardProps {
  * @param props.image.platformName - Platform name (e.g., "Unsplash")
  * @param props.image.platformLink - Link to platform
  * @returns JSX.Element - The rendered media card component
+ * @performance Memoized component that only re-renders when props change
  */
-const MediaCard = ({
-  description,
-  descriptionAlign = "center",
-  image: { authorLink, authorName, fileName, platformLink, platformName },
-  name,
-}: MediaCardProps): JSX.Element => {
-  return (
-    <article className={styles["card"]}>
-      <div className={styles["content"]}>
-        <figure className={styles["image-container"]}>
-          <img alt={name} className={styles["image"]} src={fileName} />
-          <figcaption className={styles["credit"]}>
-            Photo by
-            <RouterLink
-              className={styles["link"]}
-              hasTextDecorationOnHover
-              shouldOpenInNewTab
-              to={authorLink}
+const MediaCard = memo(
+  ({
+    description,
+    descriptionAlign = "center",
+    isHidden = false,
+    image: { authorLink, authorName, fileName, platformLink, platformName },
+    name,
+  }: MediaCardProps): JSX.Element => {
+    return (
+      <article
+        className={classNames(styles["card"], {
+          [String(styles["hidden"])]: isHidden,
+        })}
+      >
+        <div className={styles["content"]}>
+          <figure className={styles["image-container"]}>
+            <img alt={name} className={styles["image"]} src={fileName} />
+            <figcaption className={styles["credit"]}>
+              Photo by
+              <RouterLink
+                className={styles["link"]}
+                hasTextDecorationOnHover
+                shouldOpenInNewTab
+                to={authorLink}
+              >
+                {authorName}
+              </RouterLink>
+              from
+              <RouterLink
+                className={styles["link"]}
+                hasTextDecorationOnHover
+                shouldOpenInNewTab
+                to={platformLink}
+              >
+                {platformName}
+              </RouterLink>
+            </figcaption>
+          </figure>
+          <div className={styles["details"]}>
+            <h2 className={styles["name"]}>{name}</h2>
+            <p
+              className={classNames(styles["description"], {
+                [String(styles["center"])]: descriptionAlign === "center",
+                [String(styles["left"])]: descriptionAlign === "left",
+              })}
             >
-              {authorName}
-            </RouterLink>
-            from
-            <RouterLink
-              className={styles["link"]}
-              hasTextDecorationOnHover
-              shouldOpenInNewTab
-              to={platformLink}
-            >
-              {platformName}
-            </RouterLink>
-          </figcaption>
-        </figure>
-        <div className={styles["details"]}>
-          <h2 className={styles["name"]}>{name}</h2>
-          <p
-            className={classNames(styles["description"], {
-              [String(styles["center"])]: descriptionAlign === "center",
-              [String(styles["left"])]: descriptionAlign === "left",
-            })}
-          >
-            {description}
-          </p>
+              {description}
+            </p>
+          </div>
         </div>
-      </div>
-    </article>
-  );
-};
+      </article>
+    );
+  }
+);
+
+MediaCard.displayName = "MediaCard";
 
 export { MediaCard };

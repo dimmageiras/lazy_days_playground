@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import type { ChangeEvent, JSX, Ref } from "react";
+import { memo } from "react";
 
 import styles from "./RadioButton.module.scss";
 
@@ -27,6 +28,7 @@ interface RadioButtonProps {
 
 /**
  * A styled radio button component with consistent form handling and visual feedback.
+ * This component is memoized to prevent unnecessary re-renders when props haven't changed.
  *
  * @example
  * ```tsx
@@ -60,41 +62,46 @@ interface RadioButtonProps {
  * @param props.onChange - Change handler
  * @param props.value - Form field value
  * @returns JSX.Element - The rendered radio button component
+ * @performance Memoized component that only re-renders when props change
  */
-const RadioButton = ({
-  id,
-  className,
-  inputRef,
-  isChecked = false,
-  label,
-  name,
-  onChange,
-  value,
-}: RadioButtonProps): JSX.Element => {
-  return (
-    <label
-      className={classNames(styles["radio-button"], className)}
-      htmlFor={id}
-      {...(isChecked && { "data-checked": "" })}
-    >
-      <input
-        checked={isChecked}
-        className={styles["input"]}
-        id={id}
-        name={name}
-        onChange={onChange}
-        ref={inputRef}
-        type="radio"
-        value={value}
-      />
-      <span
-        className={styles["label"]}
+const RadioButton = memo(
+  ({
+    id,
+    className,
+    inputRef,
+    isChecked = false,
+    label,
+    name,
+    onChange,
+    value,
+  }: RadioButtonProps): JSX.Element => {
+    return (
+      <label
+        className={classNames(styles["radio-button"], className)}
+        htmlFor={id}
         {...(isChecked && { "data-checked": "" })}
       >
-        {label}
-      </span>
-    </label>
-  );
-};
+        <input
+          checked={isChecked}
+          className={styles["input"]}
+          id={id}
+          name={name}
+          onChange={onChange}
+          ref={inputRef}
+          type="radio"
+          value={value}
+        />
+        <span
+          className={styles["label"]}
+          {...(isChecked && { "data-checked": "" })}
+        >
+          {label}
+        </span>
+      </label>
+    );
+  }
+);
+
+RadioButton.displayName = "RadioButton";
 
 export { RadioButton };

@@ -127,7 +127,7 @@ const [isSubscribed, setIsSubscribed] = useState(false);
 
 ### RadioButton
 
-A styled radio button component with consistent form handling and visual feedback.
+A styled radio button component with consistent form handling and visual feedback. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
@@ -201,7 +201,7 @@ A wrapper component for Iconify icons with type safety and consistent integratio
 
 ### MediaCard
 
-A card component designed for displaying media content with image, title, description, and image attribution.
+A card component designed for displaying media content with image, title, description, and image attribution. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
@@ -360,10 +360,12 @@ A utility component for efficiently rendering lists with automatic key generatio
 
 ### 4. **Performance**
 
-- `ListRenderer` uses stable keys to prevent unnecessary re-renders
-- `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
-- `IconifyIcon` is memoized to prevent unnecessary re-renders when props haven't changed
 - `DynamicElement` helper functions are memoized for optimal performance
+- `IconifyIcon` is memoized to prevent unnecessary re-renders when props haven't changed
+- `ListRenderer` uses stable keys to prevent unnecessary re-renders
+- `MediaCard` is memoized to prevent unnecessary re-renders when props haven't changed
+- `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
+- `RadioButton` is memoized to prevent unnecessary re-renders when props haven't changed
 - Components are designed to minimize unnecessary re-renders
 
 ### 5. **Consistency**

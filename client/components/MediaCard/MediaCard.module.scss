@@ -4,6 +4,10 @@
   justify-content: center;
   padding: 3rem 0;
 
+  &.hidden {
+    display: none;
+  }
+
   .content {
     background-color: #fff;
     border-radius: 0.5rem;
