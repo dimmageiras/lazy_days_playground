@@ -1,12 +1,4 @@
-import type { MetaFunction } from "react-router";
-
 import { Home } from "./Home";
-
-const meta: MetaFunction = () => {
-  return [
-    { title: "Lazy Days Spa" },
-    { name: "description", content: "Lazy Days Spa - Home Page" },
-  ];
-};
+import { meta } from "./meta";
 
 export { Home as default, meta };

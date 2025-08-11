@@ -9,10 +9,10 @@ const Home = (): JSX.Element => {
   return (
     <main aria-label="Home" className={styles["home"]}>
       <img
+        alt="Background Image"
         aria-hidden="true"
         className={styles["background-image"]}
         src={splashImg}
-        alt="Background Image"
       />
       <div className={styles["content"]}>
         <h1 aria-label="Company title" className={styles["title"]}>
