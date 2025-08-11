@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { TreatmentOptions } from "./components/TreatmentOptions";
+import { Filters } from "./components/Filters";
 import styles from "./TreatmentFilter.module.scss";
 
 const TreatmentFilter = (): JSX.Element => {
@@ -12,7 +12,7 @@ const TreatmentFilter = (): JSX.Element => {
     >
       <div aria-label="Treatment filter options" className={styles["filters"]}>
         <h2 aria-label="Filter by treatment">Filter by treatment:</h2>
-        <TreatmentOptions />
+        <Filters />
       </div>
     </div>
   );

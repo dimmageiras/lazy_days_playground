@@ -25,7 +25,7 @@ const Cards = ({ staff }: CardsProps): JSX.Element => {
       data={staff}
       getKey={(staffMember): number => staffMember.id}
       renderComponent={({ data }): JSX.Element => {
-        return <Card aria-label={data.name} staffMemberData={data} />;
+        return <Card staffMemberData={data} />;
       }}
     />
   );
