@@ -2,11 +2,10 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { JSX } from "react";
 import { useLayoutEffect } from "react";
 
-import { TQDTHelper } from "@client/root/components/DevTools/helpers/tqdt.helper";
-
 import "./DevTools.module.scss";
 
 import { DevToolsHelper } from "./helpers/dev-tools.helper";
+import { TQDTHelper } from "./helpers/tqdt.helper";
 
 // React Router DevTools
 const RRD_BUTTON_SELECTOR = "[data-testid='react-router-devtools-trigger']";
