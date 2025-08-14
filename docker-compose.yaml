@@ -2,7 +2,7 @@ name: lazy_days_playground
 
 services:
   node:
-    image: localhost/lazy_days_playground_node
+    image: lazy_days_playground_node
     build:
       context: .
       dockerfile: Dockerfile
