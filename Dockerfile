@@ -1,5 +1,5 @@
 # Base image with Node.js 24 (matches package.json engine requirement)
-FROM node:24.5-bookworm
+FROM node:24.5-trixie
 
 # Set shell to bash
 SHELL ["/bin/bash", "-c"]
