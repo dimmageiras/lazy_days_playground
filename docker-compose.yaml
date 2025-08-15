@@ -1,8 +1,8 @@
-name: lazy_days_playground
+name: lazy_days_playground_web
 
 services:
-  node:
-    image: lazy_days_playground_node
+  web:
+    image: lazy_days_playground_web
     build:
       context: .
       dockerfile: Dockerfile
