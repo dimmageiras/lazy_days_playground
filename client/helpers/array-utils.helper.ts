@@ -8,6 +8,6 @@ const isArray = (value: unknown): value is unknown[] => {
   return Array.isArray(value);
 };
 
-export const ArrayUtilitiesHelper = {
+export const ArrayUtilsHelper = {
   isArray,
 };

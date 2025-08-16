@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useTrackedStore } from "zustand-x";
 
 import { ListRenderer } from "@client/components/ListRenderer";
-import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import { CalendarUtilsHelper } from "@client/helpers/calendar-utils.helper";
 import type { Appointment } from "@client/pages/Calendar/constants";
 import { APPOINTMENTS } from "@client/pages/Calendar/constants";
 import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
@@ -14,7 +14,7 @@ const MonthDisplay = (): JSX.Element => {
   const { selectedMonth, showOnlyAvailableAppointments } =
     useTrackedStore(calendarStore);
 
-  const { getMonthYearDetails } = CalendarUtilitiesHelper;
+  const { getMonthYearDetails } = CalendarUtilsHelper;
   const { lastDate } = getMonthYearDetails(selectedMonth);
 
   const daysInMonth = [...Array(lastDate)].map((_, index) => index + 1);

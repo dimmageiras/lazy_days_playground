@@ -66,7 +66,7 @@ const getUpdatedMonthYear = (
   return monthYear.startDate.clone().add(monthIncrement, "months");
 };
 
-export const CalendarUtilitiesHelper = {
+export const CalendarUtilsHelper = {
   getMonthYearDetails,
   getUpdatedMonthYear,
 };

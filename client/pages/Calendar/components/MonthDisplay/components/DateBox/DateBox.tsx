@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useTrackedStore } from "zustand-x";
 
 import { ListRenderer } from "@client/components/ListRenderer";
-import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import { CalendarUtilsHelper } from "@client/helpers/calendar-utils.helper";
 import type { Appointment as AppointmentType } from "@client/pages/Calendar/constants";
 import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
@@ -17,7 +17,7 @@ interface DateBoxProps {
 const DateBox = ({ dailyAppointments, day }: DateBoxProps): JSX.Element => {
   const { selectedMonth } = useTrackedStore(calendarStore);
 
-  const { getMonthYearDetails } = CalendarUtilitiesHelper;
+  const { getMonthYearDetails } = CalendarUtilsHelper;
 
   const { firstDOW } = getMonthYearDetails(selectedMonth);
 

@@ -1,5 +1,6 @@
 import classNames from "classnames";
-import { type JSX, memo } from "react";
+import type { JSX } from "react";
+import { memo } from "react";
 
 import { RouterLink } from "@client/components/RouterLink";
 

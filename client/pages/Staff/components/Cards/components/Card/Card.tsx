@@ -1,4 +1,4 @@
-import { type JSX } from "react";
+import type { JSX } from "react";
 import { useTrackedStore } from "zustand-x";
 
 import { MediaCard } from "@client/components/MediaCard";

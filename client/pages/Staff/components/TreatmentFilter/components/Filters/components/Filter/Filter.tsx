@@ -1,8 +1,9 @@
-import { type JSX, useCallback } from "react";
+import type { JSX } from "react";
+import { useCallback } from "react";
 import { useStoreState } from "zustand-x";
 
 import { RadioButton } from "@client/components/RadioButton";
-import { StringManipulationHelper } from "@client/helpers/string-manipulation.helper";
+import { StringUtilsHelper } from "@client/helpers/string-utils.helper";
 import { staffStore } from "@client/pages/Staff/stores/staff.store";
 import type { TreatmentNames } from "@client/types/staff.types";
 
@@ -19,7 +20,7 @@ const Filter = ({ filter }: FilterProps): JSX.Element => {
     "selectedTreatment"
   );
 
-  const { safeCamelCase } = StringManipulationHelper;
+  const { safeCamelCase } = StringUtilsHelper;
 
   const treatmentValue = safeCamelCase(filter.name);
 

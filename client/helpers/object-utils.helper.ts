@@ -27,7 +27,7 @@ const isPlainObject = (item: unknown): item is Record<PropertyKey, unknown> => {
   return proto === null || proto === Object.prototype;
 };
 
-export const ObjectUtilitiesHelper = {
+export const ObjectUtilsHelper = {
   isObject,
   isPlainObject,
 };

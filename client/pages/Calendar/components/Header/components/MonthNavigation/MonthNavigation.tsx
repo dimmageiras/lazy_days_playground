@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { type JSX, type PropsWithChildren } from "react";
+import type { JSX, PropsWithChildren } from "react";
 import { useStoreState } from "zustand-x";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
-import { CalendarUtilitiesHelper } from "@client/helpers/calendar-utilities.helper";
+import { CalendarUtilsHelper } from "@client/helpers/calendar-utils.helper";
 import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
 import styles from "./MonthNavigation.module.scss";
@@ -17,7 +17,7 @@ const MonthNavigation = ({ children }: PropsWithChildren): JSX.Element => {
     "selectedMonth"
   );
 
-  const { getMonthYearDetails, getUpdatedMonthYear } = CalendarUtilitiesHelper;
+  const { getMonthYearDetails, getUpdatedMonthYear } = CalendarUtilsHelper;
 
   const currentMonthYear = getMonthYearDetails(selectedMonth);
 

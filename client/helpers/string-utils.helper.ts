@@ -10,6 +10,6 @@ const safeCamelCase = <T extends string>(str: T): CamelCase<T> => {
   return camelCase(str) as CamelCase<T>;
 };
 
-export const StringManipulationHelper = {
+export const StringUtilsHelper = {
   safeCamelCase,
 };

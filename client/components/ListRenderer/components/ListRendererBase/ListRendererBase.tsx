@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import type { ListRenderer } from "@client/components/ListRenderer";
 import { ListItem } from "@client/components/ListRenderer/components/ListRendererBase/components/ListItem";
-import { ArrayUtilitiesHelper } from "@client/helpers/array-utilities.helper";
-import { ObjectUtilitiesHelper } from "@client/helpers/object-utilities.helper";
+import { ArrayUtilsHelper } from "@client/helpers/array-utils.helper";
+import { ObjectUtilsHelper } from "@client/helpers/object-utils.helper";
 import { IS_DEVELOPMENT } from "@shared/constants/root-env.constants";
 
 const ListRendererBase = <TItem,>({
@@ -28,8 +28,8 @@ const ListRendererBase = <TItem,>({
       );
     }
 
-    const { isArray } = ArrayUtilitiesHelper;
-    const { isObject } = ObjectUtilitiesHelper;
+    const { isArray } = ArrayUtilsHelper;
+    const { isObject } = ObjectUtilsHelper;
 
     const stringifiedItem = `${index}-${item}`;
 
