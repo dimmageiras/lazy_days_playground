@@ -5,7 +5,7 @@ import { useStoreState } from "zustand-x";
 import { RadioButton } from "@client/components/RadioButton";
 import { StringUtilsHelper } from "@client/helpers/string-utils.helper";
 import { staffStore } from "@client/pages/Staff/stores/staff.store";
-import type { TreatmentNames } from "@client/types/staff.types";
+import type { TreatmentNames } from "@client/types/staff.type";
 
 interface FilterProps {
   filter: {

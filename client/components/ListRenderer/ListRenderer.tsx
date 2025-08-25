@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { ListRendererBase } from "./components/ListRendererBase/ListRendererBase";
+import { ListRendererBase } from "./components/ListRendererBase";
 
 /**
  * Props interface for the ListRenderer component

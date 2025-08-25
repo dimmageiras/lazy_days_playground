@@ -1,7 +1,7 @@
 import type { $ZodError } from "zod/v4/core";
 
 import { ISSUE_CODES } from "../../shared/constants/zod.constants.ts";
-import type { ZodFormattedError } from "../../shared/types/zod.types.ts";
+import type { ZodFormattedError } from "../../shared/types/zod.type.ts";
 
 const formatZodError = (zodError: $ZodError): ZodFormattedError[] => {
   return zodError.issues.map((error) => {

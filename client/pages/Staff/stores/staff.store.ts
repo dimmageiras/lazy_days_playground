@@ -1,6 +1,6 @@
 import { createStore } from "zustand-x";
 
-import type { TreatmentNames } from "@client/types/staff.types";
+import type { TreatmentNames } from "@client/types/staff.type";
 
 const initialState: {
   selectedTreatment: TreatmentNames;
