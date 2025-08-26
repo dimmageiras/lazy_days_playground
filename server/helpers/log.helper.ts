@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { Options } from "pino-http";
 import pino from "pino-http";
 
-import { LOG_LEVEL, MODE } from "../../shared/constants/root-env.constants.ts";
+import { LOG_LEVEL, MODE } from "../../shared/constants/root-env.constant.ts";
 
 const loggerOptions: Record<
   typeof MODE,

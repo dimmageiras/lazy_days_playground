@@ -3,7 +3,7 @@ import type { JSX, PropsWithChildren } from "react";
 
 import { ReactQueryConfig } from "@client/configs/react-query.config";
 import { DevTools } from "@client/root/components/DevTools";
-import { IS_DEVELOPMENT } from "@shared/constants/root-env.constants";
+import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
 
 const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
   return (

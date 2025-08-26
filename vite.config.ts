@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-import { MODES } from "./shared/constants/root-env.constants.ts";
+import { MODES } from "./shared/constants/root-env.constant.ts";
 
 export default defineConfig(({ mode }) => {
   const isDev = mode === MODES.DEVELOPMENT && !process.env.VITEST;

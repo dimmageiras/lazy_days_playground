@@ -1,4 +1,4 @@
-import { LOG_LEVELS } from "../../shared/constants/zod.constants.ts";
+import { LOG_LEVELS } from "../../shared/constants/zod.constant.ts";
 import {
   zCoerce,
   zEnum,

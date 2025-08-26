@@ -3,7 +3,7 @@ import type { JSX, Ref } from "react";
 import type { Path } from "react-router";
 import { Link, NavLink } from "react-router";
 
-import { LINK_AS } from "./constants/router-link.constants";
+import { LINK_AS } from "./constants/router-link.constant";
 import styles from "./RouterLink.module.scss";
 
 interface CommonLinkProps {

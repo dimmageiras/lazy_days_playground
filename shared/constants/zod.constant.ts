@@ -1,4 +1,4 @@
-import { zEnum } from "../../shared/wrappers/zod.wrapper.ts";
+import { zEnum } from "../wrappers/zod.wrapper.ts";
 
 const LOG_LEVELS = zEnum([
   "debug",

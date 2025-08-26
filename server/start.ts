@@ -8,7 +8,7 @@ import {
   LOG_LEVEL,
   MODE,
   PORT,
-} from "../shared/constants/root-env.constants.ts";
+} from "../shared/constants/root-env.constant.ts";
 import { log } from "./helpers/log.helper.ts";
 
 const app = fastify({

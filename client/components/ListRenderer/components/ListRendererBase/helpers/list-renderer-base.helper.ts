@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { ArrayUtilsHelper } from "@client/helpers/array-utils.helper";
 import { ObjectUtilsHelper } from "@client/helpers/object-utils.helper";
-import { IS_DEVELOPMENT } from "@shared/constants/root-env.constants";
+import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
 
 /**
  * Generates a stable key for list items to optimize React's reconciliation process.

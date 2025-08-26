@@ -1,4 +1,4 @@
-import type { ISSUE_CODES } from "@shared/constants/zod.constants";
+import type { ISSUE_CODES } from "@shared/constants/zod.constant";
 
 interface ZodFormattedError {
   message: string;

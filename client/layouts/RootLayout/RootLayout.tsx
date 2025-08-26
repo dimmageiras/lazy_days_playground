@@ -1,7 +1,7 @@
 import type { JSX, PropsWithChildren } from "react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
-import { IS_DEVELOPMENT } from "@shared/constants/root-env.constants";
+import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
 
 import { DevTools } from "./components/DevTools";
 
