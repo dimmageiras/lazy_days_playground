@@ -6,11 +6,11 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { FormFields } from "./components/FormFields";
-import { signinSchema } from "./schemas/signin.schema";
-import type { SigninForm } from "./types/signin.type";
+import { signinSchema } from "./schemas/signin-form.schema";
+import type { SigninForm as SigninFormType } from "./types/signin-form.type";
 
-const Form = (): JSX.Element => {
-  const formInitialization: UseFormProps<SigninForm> = useMemo(
+const SigninForm = (): JSX.Element => {
+  const formInitialization: UseFormProps<SigninFormType> = useMemo(
     () => ({
       defaultValues: {
         email: "",
@@ -24,7 +24,7 @@ const Form = (): JSX.Element => {
     []
   );
 
-  const formMethods = useForm<SigninForm>(formInitialization);
+  const formMethods = useForm<SigninFormType>(formInitialization);
 
   const {
     formState: { isSubmitting },
@@ -32,7 +32,7 @@ const Form = (): JSX.Element => {
     reset,
   } = formMethods;
 
-  const onSubmit = async (data: SigninForm) => {
+  const onSubmit = async (data: SigninFormType) => {
     await Promise.resolve(data);
 
     reset();
@@ -47,4 +47,4 @@ const Form = (): JSX.Element => {
   );
 };
 
-export { Form };
+export { SigninForm };

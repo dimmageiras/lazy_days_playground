@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useController } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
-import type { SigninForm } from "@client/pages/Signin/components/Form/types/signin.type";
+import type { SigninForm } from "@client/pages/Signin/components/Form/types/signin-form.type";
 
 interface FieldProps {
   name: keyof SigninForm;
