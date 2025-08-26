@@ -1,4 +1,4 @@
-const disablePasswordManagers = (): Record<PropertyKey, unknown> => ({
+const getNoAutofillProps = (): Record<PropertyKey, unknown> => ({
   "aria-autocomplete": "off",
   autoComplete: "off",
 
@@ -17,5 +17,5 @@ const disablePasswordManagers = (): Record<PropertyKey, unknown> => ({
 });
 
 export const FormUtilsHelper = {
-  disablePasswordManagers,
+  getNoAutofillProps,
 };

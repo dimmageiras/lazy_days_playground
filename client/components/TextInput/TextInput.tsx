@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, JSX } from "react";
+import { memo, useMemo } from "react";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 
@@ -13,7 +14,7 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
   /**
    * Type of text input to render:
    * - "email": Email input with email validation
-   * - "password": Secure password input with password managers disabled
+   * - "password": Secure password input with autofill disabled
    * - "text": Standard text input
    */
   type: TextInputType;
@@ -21,7 +22,8 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
 
 /**
  * A styled text input component with enhanced security features and
- * built-in protection against unwanted password manager interference.
+ * built-in protection against unwanted autofill interference.
+ * The component is optimized for performance using React.memo to prevent unnecessary re-renders.
  *
  * Features:
  * - Type-safe input types (email, password, text)
@@ -57,16 +59,16 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  * @param props.type - Must be one of: "text", "email", "password"
  * @returns JSX.Element - The rendered input element with applied styles and protections
  */
-const TextInput = ({ ...props }: TextInputProps): JSX.Element => {
-  const { disablePasswordManagers } = FormUtilsHelper;
+const TextInput = memo(({ ...props }: TextInputProps): JSX.Element => {
+  const { getNoAutofillProps } = FormUtilsHelper;
+
+  const noAutofillProps = useMemo(() => getNoAutofillProps(), []);
 
   return (
-    <input
-      className={styles["text-input"]}
-      {...disablePasswordManagers()}
-      {...props}
-    />
+    <input className={styles["text-input"]} {...noAutofillProps} {...props} />
   );
-};
+});
+
+TextInput.displayName = "TextInput";
 
 export { TextInput };

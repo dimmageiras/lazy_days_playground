@@ -112,13 +112,6 @@ A type-safe link component with three distinct variants that handles both intern
 </RouterLink>
 ```
 
-**Features:**
-
-- Type-safe props based on link variant
-- Automatic security attributes for external links (rel="noopener noreferrer")
-- React Router integration for internal navigation
-- Active state support for navigation links
-
 ---
 
 ## Form Components
@@ -193,7 +186,7 @@ const [selectedPlan, setSelectedPlan] = useState('');
 
 ### TextInput
 
-A styled text input component with enhanced security features and built-in protection against unwanted password manager interference.
+A styled text input component with enhanced security features and built-in protection against unwanted password manager interference. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
@@ -446,6 +439,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 - `MediaCard` is memoized to prevent unnecessary re-renders when props haven't changed
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
 - `RadioButton` is memoized to prevent unnecessary re-renders when props haven't changed
+- `TextInput` is memoized to prevent unnecessary re-renders when props haven't changed
 - Components use appropriate performance optimizations when needed
 
 ### 5. **Consistency**

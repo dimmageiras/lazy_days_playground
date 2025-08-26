@@ -4,21 +4,25 @@ import { useController } from "react-hook-form";
 import { TextInput } from "@client/components/TextInput";
 import type { SigninForm } from "@client/pages/Signin/components/Form/types/signin.type";
 
-const PasswordField = (): JSX.Element => {
+interface FieldProps {
+  name: keyof SigninForm;
+}
+
+const Field = ({ name }: FieldProps): JSX.Element => {
   const {
     field,
     fieldState: { error },
-  } = useController<SigninForm, "password">({
-    name: "password",
+  } = useController<SigninForm, typeof name>({
+    name,
   });
 
   return (
     <>
-      <label htmlFor="password">password</label>
-      <TextInput id="password" {...field} type="password" />
+      <label htmlFor={name}>{name}</label>
+      <TextInput id={name} {...field} type={name} />
       {error ? <span role="alert">{error.message}</span> : null}
     </>
   );
 };
 
-export { PasswordField };
+export { Field };

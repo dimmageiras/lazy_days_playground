@@ -1,4 +1,26 @@
 /**
+ * Gets typed entries from an object, preserving key-value type relationships.
+ * This is a type-safe wrapper around Object.entries() that maintains proper typing.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param object - The object to get entries from
+ * @returns Array of [key, value] tuples with preserved typing
+ *
+ * @example
+ * ```typescript
+ * const obj = { name: "John", age: 30 };
+ * const entries = getObjectEntries(obj);
+ * // entries: [["name", "John"], ["age", 30]]
+ * ```
+ */
+const getObjectEntries = <TObject extends Record<string, unknown>>(
+  object: TObject
+): { [Key in keyof TObject]: [Key, TObject[Key]] }[keyof TObject][] =>
+  Object.entries(object) as {
+    [Key in keyof TObject]: [Key, TObject[Key]];
+  }[keyof TObject][];
+
+/**
  * Checks if the given value is an object and not an array.
  *
  * @param item - The value to check
@@ -28,6 +50,7 @@ const isPlainObject = (item: unknown): item is Record<PropertyKey, unknown> => {
 };
 
 export const ObjectUtilsHelper = {
+  getObjectEntries,
   isObject,
   isPlainObject,
 };
