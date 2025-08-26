@@ -4,27 +4,43 @@ import type { ComponentPropsWithRef, JSX } from "react";
 import styles from "./PageTitle.module.scss";
 
 /**
- * Props interface for the PageTitle component
- * Extends all standard h2 element props
+ * Props interface for the PageTitle component.
+ * Extends all standard h2 element props for accessibility and DOM attributes.
  */
 interface PageTitleProps extends ComponentPropsWithRef<"h2"> {
-  /** The title text to display */
+  /** The title text to display in the heading */
   pageTitle: string;
 }
 
 /**
- * A consistent page title component that renders as an h2 element with standardized styling.
+ * A semantic page title component that renders as an h2 element with consistent styling.
+ * Provides standardized heading appearance while allowing customization through
+ * standard h2 attributes and additional CSS classes.
  *
  * @example
  * ```tsx
- * <PageTitle pageTitle="User Dashboard" className="custom-title-style" />
+ * // Basic usage
+ * <PageTitle pageTitle="User Dashboard" />
+ *
+ * // With custom styling
+ * <PageTitle
+ *   className="dashboard-title"
+ *   pageTitle="Welcome Back"
+ * />
+ *
+ * // With ARIA attributes
+ * <PageTitle
+ *   aria-label="Dashboard Overview"
+ *   id="page-heading"
+ *   pageTitle="Dashboard"
+ * />
  * ```
  *
  * @param props - The PageTitle component props
- * @param props.pageTitle - The title text to display
- * @param props.className - Additional CSS classes
- * @param props.props - All other standard h2 props are supported
- * @returns JSX.Element - The rendered h2 page title element
+ * @param props.[...h2Props] - Any valid h2 element props (e.g., id, aria-*, etc.)
+ * @param props.className - Additional CSS classes (optional)
+ * @param props.pageTitle - The title text to display in the heading
+ * @returns JSX.Element - The rendered h2 heading element with applied styles
  */
 const PageTitle = ({
   className,

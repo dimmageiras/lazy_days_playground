@@ -5,69 +5,73 @@ import { memo } from "react";
 import styles from "./RadioButton.module.scss";
 
 /**
- * Props interface for the RadioButton component
+ * Props interface for the RadioButton component.
+ * Provides type safety for all required and optional radio button functionality.
  */
 interface RadioButtonProps {
-  /** Unique identifier for the radio button */
-  id: string;
-  /** Additional CSS classes */
+  /** Additional CSS classes for custom styling */
   className?: string;
-  /** Ref for the input element */
+  /** Unique identifier for the radio button (used for label association) */
+  id: string;
+  /** Optional ref for direct access to the input element */
   inputRef?: Ref<HTMLInputElement>;
-  /** Checked state */
+  /** Whether the radio button is currently selected */
   isChecked: boolean;
-  /** Label text */
+  /** The text label displayed next to the radio button */
   label: string;
-  /** Form field name (should be same for grouped radio buttons) */
+  /** Group name for the radio button set (must be same for related options) */
   name: string;
-  /** Change handler */
+  /** Handler function called when the radio button selection changes */
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  /** Form field value */
+  /** The value submitted with the form when this option is selected */
   value: string;
 }
 
 /**
- * A styled radio button component with consistent form handling and visual feedback.
- * This component is memoized to prevent unnecessary re-renders when props haven't changed.
+ * An accessible and styled radio button component with consistent form handling and visual feedback.
+ * The component is optimized for performance using React.memo to prevent unnecessary re-renders
+ * when props haven't changed. Features proper label association and keyboard navigation support.
  *
  * @example
  * ```tsx
- * const [selectedPlan, setSelectedPlan] = useState('');
- *
+ * // Basic radio button
  * <RadioButton
  *   id="plan-basic"
  *   isChecked={selectedPlan === 'basic'}
  *   label="Basic Plan"
  *   name="subscription-plan"
- *   value="basic"
  *   onChange={(e) => setSelectedPlan(e.target.value)}
+ *   value="basic"
  * />
+ *
+ * // With custom styling and ref
  * <RadioButton
+ *   className="premium-radio"
  *   id="plan-premium"
+ *   inputRef={inputRef}
  *   isChecked={selectedPlan === 'premium'}
  *   label="Premium Plan"
  *   name="subscription-plan"
- *   value="premium"
  *   onChange={(e) => setSelectedPlan(e.target.value)}
+ *   value="premium"
  * />
  * ```
  *
  * @param props - The RadioButton component props
+ * @param props.className - Additional CSS classes for custom styling (optional)
  * @param props.id - Unique identifier for the radio button
- * @param props.className - Additional CSS classes
- * @param props.inputRef - Ref for the input element
- * @param props.isChecked - Checked state (defaults to false)
- * @param props.label - Label text
- * @param props.name - Form field name (should be same for grouped radio buttons)
- * @param props.onChange - Change handler
- * @param props.value - Form field value
- * @returns JSX.Element - The rendered radio button component
- * @performance Memoized component that only re-renders when props change
+ * @param props.inputRef - Optional ref for direct access to the input element
+ * @param props.isChecked - Whether the radio button is currently selected (default: false)
+ * @param props.label - The text label displayed next to the radio button
+ * @param props.name - Group name for the radio button set
+ * @param props.onChange - Handler function called when selection changes
+ * @param props.value - The value submitted with the form when selected
+ * @returns JSX.Element - The rendered radio button with associated label
  */
 const RadioButton = memo(
   ({
-    id,
     className,
+    id,
     inputRef,
     isChecked = false,
     label,

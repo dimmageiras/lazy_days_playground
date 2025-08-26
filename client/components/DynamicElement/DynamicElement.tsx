@@ -10,48 +10,48 @@ import { DynamicElementHelper } from "./helpers/dynamic-element.helper";
 
 /**
  * Props type for the DynamicElement component
- * @template TWrapperElement - The HTML tag type to render
+ * @template TElement - The HTML tag type to render
  */
-type DynamicElementProps<TWrapperElement extends CustomHtmlTags> =
-  PropsWithChildren<ComponentPropsWithRef<TWrapperElement>> & {
-    /** The HTML tag to render */
-    as: TWrapperElement;
-  };
+type DynamicElementProps<TElement extends CustomHtmlTags> = PropsWithChildren<
+  ComponentPropsWithRef<TElement>
+> & {
+  /** The HTML tag to render */
+  as: TElement;
+};
 
 /**
  * A type-safe component for rendering dynamic HTML elements, including custom elements like iconify-icon.
- * Uses memoized tag validation for optimal performance.
+ * The component uses a memoized helper function to validate HTML tags for better performance.
  *
  * @example
  * ```tsx
- * // Render a div
+ * // Basic div
  * <DynamicElement as="div" className="wrapper">
  *   Content here
  * </DynamicElement>
  *
- * // Render custom iconify-icon element
+ * // Icon element
  * <DynamicElement as="iconify-icon" icon="material-symbols:star" />
  *
- * // Render a section
+ * // Section with role
  * <DynamicElement as="section" role="banner">
  *   <h1>Page Header</h1>
  * </DynamicElement>
  * ```
  *
- * @template TDynamicElement - The HTML tag type to render
+ * @template TElement - The HTML tag type to render
  * @param props - The DynamicElement component props
- * @param props.children - Child content
- * @param props.as - The HTML tag to render
- * @param props.props - All props corresponding to the specified HTML element are supported
- * @returns JSX.Element - The rendered dynamic element
- * @throws {Error} When an invalid wrapper element is provided
- * @performance Tag validation uses memoized helper function to avoid recomputing valid tags list
+ * @param props.[...elementProps] - Any valid props for the specified HTML element type
+ * @param props.as - The HTML tag to render (must be a valid custom HTML tag)
+ * @param props.children - Optional child content to render inside the element
+ * @returns JSX.Element - The rendered dynamic element with the specified tag and props
+ * @throws {Error} When the provided 'as' prop is not a valid custom HTML tag
  */
-const DynamicElement = <TDynamicElement extends CustomHtmlTags>({
+const DynamicElement = <TElement extends CustomHtmlTags>({
   children,
   as,
   ...props
-}: DynamicElementProps<TDynamicElement>): JSX.Element => {
+}: DynamicElementProps<TElement>): JSX.Element => {
   const { getCustomTags } = DynamicElementHelper;
   const customTags: CustomHtmlTags[] = getCustomTags();
 

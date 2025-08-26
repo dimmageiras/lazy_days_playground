@@ -2,9 +2,26 @@ import classNames from "classnames";
 import type { JSX } from "react";
 import { memo } from "react";
 
+import { Card } from "@client/components/Card";
 import { RouterLink } from "@client/components/RouterLink";
 
 import styles from "./MediaCard.module.scss";
+
+/**
+ * Image configuration object
+ */
+interface Image {
+  /** Link to author profile */
+  authorLink: string;
+  /** Image author name */
+  authorName: string;
+  /** Image source URL */
+  fileName: string;
+  /** Link to platform */
+  platformLink: string;
+  /** Platform name (e.g., "Unsplash") */
+  platformName: string;
+}
 
 /**
  * Props interface for the MediaCard component
@@ -17,69 +34,55 @@ interface MediaCardProps {
   /** Whether the card is hidden */
   isHidden?: boolean;
   /** Image configuration */
-  image: {
-    /** Link to author profile */
-    authorLink: string;
-    /** Image author name */
-    authorName: string;
-    /** Image source URL */
-    fileName: string;
-    /** Link to platform */
-    platformLink: string;
-    /** Platform name (e.g., "Unsplash") */
-    platformName: string;
-  };
+  image: Image;
   /** Card title */
   name: string;
 }
 
 /**
  * A card component designed for displaying media content with image, title, description, and image attribution.
- * This component is memoized to prevent unnecessary re-renders when props haven't changed.
+ * The component is optimized for performance using React.memo to prevent unnecessary re-renders when props haven't changed.
  *
  * @example
  * ```tsx
  * <MediaCard
- *   name="Relaxing Massage"
  *   description="Experience ultimate relaxation with our therapeutic massage treatments."
  *   descriptionAlign="center"
  *   image={{
- *     fileName: "/images/massage.jpg",
- *     authorName: "John Doe",
  *     authorLink: "https://unsplash.com/@johndoe",
- *     platformName: "Unsplash",
+ *     authorName: "John Doe",
+ *     fileName: "/images/massage.jpg",
  *     platformLink: "https://unsplash.com",
+ *     platformName: "Unsplash",
  *   }}
+ *   isHidden={false}
+ *   name="Relaxing Massage"
  * />
  * ```
  *
  * @param props - The MediaCard component props
- * @param props.name - Card title
  * @param props.description - Card description
  * @param props.descriptionAlign - Text alignment for description (default: 'center')
  * @param props.image - Image configuration object
- * @param props.image.fileName - Image source URL
- * @param props.image.authorName - Image author name
  * @param props.image.authorLink - Link to author profile
- * @param props.image.platformName - Platform name (e.g., "Unsplash")
+ * @param props.image.authorName - Image author name
+ * @param props.image.fileName - Image source URL
  * @param props.image.platformLink - Link to platform
+ * @param props.image.platformName - Platform name (e.g., "Unsplash")
+ * @param props.isHidden - Whether the card should be hidden (default: false)
+ * @param props.name - Card title
  * @returns JSX.Element - The rendered media card component
- * @performance Memoized component that only re-renders when props change
  */
 const MediaCard = memo(
   ({
     description,
     descriptionAlign = "center",
-    isHidden = false,
     image: { authorLink, authorName, fileName, platformLink, platformName },
+    isHidden = false,
     name,
   }: MediaCardProps): JSX.Element => {
     return (
-      <article
-        className={classNames(styles["card"], {
-          [String(styles["hidden"])]: isHidden,
-        })}
-      >
+      <Card isHidden={isHidden}>
         <div className={styles["content"]}>
           <figure className={styles["image-container"]}>
             <img alt={name} className={styles["image"]} src={fileName} />
@@ -116,7 +119,7 @@ const MediaCard = memo(
             </p>
           </div>
         </div>
-      </article>
+      </Card>
     );
   }
 );

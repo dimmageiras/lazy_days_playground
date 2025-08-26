@@ -17,42 +17,50 @@ export interface ListRendererProps<TItem> {
 
 /**
  * A utility component for efficiently rendering lists with automatic key generation and error handling.
- * Optimized to prevent unnecessary re-renders of individual list items when data hasn't changed.
+ * The component is optimized for performance using memoized list items and stable key generation to
+ * prevent unnecessary re-renders when data hasn't changed.
  *
  * @example
  * ```tsx
+ * import { ListRenderer } from '@client/components/ListRenderer';
+ * import { MediaCard } from '@client/components/MediaCard';
+ *
  * // Simple list rendering
- * <ListRenderer
- *   data={users}
- *   getKey={(user, index) => user.id}
- *   renderComponent={({ data: user, index }) => (
- *     <div>
- *       {index + 1}. {user.name}
- *     </div>
- *   )}
- * />
+ * const UserList = ({ users }) => (
+ *   <ListRenderer<User>
+ *     data={users}
+ *     getKey={(user) => user.id}
+ *     renderComponent={({ data: user, index }) => (
+ *       <div>
+ *         {index + 1}. {user.name}
+ *       </div>
+ *     )}
+ *   />
+ * );
  *
  * // Complex list with custom components
- * <ListRenderer
- *   data={products}
- *   getKey={(product, index) => product.sku}
- *   renderComponent={({ data: product }) => (
- *     <MediaCard
- *       name={product.name}
- *       description={product.description}
- *       image={product.image}
- *     />
- *   )}
- * />
+ * const ProductList = ({ products }) => (
+ *   <ListRenderer<Product>
+ *     data={products}
+ *     getKey={(product) => product.sku}
+ *     renderComponent={({ data: product }) => (
+ *       <MediaCard
+ *         description={product.description}
+ *         image={product.image}
+ *         name={product.name}
+ *       />
+ *     )}
+ *   />
+ * );
  * ```
  *
  * @template TItem - The type of items in the data array
  * @param props - The ListRenderer component props
- * @param props.data - Array of items to render
- * @param props.getKey - Optional key extraction function (falls back to UUID)
- * @param props.renderComponent - Render function for each item that receives data and index
- * @returns JSX.Element[] - Array of rendered JSX elements
- * @performance Uses memoized list items and stable keys to minimize re-renders
+ * @param props.data - Array of items to render (can be readonly)
+ * @param props.getKey - Optional key extraction function (falls back to UUID for objects/arrays or stringified value)
+ * @param props.renderComponent - Render function for each item that receives the item data and index
+ * @returns JSX.Element - The rendered list container
+ * @throws {Error} When the data prop is not an array
  */
 const ListRenderer = <TItem,>({
   data,

@@ -54,42 +54,70 @@ A render prop component that provides navigation functionality to child componen
 
 ### RouterLink
 
-A flexible link component that handles both internal routing and external links with consistent styling and behavior.
+A type-safe link component with three distinct variants that handles both internal routing and external links with consistent styling and behavior. Uses discriminated union types with the 'as' prop as the discriminator.
 
-**Props:**
+**Common Props (all variants):**
 
-- `to: string` - The destination URL or route
-- `as?: 'external' | 'internal' | 'navLink'` - Link type (default: 'external')
 - `children?: JSX.Element | string | null` - Link content
 - `className?: string` - Additional CSS classes
-- `activeClassName?: string` - CSS class for active NavLink
 - `hasTextDecorationOnHover?: boolean` - Show underline on hover (default: false)
-- `shouldOpenInNewTab?: boolean` - Open external links in new tab (default: false)
-- `shouldReplace?: boolean` - Replace current history entry (default: false)
 - `ref?: Ref<HTMLAnchorElement | null>` - Ref for the anchor element
+
+**External Link Props (as="external"):**
+
+- `to?: string` - External URL
+- `shouldOpenInNewTab?: boolean` - Open in new tab (default: false)
+
+**Internal Link Props (as="internal"):**
+
+- `to: string | Path` - Route path or configuration object
+- `shouldReplace?: boolean` - Replace history entry (default: false)
+
+**Navigation Link Props (as="navLink"):**
+
+- `to: string | Path` - Route path or configuration object
+- `activeClassName?: string` - CSS class for active state
+- `shouldReplace?: boolean` - Replace history entry (default: false)
 
 **Usage Examples:**
 
 ```tsx
-// External link
-<RouterLink to="https://example.com" shouldOpenInNewTab>
+// External link with security attributes
+<RouterLink
+  as="external"
+  shouldOpenInNewTab
+  to="https://example.com"
+>
   Visit Example
 </RouterLink>
 
-// Internal route
-<RouterLink as="internal" to="/dashboard">
+// Internal route with path object
+<RouterLink
+  as="internal"
+  to={{
+    pathname: "/dashboard",
+    search: "?tab=overview"
+  }}
+>
   Go to Dashboard
 </RouterLink>
 
 // Navigation link with active state
 <RouterLink
+  activeClassName="active-nav-item"
   as="navLink"
   to="/profile"
-  activeClassName="active-nav-item"
 >
   Profile
 </RouterLink>
 ```
+
+**Features:**
+
+- Type-safe props based on link variant
+- Automatic security attributes for external links (rel="noopener noreferrer")
+- React Router integration for internal navigation
+- Active state support for navigation links
 
 ---
 
@@ -150,16 +178,49 @@ const [selectedPlan, setSelectedPlan] = useState('');
   isChecked={selectedPlan === 'basic'}
   label="Basic Plan"
   name="subscription-plan"
-  value="basic"
   onChange={(e) => setSelectedPlan(e.target.value)}
+  value="basic"
 />
 <RadioButton
   id="plan-premium"
   isChecked={selectedPlan === 'premium'}
   label="Premium Plan"
   name="subscription-plan"
-  value="premium"
   onChange={(e) => setSelectedPlan(e.target.value)}
+  value="premium"
+/>
+```
+
+### TextInput
+
+A styled text input component with enhanced security features and built-in protection against unwanted password manager interference.
+
+**Props:**
+
+- `type: "text" | "email" | "password"` - Type of text input to render
+- All standard input attributes are supported except 'type'
+
+**Usage Example:**
+
+```tsx
+// Basic text input
+<TextInput
+  name="username"
+  placeholder="Enter username"
+  type="text"
+/>
+
+// Email input with validation
+<TextInput
+  name="email"
+  required
+  type="email"
+/>
+
+// Secure password input
+<TextInput
+  name="password"
+  type="password"
 />
 ```
 
@@ -167,35 +228,53 @@ const [selectedPlan, setSelectedPlan] = useState('');
 
 ## UI & Display Components
 
+### Card
+
+A base card component that provides a consistent container style for content. This component can be used as a building block for more specific card implementations.
+
+**Props:**
+
+- `children: ReactNode` - The content to be rendered inside the card
+- `isHidden?: boolean` - Whether the card should be hidden (default: false)
+
+**Usage Example:**
+
+```tsx
+<Card isHidden={false}>
+  <h2>Card Title</h2>
+  <p>Card content goes here</p>
+</Card>
+```
+
 ### IconifyIcon
 
 A wrapper component for Iconify icons with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
-- `icon: string` - Iconify icon name (e.g., "streamline-sharp:check-solid")
-- `width?: string | number` - Icon width
-- `height?: string | number` - Icon height
 - `flip?: string` - Flip icon ("horizontal", "vertical", or "horizontal,vertical")
-- `rotate?: string | number` - Rotate icon (e.g., "90deg", "180deg")
+- `height?: string | number` - Icon height
+- `icon: string` - Iconify icon name (e.g., "streamline-sharp:check-solid")
 - `inline?: boolean` - Changes vertical alignment
+- `rotate?: string | number` - Rotate icon (e.g., "90deg", "180deg")
+- `width?: string | number` - Icon width
 - All other standard iconify-icon element props are supported
 
 **Usage Example:**
 
 ```tsx
 <IconifyIcon
-  icon="material-symbols:home"
   className="nav-icon"
-  width="24"
   height="24"
+  icon="material-symbols:home"
+  width="24"
 />
 
 // With transformations
 <IconifyIcon
+  flip="horizontal"
   icon="bi:arrow-right"
   rotate="90deg"
-  flip="horizontal"
 />
 ```
 
@@ -205,30 +284,31 @@ A card component designed for displaying media content with image, title, descri
 
 **Props:**
 
-- `name: string` - Card title
 - `description: string` - Card description
 - `descriptionAlign?: 'left' | 'center'` - Text alignment for description (default: 'center')
 - `image: object` - Image configuration:
-  - `fileName: string` - Image source URL
-  - `authorName: string` - Image author name
   - `authorLink: string` - Link to author profile
-  - `platformName: string` - Platform name (e.g., "Unsplash")
+  - `authorName: string` - Image author name
+  - `fileName: string` - Image source URL
   - `platformLink: string` - Link to platform
+  - `platformName: string` - Platform name (e.g., "Unsplash")
+- `isHidden?: boolean` - Whether the card should be hidden (default: false)
+- `name: string` - Card title
 
 **Usage Example:**
 
 ```tsx
 <MediaCard
-  name="Relaxing Massage"
   description="Experience ultimate relaxation with our therapeutic massage treatments."
   descriptionAlign="center"
   image={{
-    fileName: "/images/massage.jpg",
-    authorName: "John Doe",
     authorLink: "https://unsplash.com/@johndoe",
-    platformName: "Unsplash",
+    authorName: "John Doe",
+    fileName: "/images/massage.jpg",
     platformLink: "https://unsplash.com",
+    platformName: "Unsplash",
   }}
+  name="Relaxing Massage"
 />
 ```
 
@@ -238,8 +318,8 @@ A consistent page title component that renders as an h2 element with standardize
 
 **Props:**
 
-- `pageTitle: string` - The title text to display
 - `className?: string` - Additional CSS classes
+- `pageTitle: string` - The title text to display
 - All other standard h2 props are supported
 
 **Usage Example:**
@@ -270,7 +350,7 @@ Renders its children **only after** the component has mounted on the client. Thi
 
 ### DynamicElement
 
-A type-safe component for rendering dynamic HTML elements, including custom elements like iconify-icon.
+A type-safe component for rendering dynamic HTML elements, including custom elements like iconify-icon. Uses DynamicElementHelper with memoized tag validation for optimal performance.
 
 **Props:**
 
@@ -297,13 +377,13 @@ A type-safe component for rendering dynamic HTML elements, including custom elem
 
 ### ListRenderer
 
-A utility component for efficiently rendering lists with automatic key generation and error handling. Optimized to prevent unnecessary re-renders of individual list items when data hasn't changed.
+A utility component for efficiently rendering lists with automatic key generation and error handling. Uses ListRendererBase internally for optimized rendering and key management. Will throw an error if the data prop is not an array.
 
 **Props:**
 
 - `data: TItem[] | readonly TItem[]` - Array of items to render
-- `renderComponent: (props: { data: TItem; index: number }) => JSX.Element` - Render function for each item
 - `getKey?: (item: TItem, index: number) => number | string` - Optional key extraction function (falls back to UUID)
+- `renderComponent: (props: { data: TItem; index: number }) => JSX.Element` - Render function for each item
 
 **Usage Examples:**
 
@@ -311,17 +391,18 @@ A utility component for efficiently rendering lists with automatic key generatio
 // Simple list rendering
 <ListRenderer
   data={users}
+  getKey={(user) => user.id}
   renderComponent={({ data: user, index }) => (
-    <div key={user.id}>
+    <div>
       {index + 1}. {user.name}
     </div>
   )}
-  getKey={(user) => user.id}
 />
 
 // Complex list with custom components
 <ListRenderer
   data={products}
+  getKey={(product) => product.sku}
   renderComponent={({ data: product }) => (
     <MediaCard
       name={product.name}
@@ -329,7 +410,6 @@ A utility component for efficiently rendering lists with automatic key generatio
       image={product.image}
     />
   )}
-  getKey={(product) => product.sku}
 />
 ```
 
@@ -366,7 +446,7 @@ A utility component for efficiently rendering lists with automatic key generatio
 - `MediaCard` is memoized to prevent unnecessary re-renders when props haven't changed
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
 - `RadioButton` is memoized to prevent unnecessary re-renders when props haven't changed
-- Components are designed to minimize unnecessary re-renders
+- Components use appropriate performance optimizations when needed
 
 ### 5. **Consistency**
 

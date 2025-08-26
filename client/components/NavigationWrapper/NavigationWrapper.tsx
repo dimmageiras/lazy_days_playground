@@ -6,34 +6,52 @@ import { useNavigate } from "react-router";
  * Props interface for the NavigationWrapper component
  */
 interface NavigationWrapperProps {
-  /** Render function that receives navigation callback */
+  /**
+   * Render function that receives a memoized navigation callback.
+   * This function should return a clickable element that uses the callback.
+   */
   children: (navigateTo: () => void) => JSX.Element;
-  /** Replace current history entry (default: false) */
+  /** Whether to replace the current history entry instead of pushing a new one */
   shouldReplace?: boolean;
-  /** Destination route */
+  /** Target route to navigate to */
   to: string;
 }
 
 /**
- * A render prop component that provides navigation functionality to child components,
- * useful for creating custom clickable elements.
+ * A render prop component that provides optimized navigation functionality to child components.
+ * Uses memoization to prevent unnecessary re-renders and ensure consistent navigation behavior.
+ * Useful for creating custom navigation elements without direct router dependencies.
  *
  * @example
  * ```tsx
- * <NavigationWrapper to="/settings" shouldReplace>
+ * // Basic button navigation
+ * <NavigationWrapper to="/settings">
  *   {(navigateTo) => (
- *     <button onClick={navigateTo} className="custom-button">
- *       Go to Settings
+ *     <button onClick={navigateTo} type="button">
+ *       Settings
  *     </button>
+ *   )}
+ * </NavigationWrapper>
+ *
+ * // Custom element with history replacement
+ * <NavigationWrapper shouldReplace to="/profile">
+ *   {(navigateTo) => (
+ *     <div
+ *       onClick={navigateTo}
+ *       role="button"
+ *       tabIndex={0}
+ *     >
+ *       Profile
+ *     </div>
  *   )}
  * </NavigationWrapper>
  * ```
  *
  * @param props - The NavigationWrapper component props
- * @param props.children - Render function that receives navigation callback
- * @param props.to - Destination route
- * @param props.shouldReplace - Replace current history entry (default: false)
- * @returns JSX.Element - The rendered child component with navigation functionality
+ * @param props.children - Render function that receives a memoized navigation callback
+ * @param props.shouldReplace - Whether to replace current history entry (default: false)
+ * @param props.to - Target route to navigate to
+ * @returns JSX.Element - The memoized child component with navigation functionality
  */
 const NavigationWrapper = ({
   children,

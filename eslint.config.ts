@@ -93,7 +93,7 @@ export default tsEslint.config([
         { blankLine: "always", prev: "block-like", next: "*" },
         { blankLine: "always", prev: "block", next: "*" },
         { blankLine: "always", prev: ["const", "let", "var"], next: "*" },
-        { blankLine: "any", prev: "case", next: "case" },
+        { blankLine: "any", prev: "case", next: ["case", "default"] },
         { blankLine: "any", prev: ["case", "default"], next: "break" },
         {
           blankLine: "any",

@@ -32,32 +32,37 @@ interface CheckBoxProps {
  *
  * @example
  * ```tsx
+ * import { useState } from 'react';
+ *
  * const [isSubscribed, setIsSubscribed] = useState(false);
+ * const inputRef = useRef<HTMLInputElement>(null);
  *
  * <CheckBox
+ *   className="custom-checkbox"
  *   id="newsletter-subscription"
+ *   inputRef={inputRef}
  *   isChecked={isSubscribed}
  *   label="Subscribe to newsletter"
  *   name="newsletter"
- *   value="subscribed"
  *   onChange={(e) => setIsSubscribed(e.target.checked)}
+ *   value="subscribed"
  * />
  * ```
  *
  * @param props - The CheckBox component props
+ * @param props.className - Additional CSS classes (optional)
  * @param props.id - Unique identifier for the checkbox
- * @param props.className - Additional CSS classes
- * @param props.inputRef - Ref for the input element
- * @param props.isChecked - Checked state (defaults to false)
+ * @param props.inputRef - Ref for the input element (optional)
+ * @param props.isChecked - Checked state
  * @param props.label - Label text
  * @param props.name - Form field name
- * @param props.onChange - Change handler
+ * @param props.onChange - Change handler for checkbox state changes
  * @param props.value - Form field value
  * @returns JSX.Element - The rendered checkbox component
  */
 const CheckBox = ({
-  id,
   className,
+  id,
   inputRef,
   isChecked = false,
   label,
