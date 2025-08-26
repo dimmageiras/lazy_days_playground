@@ -35,7 +35,7 @@ const Card = ({ children, isHidden = false }: CardProps): JSX.Element => {
         [String(styles["hidden"])]: isHidden,
       })}
     >
-      {children}
+      <div className={styles["content"]}>{children}</div>
     </article>
   );
 };

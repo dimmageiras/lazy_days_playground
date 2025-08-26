@@ -83,41 +83,39 @@ const MediaCard = memo(
   }: MediaCardProps): JSX.Element => {
     return (
       <Card isHidden={isHidden}>
-        <div className={styles["content"]}>
-          <figure className={styles["image-container"]}>
-            <img alt={name} className={styles["image"]} src={fileName} />
-            <figcaption className={styles["credit"]}>
-              Photo by
-              <RouterLink
-                className={styles["link"]}
-                hasTextDecorationOnHover
-                shouldOpenInNewTab
-                to={authorLink}
-              >
-                {authorName}
-              </RouterLink>
-              from
-              <RouterLink
-                className={styles["link"]}
-                hasTextDecorationOnHover
-                shouldOpenInNewTab
-                to={platformLink}
-              >
-                {platformName}
-              </RouterLink>
-            </figcaption>
-          </figure>
-          <div className={styles["details"]}>
-            <h2 className={styles["name"]}>{name}</h2>
-            <p
-              className={classNames(styles["description"], {
-                [String(styles["center"])]: descriptionAlign === "center",
-                [String(styles["left"])]: descriptionAlign === "left",
-              })}
+        <figure className={styles["image-container"]}>
+          <img alt={name} className={styles["image"]} src={fileName} />
+          <figcaption className={styles["credit"]}>
+            Photo by
+            <RouterLink
+              className={styles["link"]}
+              hasTextDecorationOnHover
+              shouldOpenInNewTab
+              to={authorLink}
             >
-              {description}
-            </p>
-          </div>
+              {authorName}
+            </RouterLink>
+            from
+            <RouterLink
+              className={styles["link"]}
+              hasTextDecorationOnHover
+              shouldOpenInNewTab
+              to={platformLink}
+            >
+              {platformName}
+            </RouterLink>
+          </figcaption>
+        </figure>
+        <div className={styles["details"]}>
+          <h2 className={styles["name"]}>{name}</h2>
+          <p
+            className={classNames(styles["description"], {
+              [String(styles["center"])]: descriptionAlign === "center",
+              [String(styles["left"])]: descriptionAlign === "left",
+            })}
+          >
+            {description}
+          </p>
         </div>
       </Card>
     );
