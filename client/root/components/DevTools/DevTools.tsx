@@ -2,6 +2,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { JSX } from "react";
 import { useLayoutEffect } from "react";
 
+import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
+
 import "./DevTools.module.scss";
 
 import { DevToolsHelper } from "./helpers/dev-tools.helper";
@@ -26,28 +28,30 @@ const DevTools = (): JSX.Element => {
       TQDTHelper;
 
     // React Router DevTools
-    const stopRRDTButtonObserver = setupDevToolsButton(
-      RRDT_BUTTON_SELECTOR,
-      RRDT_CONTAINER_SELECTOR
-    );
+    const stopRRDTButtonObserver = HAS_RRDT
+      ? setupDevToolsButton(RRDT_BUTTON_SELECTOR, RRDT_CONTAINER_SELECTOR)
+      : null;
+    const stopRRDTPanelObserver = HAS_RRDT
+      ? observeRRDTPanel(RRDT_PANEL_SELECTOR)
+      : null;
 
     // TanStack Query DevTools
-    const stopTQDTButtonObserver = setupDevToolsButton(
-      TQDT_BUTTON_SELECTOR,
-      TQDT_CONTAINER_SELECTOR
-    );
-    const stopTQDTDuplicateButtonsObserver = observeDuplicateButtons(
-      TQDT_CONTAINER_SELECTOR
-    );
-    const stopRRDTPanelObserver = observeRRDTPanel(RRDT_PANEL_SELECTOR);
-    const stopTQDTPanelObserver = observeTQDTPanel(TQDT_PANEL_SELECTOR);
+    const stopTQDTButtonObserver = HAS_RQDT
+      ? setupDevToolsButton(TQDT_BUTTON_SELECTOR, TQDT_CONTAINER_SELECTOR)
+      : null;
+    const stopTQDTDuplicateButtonsObserver = HAS_RQDT
+      ? observeDuplicateButtons(TQDT_CONTAINER_SELECTOR)
+      : null;
+    const stopTQDTPanelObserver = HAS_RQDT
+      ? observeTQDTPanel(TQDT_PANEL_SELECTOR)
+      : null;
 
     return () => {
-      stopRRDTButtonObserver();
-      stopRRDTPanelObserver();
-      stopTQDTButtonObserver();
-      stopTQDTDuplicateButtonsObserver();
-      stopTQDTPanelObserver();
+      stopRRDTButtonObserver?.();
+      stopRRDTPanelObserver?.();
+      stopTQDTButtonObserver?.();
+      stopTQDTDuplicateButtonsObserver?.();
+      stopTQDTPanelObserver?.();
     };
   }, []);
 

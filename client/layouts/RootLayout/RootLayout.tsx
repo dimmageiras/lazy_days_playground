@@ -1,7 +1,10 @@
 import type { JSX, PropsWithChildren } from "react";
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
-import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
+import {
+  HAS_DEV_TOOLS,
+  IS_DEVELOPMENT,
+} from "@shared/constants/root-env.constant";
 
 import { DevTools } from "./components/DevTools";
 
@@ -16,7 +19,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
       </head>
       <body>
         <div id="app">{children}</div>
-        {IS_DEVELOPMENT ? <DevTools /> : null}
+        {IS_DEVELOPMENT && HAS_DEV_TOOLS ? <DevTools /> : null}
         <ScrollRestoration />
         <Scripts />
       </body>

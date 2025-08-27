@@ -6,6 +6,7 @@ import { useStoreState, useTrackedStore } from "zustand-x";
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { useClickOutside } from "@client/hooks/useClickOutside";
 import { devToolsStore } from "@client/root/components/DevTools/stores/dev-tools.store";
+import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
 
 const DevTools = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useStoreState(
@@ -60,19 +61,23 @@ const DevTools = (): JSX.Element => {
         ref={devToolsBubbleRef}
       >
         <div className="bubble-content">
-          <div className="rrdt-button-container" id="rrdt-button-container" />
-          <div
-            className="tqdt-button-container"
-            id="tqdt-button-container"
-            onClick={(event) => {
-              const container = event.currentTarget;
-              const firstChild = container.firstChild?.childNodes[1];
+          {HAS_RRDT ? (
+            <div className="rrdt-button-container" id="rrdt-button-container" />
+          ) : null}
+          {HAS_RQDT ? (
+            <div
+              className="tqdt-button-container"
+              id="tqdt-button-container"
+              onClick={(event) => {
+                const container = event.currentTarget;
+                const firstChild = container.firstChild?.childNodes[1];
 
-              if (firstChild && firstChild instanceof HTMLButtonElement) {
-                firstChild.click();
-              }
-            }}
-          />
+                if (firstChild && firstChild instanceof HTMLButtonElement) {
+                  firstChild.click();
+                }
+              }}
+            />
+          ) : null}
         </div>
       </div>
     </div>

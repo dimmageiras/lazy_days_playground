@@ -8,15 +8,24 @@ import {
 import { formatZodError } from "./zod.helper.ts";
 
 const envSchema = zObject({
+  VITE_APP_ALL_DEV_TOOLS: zEnum(["true", "false"], {
+    message: 'VITE_APP_ALL_DEV_TOOLS must be either "true" or "false"',
+  }).optional(),
   VITE_APP_HOST: zString().min(1, { message: "String cannot be empty" }),
-  VITE_APP_LOG_LEVEL: LOG_LEVELS,
   VITE_APP_IS_DEVELOPMENT: zEnum(["true", "false"], {
     message: 'VITE_APP_IS_DEVELOPMENT must be either "true" or "false"',
   }).optional(),
+  VITE_APP_LOG_LEVEL: LOG_LEVELS,
   VITE_APP_PORT: zCoerce
     .number()
     .int()
     .positive({ message: "PORT must be a positive integer" }),
+  VITE_APP_RQDT: zEnum(["true", "false"], {
+    message: 'VITE_APP_RQDT must be either "true" or "false"',
+  }).optional(),
+  VITE_APP_RRDT: zEnum(["true", "false"], {
+    message: 'VITE_APP_RRDT must be either "true" or "false"',
+  }).optional(),
 });
 
 const validateEnv = (): void => {
