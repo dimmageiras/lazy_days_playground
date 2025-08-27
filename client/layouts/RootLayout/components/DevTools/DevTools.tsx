@@ -1,15 +1,18 @@
 import classNames from "classnames";
 import type { JSX } from "react";
-import { useRef, useState } from "react";
-import { useStoreValue } from "zustand-x";
+import { useEffect, useRef } from "react";
+import { useStoreState, useTrackedStore } from "zustand-x";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { useClickOutside } from "@client/hooks/useClickOutside";
 import { devToolsStore } from "@client/root/components/DevTools/stores/dev-tools.store";
 
 const DevTools = (): JSX.Element => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const isRQDTOpen = useStoreValue(devToolsStore, "isRQDTOpen");
+  const [isExpanded, setIsExpanded] = useStoreState(
+    devToolsStore,
+    "isDevToolsMenuOpen"
+  );
+  const { isRRDTOpen, isRQDTOpen } = useTrackedStore(devToolsStore);
   const devToolsBubbleRef = useRef<HTMLDivElement>(null);
   const devToolsToggleRef = useRef<HTMLButtonElement>(null);
   const devToolsRef = useClickOutside<HTMLDivElement>(
@@ -23,10 +26,17 @@ const DevTools = (): JSX.Element => {
   );
 
   const iconRotation = isExpanded ? "0deg" : "180deg";
+  const isDevToolsMenuVisible = !isRQDTOpen && !isRRDTOpen;
+
+  useEffect(() => {
+    if (isRQDTOpen || isRRDTOpen) {
+      setIsExpanded(false);
+    }
+  }, [isRQDTOpen, isRRDTOpen]);
 
   return (
     <div
-      className={classNames({ visible: !isRQDTOpen })}
+      className={classNames({ visible: isDevToolsMenuVisible })}
       id="dev-tools"
       ref={devToolsRef}
     >

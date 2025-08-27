@@ -22,11 +22,7 @@ const observeDevToolsPanel = (panelSelector: string): (() => void) => {
   observer = new MutationObserver(() => {
     const panel = document.querySelector(panelSelector);
 
-    if (panel) {
-      devToolsStore?.set("isRQDTOpen", true);
-    } else {
-      devToolsStore?.set("isRQDTOpen", false);
-    }
+    devToolsStore.set("isRQDTOpen", panel instanceof HTMLElement);
   });
 
   observer.observe(document.body, {
