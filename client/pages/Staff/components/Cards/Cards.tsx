@@ -23,7 +23,7 @@ const Cards = ({ staff }: CardsProps): JSX.Element => {
   return (
     <ListRenderer
       data={staff}
-      getKey={(staffMember): number => staffMember.id}
+      getKey={(staffMember): string => staffMember.name}
       renderComponent={({ data }): JSX.Element => {
         return <Card staffMemberData={data} />;
       }}

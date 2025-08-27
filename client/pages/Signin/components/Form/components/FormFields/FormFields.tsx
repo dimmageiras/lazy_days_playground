@@ -20,8 +20,8 @@ const FormFields = memo(({ isSubmitting }: FormFieldsProps): JSX.Element => {
     <fieldset className={styles["form-fields"]} disabled={isSubmitting}>
       <ListRenderer
         data={formFields}
-        getKey={([key]) => key}
-        renderComponent={({ data: [key, value] }) => (
+        getKey={([key]): keyof typeof FORM_FIELDS => key}
+        renderComponent={({ data: [key, value] }): JSX.Element => (
           <Field
             key={key}
             label={value.label}

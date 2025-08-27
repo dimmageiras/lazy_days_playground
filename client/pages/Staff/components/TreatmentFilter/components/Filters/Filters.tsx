@@ -25,7 +25,7 @@ const Filters = (): JSX.Element => {
   return (
     <ListRenderer
       data={filters}
-      getKey={(treatment): number => treatment.id}
+      getKey={(treatment): string => treatment.name}
       renderComponent={({ data: filter }): JSX.Element => {
         return <Filter filter={filter} />;
       }}
