@@ -5,6 +5,8 @@ import type { UseFormProps } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
+import { Card } from "@client/components/Card";
+
 import { FormFields } from "./components/FormFields";
 import { signinSchema } from "./schemas/signin-form.schema";
 import type { SigninForm as SigninFormType } from "./types/signin-form.type";
@@ -39,11 +41,13 @@ const SigninForm = (): JSX.Element => {
   };
 
   return (
-    <FormProvider {...formMethods}>
-      <ReactRouterForm noValidate onSubmit={handleSubmit(onSubmit)}>
-        <FormFields isSubmitting={isSubmitting} />
-      </ReactRouterForm>
-    </FormProvider>
+    <Card>
+      <FormProvider {...formMethods}>
+        <ReactRouterForm noValidate onSubmit={handleSubmit(onSubmit)}>
+          <FormFields isSubmitting={isSubmitting} />
+        </ReactRouterForm>
+      </FormProvider>
+    </Card>
   );
 };
 

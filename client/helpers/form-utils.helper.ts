@@ -1,3 +1,7 @@
+import type { ZodString } from "zod";
+
+import type { ZodInfer, ZodObject } from "@shared/wrappers/zod.wrapper";
+
 const getNoAutofillProps = (): Record<PropertyKey, unknown> => ({
   "aria-autocomplete": "off",
   autoComplete: "off",
@@ -16,6 +20,16 @@ const getNoAutofillProps = (): Record<PropertyKey, unknown> => ({
   "data-lpignore": "true",
 });
 
+const isFieldRequired = <TSchema extends ZodObject>(
+  schema: TSchema,
+  field: keyof ZodInfer<TSchema>
+): boolean => {
+  const fieldSchema: ZodString = Reflect.get(schema.shape, field);
+
+  return !fieldSchema.safeParse(undefined).success;
+};
+
 export const FormUtilsHelper = {
   getNoAutofillProps,
+  isFieldRequired,
 };

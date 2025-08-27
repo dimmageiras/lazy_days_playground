@@ -12,6 +12,14 @@ import type { TextInputType } from "./types/text-input.type";
  */
 interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
   /**
+   * Optional error message to display below the input.
+   */
+  errorMessage?: string | undefined;
+  /**
+   * The label text for the input field.
+   */
+  label: string;
+  /**
    * Type of text input to render:
    * - "email": Email input with email validation
    * - "password": Secure password input with autofill disabled
@@ -21,53 +29,75 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
 }
 
 /**
- * A styled text input component with enhanced security features and
- * built-in protection against unwanted autofill interference.
+ * A styled text input component with enhanced security features, built-in label,
+ * error handling, and protection against unwanted autofill interference.
  * The component is optimized for performance using React.memo to prevent unnecessary re-renders.
- *
- * Features:
- * - Type-safe input types (email, password, text)
- * - Password manager protection when needed
- * - Consistent styling across input types
- * - Preserves all standard input attributes
  *
  * @example
  * ```tsx
- * // Basic text input
+ * // Basic text input with label
  * <TextInput
+ *   label="Username"
  *   name="username"
  *   placeholder="Enter username"
+ *   required={false}
  *   type="text"
  * />
  *
- * // Email input with validation
+ * // Required email input with error
  * <TextInput
+ *   errorMessage="Invalid email format"
+ *   isRequired={true}
+ *   label="Email"
  *   name="email"
  *   required
  *   type="email"
  * />
  *
- * // Secure password input
+ * // Secure password input with validation
  * <TextInput
+ *   label="Password"
  *   name="password"
+ *   required
  *   type="password"
  * />
  * ```
  *
- * @param props - Extends standard input props (except 'type')
+ * @param props - Extends standard input props (except 'type' and 'required')
  * @param props.[...inputProps] - All standard input attributes are supported
+ * @param props.errorMessage - Optional error message to display below the input
+ * @param props.label - Label text for the input field
  * @param props.type - Must be one of: "text", "email", "password"
- * @returns JSX.Element - The rendered input element with applied styles and protections
+ * @returns JSX.Element - The rendered input group with label, input, and error message
  */
-const TextInput = memo(({ ...props }: TextInputProps): JSX.Element => {
-  const { getNoAutofillProps } = FormUtilsHelper;
+const TextInput = memo(
+  ({ errorMessage, label, ...props }: TextInputProps): JSX.Element => {
+    const { getNoAutofillProps } = FormUtilsHelper;
 
-  const noAutofillProps = useMemo(() => getNoAutofillProps(), []);
+    const noAutofillProps = useMemo(() => getNoAutofillProps(), []);
 
-  return (
-    <input className={styles["text-input"]} {...noAutofillProps} {...props} />
-  );
-});
+    return (
+      <>
+        <label className={styles["text-label"]} htmlFor={props.name}>
+          {label}
+          {props.required ? (
+            <span aria-hidden="true" className={styles["required"]}>
+              &nbsp;*
+            </span>
+          ) : null}
+        </label>
+        <input
+          aria-required={props.required}
+          className={styles["text-input"]}
+          id={props.name}
+          {...noAutofillProps}
+          {...props}
+        />
+        {errorMessage ? <span role="alert">{errorMessage}</span> : null}
+      </>
+    );
+  }
+);
 
 TextInput.displayName = "TextInput";
 

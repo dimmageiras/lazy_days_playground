@@ -67,13 +67,6 @@ type RouterLinkProps = ExternalLinkProps | InternalLinkProps | NavLinkProps;
  * The component uses discriminated union types with 'as' prop as the discriminator,
  * ensuring type-safe prop combinations for each variant.
  *
- * Features:
- * - Type-safe props based on link variant
- * - Security attributes for external links (rel="noopener noreferrer")
- * - React Router integration for internal navigation
- * - Active state support for navigation links
- * - Consistent hover effects and styling
- *
  * @example
  * ```tsx
  * // External link (type-safe props for external variant)

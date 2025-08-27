@@ -7,6 +7,7 @@ const zObject = z.object;
 const zString = z.string;
 
 type ZodInfer<T extends z.ZodTypeAny> = z.infer<T>;
+type ZodObject = z.ZodObject;
 
-export type { ZodInfer };
+export type { ZodInfer, ZodObject };
 export { zCoerce, zEmail, zEnum, zObject, zString };

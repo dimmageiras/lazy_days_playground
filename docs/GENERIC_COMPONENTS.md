@@ -186,33 +186,40 @@ const [selectedPlan, setSelectedPlan] = useState('');
 
 ### TextInput
 
-A styled text input component with enhanced security features and built-in protection against unwanted password manager interference. This component is memoized to prevent unnecessary re-renders when props haven't changed.
+A styled text input component with enhanced security features, built-in label, error handling, and protection against unwanted autofill interference. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
+- `errorMessage?: string` - Optional error message to display below the input
+- `label: string` - Label text for the input field
 - `type: "text" | "email" | "password"` - Type of text input to render
 - All standard input attributes are supported except 'type'
 
 **Usage Example:**
 
 ```tsx
-// Basic text input
+// Basic text input with label
 <TextInput
+  label="Username"
   name="username"
   placeholder="Enter username"
   type="text"
 />
 
-// Email input with validation
+// Required email input with error
 <TextInput
+  errorMessage="Invalid email format"
+  label="Email"
   name="email"
   required
   type="email"
 />
 
-// Secure password input
+// Required password input
 <TextInput
+  label="Password"
   name="password"
+  required
   type="password"
 />
 ```

@@ -47,6 +47,12 @@ body {
     cursor: pointer;
   }
 
+  fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+  }
+
   input {
     margin: 0;
   }
