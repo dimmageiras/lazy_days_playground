@@ -151,7 +151,6 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
       return (
         <Link
           className={linkClassNames}
-          onMouseDown={handleMouseDown}
           ref={ref}
           replace={!!shouldReplace}
           to={to}
@@ -189,7 +188,6 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
         <a
           className={linkClassNames}
           href={to}
-          onMouseDown={handleMouseDown}
           ref={ref}
           rel="noopener noreferrer"
           {...(shouldOpenInNewTab && { target: "_blank" })}
