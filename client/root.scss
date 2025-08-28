@@ -47,14 +47,15 @@ body {
     cursor: pointer;
   }
 
+  input {
+    margin: 0;
+    width: 100%;
+  }
+
   fieldset {
     border: none;
     margin: 0;
     padding: 0;
-  }
-
-  input {
-    margin: 0;
   }
 
   #app {

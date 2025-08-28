@@ -1,11 +1,11 @@
 import { LOG_LEVELS } from "../../shared/constants/zod.constant.ts";
+import { ZodUtilsHelper } from "../../shared/helpers/zod.helper.ts";
 import {
   zCoerce,
   zEnum,
   zObject,
   zString,
 } from "../../shared/wrappers/zod.wrapper.ts";
-import { formatZodError } from "./zod.helper.ts";
 
 const envSchema = zObject({
   VITE_APP_ALL_DEV_TOOLS: zEnum(["true", "false"], {
@@ -37,7 +37,9 @@ const validateEnv = (): void => {
     return;
   }
 
-  const formattedErrors = formatZodError(result.error);
+  const { formatError } = ZodUtilsHelper;
+
+  const formattedErrors = formatError(result.error);
 
   throw new Error(
     `❌ Environment variables:\n${formattedErrors
@@ -46,4 +48,4 @@ const validateEnv = (): void => {
   );
 };
 
-export { validateEnv };
+export const EnvVarHelper = { validateEnv };

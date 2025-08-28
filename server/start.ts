@@ -15,7 +15,9 @@ import {
   MODE,
   PORT,
 } from "../shared/constants/root-env.constant.ts";
-import { log } from "./helpers/log.helper.ts";
+import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
+
+const { log } = PinoLogHelper;
 
 const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,

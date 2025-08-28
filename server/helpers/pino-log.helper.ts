@@ -27,4 +27,4 @@ const loggerOptions: Record<
 const opts = Reflect.get(loggerOptions, MODE);
 const log = pino(opts).logger;
 
-export { log };
+export const PinoLogHelper = { log };

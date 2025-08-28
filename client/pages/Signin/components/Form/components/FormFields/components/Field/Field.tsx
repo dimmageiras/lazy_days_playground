@@ -1,5 +1,5 @@
 import type { JSX } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useController } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
@@ -29,9 +29,14 @@ const Field = ({
 
   const isRequired = useMemo(() => isFieldRequired(signinSchema, name), [name]);
 
+  useEffect(() => {
+    if (shouldAutoFocus) {
+      document.getElementById(name)?.focus();
+    }
+  }, [name, shouldAutoFocus]);
+
   return (
     <TextInput
-      autoFocus={shouldAutoFocus}
       errorMessage={error?.message}
       label={label}
       required={isRequired}

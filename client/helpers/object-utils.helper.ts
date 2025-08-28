@@ -21,6 +21,25 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
   }[keyof TObject][];
 
 /**
+ * Gets typed keys from an object.
+ * This is a type-safe wrapper around Object.keys() that returns properly typed keys.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param object - The object to get keys from
+ * @returns Array of object keys with proper typing
+ *
+ * @example
+ * ```typescript
+ * const obj = { name: "John", age: 30 };
+ * const keys = getObjectKeys(obj);
+ * // keys: ("name" | "age")[]
+ * ```
+ */
+const getObjectKeys = <TObject extends Record<string, unknown>>(
+  object: TObject
+): (keyof TObject)[] => Object.keys(object);
+
+/**
  * Checks if the given value is an object and not an array.
  *
  * @param item - The value to check
@@ -51,6 +70,7 @@ const isPlainObject = (item: unknown): item is Record<PropertyKey, unknown> => {
 
 export const ObjectUtilsHelper = {
   getObjectEntries,
+  getObjectKeys,
   isObject,
   isPlainObject,
 };

@@ -1,6 +1,8 @@
-import { validateEnv } from "./helpers/validate-env.helper.ts";
+import { EnvVarHelper } from "./helpers/env-var.helper.ts";
 
 try {
+  const { validateEnv } = EnvVarHelper;
+
   validateEnv();
 } catch (error) {
   console.error(error);

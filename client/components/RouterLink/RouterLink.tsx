@@ -3,6 +3,8 @@ import type { JSX, Ref } from "react";
 import type { Path } from "react-router";
 import { Link, NavLink } from "react-router";
 
+import { DomEventsHelper } from "@client/helpers/dom-events.helper";
+
 import { LINK_AS } from "./constants/router-link.constant";
 import styles from "./RouterLink.module.scss";
 
@@ -121,8 +123,9 @@ type RouterLinkProps = ExternalLinkProps | InternalLinkProps | NavLinkProps;
  * @param props - Union of ExternalLinkProps | InternalLinkProps | NavLinkProps
  * @returns JSX.Element - Rendered as <a>, <Link>, or <NavLink> based on 'as' prop
  */
-
 const RouterLink = (props: RouterLinkProps): JSX.Element => {
+  const { handleMouseDown } = DomEventsHelper;
+
   const {
     as = "external",
     children = null,
@@ -148,6 +151,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
       return (
         <Link
           className={linkClassNames}
+          onMouseDown={handleMouseDown}
           ref={ref}
           replace={!!shouldReplace}
           to={to}
@@ -167,6 +171,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
               [String(activeClassName)]: isActive,
             })
           }
+          onMouseDown={handleMouseDown}
           ref={ref}
           replace={!!shouldReplace}
           to={to}
@@ -184,6 +189,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
         <a
           className={linkClassNames}
           href={to}
+          onMouseDown={handleMouseDown}
           ref={ref}
           rel="noopener noreferrer"
           {...(shouldOpenInNewTab && { target: "_blank" })}

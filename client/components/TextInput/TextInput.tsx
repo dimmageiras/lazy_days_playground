@@ -77,8 +77,8 @@ const TextInput = memo(
     const noAutofillProps = useMemo(() => getNoAutofillProps(), []);
 
     return (
-      <>
-        <label className={styles["text-label"]} htmlFor={props.name}>
+      <div className={styles["text-input-container"]}>
+        <label className={styles["label"]} htmlFor={props.name}>
           {label}
           {props.required ? (
             <span aria-hidden="true" className={styles["required"]}>
@@ -87,14 +87,27 @@ const TextInput = memo(
           ) : null}
         </label>
         <input
-          aria-required={props.required}
-          className={styles["text-input"]}
+          className={styles["input"]}
           id={props.name}
+          {...(!!errorMessage && {
+            "aria-errormessage": `${props.name}-error`,
+          })}
+          {...(!!errorMessage && { "aria-invalid": "true" })}
+          {...(!!props.disabled && { "aria-disabled": "true" })}
+          {...(!!props.required && { "aria-required": "true" })}
           {...noAutofillProps}
           {...props}
         />
-        {errorMessage ? <span role="alert">{errorMessage}</span> : null}
-      </>
+        {errorMessage ? (
+          <small
+            aria-live="polite"
+            className={styles["error-message"]}
+            id={`${props.name}-error`}
+          >
+            {errorMessage}
+          </small>
+        ) : null}
+      </div>
     );
   }
 );
