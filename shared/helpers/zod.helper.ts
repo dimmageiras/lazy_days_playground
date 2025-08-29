@@ -1,6 +1,5 @@
 import { ISSUE_CODES } from "../constants/zod.constant.ts";
-import type { ZodFormattedError } from "../types/zod.type.ts";
-import type { ZodError } from "../wrappers/zod.wrapper.ts";
+import type { ZodError, ZodFormattedError } from "../wrappers/zod.wrapper.ts";
 
 const formatError = (zodError: ZodError): ZodFormattedError[] => {
   return zodError.issues.map((error) => {

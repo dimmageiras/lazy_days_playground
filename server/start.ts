@@ -1,3 +1,6 @@
+import authFastify from "@fastify/auth";
+import cookieFastify from "@fastify/cookie";
+import jwtFastify from "@fastify/jwt";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
 import { reactRouter } from "@react-router/dev/vite";
 import fastify from "fastify";
@@ -7,10 +10,12 @@ import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 import {
+  COOKIE_SECRET,
   HAS_DEV_TOOLS,
   HAS_RRDT,
   HOST,
   IS_DEVELOPMENT,
+  JWT_SECRET,
   LOG_LEVEL,
   MODE,
   PORT,
@@ -24,7 +29,36 @@ const app = fastify({
   loggerInstance: log,
 });
 
-app.register(reactRouterFastify, {
+await app.register(cookieFastify, {
+  parseOptions: {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: !IS_DEVELOPMENT,
+  },
+  secret: COOKIE_SECRET,
+});
+log.info("✅ Cookie plugin registered");
+
+await app.register(jwtFastify, {
+  cookie: {
+    cookieName: "accessToken",
+    signed: true,
+  },
+  secret: JWT_SECRET,
+});
+log.info("✅ JWT plugin registered");
+
+await app.register(authFastify);
+log.info("✅ Auth plugin registered");
+
+await app.register(async (fastify) => {
+  const { userRoutes } = await import("./routes/user.routes.ts");
+
+  await fastify.register(userRoutes, { prefix: "/api/user" });
+});
+log.info("✅ User API routes registered");
+
+await app.register(reactRouterFastify, {
   buildDirectory: "dist",
   serverBuildFile: "index.js",
   viteOptions: {
@@ -53,6 +87,7 @@ app.register(reactRouterFastify, {
     ],
   },
 });
+log.info("✅ React Router SSR plugin registered");
 
 const startServer = async (): Promise<void> => {
   const desiredPort = Number(PORT);

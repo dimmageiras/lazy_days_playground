@@ -13,12 +13,14 @@ This document provides a comprehensive guide to all generic components available
 
 1. [CheckBox](#checkbox)
 2. [RadioButton](#radiobutton)
+3. [TextInput](#textinput)
 
 ### 🎨 [UI & Display Components](#ui--display-components)
 
-1. [IconifyIcon](#iconifyicon)
-2. [MediaCard](#mediacard)
-3. [PageTitle](#pagetitle)
+1. [Card](#card)
+2. [IconifyIcon](#iconifyicon)
+3. [MediaCard](#mediacard)
+4. [PageTitle](#pagetitle)
 
 ### 🔧 [Utility Components](#utility-components)
 
@@ -40,7 +42,7 @@ A render prop component that provides navigation functionality to child componen
 - `to: string` - Destination route
 - `shouldReplace?: boolean` - Replace current history entry (default: false)
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 <NavigationWrapper to="/settings" shouldReplace>
@@ -131,7 +133,7 @@ A styled checkbox component with custom check mark icon and consistent form hand
 - `className?: string` - Additional CSS classes
 - `inputRef?: Ref<HTMLInputElement>` - Ref for the input element
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 const [isSubscribed, setIsSubscribed] = useState(false);
@@ -161,7 +163,7 @@ A styled radio button component with consistent form handling and visual feedbac
 - `className?: string` - Additional CSS classes
 - `inputRef?: Ref<HTMLInputElement>` - Ref for the input element
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 const [selectedPlan, setSelectedPlan] = useState('');
@@ -195,7 +197,7 @@ A styled text input component with enhanced security features, built-in label, e
 - `type: "text" | "email" | "password"` - Type of text input to render
 - All standard input attributes are supported except 'type'
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 // Basic text input with label
@@ -237,7 +239,7 @@ A base card component that provides a consistent container style for content. Th
 - `children: ReactNode` - The content to be rendered inside the card
 - `isHidden?: boolean` - Whether the card should be hidden (default: false)
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 <Card isHidden={false}>
@@ -260,7 +262,7 @@ A wrapper component for Iconify icons with type safety and consistent integratio
 - `width?: string | number` - Icon width
 - All other standard iconify-icon element props are supported
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 <IconifyIcon
@@ -295,7 +297,7 @@ A card component designed for displaying media content with image, title, descri
 - `isHidden?: boolean` - Whether the card should be hidden (default: false)
 - `name: string` - Card title
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 <MediaCard
@@ -322,7 +324,7 @@ A consistent page title component that renders as an h2 element with standardize
 - `pageTitle: string` - The title text to display
 - All other standard h2 props are supported
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 <PageTitle pageTitle="User Dashboard" className="custom-title-style" />
@@ -340,7 +342,7 @@ Renders its children **only after** the component has mounted on the client. Thi
 
 — `children: ReactNode` – elements to render once mounted
 
-**Usage Example:**
+**Usage Examples:**
 
 ```tsx
 <ClientOnly>

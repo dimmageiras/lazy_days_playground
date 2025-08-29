@@ -1,16 +1,4 @@
-import { zEnum } from "../wrappers/zod.wrapper.ts";
-
-const LOG_LEVELS = zEnum([
-  "debug",
-  "error",
-  "fatal",
-  "info",
-  "silent",
-  "trace",
-  "warn",
-]);
-
-const ISSUE_CODES = {
+const ISSUE_CODES = Object.freeze({
   CUSTOM: "custom",
   INVALID_ELEMENT: "invalid_element",
   INVALID_FORMAT: "invalid_format",
@@ -22,6 +10,6 @@ const ISSUE_CODES = {
   TOO_BIG: "too_big",
   TOO_SMALL: "too_small",
   UNRECOGNIZED_KEYS: "unrecognized_keys",
-} as const;
+} as const);
 
-export { LOG_LEVELS, ISSUE_CODES };
+export { ISSUE_CODES };

@@ -47,7 +47,6 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  * // Required email input with error
  * <TextInput
  *   errorMessage="Invalid email format"
- *   isRequired={true}
  *   label="Email"
  *   name="email"
  *   required

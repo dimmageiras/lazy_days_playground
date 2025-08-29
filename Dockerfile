@@ -12,7 +12,7 @@ RUN chmod +x /docker-entrypoint.sh
 # Install packages (single layer) and clean apt lists to keep image small
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
-     sudo wget curl git openssh-client locales ca-certificates \
+     ca-certificates curl git locales openssh-client sudo vim wget \
   && rm -rf /var/lib/apt/lists/*
 # clean in the same layer to actually shrink the image [3](https://stackoverflow.com/questions/61990329/benefits-of-repeated-apt-cache-cleans)
 
