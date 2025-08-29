@@ -1,0 +1,23 @@
+{
+  "recommendations": [
+    "antfu.unocss",
+    "anysphere.remote-containers",
+    "b4v1n4t0r.material-palenight",
+    "christian-kohler.npm-intellisense",
+    "cipchk.cssrem",
+    "codeandstuff.package-json-upgrade",
+    "dbaeumer.vscode-eslint",
+    "docker.docker",
+    "dsznajder.es7-react-js-snippets",
+    "esbenp.prettier-vscode",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+    "magicstack.edgedb",
+    "ms-azuretools.vscode-containers",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode-remote.remote-containers",
+    "nize.oklch-preview",
+    "wix.vscode-import-cost",
+    "yoavbls.pretty-ts-errors"
+  ]
+}
