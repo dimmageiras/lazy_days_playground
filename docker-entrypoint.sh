@@ -1,11 +1,16 @@
 #!/bin/bash
 set -e
 
-if [ -d "$HOME/.volume-config" ]; then
-    sudo chown -R node:node "$HOME/.gitconfig"
-    sudo chown -R node:node "$HOME/.ssh"
-    sudo chmod 600 -R "$HOME/.ssh" && sudo chmod +x "$HOME/.ssh"  
-    echo "Configuration files copied successfully."
+# Ensure correct permissions for git and ssh configs
+if [ -f "/home/.gitconfig" ]; then
+    sudo chown full_stack:full_stack "/home/full_stack/.gitconfig"
+fi
+
+if [ -d "/home/.ssh" ]; then
+    sudo chown -R full_stack:full_stack "/home/full_stack/.ssh"
+    sudo chmod 600 "/home/full_stack/.ssh/"* 2>/dev/null || true
+    sudo chmod 700 "/home/full_stack/.ssh"
+    echo "SSH and Git configuration permissions updated successfully."
 fi
 
 exec "$@"
