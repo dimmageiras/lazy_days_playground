@@ -63,5 +63,8 @@ RUN git clone https://github.com/dimmageiras/lazy_days_playground.git /home/full
 WORKDIR /home/full_stack/lazy_days_playground
 # docker exec will open here by default [1](https://docs.docker.com/reference/dockerfile/)[2](https://docs.docker.com/engine/containers/run/)
 
+# Set up environment and initialize the project
 ENTRYPOINT ["/docker-entrypoint.sh"]
+# Keep the container running
 CMD ["tail", "-f", "/dev/null"]
+
