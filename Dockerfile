@@ -1,4 +1,3 @@
-
 # syntax=docker/dockerfile:1.7
 # Base image debian trixie
 FROM debian:trixie
