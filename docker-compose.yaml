@@ -11,22 +11,22 @@ services:
     volumes:
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.gitconfig
-        target: /home/.gitconfig
+        target: /home/full_stack/.gitconfig
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.ssh\config
-        target: /home/.ssh/config
+        target: /home/full_stack/.ssh/config
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.ssh\id_ed25519
-        target: /home/.ssh/id_ed25519
+        target: /home/full_stack/.ssh/id_ed25519
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.ssh\id_ed25519.pub
-        target: /home/.ssh/id_ed25519.pub
+        target: /home/full_stack/.ssh/id_ed25519.pub
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.ssh\known_hosts
-        target: /home/.ssh/known_hosts
-      - home:/home
+        target: /home/full_stack/.ssh/known_hosts
+      - home:/home/full_stack
     user: full_stack
-    working_dir: /home
+    working_dir: /home/full_stack
 
 volumes:
   home: {}
