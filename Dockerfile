@@ -67,4 +67,3 @@ WORKDIR /home/full_stack/lazy_days_playground
 ENTRYPOINT ["/docker-entrypoint.sh"]
 # Keep the container running
 CMD ["tail", "-f", "/dev/null"]
-
