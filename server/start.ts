@@ -53,6 +53,12 @@ log.info("✅ JWT plugin registered");
 await app.register(authFastify);
 log.info("✅ Auth plugin registered");
 
+await app.register(async (fastify) => {
+  await fastify.register(apiHealthRoutes);
+  await fastify.register(userRoutes);
+});
+log.info("✅ All routes are registered");
+
 await app.register(reactRouterFastify, {
   buildDirectory: "dist",
   serverBuildFile: "index.js",
@@ -83,12 +89,6 @@ await app.register(reactRouterFastify, {
   },
 });
 log.info("✅ React Router SSR plugin registered");
-
-await app.register(async (fastify) => {
-  await fastify.register(apiHealthRoutes, { prefix: "/api/health" });
-  await fastify.register(userRoutes, { prefix: "/api/user" });
-});
-log.info("✅ All routes are registered");
 
 const startServer = async (): Promise<void> => {
   const desiredPort = Number(PORT);

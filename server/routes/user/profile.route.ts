@@ -28,7 +28,7 @@ const profileRoute = async (
    * @example Success: { "success": true, "data": { "id": "123", "name": "John", ... } }
    */
   fastify.get(
-    "/profile",
+    "/api/user/profile",
     { preHandler: fastify.auth([verifyJWT]) },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const requestId = request.id;
@@ -96,7 +96,7 @@ const profileRoute = async (
    * @example Success: { "success": true, "data": {...}, "message": "Profile updated successfully" }
    */
   fastify.put(
-    "/profile",
+    "/api/user/profile",
     { preHandler: fastify.auth([verifyJWT]) },
     async (
       request: FastifyRequest<{ Body: EditableUserProfile }>,

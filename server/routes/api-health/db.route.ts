@@ -25,7 +25,7 @@ const dbRoute = async (
   fastify: FastifyInstance,
   log: Logger
 ): Promise<void> => {
-  fastify.get("db", async (request, reply) => {
+  fastify.get("/api/health/db", async (request, reply) => {
     const requestId = request.id;
     const startTime = Date.now();
 

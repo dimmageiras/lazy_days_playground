@@ -23,7 +23,7 @@ const serverRoute = async (
   fastify: FastifyInstance,
   log: Logger
 ): Promise<void> => {
-  fastify.get("server", async (request, reply) => {
+  fastify.get("/api/health/server", async (request, reply) => {
     const requestId = request.id;
     const startTime = Date.now();
 
