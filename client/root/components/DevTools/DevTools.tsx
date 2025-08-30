@@ -4,8 +4,6 @@ import { useLayoutEffect } from "react";
 
 import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
 
-import "./DevTools.module.scss";
-
 import { DevToolsHelper } from "./helpers/dev-tools.helper";
 import { RRDTHelper } from "./helpers/rrdt.helper";
 import { TQDTHelper } from "./helpers/tqdt.helper";

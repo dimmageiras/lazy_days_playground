@@ -1,6 +1,16 @@
 name: lazy_days_playground
 
 services:
+  gel_db:
+    image: geldata/gel:latest
+    environment:
+      EDGEDB_SERVER_SECURITY: insecure_dev_mode
+    ports:
+      - "5656:5656"
+    volumes:
+      - gel_data:/var/lib/gel/data
+      - ./dbschema:/dbschema
+
   full_stack:
     image: lazy_days_playground
     build:
@@ -8,6 +18,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5173:5173
+    depends_on:
+      - gel_db
+    environment:
+      - GEL_DSN=gel://gel_db:5656/main?tls_security=insecure
     volumes:
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.gitconfig
@@ -29,4 +43,5 @@ services:
     working_dir: /home/full_stack
 
 volumes:
+  gel_data: {}
   home: {}

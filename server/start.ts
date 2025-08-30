@@ -21,6 +21,8 @@ import {
   PORT,
 } from "../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
+import { apiHealthRoutes } from "./routes/api-health/index.ts";
+import { userRoutes } from "./routes/user/index.ts";
 
 const { log } = PinoLogHelper;
 
@@ -50,13 +52,6 @@ log.info("✅ JWT plugin registered");
 
 await app.register(authFastify);
 log.info("✅ Auth plugin registered");
-
-await app.register(async (fastify) => {
-  const { userRoutes } = await import("./routes/user.routes.ts");
-
-  await fastify.register(userRoutes, { prefix: "/api/user" });
-});
-log.info("✅ User API routes registered");
 
 await app.register(reactRouterFastify, {
   buildDirectory: "dist",
@@ -88,6 +83,12 @@ await app.register(reactRouterFastify, {
   },
 });
 log.info("✅ React Router SSR plugin registered");
+
+await app.register(async (fastify) => {
+  await fastify.register(apiHealthRoutes, { prefix: "/api/health" });
+  await fastify.register(userRoutes, { prefix: "/api/user" });
+});
+log.info("✅ All routes are registered");
 
 const startServer = async (): Promise<void> => {
   const desiredPort = Number(PORT);

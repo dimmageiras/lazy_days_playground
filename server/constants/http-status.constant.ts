@@ -2,6 +2,8 @@
  * HTTP status codes used in authentication and authorization
  */
 const HTTP_STATUS = Object.freeze({
+  /** 200 - OK */
+  OK: 200,
   /** 401 - Authentication required (no valid token) */
   UNAUTHORIZED: 401,
   /** 403 - Forbidden (valid token but insufficient permissions) */
