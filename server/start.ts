@@ -10,6 +10,10 @@ import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
 import {
+  API_HEALTH_BASE_URL,
+  USER_BASE_URL,
+} from "../shared/constants/base-urls.const.ts";
+import {
   COOKIE_SECRET,
   HAS_DEV_TOOLS,
   HAS_RRDT,
@@ -54,8 +58,8 @@ await app.register(authFastify);
 log.info("✅ Auth plugin registered");
 
 await app.register(async (fastify) => {
-  await fastify.register(apiHealthRoutes);
-  await fastify.register(userRoutes);
+  await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
+  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
 });
 log.info("✅ All routes are registered");
 

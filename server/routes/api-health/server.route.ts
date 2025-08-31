@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Logger } from "pino";
 
 import { API_HEALTH_STATUSES } from "../../../shared/constants/api-health.constant.ts";
+import { API_HEALTH_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
 import type {
   ApiHealthServerErrorResponse,
   ApiHealthServerSuccessResponse,
@@ -18,12 +19,14 @@ import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
  *
  * @example Success: { "service": "lazy_days_playground", "status": "healthy", "timestamp": "..." }
  * @example Error: { "error": "Server health check failed", "status": "unhealthy", "timestamp": "..." }
+ *
+ * @note This route is registered with prefix ${API_HEALTH_BASE_URL} in server/start.ts
  */
 const serverRoute = async (
   fastify: FastifyInstance,
   log: Logger
 ): Promise<void> => {
-  fastify.get("/api/health/server", async (request, reply) => {
+  fastify.get("/server", async (request, reply) => {
     const requestId = request.id;
     const startTime = Date.now();
 
@@ -38,7 +41,7 @@ const serverRoute = async (
 
       log.debug({
         duration,
-        endpoint: "/api/health/server",
+        endpoint: `${API_HEALTH_BASE_URL}/server`,
         msg: "Server health check successful",
         requestId,
       });
@@ -49,7 +52,7 @@ const serverRoute = async (
 
       log.error({
         duration,
-        endpoint: "/api/health/server",
+        endpoint: `${API_HEALTH_BASE_URL}/server`,
         error: error instanceof Error ? error.message : error,
         msg: "Server health check failed",
         requestId,

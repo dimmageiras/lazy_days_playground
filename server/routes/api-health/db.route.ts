@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { Logger } from "pino";
 
 import { API_HEALTH_STATUSES } from "../../../shared/constants/api-health.constant.ts";
+import { API_HEALTH_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
 import type {
   ApiHealthDbConnectionErrorResponse,
   ApiHealthDbDsnErrorResponse,
@@ -20,12 +21,14 @@ import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
  *
  * @example Success: { "database": "gel", "status": "healthy", "test_result": [...], ... }
  * @example Error: { "error": "Database connection failed", "status": "unhealthy", ... }
+ *
+ * @note This route is registered with prefix ${API_HEALTH_BASE_URL} in server/start.ts
  */
 const dbRoute = async (
   fastify: FastifyInstance,
   log: Logger
 ): Promise<void> => {
-  fastify.get("/api/health/db", async (request, reply) => {
+  fastify.get("/db", async (request, reply) => {
     const requestId = request.id;
     const startTime = Date.now();
 
@@ -39,7 +42,7 @@ const dbRoute = async (
 
         log.error({
           duration,
-          endpoint: "/api/health/db",
+          endpoint: `${API_HEALTH_BASE_URL}/db`,
           msg: "Database health check failed - DSN not configured",
           requestId,
         });
@@ -79,7 +82,7 @@ const dbRoute = async (
         log.debug({
           database: "gel",
           duration,
-          endpoint: "/api/health/db",
+          endpoint: `${API_HEALTH_BASE_URL}/db`,
           msg: "Database health check successful",
           requestId,
         });
@@ -96,7 +99,7 @@ const dbRoute = async (
       log.error({
         database: "gel",
         duration,
-        endpoint: "/api/health/db",
+        endpoint: `${API_HEALTH_BASE_URL}/db`,
         error: error instanceof Error ? error.message : error,
         msg: "Database health check failed",
         requestId,

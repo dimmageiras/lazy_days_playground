@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { API_HEALTH_BASE_URL } from "@shared/constants/base-urls.const";
 import type {
   ApiHealthDbConnectionErrorResponse,
   ApiHealthDbDsnErrorResponse,
@@ -11,12 +12,11 @@ import type {
 /**
  * API Health Service
  * Provides functions to fetch health status from server and database endpoints
+ * Uses base URLs from shared constants for consistency
  */
 
-const BASE_URL = "/api/health";
-
 /**
- * Fetches database health status
+ * Fetches database health status from GET /api/health/db
  * @returns Promise resolving to database health response
  * @throws AxiosError if request fails
  */
@@ -29,13 +29,13 @@ const getDatabaseHealth = async (): Promise<
     | ApiHealthDbSuccessResponse
     | ApiHealthDbDsnErrorResponse
     | ApiHealthDbConnectionErrorResponse
-  >(`${BASE_URL}/db`);
+  >(`${API_HEALTH_BASE_URL}/db`);
 
   return response.data;
 };
 
 /**
- * Fetches server health status
+ * Fetches server health status from GET /api/health/server
  * @returns Promise resolving to server health response
  * @throws AxiosError if request fails
  */
@@ -44,7 +44,7 @@ const getServerHealth = async (): Promise<
 > => {
   const response = await axios.get<
     ApiHealthServerSuccessResponse | ApiHealthServerErrorResponse
-  >(`${BASE_URL}/server`);
+  >(`${API_HEALTH_BASE_URL}/server`);
 
   return response.data;
 };

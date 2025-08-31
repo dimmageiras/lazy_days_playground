@@ -3,6 +3,7 @@ import type { Logger } from "pino";
 
 import type { EditableUserProfile } from "@shared/types/auth.type";
 
+import { USER_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
 import { AuthHelper } from "../../helpers/auth.helper.ts";
 
 /**
@@ -21,14 +22,16 @@ const profileRoute = async (
   /**
    * Get current user's profile information
    *
-   * @route GET /api/user/profile
+   * @route GET /user/profile
    * @requires Authentication (JWT token)
    * @returns User profile data with success flag
    *
    * @example Success: { "success": true, "data": { "id": "123", "name": "John", ... } }
+   *
+   * @note This route is registered with prefix ${USER_BASE_URL} in server/start.ts
    */
   fastify.get(
-    "/api/user/profile",
+    "/profile",
     { preHandler: fastify.auth([verifyJWT]) },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const requestId = request.id;
@@ -57,7 +60,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: "/api/user/profile",
+          endpoint: `${USER_BASE_URL}/profile`,
         });
 
         return reply.code(200).send({
@@ -73,7 +76,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: "/api/user/profile",
+          endpoint: `${USER_BASE_URL}/profile`,
           error: error instanceof Error ? error.message : error,
         });
 
@@ -88,15 +91,17 @@ const profileRoute = async (
   /**
    * Update current user's profile information
    *
-   * @route PUT /api/user/profile
+   * @route PUT /user/profile
    * @requires Authentication (JWT token)
    * @param {EditableUserProfile} Body - Profile data to update
    * @returns Updated user profile data with success message
    *
    * @example Success: { "success": true, "data": {...}, "message": "Profile updated successfully" }
+   *
+   * @note This route is registered with prefix ${USER_BASE_URL} in server/start.ts
    */
   fastify.put(
-    "/api/user/profile",
+    "/profile",
     { preHandler: fastify.auth([verifyJWT]) },
     async (
       request: FastifyRequest<{ Body: EditableUserProfile }>,
@@ -131,7 +136,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: "/api/user/profile",
+          endpoint: `${USER_BASE_URL}/profile`,
           updatedFields: Object.keys(request.body),
         });
 
@@ -149,7 +154,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: "/api/user/profile",
+          endpoint: `${USER_BASE_URL}/profile`,
           error: error instanceof Error ? error.message : error,
         });
 
