@@ -16,6 +16,7 @@ const NavBar = (): JSX.Element => {
             aria-label="Lazy Days Spa - Home"
             as="navLink"
             className={styles["home-link"]}
+            prioritizeOnClick
             shouldReplace
             to="/"
           >
@@ -34,6 +35,7 @@ const NavBar = (): JSX.Element => {
             aria-label="User Profile"
             as="internal"
             className={styles["profile"]}
+            prioritizeOnClick
             shouldReplace
             to="/profile"
           >

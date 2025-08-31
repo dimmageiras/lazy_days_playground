@@ -15,6 +15,8 @@ interface CommonLinkProps {
   className?: string | undefined;
   /** Whether to show text decoration on hover */
   hasTextDecorationOnHover?: boolean;
+  /** Whether to prioritize onClick event over other events */
+  prioritizeOnClick?: boolean;
   /** Ref for accessing the underlying anchor element */
   ref?: Ref<HTMLAnchorElement | null>;
 }
@@ -61,67 +63,47 @@ interface NavLinkProps extends CommonLinkProps {
 type RouterLinkProps = ExternalLinkProps | InternalLinkProps | NavLinkProps;
 
 /**
- * A type-safe link component with three distinct variants:
- * 1. External links (`as="external"`): Regular anchor tags with security attributes
- * 2. Internal links (`as="internal"`): React Router Links for client-side navigation
- * 3. Nav links (`as="navLink"`): React Router NavLinks with active state support
- *
- * The component uses discriminated union types with 'as' prop as the discriminator,
- * ensuring type-safe prop combinations for each variant.
+ * A type-safe link component with three variants for handling both internal routing and external links.
+ * Renders different elements based on the `as` prop: `<a>` for external links with security attributes,
+ * React Router's `<Link>` for internal navigation, and `<NavLink>` for navigation with active state support.
  *
  * @example
  * ```tsx
- * // External link (type-safe props for external variant)
- * <RouterLink
- *   as="external"
- *   shouldOpenInNewTab
- *   to="https://example.com"
- * >
- *   External Link
+ * import { RouterLink } from '@client/components/RouterLink';
+ *
+ * // External link opening in new tab with security attributes
+ * <RouterLink as="external" shouldOpenInNewTab to="https://example.com">
+ *   Visit Example
  * </RouterLink>
  *
- * // Internal link (type-safe props for internal variant)
- * <RouterLink
- *   as="internal"
- *   shouldReplace
- *   to={{ pathname: "/settings", search: "?tab=profile" }}
- * >
- *   Settings
+ * // Internal link with onClick priority for better UX
+ * <RouterLink as="internal" prioritizeOnClick to="/dashboard">
+ *   Dashboard
  * </RouterLink>
  *
- * // Navigation link (type-safe props for navLink variant)
- * <RouterLink
- *   activeClassName="active"
- *   as="navLink"
- *   className="nav-link"
- *   to="/profile"
- * >
+ * // Navigation link with active state styling
+ * <RouterLink as="navLink" activeClassName="nav-active" to="/profile">
  *   Profile
+ * </RouterLink>
+ *
+ * // Internal link replacing current history entry
+ * <RouterLink as="internal" shouldReplace to="/settings">
+ *   Settings
  * </RouterLink>
  * ```
  *
- * Common props across all variants:
- * - children: Content to render inside the link
- * - className: Additional CSS classes
- * - hasTextDecorationOnHover: Enable hover underline effect
- * - ref: Ref for the anchor element
- *
- * Variant-specific props:
- * External (as="external"):
- * - shouldOpenInNewTab: Whether to open in new tab
- * - to: URL string
- *
- * Internal (as="internal"):
- * - shouldReplace: Whether to replace history entry
- * - to: Route path (string or Path object)
- *
- * NavLink (as="navLink"):
- * - activeClassName: CSS class for active state
- * - shouldReplace: Whether to replace history entry
- * - to: Route path (string or Path object)
- *
- * @param props - Union of ExternalLinkProps | InternalLinkProps | NavLinkProps
- * @returns JSX.Element - Rendered as <a>, <Link>, or <NavLink> based on 'as' prop
+ * @param props - The RouterLink component props (ExternalLinkProps | InternalLinkProps | NavLinkProps)
+ * @param props.as - Link type that determines the rendered component ("external" | "internal" | "navLink")
+ * @param props.children - Content to be rendered inside the link
+ * @param props.className - Additional CSS classes for styling
+ * @param props.hasTextDecorationOnHover - Whether to show text decoration on hover (default: false)
+ * @param props.prioritizeOnClick - Whether to prioritize onClick event over other events (default: false)
+ * @param props.ref - Ref for accessing the underlying anchor element
+ * @param props.shouldOpenInNewTab - Whether to open external link in new tab (external only)
+ * @param props.shouldReplace - Whether to replace current history entry instead of pushing (internal/navLink only)
+ * @param props.to - Destination URL (external) or route path/config (internal/navLink)
+ * @param props.activeClassName - CSS class applied when NavLink is active (navLink only)
+ * @returns JSX.Element - The rendered link component: `<a>`, `<Link>`, or `<NavLink>` based on 'as' prop
  */
 const RouterLink = (props: RouterLinkProps): JSX.Element => {
   const { handleMouseDown } = DomEventsHelper;
@@ -131,6 +113,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
     children = null,
     className,
     hasTextDecorationOnHover = false,
+    prioritizeOnClick = false,
     ref,
   } = props;
 
@@ -146,14 +129,14 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
 
   switch (convertedType) {
     case LINK_AS.internal: {
-      const { shouldReplace, to } = props as InternalLinkProps;
-
       return (
         <Link
           className={linkClassNames}
           ref={ref}
-          replace={!!shouldReplace}
-          to={to}
+          to={"to" in props && typeof props.to === "string" ? props.to : ""}
+          {...("shouldReplace" in props &&
+            props.shouldReplace && { replace: !!props.shouldReplace })}
+          {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
         >
           {children}
         </Link>
@@ -161,19 +144,20 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
     }
 
     case LINK_AS.navLink: {
-      const { activeClassName, shouldReplace, to } = props as NavLinkProps;
-
       return (
         <NavLink
           className={({ isActive }): string =>
             classNames(linkClassNames, {
-              [String(activeClassName)]: isActive,
+              ...("activeClassName" in props && {
+                [String(props.activeClassName)]: isActive,
+              }),
             })
           }
-          onMouseDown={handleMouseDown}
           ref={ref}
-          replace={!!shouldReplace}
-          to={to}
+          to={"to" in props && typeof props.to === "string" ? props.to : ""}
+          {...("shouldReplace" in props &&
+            props.shouldReplace && { replace: !!props.shouldReplace })}
+          {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
         >
           {children}
         </NavLink>
@@ -182,15 +166,17 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
 
     case LINK_AS.external:
     default: {
-      const { shouldOpenInNewTab, to } = props as ExternalLinkProps;
-
       return (
         <a
           className={linkClassNames}
-          href={to}
+          href={
+            "to" in props && typeof props.to === "string" ? props.to : undefined
+          }
           ref={ref}
           rel="noopener noreferrer"
-          {...(shouldOpenInNewTab && { target: "_blank" })}
+          {...("shouldOpenInNewTab" in props &&
+            props.shouldOpenInNewTab && { target: "_blank" })}
+          {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
         >
           {children}
         </a>

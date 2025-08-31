@@ -32,6 +32,7 @@ const NavItems = (): JSX.Element => {
             as="navLink"
             className={styles["nav-item"]}
             key={data.label}
+            prioritizeOnClick
             shouldReplace
             to={data.to}
           >
