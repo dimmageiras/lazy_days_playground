@@ -1,7 +1,6 @@
 import type { AxiosError } from "axios";
 import axios from "axios";
 
-axios.defaults.timeout = 1000;
 axios.defaults.withCredentials = true;
 
 axios.interceptors.request.use(
