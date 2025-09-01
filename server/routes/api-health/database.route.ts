@@ -7,6 +7,7 @@ import {
   API_HEALTH_STATUSES,
 } from "../../../shared/constants/api-health.constant.ts";
 import { API_HEALTH_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
+import { GEL_DSN } from "../../../shared/constants/root-env.constant.ts";
 import type {
   ApiHealthDbConnectionErrorResponse,
   ApiHealthDbDsnErrorResponse,
@@ -37,7 +38,7 @@ const databaseRoute = async (
     const startTime = Date.now();
 
     try {
-      const gelDSN = process.env.VITE_APP_GEL_DSN;
+      const gelDSN = GEL_DSN;
 
       if (!gelDSN) {
         const duration = Date.now() - startTime;
