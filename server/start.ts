@@ -2,12 +2,8 @@ import authFastify from "@fastify/auth";
 import cookieFastify from "@fastify/cookie";
 import jwtFastify from "@fastify/jwt";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
-import { reactRouter } from "@react-router/dev/vite";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
-import { reactRouterDevTools } from "react-router-devtools";
-import pluginChecker from "vite-plugin-checker";
-import tsConfigPaths from "vite-tsconfig-paths";
 
 import {
   API_HEALTH_BASE_URL,
@@ -15,8 +11,6 @@ import {
 } from "../shared/constants/base-urls.const.ts";
 import {
   COOKIE_SECRET,
-  HAS_DEV_TOOLS,
-  HAS_RRDT,
   HOST,
   IS_DEVELOPMENT,
   JWT_SECRET,
@@ -68,28 +62,6 @@ await app.register(reactRouterFastify, {
   serverBuildFile: "index.js",
   viteOptions: {
     mode: MODE,
-    plugins: [
-      HAS_DEV_TOOLS && HAS_RRDT && reactRouterDevTools(),
-      reactRouter(),
-      tsConfigPaths(),
-      IS_DEVELOPMENT &&
-        pluginChecker({
-          eslint: {
-            dev: {
-              logLevel: ["error"],
-            },
-            lintCommand: `eslint . \
-    --report-unused-disable-directives \
-    --max-warnings 0 \
-    --rule "no-console: ['error', { allow: ['error', 'info', 'warn'] }]" \
-    --rule "react-hooks/exhaustive-deps: off"`,
-            useFlatConfig: true,
-          },
-          // TODO: Enable overlay when an update that fixes the issue is released
-          overlay: false,
-          typescript: true,
-        }),
-    ],
   },
 });
 log.info("✅ React Router SSR plugin registered");

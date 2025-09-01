@@ -2,8 +2,11 @@ import type { MetaFunction } from "react-router";
 
 const meta: MetaFunction = () => {
   return [
-    { title: "Lazy Days Spa - Signin" },
-    { name: "description", content: "Lazy Days Spa - Signin Page" },
+    {
+      content: "Lazy Days Spa - Signin Page",
+      name: "description",
+      title: "Lazy Days Spa - Signin",
+    },
   ];
 };
 

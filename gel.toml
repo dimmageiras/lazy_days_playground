@@ -1,4 +1,4 @@
 watch = []
 
 [instance]
-server-version = "latest"
+server-version = "7"

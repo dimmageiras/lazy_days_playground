@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import { API_HEALTH_ENDPOINTS } from "@shared/constants/api-health.constant";
 import { API_HEALTH_BASE_URL } from "@shared/constants/base-urls.const";
 import type {
   ApiHealthDbConnectionErrorResponse,
@@ -16,7 +17,7 @@ import type {
  */
 
 /**
- * Fetches database health status from GET /api/health/db
+ * Fetches database health status from GET /api/health/database
  * @returns Promise resolving to database health response
  * @throws AxiosError if request fails
  */
@@ -29,7 +30,7 @@ const getDatabaseHealth = async (): Promise<
     | ApiHealthDbSuccessResponse
     | ApiHealthDbDsnErrorResponse
     | ApiHealthDbConnectionErrorResponse
-  >(`${API_HEALTH_BASE_URL}/db`);
+  >(`/${API_HEALTH_BASE_URL}/${API_HEALTH_ENDPOINTS.DATABASE}`);
 
   return response.data;
 };
@@ -44,7 +45,7 @@ const getServerHealth = async (): Promise<
 > => {
   const response = await axios.get<
     ApiHealthServerSuccessResponse | ApiHealthServerErrorResponse
-  >(`${API_HEALTH_BASE_URL}/server`);
+  >(`/${API_HEALTH_BASE_URL}/${API_HEALTH_ENDPOINTS.SERVER}`);
 
   return response.data;
 };

@@ -3,6 +3,7 @@ import { Outlet } from "react-router";
 
 import "./root.scss";
 import "iconify-icon";
+import "./configs/axios.config";
 
 import RootLayout from "./layouts/RootLayout";
 import { ErrorBoundary } from "./root/components/ErrorBoundary";

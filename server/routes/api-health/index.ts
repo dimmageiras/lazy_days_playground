@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
-import { dbRoute } from "./db.route.ts";
+import { databaseRoute } from "./database.route.ts";
 import { serverRoute } from "./server.route.ts";
 
 /**
@@ -10,7 +10,7 @@ import { serverRoute } from "./server.route.ts";
 const apiHealthRoutes = async (fastify: FastifyInstance): Promise<void> => {
   const { log } = PinoLogHelper;
 
-  await dbRoute(fastify, log);
+  await databaseRoute(fastify, log);
   await serverRoute(fastify, log);
 };
 

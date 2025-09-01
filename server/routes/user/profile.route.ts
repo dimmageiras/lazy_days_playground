@@ -4,6 +4,7 @@ import type { Logger } from "pino";
 import type { EditableUserProfile } from "@shared/types/auth.type";
 
 import { USER_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
+import { USER_ENDPOINTS } from "../../../shared/constants/user.constant.ts";
 import { AuthHelper } from "../../helpers/auth.helper.ts";
 
 /**
@@ -31,7 +32,7 @@ const profileRoute = async (
    * @note This route is registered with prefix ${USER_BASE_URL} in server/start.ts
    */
   fastify.get(
-    "/profile",
+    `/${USER_ENDPOINTS.PROFILE}`,
     { preHandler: fastify.auth([verifyJWT]) },
     async (request: FastifyRequest, reply: FastifyReply) => {
       const requestId = request.id;
@@ -60,7 +61,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: `${USER_BASE_URL}/profile`,
+          endpoint: `${USER_BASE_URL}/${USER_ENDPOINTS.PROFILE}`,
         });
 
         return reply.code(200).send({
@@ -76,7 +77,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: `${USER_BASE_URL}/profile`,
+          endpoint: `${USER_BASE_URL}/${USER_ENDPOINTS.PROFILE}`,
           error: error instanceof Error ? error.message : error,
         });
 
@@ -101,7 +102,7 @@ const profileRoute = async (
    * @note This route is registered with prefix ${USER_BASE_URL} in server/start.ts
    */
   fastify.put(
-    "/profile",
+    `/${USER_ENDPOINTS.PROFILE}`,
     { preHandler: fastify.auth([verifyJWT]) },
     async (
       request: FastifyRequest<{ Body: EditableUserProfile }>,
@@ -136,7 +137,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: `${USER_BASE_URL}/profile`,
+          endpoint: `${USER_BASE_URL}/${USER_ENDPOINTS.PROFILE}`,
           updatedFields: Object.keys(request.body),
         });
 
@@ -154,7 +155,7 @@ const profileRoute = async (
           userId,
           userEmail: email,
           duration,
-          endpoint: `${USER_BASE_URL}/profile`,
+          endpoint: `${USER_BASE_URL}/${USER_ENDPOINTS.PROFILE}`,
           error: error instanceof Error ? error.message : error,
         });
 

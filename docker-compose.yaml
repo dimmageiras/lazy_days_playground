@@ -4,6 +4,7 @@ services:
   gel_db:
     image: geldata/gel:latest
     environment:
+      EDGEDB_SERVER_ADMIN_UI: enabled
       EDGEDB_SERVER_SECURITY: insecure_dev_mode
     ports:
       - "5656:5656"

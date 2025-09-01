@@ -1,7 +1,11 @@
 import type { FastifyInstance } from "fastify";
+import { createClient } from "gel";
 import type { Logger } from "pino";
 
-import { API_HEALTH_STATUSES } from "../../../shared/constants/api-health.constant.ts";
+import {
+  API_HEALTH_ENDPOINTS,
+  API_HEALTH_STATUSES,
+} from "../../../shared/constants/api-health.constant.ts";
 import { API_HEALTH_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
 import type {
   ApiHealthDbConnectionErrorResponse,
@@ -15,7 +19,7 @@ import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
  *
  * @param {FastifyInstance} fastify - Fastify instance to register routes on
  * @param {Logger} log - Pino logger instance for structured logging
- * @route GET /api/health/db
+ * @route GET /api/health/database
  * @requires VITE_APP_GEL_DSN environment variable
  * @returns {Promise<void>} Returns 200 with DB status or 500 on failure
  *
@@ -24,17 +28,15 @@ import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
  *
  * @note This route is registered with prefix ${API_HEALTH_BASE_URL} in server/start.ts
  */
-const dbRoute = async (
+const databaseRoute = async (
   fastify: FastifyInstance,
   log: Logger
 ): Promise<void> => {
-  fastify.get("/db", async (request, reply) => {
+  fastify.get(`/${API_HEALTH_ENDPOINTS.DATABASE}`, async (request, reply) => {
     const requestId = request.id;
     const startTime = Date.now();
 
     try {
-      const { createClient } = await import("gel");
-
       const gelDSN = process.env.VITE_APP_GEL_DSN;
 
       if (!gelDSN) {
@@ -42,7 +44,7 @@ const dbRoute = async (
 
         log.error({
           duration,
-          endpoint: `${API_HEALTH_BASE_URL}/db`,
+          endpoint: `${API_HEALTH_BASE_URL}/${API_HEALTH_ENDPOINTS.DATABASE}`,
           msg: "Database health check failed - DSN not configured",
           requestId,
         });
@@ -54,7 +56,7 @@ const dbRoute = async (
         };
 
         return reply
-          .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+          .status(HTTP_STATUS.SERVICE_UNAVAILABLE)
           .send(errorResponse);
       }
 
@@ -62,44 +64,42 @@ const dbRoute = async (
         dsn: gelDSN,
       });
 
+      let queryResult: unknown;
+
       try {
-        const result = await client.query("SELECT 1 + 1");
-
+        queryResult = await client.query("SELECT 1 + 1");
+      } finally {
         await client.close();
-
-        const duration = Date.now() - startTime;
-        const response: ApiHealthDbSuccessResponse = {
-          database: "gel",
-          dsn:
-            typeof gelDSN === "string"
-              ? gelDSN.replace(/\/\/.*@/, "//***@")
-              : gelDSN,
-          status: API_HEALTH_STATUSES.HEALTHY,
-          test_result: result,
-          timestamp: new Date().toISOString(),
-        };
-
-        log.debug({
-          database: "gel",
-          duration,
-          endpoint: `${API_HEALTH_BASE_URL}/db`,
-          msg: "Database health check successful",
-          requestId,
-        });
-
-        return reply.status(HTTP_STATUS.OK).send(response);
-      } catch (dbError) {
-        await client.close();
-
-        throw dbError;
       }
+
+      const duration = Date.now() - startTime;
+      const response: ApiHealthDbSuccessResponse = {
+        database: "gel",
+        dsn:
+          typeof gelDSN === "string"
+            ? gelDSN.replace(/\/\/.*@/, "//***@")
+            : gelDSN,
+        status: API_HEALTH_STATUSES.HEALTHY,
+        test_result: queryResult,
+        timestamp: new Date().toISOString(),
+      };
+
+      log.info({
+        database: "gel",
+        duration,
+        endpoint: `${API_HEALTH_BASE_URL}/${API_HEALTH_ENDPOINTS.DATABASE}`,
+        msg: "Database health check successful",
+        requestId,
+      });
+
+      return reply.status(HTTP_STATUS.OK).send(response);
     } catch (error) {
       const duration = Date.now() - startTime;
 
       log.error({
         database: "gel",
         duration,
-        endpoint: `${API_HEALTH_BASE_URL}/db`,
+        endpoint: `${API_HEALTH_BASE_URL}/${API_HEALTH_ENDPOINTS.DATABASE}`,
         error: error instanceof Error ? error.message : error,
         msg: "Database health check failed",
         requestId,
@@ -112,11 +112,9 @@ const dbRoute = async (
         timestamp: new Date().toISOString(),
       };
 
-      return reply
-        .status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-        .send(errorResponse);
+      return reply.status(HTTP_STATUS.SERVICE_UNAVAILABLE).send(errorResponse);
     }
   });
 };
 
-export { dbRoute };
+export { databaseRoute };

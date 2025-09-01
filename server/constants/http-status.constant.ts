@@ -1,15 +1,21 @@
 /**
- * HTTP status codes used in authentication and authorization
+ * HTTP status codes used across the application
  */
 const HTTP_STATUS = Object.freeze({
   /** 200 - OK */
   OK: 200,
+  /** 400 - Bad Request */
+  BAD_REQUEST: 400,
   /** 401 - Authentication required (no valid token) */
   UNAUTHORIZED: 401,
   /** 403 - Forbidden (valid token but insufficient permissions) */
   FORBIDDEN: 403,
+  /** 404 - Not Found */
+  NOT_FOUND: 404,
   /** 500 - Internal server error */
   INTERNAL_SERVER_ERROR: 500,
+  /** 503 - Service Unavailable */
+  SERVICE_UNAVAILABLE: 503,
 } as const);
 
 /**
