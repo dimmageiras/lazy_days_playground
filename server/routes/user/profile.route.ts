@@ -1,24 +1,21 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import type { Logger } from "pino";
 
 import type { EditableUserProfile } from "@shared/types/auth.type";
 
 import { USER_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
 import { USER_ENDPOINTS } from "../../../shared/constants/user.constant.ts";
 import { AuthHelper } from "../../helpers/auth.helper.ts";
+import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 
 /**
  * User profile management routes - requires authentication
  *
  * @param {FastifyInstance} fastify - Fastify instance to register routes on
- * @param {Logger} log - Pino logger instance for structured logging
  * @returns {Promise<void>} Promise that resolves when routes are registered
  */
-const profileRoute = async (
-  fastify: FastifyInstance,
-  log: Logger
-): Promise<void> => {
+const profileRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { verifyJWT } = AuthHelper;
+  const { log } = PinoLogHelper;
 
   /**
    * Get current user's profile information
@@ -52,17 +49,6 @@ const profileRoute = async (
           role,
           updatedAt: new Date().toISOString(),
         };
-
-        const duration = Date.now() - startTime;
-
-        log.info({
-          msg: "User profile retrieved successfully",
-          requestId,
-          userId,
-          userEmail: email,
-          duration,
-          endpoint: `${USER_BASE_URL}/${USER_ENDPOINTS.PROFILE}`,
-        });
 
         return reply.code(200).send({
           data: userProfile,
@@ -128,18 +114,6 @@ const profileRoute = async (
           role,
           updatedAt: new Date().toISOString(),
         };
-
-        const duration = Date.now() - startTime;
-
-        log.info({
-          msg: "User profile updated successfully",
-          requestId,
-          userId,
-          userEmail: email,
-          duration,
-          endpoint: `${USER_BASE_URL}/${USER_ENDPOINTS.PROFILE}`,
-          updatedFields: Object.keys(request.body),
-        });
 
         return reply.code(200).send({
           data: updatedProfile,

@@ -1,6 +1,5 @@
 import type { FastifyInstance } from "fastify";
 import { createClient } from "gel";
-import type { Logger } from "pino";
 
 import {
   API_HEALTH_ENDPOINTS,
@@ -14,12 +13,12 @@ import type {
   ApiHealthDbSuccessResponse,
 } from "../../../shared/types/api-health.type.ts";
 import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
+import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 
 /**
  * Database health check endpoint - verifies Gel database connectivity
  *
  * @param {FastifyInstance} fastify - Fastify instance to register routes on
- * @param {Logger} log - Pino logger instance for structured logging
  * @route GET /api/health/database
  * @requires VITE_APP_GEL_DSN environment variable
  * @returns {Promise<void>} Returns 200 with DB status or 500 on failure
@@ -29,11 +28,10 @@ import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
  *
  * @note This route is registered with prefix ${API_HEALTH_BASE_URL} in server/start.ts
  */
-const databaseRoute = async (
-  fastify: FastifyInstance,
-  log: Logger
-): Promise<void> => {
+const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
   fastify.get(`/${API_HEALTH_ENDPOINTS.DATABASE}`, async (request, reply) => {
+    const { log } = PinoLogHelper;
+
     const requestId = request.id;
     const startTime = Date.now();
 
@@ -73,7 +71,6 @@ const databaseRoute = async (
         await client.close();
       }
 
-      const duration = Date.now() - startTime;
       const response: ApiHealthDbSuccessResponse = {
         database: "gel",
         dsn:
@@ -84,14 +81,6 @@ const databaseRoute = async (
         test_result: queryResult,
         timestamp: new Date().toISOString(),
       };
-
-      log.info({
-        database: "gel",
-        duration,
-        endpoint: `${API_HEALTH_BASE_URL}/${API_HEALTH_ENDPOINTS.DATABASE}`,
-        msg: "Database health check successful",
-        requestId,
-      });
 
       return reply.status(HTTP_STATUS.OK).send(response);
     } catch (error) {

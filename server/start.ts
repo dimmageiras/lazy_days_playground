@@ -1,12 +1,15 @@
 import authFastify from "@fastify/auth";
 import cookieFastify from "@fastify/cookie";
 import jwtFastify from "@fastify/jwt";
+import swaggerFastify from "@fastify/swagger";
+import swaggerUIFastify from "@fastify/swagger-ui";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
 
 import {
   API_HEALTH_BASE_URL,
+  API_SWAGGER_BASE_URL,
   USER_BASE_URL,
 } from "../shared/constants/base-urls.const.ts";
 import {
@@ -52,10 +55,37 @@ await app.register(authFastify);
 log.info("✅ Auth plugin registered");
 
 await app.register(async (fastify) => {
+  if (IS_DEVELOPMENT) {
+    await fastify.register(swaggerFastify);
+
+    await fastify.register(swaggerUIFastify, {
+      routePrefix: `/${API_SWAGGER_BASE_URL}`,
+      uiConfig: {
+        docExpansion: "list",
+        deepLinking: false,
+      },
+      uiHooks: {
+        onRequest: (_request, _reply, next) => {
+          next();
+        },
+        preHandler: (_request, _reply, next) => {
+          next();
+        },
+      },
+      staticCSP: true,
+      transformStaticCSP: (header) => header,
+      transformSpecification: (swaggerObject, _request, _reply) => {
+        return swaggerObject;
+      },
+      transformSpecificationClone: true,
+    });
+    log.info("✅ Swagger plugins registered for API routes only");
+  }
+
   await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
   await fastify.register(userRoutes, { prefix: USER_BASE_URL });
+  log.info("✅ All routes are registered");
 });
-log.info("✅ All routes are registered");
 
 await app.register(reactRouterFastify, {
   buildDirectory: "dist",

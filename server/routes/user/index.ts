@@ -1,6 +1,5 @@
 import type { FastifyInstance } from "fastify";
 
-import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 import { profileRoute } from "./profile.route.ts";
 
 /**
@@ -9,9 +8,7 @@ import { profileRoute } from "./profile.route.ts";
  * @param fastify - Fastify instance
  */
 const userRoutes = async (fastify: FastifyInstance): Promise<void> => {
-  const { log } = PinoLogHelper;
-
-  await profileRoute(fastify, log);
+  await profileRoute(fastify);
 };
 
 export { userRoutes };
