@@ -2,7 +2,7 @@
  * Helper functions for managing React Router DevTools button DOM manipulation
  */
 
-import { devToolsStore } from "@client/root/components/DevTools/stores/dev-tools.store";
+import { devToolsStore } from "@client/layouts/RootLayout/components/DevTools/stores/dev-tools.store";
 
 /**
  * Observes DOM changes to detect React Router DevTools panel visibility

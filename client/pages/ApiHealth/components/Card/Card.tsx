@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { JSX } from "react";
 
-import { Card as BaseCard } from "@client/components/Card";
+import { BaseCard } from "@client/components/BaseCard";
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api-health.constant";
 import type {

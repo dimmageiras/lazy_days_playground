@@ -2,7 +2,7 @@ import classNames from "classnames";
 import type { JSX } from "react";
 import { memo } from "react";
 
-import { Card } from "@client/components/Card";
+import { BaseCard } from "@client/components/BaseCard";
 import { RouterLink } from "@client/components/RouterLink";
 
 import styles from "./MediaCard.module.scss";
@@ -82,7 +82,7 @@ const MediaCard = memo(
     name,
   }: MediaCardProps): JSX.Element => {
     return (
-      <Card isHidden={isHidden}>
+      <BaseCard isHidden={isHidden}>
         <figure className={styles["image-container"]}>
           <img alt={name} className={styles["image"]} src={fileName} />
           <figcaption className={styles["credit"]}>
@@ -117,7 +117,7 @@ const MediaCard = memo(
             {description}
           </p>
         </div>
-      </Card>
+      </BaseCard>
     );
   }
 );

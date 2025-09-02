@@ -17,7 +17,7 @@ This document provides a comprehensive guide to all generic components available
 
 ### 🎨 [UI & Display Components](#ui--display-components)
 
-1. [Card](#card)
+1. [BaseCard](#basecard)
 2. [IconifyIcon](#iconifyicon)
 3. [MediaCard](#mediacard)
 4. [PageTitle](#pagetitle)
@@ -65,6 +65,7 @@ A type-safe link component with three variants for handling both internal routin
 - `children?: JSX.Element | string | null` - Content to be rendered inside the link
 - `className?: string` - Additional CSS classes for styling
 - `hasTextDecorationOnHover?: boolean` - Whether to show text decoration on hover (default: false)
+- `onClick?: (event: MouseEvent<HTMLAnchorElement>) => void` - onClick event handler
 - `prioritizeOnClick?: boolean` - Whether to prioritize onClick event over other events (default: false)
 - `ref?: Ref<HTMLAnchorElement>` - Ref for accessing the underlying anchor element
 
@@ -227,22 +228,22 @@ A styled text input component with enhanced security features, built-in label, e
 
 ## UI & Display Components
 
-### Card
+### BaseCard
 
 A base card component that provides a consistent container style for content. This component can be used as a building block for more specific card implementations.
 
 **Props:**
 
-- `children: ReactNode` - The content to be rendered inside the card
-- `isHidden?: boolean` - Whether the card should be hidden (default: false)
+- `children: ReactNode` - The content to be rendered inside the BaseCard
+- `isHidden?: boolean` - Whether the BaseCard should be hidden (default: false)
 
 **Usage Examples:**
 
 ```tsx
-<Card isHidden={false}>
-  <h2>Card Title</h2>
-  <p>Card content goes here</p>
-</Card>
+<BaseCard isHidden={false}>
+  <h2>BaseCard Title</h2>
+  <p>BaseCard content goes here</p>
+</BaseCard>
 ```
 
 ### IconifyIcon

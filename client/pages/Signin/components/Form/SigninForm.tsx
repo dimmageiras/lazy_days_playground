@@ -5,7 +5,7 @@ import type { UseFormProps } from "react-hook-form";
 import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
-import { Card } from "@client/components/Card";
+import { BaseCard } from "@client/components/BaseCard";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 
 import { FormFields } from "./components/FormFields";
@@ -52,7 +52,7 @@ const SigninForm = (): JSX.Element => {
   };
 
   return (
-    <Card>
+    <BaseCard>
       <FormProvider {...formMethods}>
         <ReactRouterForm noValidate onSubmit={handleSubmit(onValid, onInvalid)}>
           <FormFields
@@ -62,7 +62,7 @@ const SigninForm = (): JSX.Element => {
           />
         </ReactRouterForm>
       </FormProvider>
-    </Card>
+    </BaseCard>
   );
 };
 

@@ -1,15 +1,26 @@
 import classNames from "classnames";
 import type { JSX } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { useStoreState, useTrackedStore } from "zustand-x";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { RouterLink } from "@client/components/RouterLink";
 import { useClickOutside } from "@client/hooks/useClickOutside";
-import { devToolsStore } from "@client/root/components/DevTools/stores/dev-tools.store";
 import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
 
+import {
+  RRDT_BUTTON_SELECTOR,
+  RRDT_CONTAINER_SELECTOR,
+  RRDT_PANEL_SELECTOR,
+  TQDT_BUTTON_SELECTOR,
+  TQDT_CONTAINER_SELECTOR,
+  TQDT_PANEL_SELECTOR,
+} from "./constants/dev-tools.constant";
 import styles from "./DevTools.module.scss";
+import { DevToolsHelper } from "./helpers/dev-tools.helper";
+import { RRDTHelper } from "./helpers/rrdt.helper";
+import { TQDTHelper } from "./helpers/tqdt.helper";
+import { devToolsStore } from "./stores/dev-tools.store";
 
 const DevTools = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useStoreState(
@@ -37,6 +48,40 @@ const DevTools = (): JSX.Element => {
       setIsExpanded(false);
     }
   }, [isRQDTOpen, isRRDTOpen]);
+
+  useLayoutEffect(() => {
+    const { setupDevToolsButton } = DevToolsHelper;
+    const { observeDevToolsPanel: observeRRDTPanel } = RRDTHelper;
+    const { observeDevToolsPanel: observeTQDTPanel, observeDuplicateButtons } =
+      TQDTHelper;
+
+    // React Router DevTools
+    const stopRRDTButtonObserver = HAS_RRDT
+      ? setupDevToolsButton(RRDT_BUTTON_SELECTOR, RRDT_CONTAINER_SELECTOR)
+      : null;
+    const stopRRDTPanelObserver = HAS_RRDT
+      ? observeRRDTPanel(RRDT_PANEL_SELECTOR)
+      : null;
+
+    // TanStack Query DevTools
+    const stopTQDTButtonObserver = HAS_RQDT
+      ? setupDevToolsButton(TQDT_BUTTON_SELECTOR, TQDT_CONTAINER_SELECTOR)
+      : null;
+    const stopTQDTDuplicateButtonsObserver = HAS_RQDT
+      ? observeDuplicateButtons(TQDT_CONTAINER_SELECTOR)
+      : null;
+    const stopTQDTPanelObserver = HAS_RQDT
+      ? observeTQDTPanel(TQDT_PANEL_SELECTOR)
+      : null;
+
+    return () => {
+      stopRRDTButtonObserver?.();
+      stopRRDTPanelObserver?.();
+      stopTQDTButtonObserver?.();
+      stopTQDTDuplicateButtonsObserver?.();
+      stopTQDTPanelObserver?.();
+    };
+  }, []);
 
   return (
     <div
@@ -70,6 +115,10 @@ const DevTools = (): JSX.Element => {
             <RouterLink
               as="internal"
               className={styles["api-health"]}
+              onClick={() => {
+                setIsExpanded(false);
+              }}
+              prioritizeOnClick
               shouldReplace
               to="/api/health"
             >
