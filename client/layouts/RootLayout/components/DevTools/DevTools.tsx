@@ -6,6 +6,10 @@ import { useStoreState, useTrackedStore } from "zustand-x";
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { RouterLink } from "@client/components/RouterLink";
 import { useClickOutside } from "@client/hooks/useClickOutside";
+import {
+  API_HEALTH_BASE_URL,
+  API_SWAGGER_BASE_URL,
+} from "@shared/constants/base-urls.const";
 import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
 
 import {
@@ -47,7 +51,7 @@ const DevTools = (): JSX.Element => {
     if (isRQDTOpen || isRRDTOpen) {
       setIsExpanded(false);
     }
-  }, [isRQDTOpen, isRRDTOpen]);
+  }, [isRQDTOpen, isRRDTOpen, setIsExpanded]);
 
   useLayoutEffect(() => {
     const { setupDevToolsButton } = DevToolsHelper;
@@ -113,6 +117,19 @@ const DevTools = (): JSX.Element => {
         <div className={styles["bubble-content"]}>
           <div className={styles["option-container"]}>
             <RouterLink
+              as="external"
+              className={styles["swagger-docs"]}
+              onClick={() => {
+                setIsExpanded(false);
+              }}
+              prioritizeOnClick
+              to={`/${API_SWAGGER_BASE_URL}`}
+            >
+              <IconifyIcon className={styles["icon"]} icon="logos:swagger" />
+            </RouterLink>
+          </div>
+          <div className={styles["option-container"]}>
+            <RouterLink
               as="internal"
               className={styles["api-health"]}
               onClick={() => {
@@ -120,7 +137,7 @@ const DevTools = (): JSX.Element => {
               }}
               prioritizeOnClick
               shouldReplace
-              to="/api/health"
+              to={`/${API_HEALTH_BASE_URL}`}
             >
               <IconifyIcon
                 className={styles["icon"]}

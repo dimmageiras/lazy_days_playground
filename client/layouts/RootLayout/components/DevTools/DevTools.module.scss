@@ -100,6 +100,16 @@
             }
           }
 
+          &.swagger-docs {
+            &::after {
+              content: "API Documentation";
+            }
+
+            .icon {
+              font-size: 1.125rem;
+            }
+          }
+
           &[class~="tsqd-open-btn-container"] {
             &::after {
               content: "Tanstack Query Dev Tools";
