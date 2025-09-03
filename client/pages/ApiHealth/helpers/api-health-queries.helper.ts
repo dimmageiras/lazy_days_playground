@@ -1,4 +1,5 @@
-import { queryOptions, type UseQueryOptions } from "@tanstack/react-query";
+import type { UseQueryOptions } from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 
 import { API_HEALTH_QUERY_KEYS } from "@client/pages/ApiHealth/constants/api-health.constant";
 import { ApiHealthService } from "@client/pages/ApiHealth/services/api-health.service";

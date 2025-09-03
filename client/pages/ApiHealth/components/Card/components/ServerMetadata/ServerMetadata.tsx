@@ -1,4 +1,4 @@
-import { type JSX } from "react";
+import type { JSX } from "react";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { DateHelper } from "@client/helpers/date.helper";
