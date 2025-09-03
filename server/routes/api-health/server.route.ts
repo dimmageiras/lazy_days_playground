@@ -1,9 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import {
-  API_HEALTH_ENDPOINTS,
-  API_HEALTH_STATUSES,
-} from "../../../shared/constants/api-health.constant.ts";
+import { API_HEALTH_ENDPOINTS } from "../../../shared/constants/api.constant.ts";
 import type { ApiHealthServerSuccessResponse } from "../../../shared/types/api-health.type.ts";
 import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
 
@@ -23,7 +20,6 @@ const serverRoute = async (fastify: FastifyInstance): Promise<void> => {
   fastify.get(`/${API_HEALTH_ENDPOINTS.SERVER}`, async (_request, reply) => {
     const response: ApiHealthServerSuccessResponse = {
       service: "lazy_days_playground",
-      status: API_HEALTH_STATUSES.HEALTHY,
       timestamp: new Date().toISOString(),
     };
 

@@ -1,16 +1,13 @@
 import type { FastifyInstance } from "fastify";
 import { createClient } from "gel";
 
-import {
-  API_HEALTH_ENDPOINTS,
-  API_HEALTH_STATUSES,
-} from "../../../shared/constants/api-health.constant.ts";
+import { API_HEALTH_ENDPOINTS } from "../../../shared/constants/api.constant.ts";
 import { API_HEALTH_BASE_URL } from "../../../shared/constants/base-urls.const.ts";
 import { GEL_DSN } from "../../../shared/constants/root-env.constant.ts";
 import type {
-  ApiHealthDbConnectionErrorResponse,
-  ApiHealthDbDsnErrorResponse,
-  ApiHealthDbSuccessResponse,
+  ApiHealthDatabaseConnectionErrorResponse,
+  ApiHealthDatabaseDsnErrorResponse,
+  ApiHealthDatabaseSuccessResponse,
 } from "../../../shared/types/api-health.type.ts";
 import { HTTP_STATUS } from "../../constants/http-status.constant.ts";
 import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
@@ -48,9 +45,8 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
           requestId,
         });
 
-        const errorResponse: ApiHealthDbDsnErrorResponse = {
+        const errorResponse: ApiHealthDatabaseDsnErrorResponse = {
           error: "Database DSN not configured",
-          status: API_HEALTH_STATUSES.UNHEALTHY,
           timestamp: new Date().toISOString(),
         };
 
@@ -71,13 +67,12 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
         await client.close();
       }
 
-      const response: ApiHealthDbSuccessResponse = {
+      const response: ApiHealthDatabaseSuccessResponse = {
         database: "gel",
         dsn:
           typeof gelDSN === "string"
             ? gelDSN.replace(/\/\/.*@/, "//***@")
             : gelDSN,
-        status: API_HEALTH_STATUSES.HEALTHY,
         test_result: queryResult,
         timestamp: new Date().toISOString(),
       };
@@ -95,10 +90,9 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
         requestId,
       });
 
-      const errorResponse: ApiHealthDbConnectionErrorResponse = {
+      const errorResponse: ApiHealthDatabaseConnectionErrorResponse = {
         details: error instanceof Error ? error.message : "Unknown error",
         error: "Database connection failed",
-        status: API_HEALTH_STATUSES.UNHEALTHY,
         timestamp: new Date().toISOString(),
       };
 

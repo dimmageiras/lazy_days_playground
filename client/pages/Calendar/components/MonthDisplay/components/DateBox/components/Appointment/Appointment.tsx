@@ -1,6 +1,6 @@
-import dayjs from "dayjs";
 import type { JSX } from "react";
 
+import { DateHelper } from "@client/helpers/date.helper";
 import type { Appointment as AppointmentType } from "@client/pages/Calendar/constants";
 
 import styles from "./Appointment.module.scss";
@@ -9,7 +9,7 @@ const Appointment = ({
   dateTime,
   treatmentName,
 }: AppointmentType): JSX.Element => {
-  const appointmentHour = dayjs(dateTime).format("h a");
+  const appointmentHour = DateHelper.formatHourForDisplay(dateTime);
 
   return (
     <div className={styles["appointment"]}>

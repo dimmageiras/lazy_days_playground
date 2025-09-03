@@ -175,6 +175,7 @@ export default tsEslint.config([
   // Client files: enable restricted imports
   {
     files: ["client/**/*.{ts,tsx}"],
+    ignores: ["client/routes.ts"],
     rules: {
       "no-restricted-imports": [
         "error",

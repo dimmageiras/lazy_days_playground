@@ -1,0 +1,10 @@
+.api-swagger {
+  height: calc(100vh - 4rem);
+  overflow-y: hidden !important;
+
+  .swagger-iframe {
+    border: none;
+    height: 100%;
+    width: 100%;
+  }
+}

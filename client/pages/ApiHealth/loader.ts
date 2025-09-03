@@ -1,59 +1,30 @@
-import type { LoaderFunctionArgs } from "react-router";
+import type { DehydratedState } from "@tanstack/react-query";
+import { dehydrate } from "@tanstack/react-query";
+import { data } from "react-router";
 
-import { ReactQueryConfig } from "@client/configs/react-query.config";
+import { QueriesHelper } from "@client/helpers/queries.helper";
 
-import { ApiHealthService } from "./services/api-health.service";
+import { ApiHealthQueriesHelper } from "./helpers/api-health-queries.helper";
 
-/**
- * API Health page loader for SSR data prefetching
- *
- * Prefetches both server and database health status on the server side
- * to provide immediate data availability when the page loads.
- *
- * @param args - React Router loader function arguments
- * @returns Promise resolving to prefetched health data
- *
- * @example
- * Route configuration:
- * ```ts
- * route("/api/health", "pages/ApiHealth/index.ts", {
- *   loader: () => import("./loader.ts").then(m => m.loader)
- * })
- * ```
- */
-const loader = async ({
-  request: _request,
-}: LoaderFunctionArgs): Promise<{
-  dehydratedState: unknown;
-  error?: string;
-  timestamp: string;
-}> => {
-  const { client } = ReactQueryConfig;
+const loader = async (): Promise<
+  ReturnType<
+    typeof data<{
+      dehydratedState: DehydratedState;
+    }>
+  >
+> => {
+  const { getDatabaseHealthQueryOptions, getServerHealthQueryOptions } =
+    ApiHealthQueriesHelper;
+  const { fetchServerData } = QueriesHelper;
 
-  try {
-    await client.prefetchQuery({
-      queryKey: ["api-health", "server"],
-      queryFn: ApiHealthService.getServerHealth,
-    });
+  const queryClient = await fetchServerData([
+    getDatabaseHealthQueryOptions(),
+    getServerHealthQueryOptions(),
+  ]);
 
-    await client.prefetchQuery({
-      queryKey: ["api-health", "database"],
-      queryFn: ApiHealthService.getDatabaseHealth,
-    });
+  const dehydratedState = dehydrate(queryClient);
 
-    return {
-      dehydratedState: client.getQueryData(["api-health"]),
-      timestamp: new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error("Failed to prefetch API health data:", error);
-
-    return {
-      dehydratedState: null,
-      error: error instanceof Error ? error.message : "Unknown error",
-      timestamp: new Date().toISOString(),
-    };
-  }
+  return data({ dehydratedState });
 };
 
 export { loader };

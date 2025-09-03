@@ -1,18 +1,13 @@
 import { type JSX } from "react";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
-import type {
-  ApiHealthServerErrorResponse,
-  ApiHealthServerSuccessResponse,
-} from "@shared/types/api-health.type";
+import { DateHelper } from "@client/helpers/date.helper";
+import type { ApiHealthServerCheckResponse } from "@shared/types/api-health.type";
 
 import styles from "./ServerMetadata.module.scss";
 
 interface ServerMetadataProps {
-  data:
-    | ApiHealthServerSuccessResponse
-    | ApiHealthServerErrorResponse
-    | undefined;
+  data: ApiHealthServerCheckResponse | undefined;
   error: Error | null;
   isHealthy: boolean;
   isUnhealthy: boolean;
@@ -24,6 +19,8 @@ const ServerMetadata = ({
   isHealthy,
   isUnhealthy,
 }: ServerMetadataProps): JSX.Element => {
+  const { formatTimestampForDisplay } = DateHelper;
+
   return (
     <>
       {isHealthy && data && "service" in data ? (
@@ -40,7 +37,7 @@ const ServerMetadata = ({
               className={styles["meta-icon"]}
               icon="material-symbols:schedule"
             />
-            {`Last checked: ${new Date(data.timestamp).toLocaleString()}`}
+            {`Last checked: ${formatTimestampForDisplay(data.timestamp)}`}
           </div>
         </div>
       ) : null}

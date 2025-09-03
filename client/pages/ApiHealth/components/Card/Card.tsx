@@ -3,13 +3,10 @@ import type { JSX } from "react";
 
 import { BaseCard } from "@client/components/BaseCard";
 import { IconifyIcon } from "@client/components/IconifyIcon";
-import { API_HEALTH_ENDPOINTS } from "@shared/constants/api-health.constant";
+import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
 import type {
-  ApiHealthDbConnectionErrorResponse,
-  ApiHealthDbDsnErrorResponse,
-  ApiHealthDbSuccessResponse,
-  ApiHealthServerErrorResponse,
-  ApiHealthServerSuccessResponse,
+  ApiHealthDatabaseCheckResponse,
+  ApiHealthServerCheckResponse,
 } from "@shared/types/api-health.type";
 
 import styles from "./Card.module.scss";
@@ -25,20 +22,13 @@ interface CardBaseProps {
 
 interface CardDatabaseProps extends CardBaseProps {
   apiHealthService: typeof API_HEALTH_ENDPOINTS.DATABASE;
-  data:
-    | ApiHealthDbConnectionErrorResponse
-    | ApiHealthDbDsnErrorResponse
-    | ApiHealthDbSuccessResponse
-    | undefined;
+  data: ApiHealthDatabaseCheckResponse | undefined;
   error: Error | null;
 }
 
 interface CardServerProps extends CardBaseProps {
   apiHealthService: typeof API_HEALTH_ENDPOINTS.SERVER;
-  data:
-    | ApiHealthServerErrorResponse
-    | ApiHealthServerSuccessResponse
-    | undefined;
+  data: ApiHealthServerCheckResponse | undefined;
   error: Error | null;
 }
 

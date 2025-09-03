@@ -7,8 +7,8 @@ import { IconifyIcon } from "@client/components/IconifyIcon";
 import { RouterLink } from "@client/components/RouterLink";
 import { useClickOutside } from "@client/hooks/useClickOutside";
 import {
+  API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
-  API_SWAGGER_BASE_URL,
 } from "@shared/constants/base-urls.const";
 import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
 
@@ -117,19 +117,6 @@ const DevTools = (): JSX.Element => {
         <div className={styles["bubble-content"]}>
           <div className={styles["option-container"]}>
             <RouterLink
-              as="external"
-              className={styles["swagger-docs"]}
-              onClick={() => {
-                setIsExpanded(false);
-              }}
-              prioritizeOnClick
-              to={`/${API_SWAGGER_BASE_URL}`}
-            >
-              <IconifyIcon className={styles["icon"]} icon="logos:swagger" />
-            </RouterLink>
-          </div>
-          <div className={styles["option-container"]}>
-            <RouterLink
               as="internal"
               className={styles["api-health"]}
               onClick={() => {
@@ -143,6 +130,20 @@ const DevTools = (): JSX.Element => {
                 className={styles["icon"]}
                 icon="streamline-color:shield-cross-flat"
               />
+            </RouterLink>
+          </div>
+          <div className={styles["option-container"]}>
+            <RouterLink
+              as="internal"
+              className={styles["api-docs"]}
+              onClick={() => {
+                setIsExpanded(false);
+              }}
+              prioritizeOnClick
+              shouldReplace
+              to={`/${API_DOCS_BASE_URL}`}
+            >
+              <IconifyIcon className={styles["icon"]} icon="logos-swagger" />
             </RouterLink>
           </div>
           {HAS_RRDT ? (

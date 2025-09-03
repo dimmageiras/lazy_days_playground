@@ -1,20 +1,13 @@
 import type { JSX } from "react";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
-import type {
-  ApiHealthDbConnectionErrorResponse,
-  ApiHealthDbDsnErrorResponse,
-  ApiHealthDbSuccessResponse,
-} from "@shared/types/api-health.type";
+import { DateHelper } from "@client/helpers/date.helper";
+import type { ApiHealthDatabaseCheckResponse } from "@shared/types/api-health.type";
 
 import styles from "./DatabaseMetadata.module.scss";
 
 interface DatabaseMetadataProps {
-  data:
-    | ApiHealthDbConnectionErrorResponse
-    | ApiHealthDbDsnErrorResponse
-    | ApiHealthDbSuccessResponse
-    | undefined;
+  data: ApiHealthDatabaseCheckResponse | undefined;
   error: Error | null;
   isHealthy: boolean;
   isUnhealthy: boolean;
@@ -26,6 +19,8 @@ const DatabaseMetadata = ({
   isHealthy,
   isUnhealthy,
 }: DatabaseMetadataProps): JSX.Element => {
+  const { formatTimestampForDisplay } = DateHelper;
+
   return (
     <>
       {isHealthy && data && "database" in data ? (
@@ -49,7 +44,7 @@ const DatabaseMetadata = ({
               className={styles["meta-icon"]}
               icon="material-symbols:schedule"
             />
-            {`Last checked: ${new Date(data.timestamp).toLocaleString()}`}
+            {`Last checked: ${formatTimestampForDisplay(data.timestamp)}`}
           </div>
         </div>
       ) : null}

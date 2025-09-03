@@ -90,23 +90,22 @@
             color: #6e7c6a;
           }
 
+          &.api-docs,
           &.api-health {
-            &::after {
-              content: "API Health Check";
-            }
-
             .icon {
               font-size: 1.125rem;
             }
           }
 
-          &.swagger-docs {
+          &.api-docs {
             &::after {
-              content: "API Documentation";
+              content: "API Swagger Docs";
             }
+          }
 
-            .icon {
-              font-size: 1.125rem;
+          &.api-health {
+            &::after {
+              content: "API Health Check";
             }
           }
 

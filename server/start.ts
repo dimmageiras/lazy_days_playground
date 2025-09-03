@@ -7,9 +7,10 @@ import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
 
+import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import {
+  API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
-  API_SWAGGER_BASE_URL,
   USER_BASE_URL,
 } from "../shared/constants/base-urls.const.ts";
 import {
@@ -58,22 +59,47 @@ await app.register(async (fastify) => {
   if (IS_DEVELOPMENT) {
     await fastify.register(swaggerFastify);
 
+    const { SWAGGER } = API_DOCS_ENDPOINTS;
+    const routePrefix = `/${API_DOCS_BASE_URL}/${SWAGGER}` as const;
+
     await fastify.register(swaggerUIFastify, {
-      routePrefix: `/${API_SWAGGER_BASE_URL}`,
+      routePrefix,
       uiConfig: {
         docExpansion: "list",
         deepLinking: false,
       },
       uiHooks: {
-        onRequest: (_request, _reply, next) => {
-          next();
+        onRequest: (request, reply, next) => {
+          if (request.url.endsWith("/json")) {
+            next();
+
+            return;
+          }
+
+          const referer = request.headers.referer;
+
+          if (referer && referer.includes(request.hostname)) {
+            next();
+
+            return;
+          }
+
+          reply.code(404).send({
+            error: `No routes matched location "${request.url}"`,
+            statusCode: 404,
+          });
         },
         preHandler: (_request, _reply, next) => {
           next();
         },
       },
       staticCSP: true,
-      transformStaticCSP: (header) => header,
+      transformStaticCSP: (header) => {
+        return header.replace(
+          "style-src 'self' https:",
+          "style-src 'self' https: 'unsafe-inline'"
+        );
+      },
       transformSpecification: (swaggerObject, _request, _reply) => {
         return swaggerObject;
       },

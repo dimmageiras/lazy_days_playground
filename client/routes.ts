@@ -1,7 +1,11 @@
 import type { RouteConfig } from "@react-router/dev/routes";
 import { index, layout, route } from "@react-router/dev/routes";
 
+import { IS_DEVELOPMENT } from "../shared/constants/root-env.constant";
+
+const apiDocs = route("/api/docs", "pages/ApiDocs/index.ts");
 const apiHealth = route("/api/health", "pages/ApiHealth/index.ts");
+
 const home = index("pages/Home/index.ts");
 const calendar = route("/calendar", "pages/Calendar/index.ts");
 const signin = route("/signin", "pages/Signin/index.ts");
@@ -10,7 +14,7 @@ const treatments = route("/treatments", "pages/Treatments/index.ts");
 const userProfile = route("/profile", "pages/UserProfile/index.ts");
 
 const notTreatmentPages = [
-  apiHealth,
+  ...(IS_DEVELOPMENT ? [apiDocs, apiHealth] : []),
   home,
   calendar,
   signin,
