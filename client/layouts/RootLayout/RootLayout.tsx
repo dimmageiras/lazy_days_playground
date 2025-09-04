@@ -20,6 +20,9 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
       <body>
         <div id="app">{children}</div>
         {IS_DEVELOPMENT && HAS_DEV_TOOLS ? <DevTools /> : null}
+        {IS_DEVELOPMENT ? (
+          <script type="module" src="/@vite-plugin-checker-runtime-entry" />
+        ) : null}
         <ScrollRestoration />
         <Scripts />
       </body>

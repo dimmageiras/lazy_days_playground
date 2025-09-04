@@ -28,8 +28,7 @@ export default defineConfig(({ mode }) => {
     --rule "react-hooks/exhaustive-deps: off"`,
             useFlatConfig: true,
           },
-          // TODO: Enable overlay when an update that fixes the issue is released
-          overlay: false,
+          overlay: true,
           typescript: true,
         }),
     ],
