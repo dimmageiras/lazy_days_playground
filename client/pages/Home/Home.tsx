@@ -2,10 +2,13 @@ import type { JSX } from "react";
 
 import splashImg from "@client/assets/images/splash.jpg";
 import { IconifyIcon } from "@client/components/IconifyIcon";
+import { iconifyIcons } from "@client/components/IconifyIcon";
 
 import styles from "./Home.module.scss";
 
 const Home = (): JSX.Element => {
+  const { home } = iconifyIcons;
+
   return (
     <main aria-label="Home" className={styles["home"]}>
       <img
@@ -19,7 +22,8 @@ const Home = (): JSX.Element => {
           <IconifyIcon
             aria-hidden="true"
             className={styles["logo"]}
-            icon="game-icons:flower-pot"
+            icon={home}
+            ssr
           />
           Lazy Days Spa
         </h1>

@@ -6,7 +6,7 @@ import { ListRendererBase } from "./components/ListRendererBase";
  * Props interface for the ListRenderer component
  * @template TItem - The type of items in the data array
  */
-export interface ListRendererProps<TItem> {
+interface ListRendererProps<TItem> {
   /** Array of items to render */
   data: TItem[] | readonly TItem[];
   /** Optional key extraction function (falls back to UUID) */

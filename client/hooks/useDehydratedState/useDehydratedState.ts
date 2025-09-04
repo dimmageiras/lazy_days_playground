@@ -8,11 +8,11 @@ const useDehydratedState = (): DehydratedState => {
   const matches = useMatches();
 
   const { isDehydratedState } = QueriesHelper;
-  const { isObject } = ObjectUtilsHelper;
+  const { isPlainObject } = ObjectUtilsHelper;
 
   const dehydratedStates = matches
     .map(({ loaderData }) =>
-      isObject(loaderData) &&
+      isPlainObject(loaderData) &&
       "dehydratedState" in loaderData &&
       isDehydratedState(loaderData.dehydratedState)
         ? loaderData.dehydratedState

@@ -29,6 +29,7 @@ const ServerMetadata = ({
             <IconifyIcon
               className={styles["meta-icon"]}
               icon="material-symbols:info"
+              ssr
             />
             {`Service: ${data.service}`}
           </div>
@@ -36,6 +37,7 @@ const ServerMetadata = ({
             <IconifyIcon
               className={styles["meta-icon"]}
               icon="material-symbols:schedule"
+              ssr
             />
             {`Last checked: ${formatTimestampForDisplay(data.timestamp)}`}
           </div>

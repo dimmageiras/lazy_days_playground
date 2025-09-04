@@ -33,10 +33,10 @@ const fetchServerData = async <TQueryOptions extends AnyUseQueryOptions>(
 
 const isDehydratedState = (value: unknown): value is DehydratedState => {
   const { isArray } = ArrayUtilsHelper;
-  const { isObject } = ObjectUtilsHelper;
+  const { isPlainObject } = ObjectUtilsHelper;
 
   return (
-    isObject(value) &&
+    isPlainObject(value) &&
     "queries" in value &&
     "mutations" in value &&
     isArray(value.queries) &&

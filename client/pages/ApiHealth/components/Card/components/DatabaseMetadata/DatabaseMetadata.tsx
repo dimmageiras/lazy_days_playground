@@ -29,6 +29,7 @@ const DatabaseMetadata = ({
             <IconifyIcon
               className={styles["meta-icon"]}
               icon="material-symbols:info"
+              ssr
             />
             {`Engine: ${data.database}`}
           </div>
@@ -36,6 +37,7 @@ const DatabaseMetadata = ({
             <IconifyIcon
               className={styles["meta-icon"]}
               icon="material-symbols:link"
+              ssr
             />
             {`DSN: ${data.dsn}`}
           </div>
@@ -43,6 +45,7 @@ const DatabaseMetadata = ({
             <IconifyIcon
               className={styles["meta-icon"]}
               icon="material-symbols:schedule"
+              ssr
             />
             {`Last checked: ${formatTimestampForDisplay(data.timestamp)}`}
           </div>

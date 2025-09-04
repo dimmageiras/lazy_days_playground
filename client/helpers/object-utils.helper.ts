@@ -40,12 +40,24 @@ const getObjectKeys = <TObject extends Record<string, unknown>>(
 ): (keyof TObject)[] => Object.keys(object);
 
 /**
+ * Gets typed values from an object.
+ * This is a type-safe wrapper around Object.values() that returns properly typed values.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param object - The object to get values from
+ * @returns Array of object values with proper typing
+ */
+const getObjectValues = <T extends Record<string, unknown>>(
+  initialObject: T
+): T[keyof T][] => Object.values(initialObject) as T[keyof T][];
+
+/**
  * Checks if the given value is an object and not an array.
  *
  * @param item - The value to check
  * @returns True if the value is an object and not an array, false otherwise
  */
-const isObject = (item: unknown): item is Record<PropertyKey, unknown> => {
+const isObject = (item: unknown): item is Record<string, unknown> => {
   return typeof item === "object" && item !== null && !Array.isArray(item);
 };
 
@@ -71,6 +83,6 @@ const isPlainObject = (item: unknown): item is Record<PropertyKey, unknown> => {
 export const ObjectUtilsHelper = {
   getObjectEntries,
   getObjectKeys,
-  isObject,
+  getObjectValues,
   isPlainObject,
 };

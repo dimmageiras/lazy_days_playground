@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import type { ChangeEvent, JSX, Ref } from "react";
 
-import { IconifyIcon } from "@client/components/IconifyIcon";
+import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 
 import styles from "./CheckBox.module.scss";
 
@@ -70,6 +70,8 @@ const CheckBox = ({
   onChange,
   value,
 }: CheckBoxProps): JSX.Element => {
+  const { check } = iconifyIcons;
+
   return (
     <label
       className={classNames(styles["check-box"], className)}
@@ -87,10 +89,7 @@ const CheckBox = ({
         value={value}
       />
       {isChecked ? (
-        <IconifyIcon
-          className={styles["image"]}
-          icon="streamline-sharp:check-solid"
-        />
+        <IconifyIcon className={styles["image"]} icon={check} ssr />
       ) : null}
       <span className={styles["label"]}>{label}</span>
     </label>

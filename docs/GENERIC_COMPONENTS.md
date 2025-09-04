@@ -248,21 +248,31 @@ A base card component that provides a consistent container style for content. Th
 
 ### IconifyIcon
 
-A wrapper component for Iconify icons with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
+A flexible icon component supporting both client-side and server-side rendering with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
 
 **Props:**
 
-- `flip?: string` - Flip icon ("horizontal", "vertical", or "horizontal,vertical")
-- `height?: string | number` - Icon height
-- `icon: string` - Iconify icon name (e.g., "streamline-sharp:check-solid")
-- `inline?: boolean` - Changes vertical alignment
-- `rotate?: string | number` - Rotate icon (e.g., "90deg", "180deg")
-- `width?: string | number` - Icon width
-- All other standard iconify-icon element props are supported
+**Client-side Rendering Props (default):**
+
+- `icon: string | IconifyIcon | undefined` - Iconify icon name or icon object (e.g., "streamline-sharp:check-solid")
+- All standard `iconify-icon` element props are supported
+
+**Server-side Rendering Props:**
+
+- `icon: IconifyIconName | undefined` - Must be one of the predefined icon names from the icon registry
+- `ssr: true` - Enables server-side rendering with React Query integration
+- All `@iconify/react` Icon component props are supported
+
+**Available Icon Names (for SSR):**
+
+- Icon names are defined in `client/components/IconifyIcon/constants/iconify-icon.constant.ts`
+- Use the `iconifyIcons` export to access available icon names and their mappings
+- Only predefined icon names from the constants are supported for SSR mode
 
 **Usage Examples:**
 
 ```tsx
+// Client-side rendering (default)
 <IconifyIcon
   className="nav-icon"
   height="24"
@@ -270,11 +280,27 @@ A wrapper component for Iconify icons with type safety and consistent integratio
   width="24"
 />
 
-// With transformations
+// Client-side with transformations
 <IconifyIcon
   flip="horizontal"
   icon="bi:arrow-right"
   rotate="90deg"
+/>
+
+// Server-side rendering with predefined icon
+<IconifyIcon
+  className="server-icon"
+  height="32"
+  icon="home"
+  ssr={true}
+  width="32"
+/>
+
+// Server-side rendering with type-safe icon names
+<IconifyIcon
+  icon="checkCircle"
+  ssr={true}
+  style={{ color: 'green' }}
 />
 ```
 

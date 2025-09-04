@@ -52,14 +52,16 @@
   }
 
   .image {
+    align-self: center;
     animation: check-icon-appear 400ms linear forwards;
     clip-path: inset(0 100% 0 0);
     color: #fff;
     display: flex;
     font-size: 0.7rem;
     grid-area: 1 / 1;
-    height: 1rem;
-    width: 1rem;
+    height: 0.7rem;
+    justify-self: center;
+    width: 0.7rem;
   }
 
   .label {

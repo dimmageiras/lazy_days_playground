@@ -42,9 +42,9 @@ const generateStableKey = <TItem>(
   }
 
   const { isArray } = ArrayUtilsHelper;
-  const { isObject } = ObjectUtilsHelper;
+  const { isPlainObject } = ObjectUtilsHelper;
 
-  if (isArray(item) || isObject(item)) {
+  if (isArray(item) || isPlainObject(item)) {
     if (!keyMap.current.has(item)) {
       keyMap.current.set(item, uuidv4());
     }

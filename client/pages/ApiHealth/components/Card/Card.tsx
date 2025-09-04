@@ -50,7 +50,7 @@ const Card = ({
       <div className={styles["card-content"]}>
         <div className={styles["card-header"]}>
           <div className={styles["left-section"]}>
-            <IconifyIcon className={styles["title-icon"]} icon={icon} />
+            <IconifyIcon className={styles["title-icon"]} icon={icon} ssr />
             <h2 className={styles["service-name"]}>{apiHealthService}</h2>
           </div>
           <div className={styles["right-section"]}>
@@ -67,6 +67,7 @@ const Card = ({
                     ? "material-symbols:check-circle"
                     : "material-symbols:error"
                 }
+                ssr
               />
               {status || "Unknown"}
             </div>

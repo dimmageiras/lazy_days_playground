@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { IconifyIcon } from "@client/components/IconifyIcon";
+import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { NavigationWrapper } from "@client/components/NavigationWrapper";
 import { RouterLink } from "@client/components/RouterLink";
 
@@ -8,6 +8,8 @@ import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";
 
 const NavBar = (): JSX.Element => {
+  const { home } = iconifyIcons;
+
   return (
     <header className={styles["header"]}>
       <div className={styles["content"]}>
@@ -23,7 +25,8 @@ const NavBar = (): JSX.Element => {
             <IconifyIcon
               aria-hidden="true"
               className={styles["logo"]}
-              icon="game-icons:flower-pot"
+              icon={home}
+              ssr
             />
           </RouterLink>
           <nav aria-label="Main navigation" className={styles["nav-bar"]}>

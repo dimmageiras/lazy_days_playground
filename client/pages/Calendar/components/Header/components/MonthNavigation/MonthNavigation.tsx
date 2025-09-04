@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import type { JSX, PropsWithChildren } from "react";
 import { useStoreState } from "zustand-x";
 
-import { IconifyIcon } from "@client/components/IconifyIcon";
+import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { CalendarUtilsHelper } from "@client/helpers/calendar-utils.helper";
 import { calendarStore } from "@client/pages/Calendar/stores/calendar.store";
 
@@ -16,6 +16,8 @@ const MonthNavigation = ({ children }: PropsWithChildren): JSX.Element => {
     calendarStore,
     "selectedMonth"
   );
+
+  const { arrowLeft, arrowRight } = iconifyIcons;
 
   const { getMonthYearDetails, getUpdatedMonthYear } = CalendarUtilsHelper;
 
@@ -39,7 +41,7 @@ const MonthNavigation = ({ children }: PropsWithChildren): JSX.Element => {
         onClick={() => updateMonthYear(-1)}
         type="button"
       >
-        <IconifyIcon icon="typcn:arrow-left-thick" />
+        <IconifyIcon icon={arrowLeft} ssr />
       </button>
       {children}
       <button
@@ -48,7 +50,7 @@ const MonthNavigation = ({ children }: PropsWithChildren): JSX.Element => {
         onClick={() => updateMonthYear(1)}
         type="button"
       >
-        <IconifyIcon icon="typcn:arrow-right-thick" />
+        <IconifyIcon icon={arrowRight} ssr />
       </button>
     </>
   );

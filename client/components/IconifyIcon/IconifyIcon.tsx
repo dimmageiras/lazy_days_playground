@@ -1,21 +1,41 @@
+import type { IconProps } from "@iconify/react";
+import type { IconifyIcon as IconifyIconType } from "iconify-icon";
 import type { ComponentPropsWithRef, JSX } from "react";
 import { memo } from "react";
 
 import { DynamicElement } from "@client/components/DynamicElement";
 
-/**
- * Props type for the IconifyIcon component.
- * Extends all standard iconify-icon element props for complete type safety.
- */
-type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
+import { ServerIcon } from "./components/ServerIcon";
+import type { IconifyIconName } from "./types/iconify-icon.type";
 
 /**
- * A wrapper component for Iconify icons that provides type safety and consistent integration.
- * The component is optimized for performance using React.memo to prevent unnecessary re-renders when props haven't changed.
+ * Props interface for client-side rendering mode (default)
+ */
+interface IconifyIconProps
+  extends Omit<ComponentPropsWithRef<"iconify-icon">, "icon"> {
+  /** Iconify icon name or icon object (e.g., "material-symbols:home") */
+  icon: string | IconifyIconType | undefined;
+  /** Enables client-side rendering (default behavior) */
+  ssr?: false;
+}
+
+/**
+ * Props interface for server-side rendering mode
+ */
+interface IconifyIconSSRProps extends Omit<IconProps, "icon"> {
+  /** Must be one of the predefined icon names from the icon registry */
+  icon: IconifyIconName | undefined;
+  /** Enables server-side rendering with React Query integration */
+  ssr: true;
+}
+
+/**
+ * A flexible icon component supporting both client-side and server-side rendering with type safety and consistent integration.
+ * The component is optimized for performance using React.memo to prevent unnecessary re-renders.
  *
  * @example
  * ```tsx
- * // Basic usage with size
+ * // Client-side rendering (default)
  * <IconifyIcon
  *   className="nav-icon"
  *   height="24"
@@ -23,36 +43,53 @@ type IconifyIconProps = ComponentPropsWithRef<"iconify-icon">;
  *   width="24"
  * />
  *
- * // With transformations
+ * // Client-side with transformations
  * <IconifyIcon
  *   flip="horizontal"
  *   icon="bi:arrow-right"
  *   rotate="90deg"
  * />
  *
- * // With color and alignment
+ * // Server-side rendering with predefined icon
  * <IconifyIcon
- *   color="currentColor"
- *   icon="mdi:alert"
- *   inline={true}
- *   style={{ color: 'red' }}
+ *   className="server-icon"
+ *   height="32"
+ *   icon="home"
+ *   ssr={true}
+ *   width="32"
+ * />
+ *
+ * // Server-side rendering with styling
+ * <IconifyIcon
+ *   icon="checkCircle"
+ *   ssr={true}
+ *   style={{ color: 'green' }}
  * />
  * ```
  *
- * @param props - The IconifyIcon component props
- * @param props.[...iconifyProps] - Any other valid iconify-icon element props
- * @param props.color - Icon color (optional, defaults to currentColor)
- * @param props.flip - Flip icon horizontally/vertically (optional, "horizontal", "vertical", or "horizontal,vertical")
- * @param props.height - Icon height (optional, in pixels or "auto" for original)
- * @param props.icon - Iconify icon name (required, e.g., "material-symbols:home")
- * @param props.inline - Changes vertical alignment (optional, boolean)
- * @param props.rotate - Rotate icon by degrees (optional, e.g., "90deg", "180deg")
- * @param props.width - Icon width (optional, in pixels or "auto" for original)
- * @returns JSX.Element - The rendered iconify-icon element
+ * @param props - The IconifyIcon component props (IconifyIconProps | IconifyIconSSRProps)
+ * @param props.icon - Icon identifier: string/IconifyIcon object for client-side, predefined name for SSR
+ * @param props.ssr - Rendering mode: false/undefined for client-side, true for server-side
+ * @param props.[...iconProps] - All standard iconify-icon (client) or @iconify/react Icon (SSR) props are supported
+ * @returns JSX.Element | null - The rendered icon component or null if no icon is provided
  */
 const IconifyIcon = memo(
-  ({ icon, ...props }: IconifyIconProps): JSX.Element => {
-    return <DynamicElement as="iconify-icon" icon={icon} {...props} />;
+  (props: IconifyIconProps | IconifyIconSSRProps): JSX.Element | null => {
+    if (props.icon == undefined) {
+      console.warn("IconifyIcon: No icon provided");
+
+      return null;
+    }
+
+    if (!props.ssr) {
+      const { icon, ...rest } = props;
+
+      return <DynamicElement as="iconify-icon" icon={icon} {...rest} />;
+    }
+
+    const { icon, ...rest } = props;
+
+    return <ServerIcon icon={icon} {...rest} />;
   }
 );
 
