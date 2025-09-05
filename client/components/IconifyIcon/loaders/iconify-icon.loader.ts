@@ -16,7 +16,7 @@ const iconifyIconLoader = async (): Promise<{
   const iconNames = getObjectValues(ICONIFY_ICONS);
 
   const iconifyIconQueryOptionsList = iconNames.map((iconName) =>
-    getIconifyIconQueryOptions(iconName)
+    getIconifyIconQueryOptions({ iconName })
   );
 
   const queryClient = await fetchServerData(iconifyIconQueryOptionsList);

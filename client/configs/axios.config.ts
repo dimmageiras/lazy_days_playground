@@ -1,12 +1,12 @@
 import type { AxiosError } from "axios";
 import axios from "axios";
 
-import { HOST, PORT } from "@shared/constants/root-env.constant";
+import { HOST, IS_SSR, PORT } from "@shared/constants/root-env.constant";
 
 axios.defaults.withCredentials = true;
 
 // Configure base URL for SSR
-if (typeof window === "undefined") {
+if (IS_SSR) {
   // We're on the server, set the base URL to the full server address
   axios.defaults.baseURL = `http://${HOST}:${PORT}`;
 }

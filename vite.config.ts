@@ -5,7 +5,7 @@ import { defineConfig } from "vite";
 import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig(({ mode }) => {
+const viteConfig = defineConfig(({ mode }) => {
   const IS_DEVELOPMENT = mode === "development";
   const HAS_DEV_TOOLS = process.env.VITE_APP_ALL_DEV_TOOLS === "true";
   const HAS_RRDT = process.env.VITE_APP_RRDT === "true";
@@ -34,3 +34,5 @@ export default defineConfig(({ mode }) => {
     ],
   };
 }) satisfies UserConfigFnObject;
+
+export default viteConfig;

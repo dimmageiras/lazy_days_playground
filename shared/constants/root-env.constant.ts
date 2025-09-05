@@ -12,6 +12,7 @@ const {
   VITE_APP_RRDT,
 } = typeof process !== "undefined" ? process.env : import.meta.env;
 
+const IS_SSR = typeof window === "undefined";
 const IS_DEVELOPMENT = VITE_APP_IS_DEVELOPMENT === "true";
 const HAS_DEV_TOOLS = VITE_APP_ALL_DEV_TOOLS === "true";
 const HAS_RQDT = VITE_APP_RQDT === "true";
@@ -30,6 +31,7 @@ export {
   HAS_RQDT,
   HAS_RRDT,
   IS_DEVELOPMENT,
+  IS_SSR,
   MODE,
   MODES,
   VITE_APP_COOKIE_SECRET as COOKIE_SECRET,
