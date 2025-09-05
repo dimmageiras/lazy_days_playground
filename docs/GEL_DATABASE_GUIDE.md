@@ -62,6 +62,22 @@ echo "password" | gel --host host.docker.internal --tls-security=insecure -P 565
 echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin query "SELECT 1 + 1"
 ```
 
+### Branch Management
+
+**List All Branches:**
+
+```bash
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin branch list
+```
+
+**Delete a Branch:**
+
+```bash
+echo -e "password\nYes" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin branch drop BRANCH_NAME
+```
+
+**Note:** Branch deletion requires confirmation. The command above provides both the database password and the confirmation ("Yes") automatically.
+
 ---
 
 ## Admin Interface
