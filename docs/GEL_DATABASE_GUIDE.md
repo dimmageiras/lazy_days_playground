@@ -36,21 +36,21 @@ When you have schema changes in `dbschema/default.gel`, create and apply migrati
 **Create Migration:**
 
 ```bash
-gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin migration create
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin migration create
 # Enter password: password
 ```
 
 **Apply Migration:**
 
 ```bash
-gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin migrate
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin migrate
 # Enter password: password
 ```
 
 **Check Migration Status:**
 
 ```bash
-gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin migration status
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin migration status
 # Enter password: password
 ```
 
@@ -59,7 +59,7 @@ gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-
 **Execute EdgeQL Queries:**
 
 ```bash
-echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin query "SELECT User { email, name }"
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin query "SELECT 1 + 1"
 ```
 
 ---
