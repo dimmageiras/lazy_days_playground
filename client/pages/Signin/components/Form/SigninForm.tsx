@@ -6,7 +6,6 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
-import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 
 import { FormFields } from "./components/FormFields";
 import { signinSchema } from "./schemas/signin-form.schema";
@@ -31,15 +30,10 @@ const SigninForm = (): JSX.Element => {
   const formMethods = useForm<SigninFormType>(formInitialization);
 
   const {
-    formState: { errors, isReady, isSubmitting },
+    formState: { isReady, isValid, isSubmitting },
     handleSubmit,
     reset,
-    trigger,
   } = formMethods;
-
-  const { hasFormErrors } = FormUtilsHelper;
-
-  const hasErrors = useMemo(() => hasFormErrors(errors), [errors]);
 
   const onValid = async (data: SigninFormType) => {
     await Promise.resolve(data);
@@ -47,18 +41,14 @@ const SigninForm = (): JSX.Element => {
     reset();
   };
 
-  const onInvalid = () => {
-    trigger();
-  };
-
   return (
     <BaseCard>
       <FormProvider {...formMethods}>
-        <ReactRouterForm noValidate onSubmit={handleSubmit(onValid, onInvalid)}>
+        <ReactRouterForm noValidate onSubmit={handleSubmit(onValid)}>
           <FormFields
             isFieldsetDisabled={isSubmitting || !isReady}
-            isSignInButtonDisabled={!!hasErrors}
-            isSignUpButtonDisabled={!!hasErrors}
+            isSignInButtonDisabled={!isValid}
+            isSignUpButtonDisabled={!isValid}
           />
         </ReactRouterForm>
       </FormProvider>

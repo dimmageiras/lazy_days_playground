@@ -1,9 +1,9 @@
 import type { RefObject } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import { ArrayUtilsHelper } from "@client/helpers/array-utils.helper";
 import { ObjectUtilsHelper } from "@client/helpers/object-utils.helper";
 import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
+import { IdUtilsHelper } from "@shared/helpers/id-utils.helper";
 
 /**
  * Generates a stable key for list items to optimize React's reconciliation process.
@@ -46,7 +46,9 @@ const generateStableKey = <TItem>(
 
   if (isArray(item) || isPlainObject(item)) {
     if (!keyMap.current.has(item)) {
-      keyMap.current.set(item, uuidv4());
+      const { fastIdGen } = IdUtilsHelper;
+
+      keyMap.current.set(item, fastIdGen());
     }
 
     const key = keyMap.current.get(item);
