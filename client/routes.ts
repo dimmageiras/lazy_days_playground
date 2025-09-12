@@ -3,15 +3,17 @@ import { index, layout, route } from "@react-router/dev/routes";
 
 import { IS_DEVELOPMENT } from "../shared/constants/root-env.constant";
 
-const apiDocs = route("/api/docs", "pages/ApiDocs/index.ts");
-const apiHealth = route("/api/health", "pages/ApiHealth/index.ts");
+const INDEX_FILE = "index.ts";
 
-const home = index("pages/Home/index.ts");
-const calendar = route("/calendar", "pages/Calendar/index.ts");
-const signin = route("/signin", "pages/Signin/index.ts");
-const staff = route("/staff", "pages/Staff/index.ts");
-const treatments = route("/treatments", "pages/Treatments/index.ts");
-const userProfile = route("/profile", "pages/UserProfile/index.ts");
+const apiDocs = route("/api/docs", `pages/ApiDocs/${INDEX_FILE}`);
+const apiHealth = route("/api/health", `pages/ApiHealth/${INDEX_FILE}`);
+
+const home = index(`pages/Home/${INDEX_FILE}`);
+const calendar = route("/calendar", `pages/Calendar/${INDEX_FILE}`);
+const signin = route("/signin", `pages/Signin/${INDEX_FILE}`);
+const staff = route("/staff", `pages/Staff/${INDEX_FILE}`);
+const treatments = route("/treatments", `pages/Treatments/${INDEX_FILE}`);
+const userProfile = route("/profile", `pages/UserProfile/${INDEX_FILE}`);
 
 const notTreatmentPages = [
   ...(IS_DEVELOPMENT ? [apiDocs, apiHealth] : []),
@@ -22,11 +24,11 @@ const notTreatmentPages = [
   userProfile,
 ];
 const standardPageLayout = layout(
-  "layouts/StandardPageLayout/index.ts",
+  `layouts/StandardPageLayout/${INDEX_FILE}`,
   notTreatmentPages
 );
 
-const appLayout = layout("layouts/AppLayout/index.ts", [
+const appLayout = layout(`layouts/AppLayout/${INDEX_FILE}`, [
   standardPageLayout,
   treatments,
 ]);

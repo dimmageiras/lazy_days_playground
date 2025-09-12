@@ -13,11 +13,11 @@ const {
   VITE_APP_RRDT,
 } = typeof process !== "undefined" ? process.env : import.meta.env;
 
-const IS_SSR = typeof window === "undefined";
-const IS_DEVELOPMENT = VITE_APP_IS_DEVELOPMENT === "true";
 const HAS_DEV_TOOLS = VITE_APP_ALL_DEV_TOOLS === "true";
 const HAS_RQDT = VITE_APP_RQDT === "true";
 const HAS_RRDT = VITE_APP_RRDT === "true";
+const IS_DEVELOPMENT = VITE_APP_IS_DEVELOPMENT === "true";
+const IS_SSR = typeof window === "undefined";
 
 const MODES = Object.freeze({
   DEVELOPMENT: "development",
