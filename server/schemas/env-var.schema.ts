@@ -6,6 +6,9 @@ import {
 } from "../../shared/wrappers/zod.wrapper.ts";
 
 const envSchema = zObject({
+  GEL_AUTH_BASE_URL: zString().min(1, {
+    message: "VITE_APP_GEL_AUTH_BASE_URL is required for auth connection",
+  }),
   GEL_DSN: zString().min(1, {
     message: "VITE_APP_GEL_DSN is required for database connection",
   }),

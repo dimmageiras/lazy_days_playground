@@ -24,6 +24,7 @@ services:
       - gel_db
     environment:
       - GEL_DSN=gel://admin:password@gel_db:5656/main?tls_security=insecure
+      - GEL_AUTH_BASE_URL=gel://admin:password@host.docker.internal:5656/main?tls_security=insecure
     volumes:
       - type: bind
         source: ${HOMEDRIVE}${HOMEPATH}\.gitconfig

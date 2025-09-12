@@ -4,6 +4,7 @@
 import type { LoggerOptions } from "pino";
 
 interface EnvironmentVariables {
+  GEL_AUTH_BASE_URL: string;
   GEL_DSN: string;
   VITE_APP_ALL_DEV_TOOLS?: `${boolean}`;
   VITE_APP_COOKIE_SECRET: string;

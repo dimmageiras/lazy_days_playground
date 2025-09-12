@@ -4,10 +4,10 @@ export default {
   appDirectory: "client",
   buildDirectory: "dist",
   future: {
-    unstable_middleware: true,
     unstable_optimizeDeps: true,
     unstable_splitRouteModules: true,
     unstable_viteEnvironmentApi: true,
+    v8_middleware: true,
   },
   serverBuildFile: "index.js",
   ssr: true,

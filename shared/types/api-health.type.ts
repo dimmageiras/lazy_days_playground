@@ -5,7 +5,7 @@ interface ApiHealthBaseResponse {
 interface ApiHealthDatabaseSuccessResponse extends ApiHealthBaseResponse {
   database: string;
   dsn: string;
-  test_result: unknown; // Gel query result can vary
+  test_result: unknown;
 }
 
 interface ApiHealthDatabaseDsnErrorResponse extends ApiHealthBaseResponse {

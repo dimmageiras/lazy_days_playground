@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 
-import { DateHelper } from "@client/helpers/date.helper";
 import type { Appointment as AppointmentType } from "@client/pages/Calendar/constants";
+import { DateHelper } from "@shared/helpers/date.helper";
 
 import styles from "./Appointment.module.scss";
 

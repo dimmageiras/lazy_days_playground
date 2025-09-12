@@ -9,8 +9,20 @@ type ZodString = z.ZodString;
 const zCoerce = z.coerce;
 const zEmail = z.email;
 const zEnum = z.enum;
+const zIsoDateTime = z.iso.datetime;
 const zObject = z.object;
 const zString = z.string;
+const zToJSONSchema = z.toJSONSchema;
+const zUnknown = z.unknown;
 
 export type { ZodError, ZodFormattedError, ZodInfer, ZodObject, ZodString };
-export { zCoerce, zEmail, zEnum, zObject, zString };
+export {
+  zCoerce,
+  zEmail,
+  zEnum,
+  zIsoDateTime,
+  zObject,
+  zString,
+  zToJSONSchema,
+  zUnknown,
+};

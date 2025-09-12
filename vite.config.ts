@@ -28,7 +28,9 @@ const viteConfig = defineConfig(({ mode }) => {
     --rule "react-hooks/exhaustive-deps: off"`,
             useFlatConfig: true,
           },
-          overlay: true,
+          overlay: {
+            initialIsOpen: false,
+          },
           typescript: true,
         }),
     ],

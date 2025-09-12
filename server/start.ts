@@ -1,6 +1,4 @@
-import authFastify from "@fastify/auth";
 import cookieFastify from "@fastify/cookie";
-import jwtFastify from "@fastify/jwt";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
@@ -11,20 +9,19 @@ import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import {
   API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
-  USER_BASE_URL,
+  AUTH_BASE_URL,
 } from "../shared/constants/base-urls.const.ts";
 import {
   COOKIE_SECRET,
   HOST,
   IS_DEVELOPMENT,
-  JWT_SECRET,
   LOG_LEVEL,
   MODE,
   PORT,
 } from "../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { apiHealthRoutes } from "./routes/api-health/index.ts";
-import { userRoutes } from "./routes/user/index.ts";
+import { authRoutes } from "./routes/auth/index.ts";
 
 const { log } = PinoLogHelper;
 
@@ -42,18 +39,6 @@ await app.register(cookieFastify, {
   secret: COOKIE_SECRET,
 });
 log.info("✅ Cookie plugin registered");
-
-await app.register(jwtFastify, {
-  cookie: {
-    cookieName: "accessToken",
-    signed: true,
-  },
-  secret: JWT_SECRET,
-});
-log.info("✅ JWT plugin registered");
-
-await app.register(authFastify);
-log.info("✅ Auth plugin registered");
 
 await app.register(async (fastify) => {
   if (IS_DEVELOPMENT) {
@@ -109,7 +94,7 @@ await app.register(async (fastify) => {
   }
 
   await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
-  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
+  await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
   log.info("✅ All routes are registered");
 });
 
