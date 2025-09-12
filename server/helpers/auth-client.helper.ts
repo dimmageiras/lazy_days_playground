@@ -1,13 +1,14 @@
 import type { Client } from "gel";
 import { createClient as createGelClient } from "gel";
 
+import type { GelAuthInstance } from "@server/plugins/gel-auth-fastify";
+
 import {
   GEL_AUTH_BASE_URL,
   HOST,
   IS_DEVELOPMENT,
   PORT,
 } from "../../shared/constants/root-env.constant.ts";
-import type { GelAuthInstance } from "../plugins/gel-auth-fastify/gel-auth-fastify.plugin.ts";
 import { createGelAuth } from "../plugins/gel-auth-fastify/index.ts";
 
 const createAuth = (client: Client): GelAuthInstance => {

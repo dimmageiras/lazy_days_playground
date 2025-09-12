@@ -3,7 +3,7 @@
  * Extends Fastify types to include our custom user authentication
  */
 
-import type { JWTPayload } from "../../shared/types/auth.type.ts";
+import type { JWTPayload } from "@shared/types/auth.type";
 
 declare module "fastify" {
   interface FastifyRequest {

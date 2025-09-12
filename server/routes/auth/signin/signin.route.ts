@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
+import type { SigninRequestBody } from "@server/plugins/gel-auth-fastify";
+
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { IS_DEVELOPMENT } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
@@ -8,7 +10,6 @@ import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import type { SigninRequestBody } from "../../../plugins/gel-auth-fastify/types/no-name.type.ts";
 import {
   signinRequestSchema,
   signinResponseSchema,
@@ -49,9 +50,9 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
         }
 
         const client = createClient();
-        const { emailPassword } = createAuth(client);
+        const { emailPasswordHandlers } = createAuth(client);
 
-        const { signin } = emailPassword;
+        const { signin } = emailPasswordHandlers;
 
         try {
           const tokenData = await signin(email, password);

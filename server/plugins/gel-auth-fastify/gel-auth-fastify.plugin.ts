@@ -1,53 +1,20 @@
 import { Auth } from "@gel/auth-core";
-import type { Client } from "gel";
 
-import type { EmailPasswordHandlers } from "./types/no-name.type";
-
-type GelAuthFactory = (client: Client) => {
-  emailPassword: EmailPasswordHandlers;
-};
-
-type GelAuthInstance = ReturnType<GelAuthFactory>;
+import { EmailPasswordHandlersHelper } from "./helpers/email-password-handlers.helper.ts";
+import type { GelAuthFactory, GelAuthInstance } from "./types/auth-core.type";
 
 const createGelAuth: GelAuthFactory = (client) => {
   const core = Auth.create(client);
 
-  const signin: EmailPasswordHandlers["signin"] = async (email, password) => {
-    const result = (await core).signinWithEmailPassword(email, password);
+  const { getEmailPasswordHandlers } = EmailPasswordHandlersHelper;
 
-    return result;
-  };
-
-  const signup: EmailPasswordHandlers["signup"] = async (
-    email,
-    password,
-    verifyUrl
-  ) => {
-    const result = (await core).signupWithEmailPassword(
-      email,
-      password,
-      verifyUrl
-    );
-
-    return result;
-  };
-
-  const verifyRegistration: EmailPasswordHandlers["verifyRegistration"] =
-    async (verificationToken, verifier) => {
-      const result = (await core).verifyEmailPasswordSignup(
-        verificationToken,
-        verifier
-      );
-
-      return result;
-    };
+  const emailPasswordHandlers = getEmailPasswordHandlers(core);
 
   const fastifyAuth = {
-    emailPassword: { signin, signup, verifyRegistration },
+    emailPasswordHandlers,
   } satisfies GelAuthInstance;
 
   return fastifyAuth;
 };
 
-export type { GelAuthInstance };
 export { createGelAuth };

@@ -1,15 +1,16 @@
 import type { FastifyInstance } from "fastify";
 import { createClient } from "gel";
 
-import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
-import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
-import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import type {
   ApiHealthDatabaseConnectionErrorResponse,
   ApiHealthDatabaseDsnErrorResponse,
   ApiHealthDatabaseSuccessResponse,
-} from "../../../../shared/types/api-health.type.ts";
+} from "@shared/types/api-health.type";
+
+import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
+import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
+import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
+import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";

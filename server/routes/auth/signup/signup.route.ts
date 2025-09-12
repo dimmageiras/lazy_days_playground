@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
+import type { SignupRequestBody } from "@server/plugins/gel-auth-fastify";
+
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.const.ts";
 import { IS_DEVELOPMENT } from "../../../../shared/constants/root-env.constant.ts";
@@ -9,7 +11,6 @@ import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import type { SignupRequestBody } from "../../../plugins/gel-auth-fastify/types/no-name.type.ts";
 import {
   signupRequestSchema,
   signupResponseSchema,
@@ -57,12 +58,12 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
         }
 
         const client = createClient();
-        const { emailPassword } = createAuth(client);
+        const { emailPasswordHandlers } = createAuth(client);
         const baseUrl = getBaseUrl();
 
         const verifyUrl = `${baseUrl}/${AUTH_BASE_URL}/${VERIFY}`;
 
-        const { signup } = emailPassword;
+        const { signup } = emailPasswordHandlers;
 
         try {
           const result = await signup(email, password, verifyUrl);
