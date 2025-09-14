@@ -13,4 +13,13 @@ const AUTH_ENDPOINTS = Object.freeze({
   VERIFY: "verify",
 } as const);
 
-export { API_DOCS_ENDPOINTS, API_HEALTH_ENDPOINTS, AUTH_ENDPOINTS };
+const USER_ENDPOINTS = Object.freeze({
+  CHECK_EMAIL: "check-email",
+} as const);
+
+export {
+  API_DOCS_ENDPOINTS,
+  API_HEALTH_ENDPOINTS,
+  AUTH_ENDPOINTS,
+  USER_ENDPOINTS,
+};

@@ -6,6 +6,7 @@ type ZodInfer<T extends z.ZodTypeAny> = z.infer<T>;
 type ZodObject = z.ZodObject;
 type ZodString = z.ZodString;
 
+const zBoolean = z.boolean;
 const zCoerce = z.coerce;
 const zEmail = z.email;
 const zEnum = z.enum;
@@ -17,6 +18,7 @@ const zUnknown = z.unknown;
 
 export type { ZodError, ZodFormattedError, ZodInfer, ZodObject, ZodString };
 export {
+  zBoolean,
   zCoerce,
   zEmail,
   zEnum,

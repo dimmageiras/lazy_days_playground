@@ -10,6 +10,7 @@ import {
   API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
   AUTH_BASE_URL,
+  USER_BASE_URL,
 } from "../shared/constants/base-urls.const.ts";
 import {
   COOKIE_SECRET,
@@ -22,6 +23,7 @@ import {
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { apiHealthRoutes } from "./routes/api-health/index.ts";
 import { authRoutes } from "./routes/auth/index.ts";
+import { userRoutes } from "./routes/user/index.ts";
 
 const { log } = PinoLogHelper;
 
@@ -95,6 +97,7 @@ await app.register(async (fastify) => {
 
   await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
   await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
+  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
   log.info("✅ All routes are registered");
 });
 
