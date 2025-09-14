@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { PageTitle } from "@client/components/PageTitle";
 
-import { SigninForm } from "./components/Form/SigninForm";
+import { SigninForm } from "./components/SigninForm";
 import styles from "./Signin.module.scss";
 
 const Signin = (): JSX.Element => {
