@@ -1,6 +1,7 @@
 import type { JSX } from "react";
 import { useEffect, useMemo } from "react";
 import { useController } from "react-hook-form";
+import type { KeyAsString } from "type-fest";
 
 import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
@@ -9,7 +10,7 @@ import type { SigninForm } from "@client/pages/Signin/components/Form/types/sign
 
 interface FieldProps {
   label: string;
-  name: keyof SigninForm;
+  name: KeyAsString<SigninForm>;
   shouldAutoFocus?: boolean;
 }
 

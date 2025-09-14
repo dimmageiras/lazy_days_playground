@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import type { JSX } from "react";
+import type { KeyAsString } from "type-fest";
 
 import { BaseCard } from "@client/components/BaseCard";
 import { IconifyIcon } from "@client/components/IconifyIcon";
@@ -13,8 +14,13 @@ import styles from "./Card.module.scss";
 import { DatabaseMetadata } from "./components/DatabaseMetadata";
 import { ServerMetadata } from "./components/ServerMetadata";
 
+type CardApiHealthServiceKeys = KeyAsString<typeof API_HEALTH_ENDPOINTS>;
+
+type CardApiHealthService =
+  (typeof API_HEALTH_ENDPOINTS)[CardApiHealthServiceKeys];
+
 interface CardBaseProps {
-  apiHealthService: (typeof API_HEALTH_ENDPOINTS)[keyof typeof API_HEALTH_ENDPOINTS];
+  apiHealthService: CardApiHealthService;
   isHealthy: boolean;
   isUnhealthy: boolean;
   status: string | undefined;

@@ -1,3 +1,5 @@
+import type { KeyAsString } from "type-fest";
+
 /**
  * Gets typed entries from an object, preserving key-value type relationships.
  * This is a type-safe wrapper around Object.entries() that maintains proper typing.
@@ -15,10 +17,12 @@
  */
 const getObjectEntries = <TObject extends Record<string, unknown>>(
   object: TObject
-): { [Key in keyof TObject]: [Key, TObject[Key]] }[keyof TObject][] =>
+): {
+  [Key in KeyAsString<TObject>]: [Key, TObject[Key]];
+}[KeyAsString<TObject>][] =>
   Object.entries(object) as {
-    [Key in keyof TObject]: [Key, TObject[Key]];
-  }[keyof TObject][];
+    [Key in KeyAsString<TObject>]: [Key, TObject[Key]];
+  }[KeyAsString<TObject>][];
 
 /**
  * Gets typed keys from an object.
@@ -37,7 +41,7 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
  */
 const getObjectKeys = <TObject extends Record<string, unknown>>(
   object: TObject
-): (keyof TObject)[] => Object.keys(object);
+): KeyAsString<TObject>[] => Object.keys(object) as KeyAsString<TObject>[];
 
 /**
  * Gets typed values from an object.
@@ -49,7 +53,7 @@ const getObjectKeys = <TObject extends Record<string, unknown>>(
  */
 const getObjectValues = <T extends Record<string, unknown>>(
   initialObject: T
-): T[keyof T][] => Object.values(initialObject) as T[keyof T][];
+): T[KeyAsString<T>][] => Object.values(initialObject) as T[KeyAsString<T>][];
 
 /**
  * Checks if the given value is an object and not an array.

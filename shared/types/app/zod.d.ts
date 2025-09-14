@@ -5,13 +5,17 @@
 
 import type { ISSUE_CODES } from "../../constants/zod.constant.ts";
 
+type IssueCodesKeys = KeyAsString<typeof ISSUE_CODES>;
+
+type IssueCodes = (typeof ISSUE_CODES)[IssueCodesKeys];
+
 /**
  * Common interface for formatted Zod errors
  */
 interface BaseZodFormattedError {
   message: string;
   path: string;
-  validation_code: (typeof ISSUE_CODES)[keyof typeof ISSUE_CODES];
+  validation_code: IssueCodes;
 }
 
 declare module "zod" {

@@ -1,5 +1,6 @@
 import type { AriaAttributes, HTMLInputAutoCompleteAttribute } from "react";
 import type { FieldErrors } from "react-hook-form";
+import type { KeyAsString } from "type-fest";
 
 import type {
   ZodInfer,
@@ -102,7 +103,7 @@ const hasFormErrors = <TFormErrors extends FieldErrors>(
  */
 const isFieldRequired = <TSchema extends ZodObject>(
   schema: TSchema,
-  field: keyof ZodInfer<TSchema>
+  field: KeyAsString<ZodInfer<TSchema>>
 ): boolean => {
   const fieldSchema: ZodString = Reflect.get(schema.shape, field);
 

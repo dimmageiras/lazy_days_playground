@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import type { JSX } from "react";
 import { memo, useCallback, useMemo } from "react";
+import type { KeyAsString } from "type-fest";
 
 import { ListRenderer } from "@client/components/ListRenderer";
 import { DomEventsHelper } from "@client/helpers/dom-events.helper";
@@ -28,7 +29,7 @@ const FormFields = memo(
     const formFields = useMemo(() => getObjectEntries(FORM_FIELDS), []);
 
     const getAutoFocus = useCallback(
-      (name: keyof SigninForm) => {
+      (name: KeyAsString<SigninForm>) => {
         if (isFieldsetDisabled) {
           return false;
         }
@@ -42,7 +43,7 @@ const FormFields = memo(
       <fieldset className={styles["fieldset"]} disabled={isFieldsetDisabled}>
         <ListRenderer
           data={formFields}
-          getKey={([key]): keyof typeof FORM_FIELDS => key}
+          getKey={([key]): KeyAsString<typeof FORM_FIELDS> => key}
           renderComponent={({ data: [key, value] }): JSX.Element => (
             <Field
               key={key}

@@ -5,6 +5,7 @@ import type { RenderToPipeableStreamOptions } from "react-dom/server";
 import { renderToPipeableStream } from "react-dom/server";
 import type { EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
+import type { KeyAsString } from "type-fest";
 
 const streamTimeout = 5_000;
 
@@ -23,7 +24,7 @@ const handleRequest = (
 
     // Ensure requests from bots and SPA Mode renders wait for all content to load before responding
     // https://react.dev/reference/react-dom/server/renderToPipeableStream#waiting-for-all-content-to-load-for-crawlers-and-static-generation
-    const readyOption: keyof RenderToPipeableStreamOptions =
+    const readyOption: KeyAsString<RenderToPipeableStreamOptions> =
       (userAgent && isbot(userAgent)) || routerContext.isSpaMode
         ? "onAllReady"
         : "onShellReady";

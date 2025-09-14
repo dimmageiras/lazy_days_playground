@@ -1,12 +1,15 @@
 import type { UseQueryOptions, UseQueryResult } from "@tanstack/react-query";
 import type { IconifyIcon } from "iconify-icon";
+import type { KeyAsString } from "type-fest";
 
 import type {
   ICONIFY_ICON_QUERY_KEY,
   ICONIFY_ICONS,
 } from "@client/components/IconifyIcon/constants/iconify-icon.constant";
 
-type IconifyIconName = (typeof ICONIFY_ICONS)[keyof typeof ICONIFY_ICONS];
+type IconifyIconNames = KeyAsString<typeof ICONIFY_ICONS>;
+
+type IconifyIconName = (typeof ICONIFY_ICONS)[IconifyIconNames];
 
 interface IconifyIconData<TIconifyIconName extends IconifyIconName> {
   iconData: Required<IconifyIcon>;
