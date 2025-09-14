@@ -191,6 +191,7 @@ A styled text input component with enhanced security features, built-in label, e
 **Props:**
 
 - `errorMessage?: string` - Optional error message to display below the input
+- `hasFloatingLabel?: boolean` - Whether the label should float above the input when focused or has content (default: false)
 - `label: string` - Label text for the input field
 - `type: "text" | "email" | "password"` - Type of text input to render
 - All standard input attributes are supported except 'type'
@@ -203,6 +204,7 @@ A styled text input component with enhanced security features, built-in label, e
   label="Username"
   name="username"
   placeholder="Enter username"
+  required={false}
   type="text"
 />
 
@@ -215,8 +217,9 @@ A styled text input component with enhanced security features, built-in label, e
   type="email"
 />
 
-// Required password input
+// Floating label password input
 <TextInput
+  hasFloatingLabel
   label="Password"
   name="password"
   required

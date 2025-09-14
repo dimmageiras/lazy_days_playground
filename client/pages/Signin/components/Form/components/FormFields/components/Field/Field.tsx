@@ -38,7 +38,11 @@ const Field = ({
 
   return (
     <TextInput
+      autoComplete={
+        name === "email" ? "email webauthn" : "current-password webauthn"
+      }
       errorMessage={error?.message}
+      hasFloatingLabel
       label={label}
       required={isRequired}
       type={name}

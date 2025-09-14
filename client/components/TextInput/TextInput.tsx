@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import type { ComponentPropsWithRef, JSX } from "react";
 import { memo, useMemo } from "react";
 
@@ -15,6 +16,10 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
    * Optional error message to display below the input.
    */
   errorMessage?: string | undefined;
+  /**
+   * Whether the label should float above the input when the input is focused or has content.
+   */
+  hasFloatingLabel?: boolean;
   /**
    * The label text for the input field.
    */
@@ -53,8 +58,9 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  *   type="email"
  * />
  *
- * // Secure password input with validation
+ * // Floating label password input
  * <TextInput
+ *   hasFloatingLabel
  *   label="Password"
  *   name="password"
  *   required
@@ -62,22 +68,34 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  * />
  * ```
  *
- * @param props - Extends standard input props (except 'type' and 'required')
- * @param props.[...inputProps] - All standard input attributes are supported
+ * @param props - The TextInput component props
+ * @param props.[...inputProps] - All standard input attributes are supported (except 'type')
  * @param props.errorMessage - Optional error message to display below the input
+ * @param props.hasFloatingLabel - Whether the label should float above the input when focused or has content (default: false)
  * @param props.label - Label text for the input field
  * @param props.type - Must be one of: "text", "email", "password"
  * @returns JSX.Element - The rendered input group with label, input, and error message
  */
 const TextInput = memo(
-  ({ errorMessage, label, ...props }: TextInputProps): JSX.Element => {
+  ({
+    autoComplete = "off",
+    errorMessage,
+    hasFloatingLabel = false,
+    label,
+    ...props
+  }: TextInputProps): JSX.Element => {
     const { getNoAutofillProps } = FormUtilsHelper;
 
     const noAutofillProps = useMemo(() => getNoAutofillProps(), []);
 
     return (
       <div className={styles["text-input-container"]}>
-        <label className={styles["label"]} htmlFor={props.name}>
+        <label
+          className={classNames(styles["label"], {
+            [String(styles["floating"])]: hasFloatingLabel,
+          })}
+          htmlFor={props.name}
+        >
           {label}
           {props.required ? (
             <span aria-hidden="true" className={styles["required"]}>
@@ -86,7 +104,9 @@ const TextInput = memo(
           ) : null}
         </label>
         <input
-          className={styles["input"]}
+          className={classNames(styles["input"], {
+            [String(styles["has-value"])]: !!props.value,
+          })}
           id={props.name}
           {...(!!errorMessage && {
             "aria-errormessage": `${props.name}-error`,
@@ -94,7 +114,7 @@ const TextInput = memo(
           {...(!!errorMessage && { "aria-invalid": "true" })}
           {...(!!props.disabled && { "aria-disabled": "true" })}
           {...(!!props.required && { "aria-required": "true" })}
-          {...noAutofillProps}
+          {...(autoComplete === "off" ? noAutofillProps : { autoComplete })}
           {...props}
         />
         {errorMessage ? (
