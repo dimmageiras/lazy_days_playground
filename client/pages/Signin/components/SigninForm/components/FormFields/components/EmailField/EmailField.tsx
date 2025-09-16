@@ -1,27 +1,26 @@
-import type { JSX } from "react";
-import { useEffect, useMemo } from "react";
+import type { FocusEvent, JSX } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useController } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
+import { useCheckEmailExists } from "@client/pages/Signin/components/SigninForm/components/FormFields/components/EmailField/queries/useCheckEmailExists.query";
 import { FORM_FIELDS } from "@client/pages/Signin/components/SigninForm/components/FormFields/constants/form-fields.constant";
 import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
 import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";
-
-interface EmailFieldProps {
-  isDisabled: boolean;
-}
+import { zEmail } from "@shared/wrappers/zod.wrapper";
 
 const EMAIL_FIELD_NAME = FORM_FIELDS.EMAIL.name;
 const EMAIL_FIELD_LABEL = FORM_FIELDS.EMAIL.label;
 
-const EmailField = ({ isDisabled }: EmailFieldProps): JSX.Element => {
+const EmailField = (): JSX.Element => {
   const {
-    field: fieldProps,
+    field: { onBlur, ...fieldProps },
     fieldState: { error },
   } = useController<SigninForm, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
+  const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
   const { isFieldRequired } = FormUtilsHelper;
 
@@ -30,13 +29,24 @@ const EmailField = ({ isDisabled }: EmailFieldProps): JSX.Element => {
     []
   );
 
+  const handleEmailBlur = useCallback(
+    async (event: FocusEvent<HTMLInputElement>) => {
+      onBlur();
+
+      if (zEmail().safeParse(event.target.value).success) {
+        await checkEmailExists(event.target.value);
+      }
+    },
+    [checkEmailExists, onBlur]
+  );
+
   useEffect(() => {
-    if (isDisabled) {
+    if (fieldProps.disabled) {
       return;
     }
 
     document.getElementById(EMAIL_FIELD_NAME)?.focus();
-  }, [isDisabled]);
+  }, [fieldProps.disabled]);
 
   return (
     <TextInput
@@ -44,6 +54,7 @@ const EmailField = ({ isDisabled }: EmailFieldProps): JSX.Element => {
       errorMessage={error?.message}
       hasFloatingLabel
       label={EMAIL_FIELD_LABEL}
+      onBlur={handleEmailBlur}
       required={isRequired}
       type={EMAIL_FIELD_NAME}
       {...fieldProps}

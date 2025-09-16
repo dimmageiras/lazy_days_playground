@@ -9,15 +9,17 @@ import type {
 
 const { DATABASE, SERVER } = API_HEALTH_ENDPOINTS;
 
+const BASE_URL = `/${API_HEALTH_BASE_URL}` as const;
+
 const getDatabaseHealth = async (): Promise<ApiHealthDatabaseCheckResponse> => {
-  const url = `/${API_HEALTH_BASE_URL}/${DATABASE}` as const;
+  const url = `${BASE_URL}/${DATABASE}` as const;
   const response = await axios.get<ApiHealthDatabaseCheckResponse>(url);
 
   return response.data;
 };
 
 const getServerHealth = async (): Promise<ApiHealthServerCheckResponse> => {
-  const url = `/${API_HEALTH_BASE_URL}/${SERVER}` as const;
+  const url = `${BASE_URL}/${SERVER}` as const;
   const response = await axios.get<ApiHealthServerCheckResponse>(url);
 
   return response.data;
