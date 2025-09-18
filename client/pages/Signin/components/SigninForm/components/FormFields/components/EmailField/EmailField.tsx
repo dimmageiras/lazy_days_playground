@@ -8,7 +8,6 @@ import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { FORM_FIELDS } from "@client/pages/Signin/components/SigninForm/components/FormFields/constants/form-fields.constant";
 import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
 import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";
-import { zEmail } from "@shared/wrappers/zod.wrapper";
 
 const {
   EMAIL: { name, label },
@@ -19,11 +18,10 @@ const EMAIL_FIELD_LABEL = label;
 const EmailField = (): JSX.Element => {
   const {
     field: { onBlur, ...fieldProps },
-    fieldState: { error },
+    fieldState: { error, isDirty, isTouched },
   } = useController<SigninForm, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
-
   const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
   const { isFieldRequired } = FormUtilsHelper;
@@ -33,19 +31,25 @@ const EmailField = (): JSX.Element => {
     [isFieldRequired]
   );
 
+  const isFieldUsedOrDisabled = fieldProps.disabled || isDirty || isTouched;
+
   const handleEmailBlur = useCallback(
-    async (event: FocusEvent<HTMLInputElement>) => {
+    async (event: FocusEvent<HTMLInputElement>): Promise<void> => {
       onBlur();
 
-      if (zEmail().safeParse(event.target.value).success) {
-        await checkEmailExists(event.target.value);
+      const { value } = event.currentTarget;
+      const emailSchema = Reflect.get(signinSchema.shape, "email");
+      const isEmailValid = emailSchema.safeParse(value).success;
+
+      if (isEmailValid && value.trim()) {
+        await checkEmailExists(value);
       }
     },
     [checkEmailExists, onBlur]
   );
 
   useEffect(() => {
-    if (fieldProps.disabled) {
+    if (isFieldUsedOrDisabled) {
       return;
     }
 
@@ -56,7 +60,7 @@ const EmailField = (): JSX.Element => {
         element.focus();
       }
     });
-  }, [fieldProps.disabled]);
+  }, [isFieldUsedOrDisabled]);
 
   return (
     <TextInput

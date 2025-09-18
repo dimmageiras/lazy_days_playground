@@ -4,14 +4,18 @@ import type {
 } from "@tanstack/react-query";
 import { QueryClient } from "@tanstack/react-query";
 
+import { TIMING } from "@shared/constants/timing.constant";
+
 import { ArrayUtilsHelper } from "./array-utils.helper";
 import { ObjectUtilsHelper } from "./object-utils.helper";
 
 const createQueryClientForServer = (): QueryClient => {
+  const { QUERY_SSR_GC_TIME } = TIMING;
+
   return new QueryClient({
     defaultOptions: {
       queries: {
-        gcTime: 2 * 1000,
+        gcTime: QUERY_SSR_GC_TIME,
       },
     },
   });

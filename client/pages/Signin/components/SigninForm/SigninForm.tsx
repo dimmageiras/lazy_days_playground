@@ -21,10 +21,10 @@ const SigninForm = (): JSX.Element => {
           password: "",
         },
         disabled: isFormLoading,
-        mode: "onTouched",
+        mode: "onBlur",
         progressive: true,
         resolver: zodResolver(signinSchema),
-        reValidateMode: "onChange",
+        reValidateMode: "onSubmit",
         shouldUseNativeValidation: false,
       } satisfies UseFormProps<SigninFormType>),
     [isFormLoading]
@@ -38,10 +38,7 @@ const SigninForm = (): JSX.Element => {
     reset,
   } = formMethods;
 
-  const isLoading = useMemo(
-    () => isSubmitting || !isReady,
-    [isSubmitting, isReady]
-  );
+  const isLoading = isSubmitting || !isReady;
 
   const onValid = async (data: SigninFormType) => {
     await Promise.resolve(data);

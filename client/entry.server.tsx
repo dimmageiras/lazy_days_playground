@@ -7,7 +7,9 @@ import type { EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 import type { KeyAsString } from "type-fest";
 
-const streamTimeout = 5_000;
+import { TIMING } from "@shared/constants/timing.constant";
+
+const { EXPENSIVE, SSR_TIMEOUT } = TIMING;
 
 const handleRequest = (
   request: Request,
@@ -66,8 +68,8 @@ const handleRequest = (
 
     // Abort the rendering stream after the `streamTimeout` so it has time to
     // flush down the rejected boundaries
-    setTimeout(abort, streamTimeout + 1000);
+    setTimeout(abort, SSR_TIMEOUT + EXPENSIVE);
   });
 };
 
-export { handleRequest as default, streamTimeout };
+export { handleRequest as default, SSR_TIMEOUT as streamTimeout };
