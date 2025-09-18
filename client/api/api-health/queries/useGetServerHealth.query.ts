@@ -1,8 +1,9 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 
-import { ApiHealthQueriesHelper } from "@client/pages/ApiHealth/helpers/api-health-queries.helper";
 import type { ApiHealthServerCheckResponse } from "@shared/types/api-health.type";
+
+import { ApiHealthQueriesHelper } from "./helpers/api-health-queries.helper";
 
 const useGetServerHealth = (): UseQueryResult<
   ApiHealthServerCheckResponse,

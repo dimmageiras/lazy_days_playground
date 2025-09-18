@@ -2,9 +2,9 @@ import type { FocusEvent, JSX } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useController } from "react-hook-form";
 
+import { useCheckEmailExists } from "@client/api/user/useCheckEmailExists.query";
 import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
-import { useCheckEmailExists } from "@client/pages/Signin/components/SigninForm/components/FormFields/components/EmailField/queries/useCheckEmailExists.query";
 import { FORM_FIELDS } from "@client/pages/Signin/components/SigninForm/components/FormFields/constants/form-fields.constant";
 import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
 import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";

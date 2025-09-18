@@ -1,8 +1,8 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 
-import { USER_QUERY_KEYS } from "@client/pages/Signin/components/SigninForm/components/FormFields/components/EmailField/constants/user.constant";
-import { UserService } from "@client/pages/Signin/components/SigninForm/components/FormFields/components/EmailField/services/user.service";
+import { USER_QUERY_KEYS } from "@client/api/user/user.constant";
+import { UserService } from "@client/api/user/user.service";
 import type { CheckEmailResponse } from "@shared/types/user.type";
 
 const useCheckEmailExists = (): UseMutationResult<

@@ -3,8 +3,8 @@ import classNames from "classnames";
 import type { JSX } from "react";
 import { memo } from "react";
 
+import { USER_QUERY_KEYS } from "@client/api/user/user.constant";
 import { DomEventsHelper } from "@client/helpers/dom-events.helper";
-import { USER_QUERY_KEYS } from "@client/pages/Signin/components/SigninForm/components/FormFields/components/EmailField/constants/user.constant";
 import type { CheckEmailResponse } from "@shared/types/user.type";
 
 import styles from "./ActioButtons.module.scss";

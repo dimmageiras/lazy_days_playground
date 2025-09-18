@@ -2,9 +2,8 @@ import type { DehydratedState } from "@tanstack/react-query";
 import { dehydrate } from "@tanstack/react-query";
 import { data } from "react-router";
 
+import { ApiHealthQueriesHelper } from "@client/api/api-health/queries/helpers/api-health-queries.helper";
 import { QueriesHelper } from "@client/helpers/queries.helper";
-
-import { ApiHealthQueriesHelper } from "./helpers/api-health-queries.helper";
 
 const loader = async (): Promise<
   ReturnType<
