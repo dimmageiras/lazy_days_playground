@@ -21,9 +21,10 @@ const SigninForm = (): JSX.Element => {
           password: "",
         },
         disabled: isFormLoading,
-        mode: "onBlur",
+        mode: "onTouched",
         progressive: true,
         resolver: zodResolver(signinSchema),
+        reValidateMode: "onChange",
         shouldUseNativeValidation: false,
       } satisfies UseFormProps<SigninFormType>),
     [isFormLoading]
