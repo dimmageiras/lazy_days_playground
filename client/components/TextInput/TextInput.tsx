@@ -4,6 +4,8 @@ import { memo, useMemo } from "react";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 
+import { SkeletonInput } from "./components/SkeletonInput";
+import { SkeletonLabel } from "./components/SkeletonLabel";
 import styles from "./TextInput.module.scss";
 import type { TextInputType } from "./types/text-input.type";
 
@@ -20,6 +22,10 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
    * Whether the label should float above the input when the input is focused or has content.
    */
   hasFloatingLabel?: boolean;
+  /**
+   * Whether the input is loading.
+   */
+  isLoading?: boolean;
   /**
    * The label text for the input field.
    */
@@ -72,6 +78,7 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  * @param props.[...inputProps] - All standard input attributes are supported (except 'type')
  * @param props.errorMessage - Optional error message to display below the input
  * @param props.hasFloatingLabel - Whether the label should float above the input when focused or has content (default: false)
+ * @param props.isLoading - Whether the input is loading (default: false)
  * @param props.label - Label text for the input field
  * @param props.type - Must be one of: "text", "email", "password"
  * @returns JSX.Element - The rendered input group with label, input, and error message
@@ -79,53 +86,81 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
 const TextInput = memo(
   ({
     autoComplete = "off",
+    className,
     errorMessage,
     hasFloatingLabel = false,
+    isLoading = false,
     label,
     ...props
   }: TextInputProps): JSX.Element => {
     const { getNoAutofillProps } = FormUtilsHelper;
 
-    const noAutofillProps = useMemo(() => getNoAutofillProps(), []);
+    const noAutofillProps = useMemo(
+      () => (autoComplete === "off" ? getNoAutofillProps() : null),
+      []
+    );
 
     return (
       <div className={styles["text-input-container"]}>
-        <label
-          className={classNames(styles["label"], {
-            [String(styles["floating"])]: hasFloatingLabel,
-          })}
-          htmlFor={props.name}
-        >
-          {label}
-          {props.required ? (
-            <span aria-hidden="true" className={styles["required"]}>
-              &nbsp;*
-            </span>
-          ) : null}
-        </label>
-        <input
-          className={classNames(styles["input"], {
-            [String(styles["has-value"])]: !!props.value,
-          })}
-          id={props.name}
-          {...(!!errorMessage && {
-            "aria-errormessage": `${props.name}-error`,
-          })}
-          {...(!!errorMessage && { "aria-invalid": "true" })}
-          {...(!!props.disabled && { "aria-disabled": "true" })}
-          {...(!!props.required && { "aria-required": "true" })}
-          {...(autoComplete === "off" ? noAutofillProps : { autoComplete })}
-          {...props}
-        />
-        {errorMessage ? (
-          <small
-            aria-live="polite"
-            className={styles["error-message"]}
-            id={`${props.name}-error`}
-          >
-            {errorMessage}
-          </small>
-        ) : null}
+        {isLoading ? (
+          <>
+            {!hasFloatingLabel ? (
+              <SkeletonLabel
+                className={classNames(styles["label"], styles["skeleton"])}
+                id={`${props.name ?? props.id}-unique-id-label`}
+              />
+            ) : null}
+            <SkeletonInput
+              className={classNames(
+                styles["input"],
+                styles["skeleton"],
+                className
+              )}
+              id={`${props.name ?? props.id}-unique-id-input`}
+            />
+          </>
+        ) : (
+          <>
+            <label
+              className={classNames(styles["label"], {
+                [String(styles["floating"])]: hasFloatingLabel,
+              })}
+              htmlFor={props.name}
+            >
+              {label}
+              {props.required ? (
+                <span aria-hidden="true" className={styles["required"]}>
+                  &nbsp;*
+                </span>
+              ) : null}
+            </label>
+            <input
+              className={classNames(
+                styles["input"],
+                { [String(styles["has-value"])]: !!props.value },
+                className
+              )}
+              id={props.name}
+              {...(!!errorMessage && {
+                "aria-errormessage": `${props.name}-error`,
+              })}
+              {...(!!errorMessage && { "aria-invalid": "true" })}
+              {...(!!props.disabled && { "aria-disabled": "true" })}
+              {...(!!props.required && { "aria-required": "true" })}
+              {...(noAutofillProps ?? { autoComplete })}
+              {...props}
+            />
+            {errorMessage ? (
+              <small
+                aria-live="polite"
+                className={styles["error-message"]}
+                id={`${props.name}-error`}
+              >
+                {errorMessage}
+              </small>
+            ) : null}
+          </>
+        )}
       </div>
     );
   }

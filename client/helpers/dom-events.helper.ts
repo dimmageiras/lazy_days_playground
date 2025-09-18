@@ -16,7 +16,7 @@ import type { MouseEvent } from "react";
  *
  * // Enable multiple mouse buttons
  * <button
- *   onMouseDown={(e) => handleMouseDown(e, {
+ *   onMouseDown={(event) => handleMouseDown(event, {
  *     enableLeftClick: true,
  *     enableMiddleClick: true,
  *     enableRightClick: false

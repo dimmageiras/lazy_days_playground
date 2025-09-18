@@ -10,8 +10,11 @@ import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas
 import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";
 import { zEmail } from "@shared/wrappers/zod.wrapper";
 
-const EMAIL_FIELD_NAME = FORM_FIELDS.EMAIL.name;
-const EMAIL_FIELD_LABEL = FORM_FIELDS.EMAIL.label;
+const {
+  EMAIL: { name, label },
+} = FORM_FIELDS;
+const EMAIL_FIELD_NAME = name;
+const EMAIL_FIELD_LABEL = label;
 
 const EmailField = (): JSX.Element => {
   const {
@@ -20,13 +23,14 @@ const EmailField = (): JSX.Element => {
   } = useController<SigninForm, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
+
   const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
   const { isFieldRequired } = FormUtilsHelper;
 
   const isRequired = useMemo(
     () => isFieldRequired(signinSchema, EMAIL_FIELD_NAME),
-    []
+    [isFieldRequired]
   );
 
   const handleEmailBlur = useCallback(
@@ -45,7 +49,13 @@ const EmailField = (): JSX.Element => {
       return;
     }
 
-    document.getElementById(EMAIL_FIELD_NAME)?.focus();
+    requestAnimationFrame(() => {
+      const element = document.getElementById(EMAIL_FIELD_NAME);
+
+      if (element) {
+        element.focus();
+      }
+    });
   }, [fieldProps.disabled]);
 
   return (

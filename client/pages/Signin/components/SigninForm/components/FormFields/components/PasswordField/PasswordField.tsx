@@ -8,8 +8,11 @@ import { FORM_FIELDS } from "@client/pages/Signin/components/SigninForm/componen
 import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
 import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";
 
-const PASSWORD_FIELD_NAME = FORM_FIELDS.PASSWORD.name;
-const PASSWORD_FIELD_LABEL = FORM_FIELDS.PASSWORD.label;
+const {
+  PASSWORD: { name, label },
+} = FORM_FIELDS;
+const PASSWORD_FIELD_NAME = name;
+const PASSWORD_FIELD_LABEL = label;
 
 const PasswordField = (): JSX.Element => {
   const {
@@ -23,7 +26,7 @@ const PasswordField = (): JSX.Element => {
 
   const isRequired = useMemo(
     () => isFieldRequired(signinSchema, PASSWORD_FIELD_NAME),
-    []
+    [isFieldRequired]
   );
 
   return (

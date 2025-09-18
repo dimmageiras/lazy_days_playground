@@ -12,7 +12,7 @@ import { signinSchema } from "./schemas/signin-form.schema";
 import type { SigninForm as SigninFormType } from "./types/signin-form.type";
 
 const SigninForm = (): JSX.Element => {
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [isFormLoading, setIsFormLoading] = useState(true);
   const formInitialization = useMemo(
     () =>
       ({
@@ -20,13 +20,13 @@ const SigninForm = (): JSX.Element => {
           email: "",
           password: "",
         },
-        disabled: isDisabled,
-        mode: "onTouched",
+        disabled: isFormLoading,
+        mode: "onBlur",
         progressive: true,
         resolver: zodResolver(signinSchema),
         shouldUseNativeValidation: false,
       } satisfies UseFormProps<SigninFormType>),
-    [isDisabled]
+    [isFormLoading]
   );
 
   const formMethods = useForm<SigninFormType>(formInitialization);
@@ -37,7 +37,7 @@ const SigninForm = (): JSX.Element => {
     reset,
   } = formMethods;
 
-  const isFormDisabled = useMemo(
+  const isLoading = useMemo(
     () => isSubmitting || !isReady,
     [isSubmitting, isReady]
   );
@@ -49,18 +49,18 @@ const SigninForm = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (isFormDisabled) {
+    if (isLoading) {
       return;
     }
 
-    setIsDisabled(false);
-  }, [isFormDisabled]);
+    setIsFormLoading(false);
+  }, [isLoading]);
 
   return (
     <BaseCard>
       <FormProvider {...formMethods}>
         <ReactRouterForm noValidate onSubmit={handleSubmit(onValid)}>
-          <FormFields isFieldsetDisabled={isDisabled} isFormValid={isValid} />
+          <FormFields isFormLoading={isFormLoading} isFormValid={isValid} />
         </ReactRouterForm>
       </FormProvider>
     </BaseCard>

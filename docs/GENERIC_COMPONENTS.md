@@ -142,7 +142,7 @@ const [isSubscribed, setIsSubscribed] = useState(false);
   label="Subscribe to newsletter"
   name="newsletter"
   value="subscribed"
-  onChange={(e) => setIsSubscribed(e.target.checked)}
+  onChange={(event) => setIsSubscribed(event.target.checked)}
 />;
 ```
 
@@ -171,7 +171,7 @@ const [selectedPlan, setSelectedPlan] = useState('');
   isChecked={selectedPlan === 'basic'}
   label="Basic Plan"
   name="subscription-plan"
-  onChange={(e) => setSelectedPlan(e.target.value)}
+  onChange={(event) => setSelectedPlan(event.target.value)}
   value="basic"
 />
 <RadioButton
@@ -179,7 +179,7 @@ const [selectedPlan, setSelectedPlan] = useState('');
   isChecked={selectedPlan === 'premium'}
   label="Premium Plan"
   name="subscription-plan"
-  onChange={(e) => setSelectedPlan(e.target.value)}
+  onChange={(event) => setSelectedPlan(event.target.value)}
   value="premium"
 />
 ```
@@ -192,6 +192,7 @@ A styled text input component with enhanced security features, built-in label, e
 
 - `errorMessage?: string` - Optional error message to display below the input
 - `hasFloatingLabel?: boolean` - Whether the label should float above the input when focused or has content (default: false)
+- `isLoading?: boolean` - Whether the input is loading, shows skeleton animation when true (default: false)
 - `label: string` - Label text for the input field
 - `type: "text" | "email" | "password"` - Type of text input to render
 - All standard input attributes are supported except 'type'

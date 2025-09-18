@@ -44,7 +44,7 @@ interface CheckBoxProps {
  *   isChecked={isSubscribed}
  *   label="Subscribe to newsletter"
  *   name="newsletter"
- *   onChange={(e) => setIsSubscribed(e.target.checked)}
+ *   onChange={(event) => setIsSubscribed(event.target.checked)}
  *   value="subscribed"
  * />
  * ```

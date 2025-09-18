@@ -40,7 +40,7 @@ interface RadioButtonProps {
  *   isChecked={selectedPlan === 'basic'}
  *   label="Basic Plan"
  *   name="subscription-plan"
- *   onChange={(e) => setSelectedPlan(e.target.value)}
+ *   onChange={(event) => setSelectedPlan(event.target.value)}
  *   value="basic"
  * />
  *
@@ -52,7 +52,7 @@ interface RadioButtonProps {
  *   isChecked={selectedPlan === 'premium'}
  *   label="Premium Plan"
  *   name="subscription-plan"
- *   onChange={(e) => setSelectedPlan(e.target.value)}
+ *   onChange={(event) => setSelectedPlan(event.target.value)}
  *   value="premium"
  * />
  * ```
