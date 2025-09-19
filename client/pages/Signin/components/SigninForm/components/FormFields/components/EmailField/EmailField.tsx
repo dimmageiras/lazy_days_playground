@@ -22,11 +22,11 @@ const EMAIL_FIELD_LABEL = label;
 const EmailField = (): JSX.Element => {
   const {
     field: { onBlur, onChange, ...fieldProps },
-    fieldState: { error, invalid, isDirty, isTouched, isValidating },
+    fieldState: { error, invalid, isDirty, isTouched },
   } = useController<SigninForm, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
-  const { mutateAsync: checkEmailExists } = useCheckEmailExists();
+  const { isPending, mutateAsync: checkEmailExists } = useCheckEmailExists();
 
   const { checkEmailValidity, handleBlur, handleChange } = EmailFieldHelper;
   const { isFieldRequired } = FormUtilsHelper;
@@ -37,7 +37,6 @@ const EmailField = (): JSX.Element => {
   );
 
   const hasBeenValidated = isTouched || invalid || !!error;
-  const isCurrentlyValidating = isValidating;
   const isFieldUsedOrDisabled = fieldProps.disabled || isDirty || isTouched;
 
   const debouncedEmailValidation = useDebounce(
@@ -80,7 +79,7 @@ const EmailField = (): JSX.Element => {
       autoComplete="email webauthn"
       errorMessage={error?.message}
       hasFloatingLabel
-      isLoading={isCurrentlyValidating}
+      isLoading={isPending}
       label={EMAIL_FIELD_LABEL}
       onBlur={handleEmailBlur}
       onChange={handleEmailChange}
