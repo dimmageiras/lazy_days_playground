@@ -1,6 +1,18 @@
 .fieldset {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 0.5rem;
+
   padding: 0.5rem;
+
+  &:has(div:first-child:nth-last-child(3)) {
+    grid-template-rows: 1fr 1fr 1fr auto;
+
+    div:nth-child(3) {
+      grid-area: 4 / 1;
+    }
+  }
+
+  &:has(div:first-child:nth-last-child(4)) {
+    grid-template-rows: 1fr 1fr 1fr auto;
+  }
 }
