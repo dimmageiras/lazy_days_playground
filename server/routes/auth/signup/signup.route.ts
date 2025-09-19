@@ -7,14 +7,14 @@ import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.const.ts";
 import { IS_DEVELOPMENT } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
+import {
+  signupRequestSchema,
+  signupResponseSchema,
+} from "../../../../shared/schemas/auth/signup-route.schema.ts";
 import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import {
-  signupRequestSchema,
-  signupResponseSchema,
-} from "./signup-route.schema.ts";
 
 const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { SIGNUP, VERIFY } = AUTH_ENDPOINTS;

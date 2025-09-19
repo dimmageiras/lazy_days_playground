@@ -6,14 +6,14 @@ import { AUTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { IS_DEVELOPMENT } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
+import {
+  signinRequestSchema,
+  signinResponseSchema,
+} from "../../../../shared/schemas/auth/signin-route.schema.ts";
 import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import {
-  signinRequestSchema,
-  signinResponseSchema,
-} from "./signin-route.schema.ts";
 
 const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { SIGNIN } = AUTH_ENDPOINTS;

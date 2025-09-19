@@ -3,7 +3,7 @@ import {
   zIsoDateTime,
   zObject,
   zString,
-} from "../../../../shared/wrappers/zod.wrapper.ts";
+} from "../../wrappers/zod.wrapper.ts";
 
 const signinRequestSchema = zObject({
   email: zEmail(),

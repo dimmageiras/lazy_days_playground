@@ -3,7 +3,7 @@ import type { ZodInfer } from "@shared/wrappers/zod.wrapper";
 import type {
   checkEmailRequestSchema,
   checkEmailResponseSchema,
-} from "../../server/routes/user/check-email/check-email-route.schema";
+} from "../schemas/user/check-email-route.schema";
 
 type CheckEmailRequest = ZodInfer<typeof checkEmailRequestSchema>;
 

@@ -4,9 +4,9 @@ import type { ApiHealthServerSuccessResponse } from "@shared/types/api-health.ty
 
 import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
+import { serverHealthSchema } from "../../../../shared/schemas/api-health/server-route.schema.ts";
 import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
-import { serverHealthSchema } from "./server-route.schema.ts";
 
 const serverRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { getCurrentISOTimestamp } = DateHelper;

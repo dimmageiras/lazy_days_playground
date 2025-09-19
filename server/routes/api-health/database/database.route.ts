@@ -11,10 +11,10 @@ import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
+import { databaseHealthSchema } from "../../../../shared/schemas/api-health/database-route.schema.ts";
 import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import { databaseHealthSchema } from "./database-route.schema.ts";
 
 const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { getCurrentISOTimestamp } = DateHelper;

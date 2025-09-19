@@ -3,7 +3,7 @@ import {
   zObject,
   zString,
   zUnknown,
-} from "../../../../shared/wrappers/zod.wrapper.ts";
+} from "../../wrappers/zod.wrapper.ts";
 
 const databaseHealthSchema = zObject({
   database: zString().optional(),

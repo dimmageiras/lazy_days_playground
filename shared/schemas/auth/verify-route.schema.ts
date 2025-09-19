@@ -1,8 +1,4 @@
-import {
-  zIsoDateTime,
-  zObject,
-  zString,
-} from "../../../../shared/wrappers/zod.wrapper.ts";
+import { zIsoDateTime, zObject, zString } from "../../wrappers/zod.wrapper.ts";
 
 const verifyRequestSchema = zObject({
   verificationToken: zString(),

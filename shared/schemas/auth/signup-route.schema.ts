@@ -4,7 +4,7 @@ import {
   zIsoDateTime,
   zObject,
   zString,
-} from "../../../../shared/wrappers/zod.wrapper.ts";
+} from "../../wrappers/zod.wrapper.ts";
 
 const signupRequestSchema = zObject({
   confirmPassword: zString().min(8),

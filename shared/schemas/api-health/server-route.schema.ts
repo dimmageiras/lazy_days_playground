@@ -1,8 +1,4 @@
-import {
-  zIsoDateTime,
-  zObject,
-  zString,
-} from "../../../../shared/wrappers/zod.wrapper.ts";
+import { zIsoDateTime, zObject, zString } from "../../wrappers/zod.wrapper.ts";
 
 const serverHealthSchema = zObject({
   error: zString().optional(),
