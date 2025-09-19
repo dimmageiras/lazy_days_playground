@@ -1,13 +1,17 @@
-import type { FocusEvent, JSX } from "react";
+import type { ChangeEvent, FocusEvent, JSX } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useController } from "react-hook-form";
 
 import { useCheckEmailExists } from "@client/api/user/useCheckEmailExists.query";
 import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
+import { useDebounce } from "@client/hooks/useDebounce";
 import { FORM_FIELDS } from "@client/pages/Signin/components/SigninForm/components/FormFields/constants/form-fields.constant";
 import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
 import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";
+import { TIMING } from "@shared/constants/timing.constant";
+
+import { EmailFieldHelper } from "./helpers/email-field.helper";
 
 const {
   EMAIL: { name, label },
@@ -17,13 +21,14 @@ const EMAIL_FIELD_LABEL = label;
 
 const EmailField = (): JSX.Element => {
   const {
-    field: { onBlur, ...fieldProps },
-    fieldState: { error, isDirty, isTouched },
+    field: { onBlur, onChange, ...fieldProps },
+    fieldState: { error, invalid, isDirty, isTouched, isValidating },
   } = useController<SigninForm, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
   const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
+  const { checkEmailValidity, handleBlur, handleChange } = EmailFieldHelper;
   const { isFieldRequired } = FormUtilsHelper;
 
   const isRequired = useMemo(
@@ -31,21 +36,29 @@ const EmailField = (): JSX.Element => {
     [isFieldRequired]
   );
 
+  const hasBeenValidated = isTouched || invalid || !!error;
+  const isCurrentlyValidating = isValidating;
   const isFieldUsedOrDisabled = fieldProps.disabled || isDirty || isTouched;
 
-  const handleEmailBlur = useCallback(
-    async (event: FocusEvent<HTMLInputElement>): Promise<void> => {
-      onBlur();
-
-      const { value } = event.currentTarget;
-      const emailSchema = Reflect.get(signinSchema.shape, "email");
-      const isEmailValid = emailSchema.safeParse(value).success;
-
-      if (isEmailValid && value.trim()) {
-        await checkEmailExists(value);
-      }
+  const debouncedEmailValidation = useDebounce(
+    async (email: string): Promise<void> => {
+      await checkEmailValidity(email, checkEmailExists);
     },
-    [checkEmailExists, onBlur]
+    TIMING.VALIDATION
+  );
+
+  const handleEmailChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>): void => {
+      handleChange(event, onChange, debouncedEmailValidation, hasBeenValidated);
+    },
+    [debouncedEmailValidation, handleChange, hasBeenValidated, onChange]
+  );
+
+  const handleEmailBlur = useCallback(
+    (event: FocusEvent<HTMLInputElement>) => {
+      handleBlur(event, onBlur, checkEmailExists);
+    },
+    [checkEmailExists, handleBlur, onBlur]
   );
 
   useEffect(() => {
@@ -67,8 +80,10 @@ const EmailField = (): JSX.Element => {
       autoComplete="email webauthn"
       errorMessage={error?.message}
       hasFloatingLabel
+      isLoading={isCurrentlyValidating}
       label={EMAIL_FIELD_LABEL}
       onBlur={handleEmailBlur}
+      onChange={handleEmailChange}
       required={isRequired}
       type={EMAIL_FIELD_NAME}
       {...fieldProps}

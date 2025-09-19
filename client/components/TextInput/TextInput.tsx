@@ -100,6 +100,10 @@ const TextInput = memo(
       []
     );
 
+    const hasErrorMessage = !!errorMessage;
+    const isDisabled = !!props.disabled;
+    const isRequired = !!props.required;
+
     return (
       <div className={styles["text-input-container"]}>
         {isLoading ? (
@@ -141,12 +145,12 @@ const TextInput = memo(
                 className
               )}
               id={props.name}
-              {...(!!errorMessage && {
+              {...(hasErrorMessage && {
                 "aria-errormessage": `${props.name}-error`,
+                "aria-invalid": "true",
               })}
-              {...(!!errorMessage && { "aria-invalid": "true" })}
-              {...(!!props.disabled && { "aria-disabled": "true" })}
-              {...(!!props.required && { "aria-required": "true" })}
+              {...(isDisabled && { "aria-disabled": "true" })}
+              {...(isRequired && { "aria-required": "true" })}
               {...(noAutofillProps ?? { autoComplete })}
               {...props}
             />

@@ -178,11 +178,11 @@ importers:
         specifier: 1.92.1
         version: 1.92.1
       swagger-typescript-api:
-        specifier: 13.2.11
-        version: 13.2.11
+        specifier: 13.2.13
+        version: 13.2.13
       type-fest:
-        specifier: 5.0.0
-        version: 5.0.0
+        specifier: 5.0.1
+        version: 5.0.1
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -363,8 +363,8 @@ packages:
       react: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  '@bufbuild/protobuf@2.8.0':
-    resolution: {integrity: sha512-r1/0w5C9dkbcdjyxY8ZHsC5AOWg4Pnzhm2zu7LO4UHSounp2tMm6Y+oioV9zlGbLveE7YaWRDUk48WLxRDgoqg==}
+  '@bufbuild/protobuf@2.9.0':
+    resolution: {integrity: sha512-rnJenoStJ8nvmt9Gzye8nkYd6V22xUAnu4086ER7h1zJ508vStko4pMvDeQ446ilDTFpV5wnoc5YS7XvMwwMqA==}
 
   '@emotion/babel-plugin@11.13.5':
     resolution: {integrity: sha512-pxHCpT2ex+0q+HH91/zsdHkw/lXd468DIN2zvfvLtPKLLMo6gQj7oLObq8PhkrxOZb/gGCq03S3Z7PDhS8pduQ==}
@@ -3654,8 +3654,8 @@ packages:
   swagger-schema-official@2.0.0-bab6bed:
     resolution: {integrity: sha512-rCC0NWGKr/IJhtRuPq/t37qvZHI/mH4I4sxflVM+qgVe5Z2uOCivzWaVbuioJaB61kvm5UvB7b49E+oBY0M8jA==}
 
-  swagger-typescript-api@13.2.11:
-    resolution: {integrity: sha512-X3logyxFnUFifzh2GUxnH0TfcvNmPvg8dIQ1/Rok/9gaj7ZW883llaVZUVnM7db7TruGPhiECTc26Qvzy5pDFQ==}
+  swagger-typescript-api@13.2.13:
+    resolution: {integrity: sha512-d4Ri5iOxCFB8VeTyosuzKnW8jtRBUFZC+XZthFiH78CwNrkMKAzyuSs0YGUZlHtm60VtkZBNxZkp71BHShJ8HQ==}
     engines: {node: '>=20'}
     hasBin: true
 
@@ -3733,8 +3733,8 @@ packages:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
 
-  type-fest@5.0.0:
-    resolution: {integrity: sha512-GeJop7+u7BYlQ6yQCAY1nBQiRSHR+6OdCEtd8Bwp9a3NK3+fWAVjOaPKJDteB9f6cIJ0wt4IfnScjLG450EpXA==}
+  type-fest@5.0.1:
+    resolution: {integrity: sha512-9MpwAI52m8H6ssA542UxSLnSiSD2dsC3/L85g6hVubLSXd82wdI80eZwTWhdOfN67NlA+D+oipAs1MlcTcu3KA==}
     engines: {node: '>=20'}
 
   type-is@1.6.18:
@@ -4285,7 +4285,7 @@ snapshots:
       react-lifecycles-compat: 3.0.4
       warning: 3.0.0
 
-  '@bufbuild/protobuf@2.8.0': {}
+  '@bufbuild/protobuf@2.9.0': {}
 
   '@emotion/babel-plugin@11.13.5':
     dependencies:
@@ -7496,7 +7496,7 @@ snapshots:
 
   sass-embedded@1.92.1:
     dependencies:
-      '@bufbuild/protobuf': 2.8.0
+      '@bufbuild/protobuf': 2.9.0
       buffer-builder: 0.2.0
       colorjs.io: 0.5.2
       immutable: 5.1.3
@@ -7782,21 +7782,23 @@ snapshots:
 
   swagger-schema-official@2.0.0-bab6bed: {}
 
-  swagger-typescript-api@13.2.11:
+  swagger-typescript-api@13.2.13:
     dependencies:
       '@biomejs/js-api': 3.0.0(@biomejs/wasm-nodejs@2.2.4)
       '@biomejs/wasm-nodejs': 2.2.4
+      '@types/lodash': 4.17.20
       '@types/swagger-schema-official': 2.0.25
       c12: 3.3.0
       citty: 0.1.6
       consola: 3.4.2
       eta: 4.0.1
-      js-yaml: 4.1.0
       lodash: 4.17.21
       nanoid: 5.1.5
+      openapi-types: 12.1.3
       swagger-schema-official: 2.0.0-bab6bed
       swagger2openapi: 7.0.8
       typescript: 5.9.2
+      yaml: 2.8.1
     transitivePeerDependencies:
       - '@biomejs/wasm-bundler'
       - '@biomejs/wasm-web'
@@ -7868,7 +7870,7 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
 
-  type-fest@5.0.0:
+  type-fest@5.0.1:
     dependencies:
       tagged-tag: 1.0.0
 
