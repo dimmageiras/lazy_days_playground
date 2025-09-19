@@ -1,7 +1,7 @@
 import type { UseMutateAsyncFunction } from "@tanstack/react-query";
 import type { ChangeEvent, FocusEvent } from "react";
 
-import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
+import { signinSchema } from "@client/pages/Signin/components/AuthForm/schemas/auth-form.schema";
 import type { CheckEmailResponse } from "@shared/types/user.type";
 
 const checkEmailValidity = async (

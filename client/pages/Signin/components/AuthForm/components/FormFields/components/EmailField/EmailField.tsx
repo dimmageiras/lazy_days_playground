@@ -6,9 +6,9 @@ import { useCheckEmailExists } from "@client/api/user/useCheckEmailExists.query"
 import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { useDebounce } from "@client/hooks/useDebounce";
-import { FORM_FIELDS } from "@client/pages/Signin/components/SigninForm/components/FormFields/constants/form-fields.constant";
-import { signinSchema } from "@client/pages/Signin/components/SigninForm/schemas/signin-form.schema";
-import type { SigninForm } from "@client/pages/Signin/components/SigninForm/types/signin-form.type";
+import { FORM_FIELDS } from "@client/pages/Signin/components/AuthForm/components/FormFields/constants/form-fields.constant";
+import { signinSchema } from "@client/pages/Signin/components/AuthForm/schemas/auth-form.schema";
+import type { SigninFormData } from "@client/pages/Signin/components/AuthForm/types/auth-form.type";
 import { TIMING } from "@shared/constants/timing.constant";
 
 import { EmailFieldHelper } from "./helpers/email-field.helper";
@@ -23,7 +23,7 @@ const EmailField = (): JSX.Element => {
   const {
     field: { onBlur, onChange, ...fieldProps },
     fieldState: { error, invalid, isDirty, isTouched },
-  } = useController<SigninForm, typeof EMAIL_FIELD_NAME>({
+  } = useController<SigninFormData, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
   const { isPending, mutateAsync: checkEmailExists } = useCheckEmailExists();
@@ -84,7 +84,7 @@ const EmailField = (): JSX.Element => {
       onBlur={handleEmailBlur}
       onChange={handleEmailChange}
       required={isRequired}
-      type={EMAIL_FIELD_NAME}
+      type="email"
       {...fieldProps}
     />
   );

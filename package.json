@@ -47,7 +47,7 @@
     "zustand-x": "6.1.2"
   },
   "devDependencies": {
-    "@eslint/js": "9.35.0",
+    "@eslint/js": "9.36.0",
     "@gel/generate": "0.6.4",
     "@react-router/dev": "7.9.1",
     "@redux-devtools/extension": "3.3.0",

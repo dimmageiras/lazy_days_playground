@@ -8,10 +8,10 @@ import { Form as ReactRouterForm } from "react-router";
 import { BaseCard } from "@client/components/BaseCard";
 
 import { FormFields } from "./components/FormFields";
-import { signinSchema } from "./schemas/signin-form.schema";
-import type { SigninForm as SigninFormType } from "./types/signin-form.type";
+import { signinSchema } from "./schemas/auth-form.schema";
+import type { SigninFormData } from "./types/auth-form.type";
 
-const SigninForm = (): JSX.Element => {
+const AuthForm = (): JSX.Element => {
   const [isFormLoading, setIsFormLoading] = useState(true);
   const formInitialization = useMemo(
     () =>
@@ -25,11 +25,11 @@ const SigninForm = (): JSX.Element => {
         progressive: true,
         resolver: zodResolver(signinSchema),
         shouldUseNativeValidation: false,
-      } satisfies UseFormProps<SigninFormType>),
+      } satisfies UseFormProps<SigninFormData>),
     [isFormLoading]
   );
 
-  const formMethods = useForm<SigninFormType>(formInitialization);
+  const formMethods = useForm<SigninFormData>(formInitialization);
 
   const {
     formState: { isReady, isValid, isSubmitting },
@@ -39,7 +39,7 @@ const SigninForm = (): JSX.Element => {
 
   const isLoading = isSubmitting || !isReady;
 
-  const onValid = async (data: SigninFormType) => {
+  const onValid = async (data: SigninFormData) => {
     await Promise.resolve(data);
 
     reset();
@@ -64,4 +64,4 @@ const SigninForm = (): JSX.Element => {
   );
 };
 
-export { SigninForm };
+export { AuthForm };
