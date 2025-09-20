@@ -7,7 +7,7 @@ import {
 
 const signinRequestSchema = zObject({
   email: zEmail(),
-  password: zString(),
+  password: zString().min(5, "min length is 5").max(50, "max length is 50"),
 });
 
 const signinResponseSchema = zObject({

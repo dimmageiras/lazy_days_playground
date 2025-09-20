@@ -7,9 +7,11 @@ import {
 } from "../../wrappers/zod.wrapper.ts";
 
 const signupRequestSchema = zObject({
-  confirmPassword: zString().min(8),
+  confirmPassword: zString()
+    .min(5, "min length is 5")
+    .max(50, "max length is 50"),
   email: zEmail(),
-  password: zString().min(8),
+  password: zString().min(5, "min length is 5").max(50, "max length is 50"),
 });
 
 const tokenDataSchema = zObject({

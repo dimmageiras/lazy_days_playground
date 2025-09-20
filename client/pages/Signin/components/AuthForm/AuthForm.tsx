@@ -6,9 +6,9 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
+import { signinRequestSchema } from "@shared/schemas/auth/signin-route.schema";
 
 import { FormFields } from "./components/FormFields";
-import { signinSchema } from "./schemas/auth-form.schema";
 import type { SigninFormData } from "./types/auth-form.type";
 
 const AuthForm = (): JSX.Element => {
@@ -23,7 +23,7 @@ const AuthForm = (): JSX.Element => {
         disabled: isFormLoading,
         mode: "onTouched",
         progressive: true,
-        resolver: zodResolver(signinSchema),
+        resolver: zodResolver(signinRequestSchema),
         shouldUseNativeValidation: false,
       } satisfies UseFormProps<SigninFormData>),
     [isFormLoading]

@@ -8,7 +8,7 @@ const initialState = {
 
 const devToolsStore = createStore(initialState, {
   devtools: true,
-  name: "devTools",
+  name: "dev-tools",
 });
 
 export { devToolsStore };

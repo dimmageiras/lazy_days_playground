@@ -7,9 +7,9 @@ import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { useDebounce } from "@client/hooks/useDebounce";
 import { FORM_FIELDS } from "@client/pages/Signin/components/AuthForm/components/FormFields/constants/form-fields.constant";
-import { signinSchema } from "@client/pages/Signin/components/AuthForm/schemas/auth-form.schema";
 import type { SigninFormData } from "@client/pages/Signin/components/AuthForm/types/auth-form.type";
 import { TIMING } from "@shared/constants/timing.constant";
+import { signinRequestSchema } from "@shared/schemas/auth/signin-route.schema";
 
 import { EmailFieldHelper } from "./helpers/email-field.helper";
 
@@ -32,7 +32,7 @@ const EmailField = (): JSX.Element => {
   const { isFieldRequired } = FormUtilsHelper;
 
   const isRequired = useMemo(
-    () => isFieldRequired(signinSchema, EMAIL_FIELD_NAME),
+    () => isFieldRequired(signinRequestSchema, EMAIL_FIELD_NAME),
     [isFieldRequired]
   );
 

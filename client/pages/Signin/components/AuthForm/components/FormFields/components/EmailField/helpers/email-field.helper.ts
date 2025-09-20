@@ -1,7 +1,7 @@
 import type { UseMutateAsyncFunction } from "@tanstack/react-query";
 import type { ChangeEvent, FocusEvent } from "react";
 
-import { signinSchema } from "@client/pages/Signin/components/AuthForm/schemas/auth-form.schema";
+import { signinRequestSchema } from "@shared/schemas/auth/signin-route.schema";
 import type { CheckEmailResponse } from "@shared/types/user.type";
 
 const checkEmailValidity = async (
@@ -13,7 +13,7 @@ const checkEmailValidity = async (
     unknown
   >
 ): Promise<void> => {
-  const emailSchema = Reflect.get(signinSchema.shape, "email");
+  const emailSchema = Reflect.get(signinRequestSchema.shape, "email");
   const isEmailValid = emailSchema.safeParse(email).success;
 
   if (isEmailValid && email.trim()) {
