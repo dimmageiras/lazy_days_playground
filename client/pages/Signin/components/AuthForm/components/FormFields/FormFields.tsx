@@ -1,10 +1,8 @@
-import { useMutationState } from "@tanstack/react-query";
 import type { JSX } from "react";
 import { memo } from "react";
 
-import { USER_QUERY_KEYS } from "@client/api/user/user.constant";
+import { useEmailExistence } from "@client/api/user/useEmailExistence.query";
 import { TextInput } from "@client/components/TextInput";
-import type { CheckEmailResponse } from "@shared/types/user.type";
 
 import { ActionButtons } from "./components/ActionButtons";
 import { ConfirmPassword } from "./components/ConfirmPassword";
@@ -19,47 +17,32 @@ interface FormFieldsProps {
 
 const FormFields = memo(
   ({ isFormLoading, isFormValid }: FormFieldsProps): JSX.Element => {
-    const emailExists = useMutationState({
-      filters: { mutationKey: USER_QUERY_KEYS.CHECK_EMAIL },
-      select: (mutation) => {
-        const data = mutation.state.data as CheckEmailResponse | undefined;
+    const { isExistingUser, isNewUser, isUnchecked } = useEmailExistence();
 
-        return data?.exists ?? null;
-      },
-    })[0];
-
-    const isExistingUser = emailExists === true;
-    const isNotExistingUser = emailExists === false;
-    const shouldDisableActionButtons = emailExists === null;
     const shouldEnableSignIn = isFormValid && isExistingUser;
-    const shouldEnableSignUp = isFormValid && isNotExistingUser;
+    const shouldEnableSignUp = isFormValid && isNewUser;
 
     return (
       <fieldset className={styles["fieldset"]}>
         {isFormLoading ? (
-          <TextInput
-            hasFloatingLabel
-            isLoading={isFormLoading}
-            label="Email"
-            type="email"
-          />
+          <TextInput hasFloatingLabel isLoading label="Email" type="email" />
         ) : (
           <EmailField />
         )}
         {isFormLoading ? (
           <TextInput
             hasFloatingLabel
-            isLoading={isFormLoading}
+            isLoading
             label="Password"
             type="password"
           />
         ) : (
           <PasswordField />
         )}
-        {isNotExistingUser ? <ConfirmPassword /> : null}
+        {isNewUser ? <ConfirmPassword /> : null}
         <ActionButtons
           isExistingUser={isExistingUser}
-          shouldDisableActionButtons={shouldDisableActionButtons}
+          shouldDisableActionButtons={isUnchecked}
           shouldEnableSignIn={shouldEnableSignIn}
           shouldEnableSignUp={shouldEnableSignUp}
         />

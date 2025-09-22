@@ -1,48 +1,28 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import type { JSX } from "react";
-import { useEffect, useMemo, useState } from "react";
-import type { UseFormProps } from "react-hook-form";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
-import { signinRequestSchema } from "@shared/schemas/auth/signin-route.schema";
 
 import { FormFields } from "./components/FormFields";
-import type { SigninFormData } from "./types/auth-form.type";
+import { AUTH_FORM_INITIAL_VALUES } from "./constants/auth-form.constant";
+import type { SignupFormData } from "./types/auth-form.type";
 
 const AuthForm = (): JSX.Element => {
   const [isFormLoading, setIsFormLoading] = useState(true);
-  const formInitialization = useMemo(
-    () =>
-      ({
-        defaultValues: {
-          email: "",
-          password: "",
-        },
-        disabled: isFormLoading,
-        mode: "onTouched",
-        progressive: true,
-        resolver: zodResolver(signinRequestSchema),
-        shouldUseNativeValidation: false,
-      } satisfies UseFormProps<SigninFormData>),
-    [isFormLoading]
-  );
+  const formMethods = useForm<SignupFormData>({
+    ...AUTH_FORM_INITIAL_VALUES,
+    disabled: isFormLoading,
+  });
 
-  const formMethods = useForm<SigninFormData>(formInitialization);
+  const isLoading =
+    formMethods.formState.isSubmitting || !formMethods.formState.isReady;
 
-  const {
-    formState: { isReady, isValid, isSubmitting },
-    handleSubmit,
-    reset,
-  } = formMethods;
-
-  const isLoading = isSubmitting || !isReady;
-
-  const onValid = async (data: SigninFormData) => {
+  const onValid = async (data: SignupFormData) => {
     await Promise.resolve(data);
 
-    reset();
+    formMethods.reset();
   };
 
   useEffect(() => {
@@ -56,8 +36,14 @@ const AuthForm = (): JSX.Element => {
   return (
     <BaseCard>
       <FormProvider {...formMethods}>
-        <ReactRouterForm noValidate onSubmit={handleSubmit(onValid)}>
-          <FormFields isFormLoading={isFormLoading} isFormValid={isValid} />
+        <ReactRouterForm
+          noValidate
+          onSubmit={formMethods.handleSubmit(onValid)}
+        >
+          <FormFields
+            isFormLoading={isFormLoading}
+            isFormValid={formMethods.formState.isValid}
+          />
         </ReactRouterForm>
       </FormProvider>
     </BaseCard>

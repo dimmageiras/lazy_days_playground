@@ -9,7 +9,9 @@ const Appointment = ({
   dateTime,
   treatmentName,
 }: AppointmentType): JSX.Element => {
-  const appointmentHour = DateHelper.formatHourForDisplay(dateTime);
+  const { formatHourForDisplay } = DateHelper;
+
+  const appointmentHour = formatHourForDisplay(dateTime);
 
   return (
     <div className={styles["appointment"]}>

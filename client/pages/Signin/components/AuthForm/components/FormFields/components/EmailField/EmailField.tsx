@@ -2,7 +2,7 @@ import type { ChangeEvent, FocusEvent, JSX } from "react";
 import { useCallback, useEffect, useMemo } from "react";
 import { useController } from "react-hook-form";
 
-import { useCheckEmailExists } from "@client/api/user/useCheckEmailExists.query";
+import { useCheckEmailExists } from "@client/api/user/useEmailExistence.query";
 import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { useDebounce } from "@client/hooks/useDebounce";
