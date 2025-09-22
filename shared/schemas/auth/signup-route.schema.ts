@@ -7,11 +7,14 @@ import {
 } from "../../wrappers/zod.wrapper.ts";
 
 const signupRequestSchema = zObject({
-  confirmPassword: zString()
-    .min(5, "min length is 5")
-    .max(50, "max length is 50"),
+  confirmPassword: zString(),
   email: zEmail(),
-  password: zString().min(5, "min length is 5").max(50, "max length is 50"),
+  password: zString()
+    .min(8, "Password must be at least 8 characters")
+    .max(50, "Password must be less than 50 characters"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 const tokenDataSchema = zObject({
