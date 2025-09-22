@@ -1,6 +1,6 @@
 import type { ChangeEvent, FocusEvent, JSX } from "react";
 import { useCallback, useEffect, useMemo } from "react";
-import { useController } from "react-hook-form";
+import { useController, useFormContext } from "react-hook-form";
 
 import { useCheckEmailExists } from "@client/api/user/useEmailExistence.query";
 import { TextInput } from "@client/components/TextInput";
@@ -20,13 +20,14 @@ const EMAIL_FIELD_NAME = name;
 const EMAIL_FIELD_LABEL = label;
 
 const EmailField = (): JSX.Element => {
+  const { setFocus } = useFormContext();
   const {
     field: { onBlur, onChange, ...fieldProps },
     fieldState: { error, invalid, isDirty, isTouched },
   } = useController<SignupFormData, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
-  const { isPending, mutateAsync: checkEmailExists } = useCheckEmailExists();
+  const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
   const { checkEmailValidity, handleBlur, handleChange } = EmailFieldHelper;
   const { isFieldRequired } = FormUtilsHelper;
@@ -55,9 +56,9 @@ const EmailField = (): JSX.Element => {
 
   const handleEmailBlur = useCallback(
     (event: FocusEvent<HTMLInputElement>) => {
-      handleBlur(event, onBlur, checkEmailExists);
+      handleBlur(event, onBlur, checkEmailExists, hasBeenValidated);
     },
-    [checkEmailExists, handleBlur, onBlur]
+    [checkEmailExists, handleBlur, hasBeenValidated, onBlur]
   );
 
   useEffect(() => {
@@ -66,20 +67,15 @@ const EmailField = (): JSX.Element => {
     }
 
     requestAnimationFrame(() => {
-      const element = document.getElementById(EMAIL_FIELD_NAME);
-
-      if (element) {
-        element.focus();
-      }
+      setFocus(EMAIL_FIELD_NAME);
     });
-  }, [isFieldUsedOrDisabled]);
+  }, [isFieldUsedOrDisabled, setFocus]);
 
   return (
     <TextInput
       autoComplete="email webauthn"
       errorMessage={error?.message}
       hasFloatingLabel
-      isLoading={isPending}
       label={EMAIL_FIELD_LABEL}
       onBlur={handleEmailBlur}
       onChange={handleEmailChange}

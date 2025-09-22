@@ -89,9 +89,8 @@
 
   .error-message {
     color: #e53e3e;
-    display: flex;
     font-size: 0.875rem;
     grid-area: 3 / 1;
-    line-height: normal;
+    line-height: 1;
   }
 }

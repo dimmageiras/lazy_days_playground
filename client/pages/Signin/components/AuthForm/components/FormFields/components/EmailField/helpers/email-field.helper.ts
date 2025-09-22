@@ -29,9 +29,14 @@ const handleBlur = async (
     Error,
     string,
     unknown
-  >
+  >,
+  hasBeenValidated: boolean
 ): Promise<void> => {
   onBlur();
+
+  if (hasBeenValidated) {
+    return;
+  }
 
   const { value: email } = event.currentTarget;
 
