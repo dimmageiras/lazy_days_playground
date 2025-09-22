@@ -7,9 +7,9 @@ import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { useDebounce } from "@client/hooks/useDebounce";
 import { FORM_FIELDS } from "@client/pages/Signin/components/AuthForm/components/FormFields/constants/form-fields.constant";
-import type { SigninFormData } from "@client/pages/Signin/components/AuthForm/types/auth-form.type";
+import type { SignupFormData } from "@client/pages/Signin/components/AuthForm/types/auth-form.type";
 import { TIMING } from "@shared/constants/timing.constant";
-import { signinRequestSchema } from "@shared/schemas/auth/signin-route.schema";
+import { signupRequestSchema } from "@shared/schemas/auth/signup-route.schema";
 
 import { EmailFieldHelper } from "./helpers/email-field.helper";
 
@@ -23,7 +23,7 @@ const EmailField = (): JSX.Element => {
   const {
     field: { onBlur, onChange, ...fieldProps },
     fieldState: { error, invalid, isDirty, isTouched },
-  } = useController<SigninFormData, typeof EMAIL_FIELD_NAME>({
+  } = useController<SignupFormData, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
   const { isPending, mutateAsync: checkEmailExists } = useCheckEmailExists();
@@ -32,7 +32,7 @@ const EmailField = (): JSX.Element => {
   const { isFieldRequired } = FormUtilsHelper;
 
   const isRequired = useMemo(
-    () => isFieldRequired(signinRequestSchema, EMAIL_FIELD_NAME),
+    () => isFieldRequired(signupRequestSchema, EMAIL_FIELD_NAME),
     [isFieldRequired]
   );
 

@@ -5,11 +5,10 @@ import {
   zString,
 } from "../../wrappers/zod.wrapper.ts";
 
+// For signin, we don't need strict password validation (user already has account)
 const signinRequestSchema = zObject({
   email: zEmail(),
-  password: zString()
-    .min(8, "Password must be at least 8 characters")
-    .max(50, "Password must be less than 50 characters"),
+  password: zString().min(1, "Password is required"),
 });
 
 const signinResponseSchema = zObject({

@@ -6,6 +6,7 @@ import { signupRequestSchema } from "@shared/schemas/auth/signup-route.schema";
 
 const AUTH_FORM_INITIAL_VALUES: UseFormProps<SignupFormData> = {
   defaultValues: {
+    confirmPassword: "",
     email: "",
     password: "",
   },
