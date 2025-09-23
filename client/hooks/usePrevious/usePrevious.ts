@@ -4,7 +4,7 @@ const usePrevious = <TValue>(value: TValue): TValue | null => {
   const ref = useRef<TValue | null>(null);
 
   useEffect(() => {
-    ref.current = value;
+    ref.current = value ?? null;
 
     return () => {
       ref.current = null;
