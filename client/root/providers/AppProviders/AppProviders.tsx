@@ -14,17 +14,17 @@ import {
 } from "@shared/constants/root-env.constant";
 import { TIMING } from "@shared/constants/timing.constant";
 
-const { QUERY_GC_TIME, QUERY_STALE_TIME } = TIMING;
+const { MINUTES_FIFTEEN_IN_MS, MINUTES_TEN_IN_MS } = TIMING;
 
 const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
   const [queryClient] = useState(
     new QueryClient({
       defaultOptions: {
         queries: {
-          gcTime: QUERY_GC_TIME,
+          gcTime: MINUTES_FIFTEEN_IN_MS,
           refetchOnWindowFocus: false,
           retry: false,
-          staleTime: QUERY_STALE_TIME,
+          staleTime: MINUTES_TEN_IN_MS,
         },
       },
     })

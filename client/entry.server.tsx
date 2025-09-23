@@ -9,7 +9,7 @@ import type { KeyAsString } from "type-fest";
 
 import { TIMING } from "@shared/constants/timing.constant";
 
-const { EXPENSIVE, SSR_TIMEOUT } = TIMING;
+const { SECONDS_FIVE_IN_MS, SECONDS_ONE_IN_MS } = TIMING;
 
 const handleRequest = (
   request: Request,
@@ -68,8 +68,8 @@ const handleRequest = (
 
     // Abort the rendering stream after the `streamTimeout` so it has time to
     // flush down the rejected boundaries
-    setTimeout(abort, SSR_TIMEOUT + EXPENSIVE);
+    setTimeout(abort, SECONDS_FIVE_IN_MS + SECONDS_ONE_IN_MS);
   });
 };
 
-export { handleRequest as default, SSR_TIMEOUT as streamTimeout };
+export { handleRequest as default, SECONDS_FIVE_IN_MS as streamTimeout };

@@ -18,6 +18,7 @@ const {
 } = FORM_FIELDS;
 const EMAIL_FIELD_NAME = name;
 const EMAIL_FIELD_LABEL = label;
+const { SECONDS_HALF_IN_MS } = TIMING;
 
 const EmailField = (): JSX.Element => {
   const { setFocus } = useFormContext();
@@ -44,7 +45,7 @@ const EmailField = (): JSX.Element => {
     async (email: string): Promise<void> => {
       await checkEmailValidity(email, checkEmailExists);
     },
-    TIMING.VALIDATION
+    SECONDS_HALF_IN_MS
   );
 
   const handleEmailChange = useCallback(

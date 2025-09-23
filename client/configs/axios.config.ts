@@ -4,10 +4,10 @@ import axios from "axios";
 import { HOST, IS_SSR, PORT } from "@shared/constants/root-env.constant";
 import { TIMING } from "@shared/constants/timing.constant";
 
-const { API_TIMEOUT, EXPENSIVE } = TIMING;
+const { SECONDS_TEN_IN_MS, SECONDS_TEN_IN_S } = TIMING;
 
 axios.defaults.withCredentials = true;
-axios.defaults.timeout = API_TIMEOUT;
+axios.defaults.timeout = SECONDS_TEN_IN_MS;
 
 // Configure base URL for SSR
 if (IS_SSR) {
@@ -31,9 +31,7 @@ axios.interceptors.response.use(
   (error: AxiosError) => {
     if (error.code === "ECONNABORTED" && error.message.includes("timeout")) {
       console.error(
-        `Request timeout: The request took longer than ${
-          API_TIMEOUT / EXPENSIVE
-        } seconds`
+        `Request timeout: The request took longer than ${SECONDS_TEN_IN_S} seconds`
       );
     }
 

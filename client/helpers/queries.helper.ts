@@ -10,12 +10,12 @@ import { ArrayUtilsHelper } from "./array-utils.helper";
 import { ObjectUtilsHelper } from "./object-utils.helper";
 
 const createQueryClientForServer = (): QueryClient => {
-  const { QUERY_SSR_GC_TIME } = TIMING;
+  const { SECONDS_TWO_IN_MS } = TIMING;
 
   return new QueryClient({
     defaultOptions: {
       queries: {
-        gcTime: QUERY_SSR_GC_TIME,
+        gcTime: SECONDS_TWO_IN_MS,
       },
     },
   });
