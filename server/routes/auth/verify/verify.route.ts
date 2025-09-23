@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import type { VerifyRequestBody } from "@server/plugins/gel-auth-fastify";
 
-import { AUTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
+import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import { IS_DEVELOPMENT } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";

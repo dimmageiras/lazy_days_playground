@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { AUTH_ENDPOINTS } from "@shared/constants/api.constant";
+import { AUTH_ENDPOINTS } from "@shared/constants/auth.constant";
 import { AUTH_BASE_URL } from "@shared/constants/base-urls.const";
 import type {
   SigninRequest,

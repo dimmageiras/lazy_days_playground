@@ -1,5 +1,5 @@
 const USER_ENDPOINTS = Object.freeze({
-  PROFILE: "profile",
+  CHECK_EMAIL: "check-email",
 } as const);
 
 const USER_ROLES = Object.freeze({

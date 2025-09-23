@@ -1,4 +1,4 @@
-import { AUTH_ENDPOINTS } from "@shared/constants/api.constant";
+import { AUTH_ENDPOINTS } from "@shared/constants/auth.constant";
 import { USER_BASE_URL } from "@shared/constants/base-urls.const";
 
 const { SIGNIN, SIGNUP, VERIFY } = AUTH_ENDPOINTS;

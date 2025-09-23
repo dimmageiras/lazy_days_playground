@@ -1,5 +1,5 @@
-import { USER_ENDPOINTS } from "@shared/constants/api.constant";
 import { USER_BASE_URL } from "@shared/constants/base-urls.const";
+import { USER_ENDPOINTS } from "@shared/constants/user.constant";
 
 const { CHECK_EMAIL } = USER_ENDPOINTS;
 

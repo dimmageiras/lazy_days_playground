@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import { createClient } from "gel";
 
-import { USER_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
+import { USER_ENDPOINTS } from "../../../../shared/constants/user.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import {

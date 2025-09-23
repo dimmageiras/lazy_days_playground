@@ -1,7 +1,7 @@
 import axios from "axios";
 
-import { USER_ENDPOINTS } from "@shared/constants/api.constant";
 import { USER_BASE_URL } from "@shared/constants/base-urls.const";
+import { USER_ENDPOINTS } from "@shared/constants/user.constant";
 import type {
   CheckEmailRequest,
   CheckEmailResponse,
