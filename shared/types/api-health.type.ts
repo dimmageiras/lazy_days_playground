@@ -1,46 +1,14 @@
-interface ApiHealthBaseResponse {
-  timestamp: string;
-}
+import type {
+  HealthDatabaseListData,
+  HealthDatabaseListError,
+  HealthServerListData,
+  HealthServerListError,
+} from "./generated/api-health.type";
 
-interface ApiHealthDatabaseSuccessResponse extends ApiHealthBaseResponse {
-  database: string;
-  dsn: string;
-  test_result: unknown;
-}
+type HealthDatabaseListResponse =
+  | HealthDatabaseListData
+  | HealthDatabaseListError;
 
-interface ApiHealthDatabaseDsnErrorResponse extends ApiHealthBaseResponse {
-  error: string;
-}
+type HealthServerListResponse = HealthServerListData | HealthServerListError;
 
-interface ApiHealthDatabaseConnectionErrorResponse
-  extends ApiHealthBaseResponse {
-  details: string;
-  error: string;
-}
-
-type ApiHealthDatabaseCheckResponse =
-  | ApiHealthDatabaseConnectionErrorResponse
-  | ApiHealthDatabaseDsnErrorResponse
-  | ApiHealthDatabaseSuccessResponse;
-
-interface ApiHealthServerSuccessResponse extends ApiHealthBaseResponse {
-  service: string;
-}
-
-interface ApiHealthServerErrorResponse extends ApiHealthBaseResponse {
-  error: string;
-}
-
-type ApiHealthServerCheckResponse =
-  | ApiHealthServerErrorResponse
-  | ApiHealthServerSuccessResponse;
-
-export type {
-  ApiHealthDatabaseCheckResponse,
-  ApiHealthDatabaseConnectionErrorResponse,
-  ApiHealthDatabaseDsnErrorResponse,
-  ApiHealthDatabaseSuccessResponse,
-  ApiHealthServerCheckResponse,
-  ApiHealthServerErrorResponse,
-  ApiHealthServerSuccessResponse,
-};
+export type { HealthDatabaseListResponse, HealthServerListResponse };

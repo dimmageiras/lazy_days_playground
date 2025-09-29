@@ -2,12 +2,12 @@ import type { JSX } from "react";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { DateHelper } from "@shared/helpers/date.helper";
-import type { ApiHealthDatabaseCheckResponse } from "@shared/types/api-health.type";
+import type { HealthDatabaseListResponse } from "@shared/types/api-health.type";
 
 import styles from "./DatabaseMetadata.module.scss";
 
 interface DatabaseMetadataProps {
-  data: ApiHealthDatabaseCheckResponse | undefined;
+  data: HealthDatabaseListResponse | undefined;
   error: Error | null;
   isHealthy: boolean;
   isUnhealthy: boolean;

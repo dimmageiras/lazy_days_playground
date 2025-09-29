@@ -2,12 +2,12 @@ import type { JSX } from "react";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { DateHelper } from "@shared/helpers/date.helper";
-import type { ApiHealthServerCheckResponse } from "@shared/types/api-health.type";
+import type { HealthServerListResponse } from "@shared/types/api-health.type";
 
 import styles from "./ServerMetadata.module.scss";
 
 interface ServerMetadataProps {
-  data: ApiHealthServerCheckResponse | undefined;
+  data: HealthServerListResponse | undefined;
   error: Error | null;
   isHealthy: boolean;
   isUnhealthy: boolean;

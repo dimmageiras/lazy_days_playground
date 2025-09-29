@@ -1,18 +1,23 @@
 import type { FastifyInstance } from "fastify";
+import type {
+  FastifyZodOpenApiSchema,
+  FastifyZodOpenApiTypeProvider,
+} from "fastify-zod-openapi";
 import { createClient } from "gel";
 
 import type {
-  ApiHealthDatabaseConnectionErrorResponse,
-  ApiHealthDatabaseDsnErrorResponse,
-  ApiHealthDatabaseSuccessResponse,
-} from "@shared/types/api-health.type";
+  HealthDatabaseListData,
+  HealthDatabaseListError,
+} from "@shared/types/generated/api-health.type";
 
 import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
-import { databaseHealthSchema } from "../../../../shared/schemas/api-health/database-route.schema.ts";
-import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
+import {
+  databaseHealthErrorSchema,
+  databaseHealthSuccessSchema,
+} from "../../../../shared/schemas/api-health/database-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
 
@@ -21,20 +26,32 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { fastIdGen } = IdUtilsHelper;
   const { log } = PinoLogHelper;
 
-  const databaseHealthRouteSchema = {
-    description:
-      "Verifies Gel database connectivity and returns connection status",
-    response: {
-      200: zToJSONSchema(databaseHealthSchema),
-      503: zToJSONSchema(databaseHealthSchema),
-    },
-    summary: "Check database connectivity",
-    tags: ["Health"],
-  } as const;
-
-  fastify.get(
+  fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${API_HEALTH_ENDPOINTS.DATABASE}`,
-    { schema: databaseHealthRouteSchema },
+    {
+      schema: {
+        description:
+          "Verifies Gel database connectivity and returns connection status",
+        summary: "Check database connectivity",
+        tags: ["API Health"],
+        response: {
+          200: {
+            content: {
+              "application/json": {
+                schema: databaseHealthSuccessSchema,
+              },
+            },
+          },
+          503: {
+            content: {
+              "application/json": {
+                schema: databaseHealthErrorSchema,
+              },
+            },
+          },
+        },
+      } satisfies FastifyZodOpenApiSchema,
+    },
     async (_request, reply) => {
       const requestId = fastIdGen();
 
@@ -50,7 +67,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
             "⚠️ Database health check failed - DSN not configured"
           );
 
-          const errorResponse: ApiHealthDatabaseDsnErrorResponse = {
+          const errorResponse: HealthDatabaseListError = {
             error: "Database DSN not configured",
             timestamp: getCurrentISOTimestamp(),
           };
@@ -72,7 +89,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
           await client.close();
         }
 
-        const response: ApiHealthDatabaseSuccessResponse = {
+        const response: HealthDatabaseListData = {
           database: "gel",
           dsn:
             typeof gelDSN === "string"
@@ -97,7 +114,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
           "💥 Database health check failed with error"
         );
 
-        const errorResponse: ApiHealthDatabaseConnectionErrorResponse = {
+        const errorResponse: HealthDatabaseListError = {
           details: error instanceof Error ? error.message : "Unknown error",
           error: "Database connection failed",
           timestamp: getCurrentISOTimestamp(),

@@ -6,8 +6,8 @@ import { BaseCard } from "@client/components/BaseCard";
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
 import type {
-  ApiHealthDatabaseCheckResponse,
-  ApiHealthServerCheckResponse,
+  HealthDatabaseListResponse,
+  HealthServerListResponse,
 } from "@shared/types/api-health.type";
 
 import styles from "./Card.module.scss";
@@ -28,13 +28,13 @@ interface CardBaseProps {
 
 interface CardDatabaseProps extends CardBaseProps {
   apiHealthService: typeof API_HEALTH_ENDPOINTS.DATABASE;
-  data: ApiHealthDatabaseCheckResponse | undefined;
+  data: HealthDatabaseListResponse | undefined;
   error: Error | null;
 }
 
 interface CardServerProps extends CardBaseProps {
   apiHealthService: typeof API_HEALTH_ENDPOINTS.SERVER;
-  data: ApiHealthServerCheckResponse | undefined;
+  data: HealthServerListResponse | undefined;
   error: Error | null;
 }
 

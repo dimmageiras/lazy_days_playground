@@ -3,14 +3,19 @@ import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
 import fastify from "fastify";
+import {
+  fastifyZodOpenApiPlugin,
+  fastifyZodOpenApiTransformers,
+  serializerCompiler,
+  validatorCompiler,
+} from "fastify-zod-openapi";
 import getPort, { portNumbers } from "get-port";
+import process from "node:process";
 
 import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import {
   API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
-  AUTH_BASE_URL,
-  USER_BASE_URL,
 } from "../shared/constants/base-urls.const.ts";
 import {
   COOKIE_SECRET,
@@ -21,16 +26,21 @@ import {
   PORT,
 } from "../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
+import { TypesHelper } from "./helpers/types.helper.ts";
 import { apiHealthRoutes } from "./routes/api-health/index.ts";
-import { authRoutes } from "./routes/auth/index.ts";
-import { userRoutes } from "./routes/user/index.ts";
 
 const { log } = PinoLogHelper;
+const { generateRouteTypes } = TypesHelper;
 
 const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
   loggerInstance: log,
 });
+
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
+
+await app.register(fastifyZodOpenApiPlugin);
 
 await app.register(cookieFastify, {
   parseOptions: {
@@ -44,7 +54,29 @@ log.info("✅ Cookie plugin registered");
 
 await app.register(async (fastify) => {
   if (IS_DEVELOPMENT) {
-    await fastify.register(swaggerFastify);
+    await fastify.register(swaggerFastify, {
+      openapi: {
+        openapi: "3.1.0",
+        info: {
+          contact: {
+            name: "API Support",
+          },
+          description: "API documentation for Lazy Days Playground application",
+          license: {
+            name: "MIT",
+          },
+          title: "Lazy Days Playground API",
+          version: "1.0.0",
+        },
+        servers: [
+          {
+            description: "Development server",
+            url: `http://localhost:${PORT}`,
+          },
+        ],
+      },
+      ...fastifyZodOpenApiTransformers,
+    });
 
     const { SWAGGER } = API_DOCS_ENDPOINTS;
     const routePrefix = `/${API_DOCS_BASE_URL}/${SWAGGER}` as const;
@@ -96,8 +128,9 @@ await app.register(async (fastify) => {
   }
 
   await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
-  await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
-  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
+  // TODO: Fix auth and user routes to use proper FastifyZodOpenApiSchema format
+  // await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
+  // await fastify.register(userRoutes, { prefix: USER_BASE_URL });
   log.info("✅ All routes are registered");
 });
 
@@ -126,6 +159,12 @@ const startServer = async (): Promise<void> => {
       log.warn(
         `! Port ${desiredPort} is not available, using ${portToUse} instead.`
       );
+    }
+
+    if (IS_DEVELOPMENT) {
+      setTimeout(() => {
+        generateRouteTypes(address, API_HEALTH_BASE_URL);
+      }, 1000);
     }
   } catch (error) {
     if (error instanceof Error) {

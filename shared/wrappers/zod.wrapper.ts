@@ -3,11 +3,14 @@ import type { $ZodConfig } from "zod/v4/core";
 import type * as zodLocales from "zod/v4/locales";
 
 type ZodConfig = $ZodConfig;
-type ZodError = z.ZodError;
+type ZodError<T = unknown> = z.ZodError<T>;
 type ZodFormattedError = z.ZodFormattedError;
 type ZodInfer<T extends z.ZodTypeAny> = z.infer<T>;
 type ZodLocale = keyof typeof zodLocales;
-type ZodObject = z.ZodObject;
+type ZodObject<
+  TShape extends z.core.$ZodShape = z.core.$ZodLooseShape,
+  TConfig extends z.core.$ZodObjectConfig = z.core.$strip
+> = z.ZodObject<TShape, TConfig>;
 type ZodString = z.ZodString;
 
 const zArray = z.array;

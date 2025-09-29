@@ -1,8 +1,8 @@
 import type { JSX } from "react";
 
-import { useGetDatabaseHealth } from "@client/api/api-health/queries/useGetDatabaseHealth.query";
-import { useGetServerHealth } from "@client/api/api-health/queries/useGetServerHealth.query";
 import { PageTitle } from "@client/components/PageTitle";
+import { useGetDatabaseHealth } from "@client/services/api-health/queries/useGetDatabaseHealth.query";
+import { useGetServerHealth } from "@client/services/api-health/queries/useGetServerHealth.query";
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
 
 import styles from "./ApiHealth.module.scss";
