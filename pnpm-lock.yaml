@@ -169,7 +169,7 @@ importers:
         specifier: 2.6.0
         version: 2.6.0
       knip:
-        specifier: ^5.64.1
+        specifier: 5.64.1
         version: 5.64.1(@types/node@24.6.0)(typescript@5.9.2)
       pino:
         specifier: 9.12.0
