@@ -9,38 +9,43 @@ import { PinoLogHelper } from "./pino-log.helper.ts";
 
 const execAsync = promisify(exec);
 
-const generateRouteTypes = async (
-  serverUrl: string,
-  routePath: string
-): Promise<void> => {
+const generateRouteTypes = async ({
+  cleanOnFirstRun,
+  routePath,
+  serverUrl,
+}: {
+  cleanOnFirstRun: boolean;
+  routePath: string;
+  serverUrl: string;
+}): Promise<void> => {
   const { log } = PinoLogHelper;
 
-  const fileNameSafeRoute = routePath.replace("/", "-");
+  const fileName = `${routePath.replace("/", "-")}.type.ts`;
 
   try {
     log.info("🔄 Generating API types from OpenAPI spec...");
 
     await generateApi({
-      cleanOutput: true,
+      cleanOutput: cleanOnFirstRun,
+      codeGenConstructs: (struct) => ({
+        Keyword: {
+          ...struct.Keyword,
+          Any: "unknown",
+        },
+      }),
       extractResponseBody: true,
       extractResponseError: true,
-      fileName: `${fileNameSafeRoute}.type.ts`,
+      fileName,
       generateClient: false,
       generateRouteTypes: false,
       moduleNameFirstTag: true,
       output: path.resolve(process.cwd(), "./shared/types/generated"),
       sortTypes: true,
-      Ts: {
-        Keyword: { Any: "unknown" },
-      },
       url: `${serverUrl}/api/docs/swagger/json`,
     } as Partial<GenerateApiConfiguration["config"]>);
 
     const outputDir = path.resolve(process.cwd(), "./shared/types/generated");
-    const generatedFilePath = path.join(
-      outputDir,
-      `${fileNameSafeRoute}.type.ts`
-    );
+    const generatedFilePath = path.join(outputDir, fileName);
 
     if (fs.existsSync(generatedFilePath)) {
       let content = fs.readFileSync(generatedFilePath, "utf8");

@@ -163,7 +163,11 @@ const startServer = async (): Promise<void> => {
 
     if (IS_DEVELOPMENT) {
       setTimeout(() => {
-        generateRouteTypes(address, API_HEALTH_BASE_URL);
+        generateRouteTypes({
+          cleanOnFirstRun: true,
+          routePath: API_HEALTH_BASE_URL,
+          serverUrl: address,
+        });
       }, 1000);
     }
   } catch (error) {
