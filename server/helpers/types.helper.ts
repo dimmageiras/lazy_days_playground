@@ -42,7 +42,7 @@ const generateRouteTypes = async ({
       output: path.resolve(process.cwd(), "./shared/types/generated"),
       sortTypes: true,
       url: `${serverUrl}/api/docs/swagger/json`,
-    } as Partial<GenerateApiConfiguration["config"]>);
+    } satisfies Partial<GenerateApiConfiguration["config"]>);
 
     const outputDir = path.resolve(process.cwd(), "./shared/types/generated");
     const generatedFilePath = path.join(outputDir, fileName);
