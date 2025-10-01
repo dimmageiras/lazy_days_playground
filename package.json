@@ -8,6 +8,7 @@
     "build:server": "tsc --project tsconfig.server.json",
     "dev": "pnpm typegen:server && node --env-file=.env.local.dev ./server/index.ts",
     "gel:generate": "node node_modules/@gel/generate/dist/cli.js interfaces --dsn \"gel://admin:password@host.docker.internal:5656/main?tls_security=insecure\"",
+    "knip": "knip",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\" --rule \"react-hooks/exhaustive-deps: off\"",
     "lint:fix": "pnpm lint --fix",
     "start": "node --env-file=.env.local.prod ./dist/fastify/server/index.js",

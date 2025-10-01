@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "client/entry.client.tsx",
+    "client/entry.server.tsx",
+    "client/root.tsx",
+    "react-router.config.ts"
+  ],
+  "project": [
+    "**/*.{js,jsx,ts,tsx}",
+    "!**/*.test.{js,jsx,ts,tsx}",
+    "!**/*.spec.{js,jsx,ts,tsx}"
+  ],
+  "react-router": {
+    "config": "client/routes.ts",
+    "entry": [
+      "client/layouts/**/index.ts",
+      "client/layouts/**/*.tsx",
+      "client/pages/**/index.ts",
+      "client/pages/**/*.tsx"
+    ]
+  },
+  "ignore": [".react-router/**", "dist/**"],
+  "ignoreDependencies": []
+}
