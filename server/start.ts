@@ -2,6 +2,7 @@ import cookieFastify from "@fastify/cookie";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
+import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import {
   fastifyZodOpenApiPlugin,
@@ -23,14 +24,20 @@ import {
   IS_DEVELOPMENT,
   LOG_LEVEL,
   MODE,
+  MODES,
   PORT,
 } from "../shared/constants/root-env.constant.ts";
+import { ObjectUtilsHelper } from "../shared/helpers/object-utils.helper.ts";
+import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
 import { apiHealthRoutes } from "./routes/api-health/index.ts";
 
+const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
-const { generateRouteTypes } = TypesHelper;
+const { generateContractsForRoute } = TypesHelper;
+
+let fastifyWithSwagger = null as FastifyInstance | null;
 
 const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
@@ -52,11 +59,14 @@ await app.register(cookieFastify, {
 });
 log.info("✅ Cookie plugin registered");
 
-await app.register(async (fastify) => {
-  if (IS_DEVELOPMENT) {
+await app.register(async (fastify: FastifyInstance) => {
+  if (MODE === MODES.TYPE_GENERATOR) {
+    fastifyWithSwagger = fastify;
+  }
+
+  if (MODE !== MODES.PRODUCTION) {
     await fastify.register(swaggerFastify, {
       openapi: {
-        openapi: "3.1.0",
         info: {
           contact: {
             name: "API Support",
@@ -68,6 +78,7 @@ await app.register(async (fastify) => {
           title: "Lazy Days Playground API",
           version: "1.0.0",
         },
+        openapi: "3.1.0",
         servers: [
           {
             description: "Development server",
@@ -134,6 +145,43 @@ await app.register(async (fastify) => {
   log.info("✅ All routes are registered");
 });
 
+if (MODE === MODES.TYPE_GENERATOR) {
+  log.info(
+    "🔧 Running in type_generator mode - generating types from in-memory spec"
+  );
+
+  try {
+    await app.ready();
+
+    if (!fastifyWithSwagger) {
+      throw new Error("Fastify instance with swagger not available");
+    }
+
+    const spec = fastifyWithSwagger.swagger();
+    const routes: (typeof SWAGGER_ROUTES)[keyof typeof SWAGGER_ROUTES][] =
+      getObjectValues(SWAGGER_ROUTES);
+
+    for (let index = 0; index < routes.length; index++) {
+      const cleanOnFirstRun = index === 0;
+      const routePath = Reflect.get(routes, index);
+
+      if ("openapi" in spec) {
+        await generateContractsForRoute({ cleanOnFirstRun, routePath, spec });
+      }
+    }
+
+    log.info("✅ All route contracts generated. Exiting.");
+    process.exit(0);
+  } catch (error) {
+    log.error(
+      error instanceof Error
+        ? `Failed to generate types: ${error.message}`
+        : "Failed to generate types"
+    );
+    process.exit(1);
+  }
+}
+
 await app.register(reactRouterFastify, {
   buildDirectory: "dist",
   serverBuildFile: "index.js",
@@ -159,16 +207,6 @@ const startServer = async (): Promise<void> => {
       log.warn(
         `! Port ${desiredPort} is not available, using ${portToUse} instead.`
       );
-    }
-
-    if (IS_DEVELOPMENT) {
-      setTimeout(() => {
-        generateRouteTypes({
-          cleanOnFirstRun: true,
-          routePath: API_HEALTH_BASE_URL,
-          serverUrl: address,
-        });
-      }, 1000);
     }
   } catch (error) {
     if (error instanceof Error) {

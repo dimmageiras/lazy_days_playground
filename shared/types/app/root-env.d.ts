@@ -3,6 +3,8 @@
 
 import type { LoggerOptions } from "pino";
 
+import type { MODES } from "@shared/constants/root-env.constant";
+
 interface EnvironmentVariables {
   GEL_AUTH_BASE_URL: string;
   GEL_DSN: string;
@@ -16,6 +18,7 @@ interface EnvironmentVariables {
   VITE_APP_PORT: `${number}`;
   VITE_APP_RQDT?: `${boolean}`;
   VITE_APP_RRDT?: `${boolean}`;
+  VITE_APP_TYPE_GENERATOR_MODE?: typeof MODES.TYPE_GENERATOR;
 }
 
 declare global {

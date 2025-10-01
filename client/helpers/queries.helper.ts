@@ -5,9 +5,8 @@ import type {
 import { QueryClient } from "@tanstack/react-query";
 
 import { TIMING } from "@shared/constants/timing.constant";
-
-import { ArrayUtilsHelper } from "./array-utils.helper";
-import { ObjectUtilsHelper } from "./object-utils.helper";
+import { ArrayUtilsHelper } from "@shared/helpers/array-utils.helper";
+import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 
 const createQueryClientForServer = (): QueryClient => {
   const { SECONDS_TWO_IN_MS } = TIMING;

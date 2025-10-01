@@ -1,3 +1,4 @@
+import { MODES } from "../../shared/constants/root-env.constant.ts";
 import {
   zCoerce,
   zEnum,
@@ -46,6 +47,11 @@ const envSchema = zObject({
   }).optional(),
   VITE_APP_RRDT: zEnum(["true", "false"], {
     message: 'VITE_APP_RRDT must be either "true" or "false"',
+  }).optional(),
+  VITE_APP_TYPE_GENERATOR_MODE: zEnum(Object.values(MODES), {
+    message:
+      "VITE_APP_TYPE_GENERATOR_MODE must be one of the following: " +
+      Object.values(MODES).join(", "),
   }).optional(),
 });
 

@@ -1,9 +1,9 @@
 import type { RefObject } from "react";
 
-import { ArrayUtilsHelper } from "@client/helpers/array-utils.helper";
-import { ObjectUtilsHelper } from "@client/helpers/object-utils.helper";
 import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
+import { ArrayUtilsHelper } from "@shared/helpers/array-utils.helper";
 import { IdUtilsHelper } from "@shared/helpers/id-utils.helper";
+import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 
 /**
  * Generates a stable key for list items to optimize React's reconciliation process.

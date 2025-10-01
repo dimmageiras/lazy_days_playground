@@ -1,8 +1,8 @@
 import type { DehydratedState } from "@tanstack/react-query";
 import { useMatches } from "react-router";
 
-import { ObjectUtilsHelper } from "@client/helpers/object-utils.helper";
 import { QueriesHelper } from "@client/helpers/queries.helper";
+import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 
 const useDehydratedState = (): DehydratedState => {
   const matches = useMatches();

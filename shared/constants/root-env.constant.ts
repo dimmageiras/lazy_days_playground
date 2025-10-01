@@ -11,6 +11,7 @@ const {
   VITE_APP_PORT,
   VITE_APP_RQDT,
   VITE_APP_RRDT,
+  VITE_APP_TYPE_GENERATOR_MODE,
 } = typeof process !== "undefined" ? process.env : import.meta.env;
 
 const HAS_DEV_TOOLS = VITE_APP_ALL_DEV_TOOLS === "true";
@@ -22,9 +23,24 @@ const IS_SSR = typeof window === "undefined";
 const MODES = Object.freeze({
   DEVELOPMENT: "development",
   PRODUCTION: "production",
+  TYPE_GENERATOR: "type_generator",
 } as const);
 
-const MODE = IS_DEVELOPMENT ? MODES.DEVELOPMENT : MODES.PRODUCTION;
+let MODE: (typeof MODES)[keyof typeof MODES];
+
+switch (true) {
+  case !!VITE_APP_TYPE_GENERATOR_MODE:
+    MODE = MODES.TYPE_GENERATOR;
+    break;
+
+  case IS_DEVELOPMENT:
+    MODE = MODES.DEVELOPMENT;
+    break;
+
+  default:
+    MODE = MODES.PRODUCTION;
+    break;
+}
 
 export {
   GEL_AUTH_BASE_URL,

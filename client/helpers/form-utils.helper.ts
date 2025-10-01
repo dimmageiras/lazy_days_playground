@@ -2,13 +2,12 @@ import type { AriaAttributes, HTMLInputAutoCompleteAttribute } from "react";
 import type { FieldErrors } from "react-hook-form";
 import type { KeyAsString } from "type-fest";
 
+import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 import type {
   ZodInfer,
   ZodObject,
   ZodString,
 } from "@shared/wrappers/zod.wrapper";
-
-import { ObjectUtilsHelper } from "./object-utils.helper";
 
 /**
  * Generates props to prevent browser/password manager autofill on form inputs.

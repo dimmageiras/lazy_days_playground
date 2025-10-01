@@ -22,6 +22,17 @@ const loggerOptions: Record<
   production: {
     level: LOG_LEVEL ?? "info",
   },
+  type_generator: {
+    level: LOG_LEVEL ?? "info",
+    autoLogging: false,
+    transport: {
+      target: "pino-pretty",
+      options: {
+        translateTime: "HH:MM:ss",
+        ignore: "pid,hostname",
+      },
+    },
+  },
 };
 
 const opts = Reflect.get(loggerOptions, MODE);
