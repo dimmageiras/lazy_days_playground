@@ -6,20 +6,21 @@
     "client/root.tsx",
     "react-router.config.ts"
   ],
-  "project": [
-    "**/*.{js,jsx,ts,tsx}",
-    "!**/*.test.{js,jsx,ts,tsx}",
-    "!**/*.spec.{js,jsx,ts,tsx}"
-  ],
+  "project": ["**/*.{ts,tsx}", "!**/*.test.{ts,tsx}"],
   "react-router": {
     "config": "client/routes.ts",
     "entry": [
-      "client/layouts/**/index.ts",
       "client/layouts/**/*.tsx",
-      "client/pages/**/index.ts",
-      "client/pages/**/*.tsx"
+      "client/layouts/**/index.ts",
+      "client/pages/**/*.tsx",
+      "client/pages/**/index.ts"
     ]
   },
   "ignore": [".react-router/**", "dist/**"],
-  "ignoreDependencies": []
+  "ignoreDependencies": [
+    "@gel/generate",
+    "@redux-devtools/extension",
+    "@total-typescript/ts-reset",
+    "pino-pretty"
+  ]
 }
