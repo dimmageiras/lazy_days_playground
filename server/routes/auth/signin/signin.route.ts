@@ -1,103 +1,154 @@
+import { UserError } from "@gel/auth-core";
 import type { FastifyInstance } from "fastify";
+import type {
+  FastifyZodOpenApiSchema,
+  FastifyZodOpenApiTypeProvider,
+} from "fastify-zod-openapi";
 
-import type { SigninRequestBody } from "@server/plugins/gel-auth-fastify";
+import type { SigninRequestBody } from "@server/plugins/gel-auth-fastify/index";
+import type {
+  SigninCreateData,
+  SigninCreateError,
+} from "@shared/types/generated/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
-import { IS_DEVELOPMENT } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
-import {
-  signinRequestSchema,
-  signinResponseSchema,
-} from "../../../../shared/schemas/auth/signin-route.schema.ts";
-import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
+import { AUTH_COOKIE_CONFIG } from "../../../constants/cookie.constant.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
+import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
+import {
+  signinErrorSchema,
+  signinRateLimitErrorSchema,
+  signinRequestSchema,
+  signinSuccessSchema,
+} from "../../../schemas/auth/signin-route.schema.ts";
 
 const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { SIGNIN } = AUTH_ENDPOINTS;
-  const { BAD_REQUEST, OK, UNAUTHORIZED } = HTTP_STATUS;
-
   const { createAuth, createClient } = AuthClientHelper;
   const { getCurrentISOTimestamp } = DateHelper;
+  const { handleAuthError } = GelDbHelper;
+  const { fastIdGen } = IdUtilsHelper;
+  const { log } = PinoLogHelper;
 
-  const signinRouteSchema = {
-    body: zToJSONSchema(signinRequestSchema, {
-      target: "openapi-3.0",
-    }),
-    description: "Authenticate an existing user with email and password.",
-    response: {
-      200: zToJSONSchema(signinResponseSchema),
-      401: zToJSONSchema(signinResponseSchema),
-    },
-    summary: "Sign in user",
-    tags: ["Authentication"],
-  } as const;
+  const {
+    BAD_REQUEST,
+    MANY_REQUESTS_ERROR,
+    OK,
+    SERVICE_UNAVAILABLE,
+    UNAUTHORIZED,
+  } = HTTP_STATUS;
 
-  fastify.post<SigninRequestBody>(
-    `/${SIGNIN}`,
-    { schema: signinRouteSchema },
-    async (request, reply) => {
-      try {
-        const { email, password } = request.body;
-
-        if (!email || !password) {
-          return reply.status(BAD_REQUEST).send({
-            error: "Email and password are required",
-            timestamp: DateHelper.getCurrentISOTimestamp(),
-          });
-        }
-
-        const client = createClient();
-        const { emailPasswordHandlers } = createAuth(client);
-
-        const { signin } = emailPasswordHandlers;
-
-        try {
-          const tokenData = await signin(email, password);
-
-          reply.setCookie("gel-session", tokenData.auth_token, {
-            httpOnly: true,
-            secure: !IS_DEVELOPMENT,
-            sameSite: "strict",
-            maxAge: 60 * 60 * 24 * 7, // 7 days
-            path: "/",
-          });
-
-          return reply.status(OK).send({
-            ...tokenData,
-            timestamp: DateHelper.getCurrentISOTimestamp(),
-          });
-        } finally {
-          await client.close();
-        }
-      } catch (error) {
-        const { fastIdGen } = IdUtilsHelper;
-        const { log } = PinoLogHelper;
-
+  fastify
+    .withTypeProvider<FastifyZodOpenApiTypeProvider>()
+    .post<SigninRequestBody>(
+      `/${AUTH_ENDPOINTS.SIGNIN}`,
+      {
+        config: {
+          rateLimit: AUTH_RATE_LIMIT,
+        },
+        schema: {
+          body: signinRequestSchema,
+          description: "Authenticate an existing user with email and password",
+          summary: "Sign in user",
+          tags: ["Authentication"],
+          response: {
+            [OK]: {
+              content: { "application/json": { schema: signinSuccessSchema } },
+            },
+            [BAD_REQUEST]: {
+              content: { "application/json": { schema: signinErrorSchema } },
+            },
+            [UNAUTHORIZED]: {
+              content: { "application/json": { schema: signinErrorSchema } },
+            },
+            [MANY_REQUESTS_ERROR]: {
+              content: {
+                "application/json": { schema: signinRateLimitErrorSchema },
+              },
+            },
+            [SERVICE_UNAVAILABLE]: {
+              content: { "application/json": { schema: signinErrorSchema } },
+            },
+          },
+        } satisfies FastifyZodOpenApiSchema,
+      },
+      async (request, reply) => {
         const requestId = fastIdGen();
 
-        log.error(
-          {
-            email: request.body?.email,
-            error:
-              error instanceof Error ? error.message : "Invalid credentials",
-            requestId,
-            stack: error instanceof Error ? error.stack : undefined,
-          },
-          "💥 Signin request failed with error"
-        );
+        try {
+          const { email, password } = request.body;
 
-        return reply.status(UNAUTHORIZED).send({
-          details:
-            error instanceof Error ? error.message : "Invalid credentials",
-          error: "Authentication failed",
-          timestamp: getCurrentISOTimestamp(),
-        });
+          const client = createClient();
+
+          try {
+            const { emailPasswordHandlers } = createAuth(client);
+            const { signin } = emailPasswordHandlers;
+
+            const tokenData = await signin(email, password);
+
+            reply.setCookie(
+              "gel-session",
+              tokenData.auth_token,
+              AUTH_COOKIE_CONFIG
+            );
+
+            const response: SigninCreateData = {
+              identity_id: tokenData.identity_id,
+              timestamp: getCurrentISOTimestamp(),
+            };
+
+            return reply.status(OK).send(response);
+          } finally {
+            await client.close();
+          }
+        } catch (rawError) {
+          const error =
+            rawError instanceof Error ? rawError : new Error(`${rawError}`);
+
+          log.error(
+            {
+              email: request.body?.email,
+              error: error.message,
+              errorType: error instanceof UserError ? error.type : "unknown",
+              requestId,
+              stack: error instanceof Error ? error.stack : undefined,
+            },
+            "💥 Signin request failed with error"
+          );
+
+          const signinValidationError = {
+            details: "Invalid credentials",
+            errorMessageResponse: "Authentication failed",
+            statusCode: UNAUTHORIZED,
+          };
+
+          const { details, errorMessageResponse, statusCode } = handleAuthError(
+            {
+              error,
+              invalidDataError: {
+                details: "Invalid sign in details",
+                errorMessageResponse: "Signin validation failed",
+                statusCode: BAD_REQUEST,
+              },
+              noIdentityFoundError: signinValidationError,
+              userError: signinValidationError,
+            }
+          );
+
+          const errorResponse: SigninCreateError = {
+            details,
+            error: errorMessageResponse,
+            timestamp: getCurrentISOTimestamp(),
+          };
+
+          return reply.status(statusCode).send(errorResponse);
+        }
       }
-    }
-  );
+    );
 };
 
 export { signinRoute };

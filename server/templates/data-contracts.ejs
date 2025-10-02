@@ -23,17 +23,7 @@ const dataContractTemplates = {
     return `interface ${contract.name}${buildGenerics(contract)} {\r\n${contract.content}}`;
   },
   type: (contract) => {
-    // For type-to-interface conversion, strip outer braces if present
-    let content = contract.content || '';
-    const trimmed = content.trim();
-    
-    // If content starts with ({ and ends with }), it's a wrapped object type
-    if (trimmed.startsWith('({') && trimmed.endsWith('})')) {
-      // Remove the outer ({ and })
-      content = trimmed.slice(2, -2);
-    }
-    
-    return `interface ${contract.name}${buildGenerics(contract)} {\r\n${content}}`;
+    return `type ${contract.name}${buildGenerics(contract)} = ${contract.content}`;
   },
 }
 %>

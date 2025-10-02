@@ -6,9 +6,10 @@ import { BaseCard } from "@client/components/BaseCard";
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
 import type {
-  HealthDatabaseListResponse,
-  HealthServerListResponse,
-} from "@shared/types/api-health.type";
+  HealthDatabaseListData,
+  HealthDatabaseListError,
+  HealthServerListData,
+} from "@shared/types/generated/api-health.type";
 
 import styles from "./Card.module.scss";
 import { DatabaseMetadata } from "./components/DatabaseMetadata";
@@ -28,13 +29,13 @@ interface CardBaseProps {
 
 interface CardDatabaseProps extends CardBaseProps {
   apiHealthService: typeof API_HEALTH_ENDPOINTS.DATABASE;
-  data: HealthDatabaseListResponse | undefined;
+  data: HealthDatabaseListData | HealthDatabaseListError | undefined;
   error: Error | null;
 }
 
 interface CardServerProps extends CardBaseProps {
   apiHealthService: typeof API_HEALTH_ENDPOINTS.SERVER;
-  data: HealthServerListResponse | undefined;
+  data: HealthServerListData | undefined;
   error: Error | null;
 }
 
@@ -88,12 +89,7 @@ const Card = ({
           />
         ) : null}
         {apiHealthService === API_HEALTH_ENDPOINTS.SERVER ? (
-          <ServerMetadata
-            data={data}
-            error={error}
-            isHealthy={isHealthy}
-            isUnhealthy={isUnhealthy}
-          />
+          <ServerMetadata data={data} isHealthy={isHealthy} />
         ) : null}
       </div>
     </BaseCard>

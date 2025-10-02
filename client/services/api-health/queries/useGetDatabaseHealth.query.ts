@@ -1,12 +1,15 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 
-import type { HealthDatabaseListResponse } from "@shared/types/api-health.type";
+import type {
+  HealthDatabaseListData,
+  HealthDatabaseListError,
+} from "@shared/types/generated/api-health.type";
 
 import { ApiHealthQueriesHelper } from "./helpers/api-health-queries.helper";
 
 const useGetDatabaseHealth = (): UseQueryResult<
-  HealthDatabaseListResponse,
+  HealthDatabaseListData | HealthDatabaseListError,
   Error
 > => {
   const { getDatabaseHealthQueryOptions } = ApiHealthQueriesHelper;

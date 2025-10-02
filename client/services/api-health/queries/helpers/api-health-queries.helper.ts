@@ -4,16 +4,17 @@ import { queryOptions } from "@tanstack/react-query";
 import { API_HEALTH_QUERY_KEYS } from "@client/services/api-health/api-health.constant";
 import { ApiHealthService } from "@client/services/api-health/api-health.service";
 import type {
-  HealthDatabaseListResponse,
-  HealthServerListResponse,
-} from "@shared/types/api-health.type";
+  HealthDatabaseListData,
+  HealthDatabaseListError,
+  HealthServerListData,
+} from "@shared/types/generated/api-health.type";
 
 const { GET_DATABASE_HEALTH, GET_SERVER_HEALTH } = API_HEALTH_QUERY_KEYS;
 
 const getDatabaseHealthQueryOptions = (): UseQueryOptions<
-  HealthDatabaseListResponse,
+  HealthDatabaseListData | HealthDatabaseListError,
   Error,
-  HealthDatabaseListResponse,
+  HealthDatabaseListData | HealthDatabaseListError,
   typeof GET_DATABASE_HEALTH
 > => {
   const { getDatabaseHealth } = ApiHealthService;
@@ -25,9 +26,9 @@ const getDatabaseHealthQueryOptions = (): UseQueryOptions<
 };
 
 const getServerHealthQueryOptions = (): UseQueryOptions<
-  HealthServerListResponse,
+  HealthServerListData,
   Error,
-  HealthServerListResponse,
+  HealthServerListData,
   typeof GET_SERVER_HEALTH
 > => {
   const { getServerHealth } = ApiHealthService;

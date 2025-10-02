@@ -1,59 +1,75 @@
 import type { FastifyInstance } from "fastify";
-import { createClient } from "gel";
+import type {
+  FastifyZodOpenApiSchema,
+  FastifyZodOpenApiTypeProvider,
+} from "fastify-zod-openapi";
+import { createClient, QueryError } from "gel";
+
+import type {
+  CheckEmailCreateData,
+  CheckEmailCreateError,
+} from "@shared/types/generated/user.type";
 
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { USER_ENDPOINTS } from "../../../../shared/constants/user.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
-import {
-  checkEmailRequestSchema,
-  checkEmailResponseSchema,
-} from "../../../../shared/schemas/user/check-email-route.schema.ts";
-import { zToJSONSchema } from "../../../../shared/wrappers/zod.wrapper.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { USER_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
+import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-
-interface CheckEmailRequestBody {
-  Body: {
-    email: string;
-  };
-}
+import {
+  checkEmailErrorSchema,
+  checkEmailRateLimitErrorSchema,
+  checkEmailRequestSchema,
+  checkEmailSuccessSchema,
+} from "../../../schemas/user/check-email-route.schema.ts";
 
 const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { CHECK_EMAIL } = USER_ENDPOINTS;
-  const { BAD_REQUEST, OK, INTERNAL_SERVER_ERROR } = HTTP_STATUS;
-
   const { getCurrentISOTimestamp } = DateHelper;
+  const { handleAuthError } = GelDbHelper;
+  const { fastIdGen } = IdUtilsHelper;
+  const { log } = PinoLogHelper;
 
-  const checkEmailRouteSchema = {
-    body: zToJSONSchema(checkEmailRequestSchema, {
-      target: "openapi-3.0",
-    }),
-    description: "Check if an email address exists in the user database.",
-    response: {
-      200: zToJSONSchema(checkEmailResponseSchema),
-      400: zToJSONSchema(checkEmailResponseSchema),
-      500: zToJSONSchema(checkEmailResponseSchema),
+  const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
+    HTTP_STATUS;
+
+  fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
+    `/${USER_ENDPOINTS.CHECK_EMAIL}`,
+    {
+      config: {
+        rateLimit: USER_RATE_LIMIT,
+      },
+      schema: {
+        body: checkEmailRequestSchema,
+        description: "Check if an email address exists in the user database",
+        summary: "Check email existence",
+        tags: ["User"],
+        response: {
+          [OK]: {
+            content: {
+              "application/json": { schema: checkEmailSuccessSchema },
+            },
+          },
+          [BAD_REQUEST]: {
+            content: { "application/json": { schema: checkEmailErrorSchema } },
+          },
+          [MANY_REQUESTS_ERROR]: {
+            content: {
+              "application/json": { schema: checkEmailRateLimitErrorSchema },
+            },
+          },
+          [SERVICE_UNAVAILABLE]: {
+            content: { "application/json": { schema: checkEmailErrorSchema } },
+          },
+        },
+      } satisfies FastifyZodOpenApiSchema,
     },
-    summary: "Check email existence",
-    tags: ["User"],
-  } as const;
-
-  fastify.post<CheckEmailRequestBody>(
-    `/${CHECK_EMAIL}`,
-    { schema: checkEmailRouteSchema },
     async (request, reply) => {
+      const requestId = fastIdGen();
+
       try {
         const { email } = request.body;
-
-        if (!email) {
-          return reply.status(BAD_REQUEST).send({
-            email: email || "",
-            error: "Email is required",
-            exists: false,
-            timestamp: getCurrentISOTimestamp(),
-          });
-        }
 
         const client = createClient({
           dsn: GEL_DSN,
@@ -79,34 +95,48 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
           await client.close();
         }
 
-        return reply.status(OK).send({
+        const response: CheckEmailCreateData = {
           email,
           exists: emailExists,
           timestamp: getCurrentISOTimestamp(),
-        });
-      } catch (error) {
-        const { fastIdGen } = IdUtilsHelper;
-        const { log } = PinoLogHelper;
+        };
 
-        const requestId = fastIdGen();
+        return reply.status(OK).send(response);
+      } catch (rawError) {
+        const error =
+          rawError instanceof Error ? rawError : new Error(`${rawError}`);
 
         log.error(
           {
             email: request.body?.email,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error.message,
+            errorType:
+              error instanceof QueryError ? error.constructor.name : "unknown",
             requestId,
-            stack: error instanceof Error ? error.stack : undefined,
+            stack: error.stack,
           },
           "💥 Check email request failed with error"
         );
 
-        return reply.status(INTERNAL_SERVER_ERROR).send({
-          details: error instanceof Error ? error.message : "Unknown error",
-          email: request.body?.email || "",
-          error: "Failed to check email existence",
-          exists: false,
-          timestamp: getCurrentISOTimestamp(),
+        const emailCheckError = {
+          details: "Invalid email format",
+          errorMessageResponse: "Email check failed",
+          statusCode: BAD_REQUEST,
+        };
+
+        const { details, errorMessageResponse, statusCode } = handleAuthError({
+          error,
+          invalidReferenceError: emailCheckError,
+          queryError: emailCheckError,
         });
+
+        const errorResponse: CheckEmailCreateError = {
+          details,
+          error: errorMessageResponse,
+          timestamp: getCurrentISOTimestamp(),
+        };
+
+        return reply.status(statusCode).send(errorResponse);
       }
     }
   );

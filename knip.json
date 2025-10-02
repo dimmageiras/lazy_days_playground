@@ -16,7 +16,7 @@
       "client/pages/**/index.ts"
     ]
   },
-  "ignore": [".react-router/**", "dist/**"],
+  "ignore": [".react-router/**", "dist/**", "shared/types/generated/**"],
   "ignoreDependencies": [
     "@gel/generate",
     "@redux-devtools/extension",

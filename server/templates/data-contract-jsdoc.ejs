@@ -4,9 +4,18 @@ const { formatDescription, require, _ } = utils;
 
 const stringify = (value) => _.isObject(value) ? JSON.stringify(value) : _.isString(value) ? `"${value}"` : value;
 
+// Deduplicate description lines (fixes duplicate descriptions when same schema is used for multiple status codes)
+const deduplicateDescription = (description) => {
+  if (!description) return description;
+  const formatted = formatDescription(description);
+  const lines = formatted.split('\n');
+  const uniqueLines = [...new Set(lines)];
+  return uniqueLines.join('\n');
+};
+
 const jsDocLines = _.compact([
     data.title,
-    data.description && formatDescription(data.description),
+    data.description && deduplicateDescription(data.description),
     !_.isUndefined(data.deprecated) && data.deprecated && '@deprecated',
     !_.isUndefined(data.format) && `@format ${data.format}`,
     !_.isUndefined(data.minimum) && `@min ${data.minimum}`,

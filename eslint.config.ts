@@ -1,8 +1,8 @@
 import pluginJS from "@eslint/js";
 import { plugin as pluginTanstackQuery } from "@tanstack/eslint-plugin-query";
 import tsParser from "@typescript-eslint/parser";
-import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
-import { globalIgnores } from "eslint/config";
+import type { ESLint, Linter } from "eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 import * as pluginCSSModules from "eslint-plugin-css-modules";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
@@ -16,7 +16,7 @@ import tsEslint from "typescript-eslint";
 
 const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 
-export default tsEslint.config([
+export default defineConfig([
   globalIgnores([".react-router", "dist", "logs"]),
   {
     extends: [
@@ -50,7 +50,7 @@ export default tsEslint.config([
       },
     },
     plugins: {
-      "css-modules": pluginCSSModules as FlatConfig.Plugin,
+      "css-modules": pluginCSSModules as ESLint.Plugin,
       "simple-import-sort": pluginSimpleImportSort,
       security: pluginSecurity,
     },
@@ -200,4 +200,4 @@ export default tsEslint.config([
       ],
     },
   },
-]) satisfies FlatConfig.ConfigArray;
+]) satisfies Linter.Config[];

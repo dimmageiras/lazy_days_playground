@@ -1,5 +1,7 @@
 import type { FastifyInstance } from "fastify";
+import { exec } from "node:child_process";
 import { access, constants, readFile, writeFile } from "node:fs/promises";
+import { promisify } from "node:util";
 import path from "path";
 import type { GenerateApiConfiguration } from "swagger-typescript-api";
 import { generateApi } from "swagger-typescript-api";
@@ -8,6 +10,8 @@ import type { SWAGGER_ROUTES } from "@server/constants/swagger-routes.constant";
 
 import { ObjectUtilsHelper } from "../../shared/helpers/object-utils.helper.ts";
 import { PinoLogHelper } from "./pino-log.helper.ts";
+
+const execAsync = promisify(exec);
 
 type OpenAPIV3_1_Document = Extract<
   ReturnType<FastifyInstance["swagger"]>,
@@ -18,10 +22,12 @@ const generateContractsForRoute = async ({
   cleanOnFirstRun,
   routePath,
   spec,
+  isLastRoute,
 }: {
   cleanOnFirstRun: boolean;
   routePath: (typeof SWAGGER_ROUTES)[keyof typeof SWAGGER_ROUTES];
   spec: OpenAPIV3_1_Document;
+  isLastRoute: boolean;
 }): Promise<void> => {
   const { getObjectEntries, isPlainObject } = ObjectUtilsHelper;
   const { log } = PinoLogHelper;
@@ -54,13 +60,17 @@ const generateContractsForRoute = async ({
     codeGenConstructs: (struct) => ({
       Keyword: { ...struct.Keyword, Any: "unknown" },
     }),
+    extractRequestBody: true,
+    extractRequestParams: true,
     extractResponseBody: true,
     extractResponseError: true,
+    extractResponses: true,
     fileName,
     generateClient: false,
     generateRouteTypes: false,
     output,
     sortTypes: true,
+    silent: true,
     spec: filteredSpec,
     templates: path.resolve(process.cwd(), "./server/templates"),
   } satisfies Partial<GenerateApiConfiguration["config"]>);
@@ -82,7 +92,17 @@ const generateContractsForRoute = async ({
     log.error(error);
   }
 
-  log.info(`✅ Generated types for route: ${routePath} (${fileName})`);
+  if (isLastRoute) {
+    try {
+      const generatedDir = path.join(output, "*.ts");
+
+      await execAsync(`npx eslint --fix "${generatedDir}"`);
+    } catch (_eslintError) {
+      log.warn(
+        `⚠️  ESLint had warnings/errors for generated files (this is expected)`
+      );
+    }
+  }
 };
 
 export const TypesHelper = { generateContractsForRoute };

@@ -1,4 +1,5 @@
 import cookieFastify from "@fastify/cookie";
+import rateLimitFastify from "@fastify/rate-limit";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
 import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
@@ -17,6 +18,8 @@ import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import {
   API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
+  AUTH_BASE_URL,
+  USER_BASE_URL,
 } from "../shared/constants/base-urls.const.ts";
 import {
   COOKIE_SECRET,
@@ -28,14 +31,20 @@ import {
   PORT,
 } from "../shared/constants/root-env.constant.ts";
 import { ObjectUtilsHelper } from "../shared/helpers/object-utils.helper.ts";
+import { HTTP_STATUS } from "./constants/http-status.constant.ts";
+import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
 import { apiHealthRoutes } from "./routes/api-health/index.ts";
+import { authRoutes } from "./routes/auth/index.ts";
+import { userRoutes } from "./routes/user/index.ts";
 
 const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
+
+const { MANY_REQUESTS_ERROR, NOT_FOUND } = HTTP_STATUS;
 
 let fastifyWithSwagger = null as FastifyInstance | null;
 
@@ -49,15 +58,38 @@ app.setSerializerCompiler(serializerCompiler);
 
 await app.register(fastifyZodOpenApiPlugin);
 
-await app.register(cookieFastify, {
-  parseOptions: {
-    httpOnly: true,
-    sameSite: "strict",
-    secure: !IS_DEVELOPMENT,
-  },
-  secret: COOKIE_SECRET,
-});
-log.info("✅ Cookie plugin registered");
+if (MODE !== MODES.TYPE_GENERATOR) {
+  await app.register(cookieFastify, {
+    parseOptions: {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: !IS_DEVELOPMENT,
+    },
+    secret: COOKIE_SECRET,
+  });
+  log.info("✅ Cookie plugin registered");
+
+  await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
+  log.info("✅ Rate limiting plugin registered");
+
+  // Add central logging for all 429 errors
+  app.addHook("onError", (request, reply, error, done) => {
+    if (reply.statusCode === MANY_REQUESTS_ERROR) {
+      log.warn(
+        {
+          error: error.message,
+          ip: request.ip,
+          route: request.url,
+          userAgent: request.headers["user-agent"],
+        },
+        "Rate limit exceeded (central log)"
+      );
+    }
+
+    done();
+  });
+  log.info("✅ Rate limit error hook registered");
+}
 
 await app.register(async (fastify: FastifyInstance) => {
   if (MODE === MODES.TYPE_GENERATOR) {
@@ -114,9 +146,9 @@ await app.register(async (fastify: FastifyInstance) => {
             return;
           }
 
-          reply.code(404).send({
+          reply.code(NOT_FOUND).send({
             error: `No routes matched location "${request.url}"`,
-            statusCode: 404,
+            statusCode: NOT_FOUND,
           });
         },
         preHandler: (_request, _reply, next) => {
@@ -135,21 +167,22 @@ await app.register(async (fastify: FastifyInstance) => {
       },
       transformSpecificationClone: true,
     });
-    log.info("✅ Swagger plugins registered for API routes only");
+
+    if (MODE !== MODES.TYPE_GENERATOR) {
+      log.info("✅ Swagger plugins registered for API routes only");
+    }
   }
 
   await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
-  // TODO: Fix auth and user routes to use proper FastifyZodOpenApiSchema format
-  // await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
-  // await fastify.register(userRoutes, { prefix: USER_BASE_URL });
-  log.info("✅ All routes are registered");
+  await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
+  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
+
+  if (MODE !== MODES.TYPE_GENERATOR) {
+    log.info("✅ All routes are registered");
+  }
 });
 
 if (MODE === MODES.TYPE_GENERATOR) {
-  log.info(
-    "🔧 Running in type_generator mode - generating types from in-memory spec"
-  );
-
   try {
     await app.ready();
 
@@ -166,11 +199,15 @@ if (MODE === MODES.TYPE_GENERATOR) {
       const routePath = Reflect.get(routes, index);
 
       if ("openapi" in spec) {
-        await generateContractsForRoute({ cleanOnFirstRun, routePath, spec });
+        await generateContractsForRoute({
+          cleanOnFirstRun,
+          routePath,
+          spec,
+          isLastRoute: index === routes.length - 1,
+        });
       }
     }
 
-    log.info("✅ All route contracts generated. Exiting.");
     process.exit(0);
   } catch (error) {
     log.error(

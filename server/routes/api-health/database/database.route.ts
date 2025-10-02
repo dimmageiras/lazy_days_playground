@@ -14,39 +14,47 @@ import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
+import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { HEALTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
+import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
 import {
   databaseHealthErrorSchema,
   databaseHealthSuccessSchema,
-} from "../../../../shared/schemas/api-health/database-route.schema.ts";
-import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
-import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
+  databaseRateLimitErrorSchema,
+} from "../../../schemas/api-health/database-route.schema.ts";
 
 const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { getCurrentISOTimestamp } = DateHelper;
   const { fastIdGen } = IdUtilsHelper;
   const { log } = PinoLogHelper;
 
+  const { MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } = HTTP_STATUS;
+
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${API_HEALTH_ENDPOINTS.DATABASE}`,
     {
+      config: {
+        rateLimit: HEALTH_RATE_LIMIT,
+      },
       schema: {
         description:
           "Verifies Gel database connectivity and returns connection status",
         summary: "Check database connectivity",
         tags: ["API Health"],
         response: {
-          200: {
+          [OK]: {
             content: {
-              "application/json": {
-                schema: databaseHealthSuccessSchema,
-              },
+              "application/json": { schema: databaseHealthSuccessSchema },
             },
           },
-          503: {
+          [MANY_REQUESTS_ERROR]: {
             content: {
-              "application/json": {
-                schema: databaseHealthErrorSchema,
-              },
+              "application/json": { schema: databaseRateLimitErrorSchema },
+            },
+          },
+          [SERVICE_UNAVAILABLE]: {
+            content: {
+              "application/json": { schema: databaseHealthErrorSchema },
             },
           },
         },
@@ -56,29 +64,8 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
       const requestId = fastIdGen();
 
       try {
-        const gelDSN = GEL_DSN;
-
-        if (!gelDSN) {
-          log.warn(
-            {
-              issue: "missing_dsn",
-              requestId,
-            },
-            "⚠️ Database health check failed - DSN not configured"
-          );
-
-          const errorResponse: HealthDatabaseListError = {
-            error: "Database DSN not configured",
-            timestamp: getCurrentISOTimestamp(),
-          };
-
-          return reply
-            .status(HTTP_STATUS.SERVICE_UNAVAILABLE)
-            .send(errorResponse);
-        }
-
         const client = createClient({
-          dsn: gelDSN,
+          dsn: GEL_DSN,
         });
 
         let queryResult: unknown;
@@ -92,14 +79,14 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
         const response: HealthDatabaseListData = {
           database: "gel",
           dsn:
-            typeof gelDSN === "string"
-              ? gelDSN.replace(/\/\/.*@/, "//***@")
-              : gelDSN,
+            typeof GEL_DSN === "string"
+              ? GEL_DSN.replace(/\/\/.*@/, "//***@")
+              : GEL_DSN,
           test_result: queryResult,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(HTTP_STATUS.OK).send(response);
+        return reply.status(OK).send(response);
       } catch (error) {
         log.error(
           {
@@ -115,14 +102,12 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
         );
 
         const errorResponse: HealthDatabaseListError = {
-          details: error instanceof Error ? error.message : "Unknown error",
+          details: "An unexpected error occurred. Please try again later.",
           error: "Database connection failed",
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply
-          .status(HTTP_STATUS.SERVICE_UNAVAILABLE)
-          .send(errorResponse);
+        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );
