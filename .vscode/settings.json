@@ -7,13 +7,13 @@
     "source.removeUnusedImports": "explicit"
   },
   "github-actions.use-enterprise": true,
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsdk": "node_modules/typescript/lib"
 
-  "[html]": {
+  /* "[html]": {
     "editor.defaultFormatter": null,
     "editor.formatOnPaste": false,
     "editor.formatOnSave": false,
     "editor.formatOnType": false,
     "editor.suggest.insertMode": "replace"
-  }
+  } */
 }

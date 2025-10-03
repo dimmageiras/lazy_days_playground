@@ -65,10 +65,10 @@ All rate-limited endpoints include the following headers:
 
 ### On Every Request:
 
+- `retry-after`: Seconds until the rate limit resets (when limit exceeded)
 - `x-ratelimit-limit`: Maximum requests allowed in time window
 - `x-ratelimit-remaining`: Requests remaining in current window
 - `x-ratelimit-reset`: Timestamp when the rate limit resets
-- `retry-after`: Seconds until the rate limit resets (when limit exceeded)
 
 ### Example Headers:
 
@@ -134,9 +134,9 @@ done
 ```javascript
 // Check rate limit headers
 const response = await fetch("http://localhost:5173/auth/signin", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ email: "test@example.com", password: "test123" }),
+  headers: { "Content-Type": "application/json" },
+  method: "POST",
 });
 
 console.log("Limit:", response.headers.get("x-ratelimit-limit"));
