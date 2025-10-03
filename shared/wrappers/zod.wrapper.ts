@@ -1,3 +1,4 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { $ZodConfig } from "zod/v4/core";
 import type * as zodLocales from "zod/v4/locales";
@@ -13,7 +14,6 @@ type ZodObject<
 > = z.ZodObject<TShape, TConfig>;
 type ZodString = z.ZodString;
 
-const zArray = z.array;
 const zBoolean = z.boolean;
 const zCoerce = z.coerce;
 const zConfig = z.config;
@@ -24,9 +24,8 @@ const zIsoDateTime = z.iso.datetime;
 const zLiteral = z.literal;
 const zNumber = z.number;
 const zObject = z.object;
-const zRecord = z.record;
+const zResolver = zodResolver;
 const zString = z.string;
-const zToJSONSchema = z.toJSONSchema;
 const zUnknown = z.unknown;
 
 export type {
@@ -39,7 +38,6 @@ export type {
   ZodString,
 };
 export {
-  zArray,
   zBoolean,
   zCoerce,
   zConfig,
@@ -50,8 +48,7 @@ export {
   zLiteral,
   zNumber,
   zObject,
-  zRecord,
+  zResolver,
   zString,
-  zToJSONSchema,
   zUnknown,
 };

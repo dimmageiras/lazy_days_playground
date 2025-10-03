@@ -14,16 +14,16 @@ import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { USER_ENDPOINTS } from "../../../../shared/constants/user.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
-import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
-import { USER_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
-import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
-import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
 import {
   checkEmailErrorSchema,
   checkEmailRateLimitErrorSchema,
   checkEmailRequestSchema,
   checkEmailSuccessSchema,
-} from "../../../schemas/user/check-email-route.schema.ts";
+} from "../../../../shared/schemas/user/check-email-route.schema.ts";
+import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { USER_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
+import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
+import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
 
 const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { getCurrentISOTimestamp } = DateHelper;

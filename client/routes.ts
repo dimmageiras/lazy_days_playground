@@ -8,18 +8,18 @@ const INDEX_FILE = "index.ts";
 const apiDocs = route("/api/docs", `pages/ApiDocs/${INDEX_FILE}`);
 const apiHealth = route("/api/health", `pages/ApiHealth/${INDEX_FILE}`);
 
-const home = index(`pages/Home/${INDEX_FILE}`);
+const auth = route("/auth", `pages/Auth/${INDEX_FILE}`);
 const calendar = route("/calendar", `pages/Calendar/${INDEX_FILE}`);
-const signin = route("/signin", `pages/Signin/${INDEX_FILE}`);
+const home = index(`pages/Home/${INDEX_FILE}`);
 const staff = route("/staff", `pages/Staff/${INDEX_FILE}`);
 const treatments = route("/treatments", `pages/Treatments/${INDEX_FILE}`);
 const userProfile = route("/profile", `pages/UserProfile/${INDEX_FILE}`);
 
 const notTreatmentPages = [
   ...(IS_DEVELOPMENT ? [apiDocs, apiHealth] : []),
-  home,
+  auth,
   calendar,
-  signin,
+  home,
   staff,
   userProfile,
 ];

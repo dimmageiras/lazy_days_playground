@@ -44,15 +44,15 @@ const NavBar = (): JSX.Element => {
           >
             User Profile
           </RouterLink>
-          <NavigationWrapper shouldReplace to="/signin">
+          <NavigationWrapper shouldReplace to="/auth">
             {(navigateTo) => (
               <button
-                aria-label="Sign in"
-                className={styles["sign-in"]}
+                aria-label="Sign in to your account or sign up for a new account"
+                className={styles["auth-button"]}
                 onClick={navigateTo}
                 type="button"
               >
-                Sign in
+                Sign in / Sign up
               </button>
             )}
           </NavigationWrapper>

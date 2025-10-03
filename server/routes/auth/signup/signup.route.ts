@@ -16,18 +16,18 @@ import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.const.ts";
 import { TIMING } from "../../../../shared/constants/timing.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
+import {
+  signupErrorSchema,
+  signupRateLimitErrorSchema,
+  signupRequestSchema,
+  signupSuccessSchema,
+} from "../../../../shared/schemas/auth/signup-route.schema.ts";
 import { AUTH_COOKIE_CONFIG } from "../../../constants/cookie.constant.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import {
-  signupErrorSchema,
-  signupRateLimitErrorSchema,
-  signupRequestSchema,
-  signupSuccessSchema,
-} from "../../../schemas/auth/signup-route.schema.ts";
 
 const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { getCurrentISOTimestamp } = DateHelper;

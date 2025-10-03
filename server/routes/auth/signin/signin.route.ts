@@ -14,18 +14,18 @@ import type {
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
+import {
+  signinErrorSchema,
+  signinRateLimitErrorSchema,
+  signinRequestSchema,
+  signinSuccessSchema,
+} from "../../../../shared/schemas/auth/signin-route.schema.ts";
 import { AUTH_COOKIE_CONFIG } from "../../../constants/cookie.constant.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
 import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
-import {
-  signinErrorSchema,
-  signinRateLimitErrorSchema,
-  signinRequestSchema,
-  signinSuccessSchema,
-} from "../../../schemas/auth/signin-route.schema.ts";
 
 const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { createAuth, createClient } = AuthClientHelper;
