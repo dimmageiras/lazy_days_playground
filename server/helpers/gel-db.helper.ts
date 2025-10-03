@@ -1,12 +1,9 @@
 import type { CamelCase } from "type-fest";
 
+import type { HttpErrorStatuses } from "@server/types/http-status.type";
+
 import { GEL_ERROR_OBJECTS } from "../constants/gel-db.constant.ts";
 import { HTTP_STATUS } from "../constants/http-status.constant.ts";
-
-type HttpErrorStatuses = Pick<
-  typeof HTTP_STATUS,
-  "BAD_REQUEST" | "SERVICE_UNAVAILABLE" | "UNAUTHORIZED"
->;
 
 type HandleAuthErrorArgs<
   TErrorStatus extends HttpErrorStatuses[keyof HttpErrorStatuses]
