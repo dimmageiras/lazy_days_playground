@@ -4,7 +4,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
-import { useEmailExistence } from "@client/services/user/queries/useEmailExistence.query";
+import { useEmailExistence } from "@client/services/user/mutations/useEmailExistence.mutation";
 
 import { FormFields } from "./components/FormFields";
 import { AUTH_FORM_INITIAL_VALUES } from "./constants/auth-form.constant";

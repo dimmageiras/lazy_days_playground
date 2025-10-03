@@ -7,7 +7,7 @@ import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { useDebounce } from "@client/hooks/useDebounce";
 import { FORM_FIELDS } from "@client/pages/Auth/components/AuthForm/components/FormFields/constants/form-fields.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
-import { useCheckEmailExists } from "@client/services/user/queries/useEmailExistence.query";
+import { useCheckEmailExists } from "@client/services/user/mutations/useEmailExistence.mutation";
 import { TIMING } from "@shared/constants/timing.constant";
 import { signupRequestSchema } from "@shared/schemas/auth/signup-route.schema";
 
