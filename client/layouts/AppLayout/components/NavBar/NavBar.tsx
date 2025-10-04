@@ -47,7 +47,7 @@ const NavBar = (): JSX.Element => {
           <NavigationWrapper shouldReplace to="/auth">
             {(navigateTo) => (
               <button
-                aria-label="Sign in to your account or sign up for a new account"
+                aria-label="Sign in to your account or sign up for a new one"
                 className={styles["auth-button"]}
                 onClick={navigateTo}
                 type="button"

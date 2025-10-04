@@ -10,7 +10,7 @@ const Auth = (): JSX.Element => {
     <main aria-label="Auth" className={styles["auth"]}>
       <PageTitle
         aria-label="Page title"
-        pageTitle="Sign in to your account or sign up for a new account"
+        pageTitle="Sign in to your account or sign up for a new one"
       />
       <section aria-label="Auth form" className={styles["auth-form"]}>
         <AuthForm />
