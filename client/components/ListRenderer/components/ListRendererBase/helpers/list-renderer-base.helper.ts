@@ -1,5 +1,3 @@
-import type { RefObject } from "react";
-
 import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
 import { ArrayUtilsHelper } from "@shared/helpers/array-utils.helper";
 import { IdUtilsHelper } from "@shared/helpers/id-utils.helper";
@@ -18,7 +16,7 @@ import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
  * @template TItem - The type of the item to generate a key for
  * @param item - The list item
  * @param index - The item's index in the list
- * @param keyMap - React ref containing WeakMap for stable key storage
+ * @param keyMap - WeakMap for stable key storage
  * @param getKey - Optional function to extract key from item
  * @returns string - A stable key for the item
  * @internal
@@ -26,7 +24,7 @@ import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 const generateStableKey = <TItem>(
   item: TItem,
   index: number,
-  keyMap: RefObject<WeakMap<WeakKey, string>>,
+  keyMap: WeakMap<WeakKey, string>,
   getKey?: ((item: TItem, index: number) => number | string) | undefined
 ): string => {
   if (getKey) {
@@ -45,13 +43,13 @@ const generateStableKey = <TItem>(
   const { isPlainObject } = ObjectUtilsHelper;
 
   if (isArray(item) || isPlainObject(item)) {
-    if (!keyMap.current.has(item)) {
+    if (!keyMap.has(item)) {
       const { fastIdGen } = IdUtilsHelper;
 
-      keyMap.current.set(item, fastIdGen());
+      keyMap.set(item, fastIdGen());
     }
 
-    const key = keyMap.current.get(item);
+    const key = keyMap.get(item);
 
     if (key) {
       return key;

@@ -7,6 +7,7 @@ import { ActionButtons } from "./components/ActionButtons";
 import { ConfirmPassword } from "./components/ConfirmPassword";
 import { EmailField } from "./components/EmailField";
 import { PasswordField } from "./components/PasswordField";
+import { FORM_FIELDS } from "./constants/form-fields.constant";
 import styles from "./FormFields.module.scss";
 
 interface FormFieldsProps {
@@ -16,6 +17,11 @@ interface FormFieldsProps {
   isNewUser: boolean;
   isUnchecked: boolean;
 }
+
+const {
+  EMAIL: { label: emailLabel },
+  PASSWORD: { label: passwordLabel },
+} = FORM_FIELDS;
 
 const FormFields = memo(
   ({
@@ -30,7 +36,7 @@ const FormFields = memo(
 
     const emailField = useMemo(() => {
       return isFormLoading ? (
-        <TextInput hasFloatingLabel isLoading label="Email" type="email" />
+        <TextInput hasFloatingLabel isLoading label={emailLabel} type="email" />
       ) : (
         <EmailField />
       );
@@ -41,7 +47,7 @@ const FormFields = memo(
         <TextInput
           hasFloatingLabel
           isLoading
-          label="Password"
+          label={passwordLabel}
           type="password"
         />
       ) : (

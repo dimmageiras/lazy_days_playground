@@ -4,4 +4,9 @@ const FORM_FIELDS = Object.freeze({
   PASSWORD: { label: "Password", name: "password" },
 } as const);
 
-export { FORM_FIELDS };
+const FORM_TYPES = Object.freeze({
+  SIGNIN: "signin",
+  SIGNUP: "signup",
+} as const);
+
+export { FORM_FIELDS, FORM_TYPES };

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+import { IS_SSR } from "@shared/constants/root-env.constant";
 
 /**
  * useMounted – returns `true` after the component has mounted on the client.
@@ -18,13 +20,11 @@ import { useEffect, useState } from "react";
  * ```
  */
 const useMounted = (): boolean => {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  return mounted;
+  return useSyncExternalStore(
+    () => () => {}, // subscribe: no-op (mounting state never changes)
+    () => !IS_SSR, // getServerSnapshot: always false during SSR
+    () => IS_SSR // getSnapshot: always true on client
+  );
 };
 
 export { useMounted };

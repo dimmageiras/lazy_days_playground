@@ -1,5 +1,5 @@
 import type { ComponentProps, JSX } from "react";
-import { Fragment, useRef } from "react";
+import { Fragment, useState } from "react";
 
 import type { ListRenderer } from "@client/components/ListRenderer";
 import { ListItem } from "@client/components/ListRenderer/components/ListRendererBase/components/ListItem";
@@ -24,7 +24,7 @@ const ListRendererBase = <TItem,>({
   getKey,
   renderComponent,
 }: ComponentProps<typeof ListRenderer<TItem>>): JSX.Element[] => {
-  const keyMap = useRef(new WeakMap<WeakKey, string>());
+  const [keyMap] = useState(() => new WeakMap<WeakKey, string>());
 
   const { generateStableKey } = ListRendererBaseHelper;
 

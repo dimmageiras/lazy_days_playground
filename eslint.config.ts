@@ -24,7 +24,7 @@ export default defineConfig([
       tsEslint.configs.recommended,
       pluginReact.configs.flat.recommended ?? {},
       pluginReact.configs.flat["jsx-runtime"] ?? {},
-      'react-hooks/recommended',
+      pluginReactHooks.configs.flat['recommended-latest'] ?? {},
       pluginReactRefresh.configs.vite,
       ...pluginTanstackQuery.configs["flat/recommended"],
     ],
@@ -51,7 +51,6 @@ export default defineConfig([
     },
     plugins: {
       "css-modules": pluginCSSModules as ESLint.Plugin,
-      'react-hooks': pluginReactHooks,
       "simple-import-sort": pluginSimpleImportSort,
       security: pluginSecurity,
     },

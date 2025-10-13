@@ -26,7 +26,7 @@ const Filter = ({ filter }: FilterProps): JSX.Element => {
 
   const handleTreatmentChange = useCallback(
     () => setSelectedTreatment(treatmentValue),
-    [treatmentValue]
+    [setSelectedTreatment, treatmentValue]
   );
 
   return (
