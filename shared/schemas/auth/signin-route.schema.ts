@@ -35,10 +35,13 @@ const signinRequestSchema = zObject({
     description: "User's email address",
     example: "user@example.com",
   }),
-  password: zString().min(1).meta({
-    description: "User's password",
-    example: "SecurePassword123",
-  }),
+  password: zString()
+    .min(1, "Password is required")
+    .min(8, "Password should have at least 8 characters")
+    .meta({
+      description: "User's password",
+      example: "SecurePassword123",
+    }),
 }).meta({
   description: "Request body for user sign in",
 });

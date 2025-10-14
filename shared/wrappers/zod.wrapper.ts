@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { z, ZodDiscriminatedUnion } from "zod";
 import type { $ZodConfig } from "zod/v4/core";
 import type * as zodLocales from "zod/v4/locales";
 
@@ -48,6 +48,7 @@ export {
   zLiteral,
   zNumber,
   zObject,
+  ZodDiscriminatedUnion,
   zResolver,
   zString,
   zUnknown,

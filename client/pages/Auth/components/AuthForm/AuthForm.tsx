@@ -7,20 +7,27 @@ import { BaseCard } from "@client/components/BaseCard";
 import { useEmailExistence } from "@client/services/user/mutations/useEmailExistence.mutation";
 
 import { FormFields } from "./components/FormFields";
+import { FORM_TYPES } from "./components/FormFields/constants/form-fields.constant";
 import { AUTH_FORM_INITIAL_VALUES } from "./constants/auth-form.constant";
 import type { AuthFormData } from "./types/auth-form.type";
 
+const { SIGNIN, SIGNUP } = FORM_TYPES;
+
 const AuthForm = (): JSX.Element => {
-  const [isFormLoading, setIsFormLoading] = useState(true);
+  const [wasLoadingBefore, setWasLoadingBefore] = useState(true);
   const { isExistingUser, isNewUser, isUnchecked } = useEmailExistence();
 
   const formMethods = useForm<AuthFormData>({
     ...AUTH_FORM_INITIAL_VALUES,
-    disabled: isFormLoading,
+    disabled: wasLoadingBefore,
   });
+
+  const { getValues, setValue } = formMethods;
 
   const isLoading =
     formMethods.formState.isSubmitting || !formMethods.formState.isReady;
+
+  const isFormLoading = isLoading || wasLoadingBefore;
 
   const onValid = async (data: AuthFormData) => {
     await Promise.resolve(data);
@@ -33,18 +40,20 @@ const AuthForm = (): JSX.Element => {
       return;
     }
 
-    if (!isLoading && (isExistingUser || isNewUser)) {
-      if (isExistingUser && formMethods.getValues("mode") !== "signin") {
-        formMethods.setValue("mode", "signin");
-      }
+    const mode = getValues("mode");
 
-      if (isNewUser && formMethods.getValues("mode") !== "signup") {
-        formMethods.setValue("mode", "signup");
-      }
+    if (isExistingUser && mode !== SIGNIN) {
+      setValue("mode", SIGNIN);
     }
 
-    setIsFormLoading(false);
-  }, [isLoading, isNewUser, formMethods, isExistingUser]);
+    if (isNewUser && mode !== SIGNUP) {
+      setValue("mode", SIGNUP);
+    }
+  }, [getValues, isExistingUser, isLoading, isNewUser, setValue]);
+
+  if (wasLoadingBefore && !isLoading) {
+    setWasLoadingBefore(false);
+  }
 
   return (
     <BaseCard>

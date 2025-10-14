@@ -6,22 +6,20 @@ import { TextInput } from "@client/components/TextInput";
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { useDebounce } from "@client/hooks/useDebounce";
 import { FORM_FIELDS } from "@client/pages/Auth/components/AuthForm/components/FormFields/constants/form-fields.constant";
+import { authFormSchema } from "@client/pages/Auth/components/AuthForm/schemas/auth-form.schema";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 import { useCheckEmailExists } from "@client/services/user/mutations/useEmailExistence.mutation";
 import { TIMING } from "@shared/constants/timing.constant";
-import { signupRequestSchema } from "@shared/schemas/auth/signup-route.schema";
 
 import { EmailFieldHelper } from "./helpers/email-field.helper";
 
 const {
-  EMAIL: { name, label },
+  EMAIL: { name: EMAIL_FIELD_NAME, label: EMAIL_FIELD_LABEL },
 } = FORM_FIELDS;
-const EMAIL_FIELD_NAME = name;
-const EMAIL_FIELD_LABEL = label;
 const { SECONDS_HALF_IN_MS } = TIMING;
 
 const EmailField = (): JSX.Element => {
-  const { setFocus } = useFormContext();
+  const { setFocus, watch } = useFormContext();
   const {
     field: { onBlur, onChange, ...fieldProps },
     fieldState: { error, invalid, isDirty, isTouched },
@@ -31,11 +29,18 @@ const EmailField = (): JSX.Element => {
   const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
   const { checkEmailValidity, handleBlur, handleChange } = EmailFieldHelper;
-  const { isFieldRequired } = FormUtilsHelper;
+  const { checkFieldIsRequiredInDiscriminatedUnion } = FormUtilsHelper;
+
+  const mode = watch("mode");
 
   const isRequired = useMemo(
-    () => isFieldRequired(signupRequestSchema, EMAIL_FIELD_NAME),
-    [isFieldRequired]
+    () =>
+      checkFieldIsRequiredInDiscriminatedUnion(
+        authFormSchema,
+        EMAIL_FIELD_NAME,
+        mode
+      ),
+    [checkFieldIsRequiredInDiscriminatedUnion, mode]
   );
 
   const hasBeenValidated = isTouched || invalid || !!error;

@@ -4,9 +4,9 @@ import type { KeyAsString } from "type-fest";
 
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 import type {
+  ZodDiscriminatedUnion,
   ZodInfer,
   ZodObject,
-  ZodString,
 } from "@shared/wrappers/zod.wrapper";
 
 /**
@@ -52,6 +52,127 @@ const getNoAutofillProps = (): {
 });
 
 /**
+ * Retrieves a specific schema from a discriminated union based on a discriminator value.
+ *
+ * @example
+ * ```tsx
+ * const schema = getSchemaFromDiscriminatedUnion(authFormSchema, "signin");
+ * ```
+ *
+ * @param schema - The discriminated union schema
+ * @param discriminator - The discriminator value to match
+ * @returns The matching schema or undefined if no match is found
+ */
+const getSchemaFromDiscriminatedUnion = <
+  TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>
+>(
+  schema: TSchema,
+  discriminator: ZodInfer<TSchema>["mode"]
+): ZodObject | undefined => {
+  return schema.def.options.find((option) => {
+    const discriminatorKey: keyof ZodInfer<TSchema> = schema.def.discriminator;
+    const discriminatorSchema: ZodObject = Reflect.get(
+      option.shape,
+      discriminatorKey
+    );
+
+    return (
+      "value" in discriminatorSchema &&
+      discriminatorSchema.value === discriminator
+    );
+  });
+};
+
+/**
+ * Checks if a field schema rejects undefined values.
+ * Helper function used by field validation functions.
+ *
+ * @param fieldSchema - The Zod schema of the field
+ * @returns True if the field is required, false otherwise
+ */
+const isFieldSchemaRequired = (fieldSchema: unknown): boolean => {
+  const { isPlainObject } = ObjectUtilsHelper;
+
+  if (!isPlainObject(fieldSchema)) {
+    return false;
+  }
+
+  if (!("safeParse" in fieldSchema)) {
+    return false;
+  }
+
+  const safeParse = fieldSchema.safeParse as (value: unknown) => {
+    success: boolean;
+  };
+
+  return !safeParse(undefined).success;
+};
+
+/**
+ * Determines if a field is required based on its Zod schema validation.
+ * Checks if the field's schema rejects undefined values.
+ *
+ * @example
+ * ```tsx
+ * const userSchema = z.object({
+ *   email: z.string().email(),
+ *   name: z.string().optional()
+ * });
+ *
+ * checkFieldIsRequired(userSchema, 'email'); // true
+ * checkFieldIsRequired(userSchema, 'name');  // false
+ * ```
+ *
+ * @param schema - The Zod object schema containing the field
+ * @param field - The name of the field to check
+ * @returns True if the field is required, false otherwise
+ */
+const checkFieldIsRequired = <TSchema extends ZodObject>(
+  schema: TSchema,
+  field: KeyAsString<ZodInfer<TSchema>>
+): boolean => {
+  const fieldSchema = Reflect.get(schema.shape, field);
+
+  return isFieldSchemaRequired(fieldSchema);
+};
+
+/**
+ * Determines if a field is required based on its Zod schema validation in a discriminated union.
+ * Checks if the field's schema rejects undefined values for a specific discriminator option.
+ *
+ * @example
+ * ```tsx
+ * const authSchema = z.discriminatedUnion('mode', [...]);
+ * checkFieldIsRequiredInDiscriminatedUnion(authSchema, 'email', 'signin'); // true
+ * ```
+ *
+ * @param schema - The discriminated union schema containing the field
+ * @param field - The name of the field to check
+ * @param discriminator - The discriminator value to match
+ * @returns True if the field is required, false otherwise
+ */
+const checkFieldIsRequiredInDiscriminatedUnion = <
+  TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>
+>(
+  schema: TSchema,
+  field: KeyAsString<ZodInfer<TSchema>>,
+  discriminator: ZodInfer<TSchema>["mode"]
+): boolean => {
+  const schemaFromDiscriminatedUnion = getSchemaFromDiscriminatedUnion(
+    schema,
+    discriminator
+  );
+
+  if (!schemaFromDiscriminatedUnion) {
+    return false;
+  }
+
+  const fieldSchema = Reflect.get(schemaFromDiscriminatedUnion.shape, field);
+
+  return isFieldSchemaRequired(fieldSchema);
+};
+
+/**
  * Checks if a form has any validation errors by examining the errors object
  * from react-hook-form. More reliable than checking Object.keys(errors).length
  * as it handles nested form structures.
@@ -81,36 +202,10 @@ const hasFormErrors = <TFormErrors extends FieldErrors>(
   return getObjectKeys(errors).length > 0;
 };
 
-/**
- * Determines if a field is required based on its Zod schema validation.
- * Checks if the field's schema rejects undefined values.
- *
- * @example
- * ```tsx
- * const userSchema = z.object({
- *   email: z.string().email(),
- *   name: z.string().optional()
- * });
- *
- * isFieldRequired(userSchema, 'email'); // true
- * isFieldRequired(userSchema, 'name');  // false
- * ```
- *
- * @param schema - The Zod object schema containing the field
- * @param field - The name of the field to check
- * @returns True if the field is required, false otherwise
- */
-const isFieldRequired = <TSchema extends ZodObject>(
-  schema: TSchema,
-  field: KeyAsString<ZodInfer<TSchema>>
-): boolean => {
-  const fieldSchema: ZodString = Reflect.get(schema.shape, field);
-
-  return !fieldSchema.safeParse(undefined).success;
-};
-
 export const FormUtilsHelper = {
+  checkFieldIsRequired,
+  checkFieldIsRequiredInDiscriminatedUnion,
   getNoAutofillProps,
+  getSchemaFromDiscriminatedUnion,
   hasFormErrors,
-  isFieldRequired,
 };
