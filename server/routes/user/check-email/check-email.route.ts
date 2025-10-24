@@ -12,8 +12,6 @@ import type {
 
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { USER_ENDPOINTS } from "../../../../shared/constants/user.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
-import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import {
   checkEmailErrorSchema,
   checkEmailRateLimitErrorSchema,
@@ -22,14 +20,12 @@ import {
 } from "../../../../shared/schemas/user/check-email-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { USER_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
-import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
-import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
+import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { getCurrentISOTimestamp } = DateHelper;
-  const { handleAuthError } = GelDbHelper;
-  const { fastIdGen } = IdUtilsHelper;
-  const { log } = PinoLogHelper;
+  const { handleAuthError } = AuthClientHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;

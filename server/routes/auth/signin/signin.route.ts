@@ -12,28 +12,28 @@ import type {
 } from "@shared/types/generated/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
-import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import {
   signinErrorSchema,
   signinRateLimitErrorSchema,
   signinRequestSchema,
   signinSuccessSchema,
 } from "../../../../shared/schemas/auth/signin-route.schema.ts";
-import { AUTH_COOKIE_CONFIG } from "../../../constants/cookie.constant.ts";
+import {
+  ACCESS_TOKEN_COOKIE_CONFIG,
+  AUTH_COOKIE_NAMES,
+} from "../../../constants/auth-cookie.constant.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
-import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
-import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
+import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { createAuth, createClient } = AuthClientHelper;
-  const { getCurrentISOTimestamp } = DateHelper;
-  const { handleAuthError } = GelDbHelper;
-  const { fastIdGen } = IdUtilsHelper;
-  const { log } = PinoLogHelper;
+  const { createAuth, createClient, handleAuthError } = AuthClientHelper;
+  const { encryptData } = EncryptionHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
+  const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
   const {
     BAD_REQUEST,
     MANY_REQUESTS_ERROR,
@@ -90,10 +90,13 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
 
             const tokenData = await signin(email, password);
 
+            // Encrypt the token before storing in cookie
+            const encryptedToken = await encryptData(tokenData.auth_token);
+
             reply.setCookie(
-              "gel-session",
-              tokenData.auth_token,
-              AUTH_COOKIE_CONFIG
+              ACCESS_TOKEN,
+              encryptedToken,
+              ACCESS_TOKEN_COOKIE_CONFIG
             );
 
             const response: SigninCreateData = {

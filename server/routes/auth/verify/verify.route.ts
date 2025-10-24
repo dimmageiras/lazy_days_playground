@@ -12,28 +12,29 @@ import type {
 } from "@shared/types/generated/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
-import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import {
   verifyErrorSchema,
   verifyRateLimitErrorSchema,
   verifyRequestSchema,
   verifySuccessSchema,
 } from "../../../../shared/schemas/auth/verify-route.schema.ts";
-import { AUTH_COOKIE_CONFIG } from "../../../constants/cookie.constant.ts";
+import {
+  ACCESS_TOKEN_COOKIE_CONFIG,
+  AUTH_COOKIE_NAMES,
+  BASE_COOKIE_CONFIG,
+} from "../../../constants/auth-cookie.constant.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
-import { GelDbHelper } from "../../../helpers/gel-db.helper.ts";
-import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
+import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const verifyRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { getCurrentISOTimestamp } = DateHelper;
-  const { handleAuthError } = GelDbHelper;
-  const { fastIdGen } = IdUtilsHelper;
-  const { log } = PinoLogHelper;
-  const { createAuth, createClient } = AuthClientHelper;
+  const { createAuth, createClient, handleAuthError } = AuthClientHelper;
+  const { encryptData } = EncryptionHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
+  const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
 
@@ -87,20 +88,16 @@ const verifyRoute = async (fastify: FastifyInstance): Promise<void> => {
               verifier
             );
 
+            // Encrypt the token before storing in cookie
+            const encryptedToken = await encryptData(tokenData.auth_token);
+
             reply.setCookie(
-              "gel-session",
-              tokenData.auth_token,
-              AUTH_COOKIE_CONFIG
+              ACCESS_TOKEN,
+              encryptedToken,
+              ACCESS_TOKEN_COOKIE_CONFIG
             );
 
-            const { httpOnly, path, sameSite, secure } = AUTH_COOKIE_CONFIG;
-
-            reply.clearCookie("gel-pkce-verifier", {
-              httpOnly,
-              path,
-              sameSite,
-              secure,
-            });
+            reply.clearCookie("gel-pkce-verifier", BASE_COOKIE_CONFIG);
 
             const response: VerifyCreateData = {
               identity_id: tokenData.identity_id,

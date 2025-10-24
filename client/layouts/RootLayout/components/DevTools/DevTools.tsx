@@ -41,7 +41,7 @@ const DevTools = (): JSX.Element => {
       }
     },
     undefined,
-    [devToolsBubbleRef.current, devToolsToggleRef.current]
+    []
   );
 
   const iconRotation = isExpanded ? "0deg" : "180deg";

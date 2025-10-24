@@ -60,6 +60,24 @@ const getCurrentISOTimestamp = (): string => {
 };
 
 /**
+ * Gets the current date/time as a Date object in UTC.
+ * Use this for accurate time comparisons regardless of server timezone.
+ *
+ * @returns Current date/time as Date object (UTC)
+ *
+ * @example
+ * ```typescript
+ * const now = getCurrentUTCDate();
+ * if (expiresAt < now) {
+ *   // Token is expired
+ * }
+ * ```
+ */
+const getCurrentUTCDate = (): Date => {
+  return dayjs().utc().toDate();
+};
+
+/**
  * Converts any date to UTC ISO 8601 format.
  * Use this when you need to format a specific date/time.
  *
@@ -75,5 +93,6 @@ export const DateHelper = {
   formatTimestampForDisplay,
   formatTimestampLocal,
   getCurrentISOTimestamp,
+  getCurrentUTCDate,
   toISOTimestamp,
 };

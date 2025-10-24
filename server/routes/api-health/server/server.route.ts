@@ -7,16 +7,16 @@ import type {
 import type { HealthServerListData } from "@shared/types/generated/api-health.type";
 
 import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import {
   serverHealthSuccessSchema,
   serverRateLimitErrorSchema,
 } from "../../../../shared/schemas/api-health/server-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { HEALTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const serverRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { getCurrentISOTimestamp } = DateHelper;
+  const { getCurrentISOTimestamp } = RoutesHelper;
 
   const { MANY_REQUESTS_ERROR, OK } = HTTP_STATUS;
 

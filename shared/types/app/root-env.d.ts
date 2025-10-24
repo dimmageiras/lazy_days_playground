@@ -1,20 +1,24 @@
 /// <reference types="@react-router/node" />
 /// <reference types="vite/client" />
 
+import type { CipherGCMTypes } from "crypto";
 import type { LoggerOptions } from "pino";
 
 import type { MODES } from "@shared/constants/root-env.constant";
 
 interface EnvironmentVariables {
+  AUTH_TAG_LENGTH: `${number}`;
+  COOKIE_SECRET: string;
   GEL_AUTH_BASE_URL: string;
   GEL_DSN: string;
+  IV_LENGTH: `${number}`;
+  KEY_LENGTH: `${number}`;
+  LOG_LEVEL: LoggerOptions["level"];
+  SALT_LENGTH: `${number}`;
+  TOKEN_ENCRYPTION_METHOD: CipherGCMTypes;
   VITE_APP_ALL_DEV_TOOLS?: `${boolean}`;
-  VITE_APP_COOKIE_SECRET: string;
   VITE_APP_HOST: string;
   VITE_APP_IS_DEVELOPMENT?: `${boolean}`;
-  VITE_APP_JWT_REFRESH_SECRET: string;
-  VITE_APP_JWT_SECRET: string;
-  VITE_APP_LOG_LEVEL: LoggerOptions["level"];
   VITE_APP_PORT: `${number}`;
   VITE_APP_RQDT?: `${boolean}`;
   VITE_APP_RRDT?: `${boolean}`;

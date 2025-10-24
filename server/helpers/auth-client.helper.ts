@@ -10,6 +10,9 @@ import {
   PORT,
 } from "../../shared/constants/root-env.constant.ts";
 import { createGelAuth } from "../plugins/gel-auth-fastify/index.ts";
+import { GelDbHelper } from "./gel-db.helper.ts";
+
+const { handleAuthError } = GelDbHelper;
 
 const createAuth = (client: Client): GelAuthInstance => {
   return createGelAuth(client);
@@ -31,4 +34,5 @@ export const AuthClientHelper = {
   createAuth,
   createClient,
   getBaseUrl,
+  handleAuthError,
 };

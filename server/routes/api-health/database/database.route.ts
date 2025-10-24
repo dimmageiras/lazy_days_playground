@@ -12,8 +12,6 @@ import type {
 
 import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
-import { IdUtilsHelper } from "../../../../shared/helpers/id-utils.helper.ts";
 import {
   databaseHealthErrorSchema,
   databaseHealthSuccessSchema,
@@ -21,12 +19,10 @@ import {
 } from "../../../../shared/schemas/api-health/database-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { HEALTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
-import { PinoLogHelper } from "../../../helpers/pino-log.helper.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { getCurrentISOTimestamp } = DateHelper;
-  const { fastIdGen } = IdUtilsHelper;
-  const { log } = PinoLogHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   const { MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } = HTTP_STATUS;
 

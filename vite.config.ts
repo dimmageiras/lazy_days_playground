@@ -2,6 +2,7 @@ import { reactRouter } from "@react-router/dev/vite";
 import { reactRouterDevTools } from "react-router-devtools";
 import type { UserConfigFnObject } from "vite";
 import { defineConfig } from "vite";
+import pluginBabel from "vite-plugin-babel";
 import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
@@ -14,6 +15,18 @@ const viteConfig = defineConfig(({ mode }) => {
     plugins: [
       HAS_DEV_TOOLS && HAS_RRDT && reactRouterDevTools(),
       reactRouter(),
+      pluginBabel({
+        babelConfig: {
+          plugins: [
+            "@babel/plugin-transform-explicit-resource-management",
+            "babel-plugin-react-compiler",
+          ],
+          presets: ["@babel/preset-typescript"],
+        },
+        filter: (name) => name.endsWith("tsx"),
+        loader: "tsx",
+        include: ["./client/**/*"],
+      }),
       tsConfigPaths(),
       IS_DEVELOPMENT &&
         pluginChecker({
@@ -34,6 +47,11 @@ const viteConfig = defineConfig(({ mode }) => {
           typescript: true,
         }),
     ],
+    server: {
+      hmr: {
+        clientPort: 5173,
+      },
+    },
   };
 }) satisfies UserConfigFnObject;
 

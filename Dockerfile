@@ -46,9 +46,6 @@ RUN echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc \
  && echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.bashrc \
  && echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"' >> ~/.bashrc
 
-# Install pnpm
-RUN wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.bashrc" SHELL="$(which bash)" bash -
-
 # Install Gel CLI (installs into ~/.local/bin)
 RUN curl https://www.geldata.com/sh --proto "=https" -sSf1 -1 | sh -s -- -y \
   && echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc

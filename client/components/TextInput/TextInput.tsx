@@ -97,7 +97,7 @@ const TextInput = memo(
 
     const noAutofillProps = useMemo(
       () => (autoComplete === "off" ? getNoAutofillProps() : null),
-      []
+      [autoComplete, getNoAutofillProps]
     );
 
     const hasErrorMessage = !!errorMessage;

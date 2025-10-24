@@ -18,16 +18,17 @@ const { MINUTES_FIFTEEN_IN_MS, MINUTES_TEN_IN_MS } = TIMING;
 
 const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
   const [queryClient] = useState(
-    new QueryClient({
-      defaultOptions: {
-        queries: {
-          gcTime: MINUTES_FIFTEEN_IN_MS,
-          refetchOnWindowFocus: false,
-          retry: false,
-          staleTime: MINUTES_TEN_IN_MS,
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            gcTime: MINUTES_FIFTEEN_IN_MS,
+            refetchOnWindowFocus: false,
+            retry: false,
+            staleTime: MINUTES_TEN_IN_MS,
+          },
         },
-      },
-    })
+      })
   );
   const dehydratedState = useDehydratedState();
 

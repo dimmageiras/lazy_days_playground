@@ -4,7 +4,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
-import { useEmailExistence } from "@client/services/user/mutations/useEmailExistence.mutation";
+import { AuthMutations } from "@client/services/auth";
+import { UserMutations } from "@client/services/user";
 
 import { FormFields } from "./components/FormFields";
 import { FORM_TYPES } from "./components/FormFields/constants/form-fields.constant";
@@ -15,6 +16,14 @@ const { SIGNIN, SIGNUP } = FORM_TYPES;
 
 const AuthForm = (): JSX.Element => {
   const [wasLoadingBefore, setWasLoadingBefore] = useState(true);
+
+  const { useSignin, useSignup } = AuthMutations;
+
+  const signinMutation = useSignin();
+  const signupMutation = useSignup();
+
+  const { useEmailExistence } = UserMutations;
+
   const { isExistingUser, isNewUser, isUnchecked } = useEmailExistence();
 
   const formMethods = useForm<AuthFormData>({
@@ -30,7 +39,15 @@ const AuthForm = (): JSX.Element => {
   const isFormLoading = isLoading || wasLoadingBefore;
 
   const onValid = async (data: AuthFormData) => {
-    await Promise.resolve(data);
+    if (data.mode === SIGNIN) {
+      const { email, password } = data;
+
+      await signinMutation.mutateAsync({ email, password });
+    } else if (data.mode === SIGNUP) {
+      const { confirmPassword, email, password } = data;
+
+      await signupMutation.mutateAsync({ confirmPassword, email, password });
+    }
 
     formMethods.reset();
   };

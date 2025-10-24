@@ -1,5 +1,4 @@
-import type { ZodObject } from "zod";
-
+import type { ZodObject } from "../../shared/wrappers/zod.wrapper.ts";
 import {
   zLiteral,
   zNumber,

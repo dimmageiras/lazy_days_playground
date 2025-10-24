@@ -1,14 +1,15 @@
 import type { JSX } from "react";
 
 import { PageTitle } from "@client/components/PageTitle";
-import { useGetDatabaseHealth } from "@client/services/api-health/queries/useGetDatabaseHealth.query";
-import { useGetServerHealth } from "@client/services/api-health/queries/useGetServerHealth.query";
+import { ApiHealthQueries } from "@client/services/api-health";
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
 
 import styles from "./ApiHealth.module.scss";
 import { Card } from "./components/Card";
 
 const ApiHealth = (): JSX.Element => {
+  const { useGetDatabaseHealth, useGetServerHealth } = ApiHealthQueries;
+
   const {
     data: databaseHealthData,
     error: databaseHealthError,

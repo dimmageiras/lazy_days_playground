@@ -21,21 +21,24 @@ const ActionButtons = memo(
   }: ActionButtonsProps): JSX.Element => {
     const { handleMouseDown } = DomEventsHelper;
 
+    const isSignInDisabled = !shouldEnableSignIn || shouldDisableActionButtons;
+    const isSignUpDisabled = !shouldEnableSignUp || shouldDisableActionButtons;
+
     return (
       <div className={styles["action-buttons"]}>
         <button
           className={classNames(styles["submit"], styles["sign-up"])}
-          disabled={!shouldEnableSignUp || shouldDisableActionButtons}
+          disabled={isSignUpDisabled}
           onMouseDown={handleMouseDown}
-          type="submit"
+          type={isSignUpDisabled ? "button" : "submit"}
         >
           Sign up
         </button>
         <button
           className={classNames(styles["submit"], styles["sign-in"])}
-          disabled={!shouldEnableSignIn || shouldDisableActionButtons}
+          disabled={isSignInDisabled}
           onMouseDown={handleMouseDown}
-          type="submit"
+          type={isSignInDisabled ? "button" : "submit"}
         >
           Sign in
         </button>

@@ -12,7 +12,6 @@ type ZodObject<
   TShape extends z.core.$ZodShape = z.core.$ZodLooseShape,
   TConfig extends z.core.$ZodObjectConfig = z.core.$strip
 > = z.ZodObject<TShape, TConfig>;
-type ZodString = z.ZodString;
 
 const zBoolean = z.boolean;
 const zCoerce = z.coerce;
@@ -35,7 +34,6 @@ export type {
   ZodInfer,
   ZodLocale,
   ZodObject,
-  ZodString,
 };
 export {
   zBoolean,

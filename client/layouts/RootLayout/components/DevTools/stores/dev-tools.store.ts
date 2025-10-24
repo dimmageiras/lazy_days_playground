@@ -1,6 +1,10 @@
 import { createStore } from "zustand-x";
 
-const initialState = {
+const initialState: {
+  isDevToolsMenuOpen: boolean;
+  isRQDTOpen: boolean;
+  isRRDTOpen: boolean;
+} = {
   isDevToolsMenuOpen: false,
   isRQDTOpen: false,
   isRRDTOpen: false,
