@@ -49,7 +49,7 @@ const viteConfig = defineConfig(({ mode }) => {
     ],
     server: {
       hmr: {
-        clientPort: 5173,
+        clientPort: 24678,
       },
     },
   };
