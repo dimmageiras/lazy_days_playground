@@ -252,7 +252,7 @@ A base card component that provides a consistent container style for content. Th
 
 ### IconifyIcon
 
-A flexible icon component supporting both client-side and server-side rendering with type safety and consistent integration. This component is memoized to prevent unnecessary re-renders when props haven't changed.
+A flexible icon component supporting both client-side and server-side rendering with type safety and consistent integration.
 
 **Props:**
 
@@ -471,7 +471,6 @@ A utility component for efficiently rendering lists with automatic key generatio
 ### 4. **Performance**
 
 - `DynamicElement` helper functions are memoized for optimal performance
-- `IconifyIcon` is memoized to prevent unnecessary re-renders when props haven't changed
 - `ListRenderer` uses stable keys to prevent unnecessary re-renders
 - `MediaCard` is memoized to prevent unnecessary re-renders when props haven't changed
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization

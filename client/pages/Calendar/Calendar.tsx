@@ -6,10 +6,14 @@ import { MonthDisplay } from "./components/MonthDisplay";
 
 const Calendar = (): JSX.Element => {
   return (
-    <main className={styles["calendar"]}>
-      <Header />
-      <MonthDisplay />
-    </main>
+    <>
+      <title>Lazy Days Spa - Calendar</title>
+      <meta name="description" content="Lazy Days Spa - Calendar Page" />
+      <main className={styles["calendar"]}>
+        <Header />
+        <MonthDisplay />
+      </main>
+    </>
   );
 };
 

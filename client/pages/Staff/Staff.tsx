@@ -67,15 +67,19 @@ const staff = [
 
 const Staff = (): JSX.Element => {
   return (
-    <main aria-label="Staff" className={styles["staff"]}>
-      <PageTitle aria-label="Page title" pageTitle="Our Staff" />
-      <section aria-label="Staff members" className={styles["staff-list"]}>
-        <Cards staff={staff} />
-      </section>
-      <aside aria-label="Treatment filter">
-        <TreatmentFilter />
-      </aside>
-    </main>
+    <>
+      <title>Lazy Days Spa - Staff</title>
+      <meta name="description" content="Lazy Days Spa - Staff Page" />
+      <main aria-label="Staff" className={styles["staff"]}>
+        <PageTitle aria-label="Page title" pageTitle="Our Staff" />
+        <section aria-label="Staff members" className={styles["staff-list"]}>
+          <Cards staff={staff} />
+        </section>
+        <aside aria-label="Treatment filter">
+          <TreatmentFilter />
+        </aside>
+      </main>
+    </>
   );
 };
 

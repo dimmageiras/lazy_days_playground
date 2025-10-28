@@ -1,5 +1,4 @@
 import type { ComponentProps, JSX } from "react";
-import { memo } from "react";
 
 import type { ListRenderer } from "@client/components/ListRenderer";
 
@@ -23,8 +22,6 @@ interface ListItemProps<TItem> {
 
 /**
  * Internal component for rendering individual list items in ListRendererBase.
- * A memoized component that handles the rendering of a single item using the provided render function
- * to optimize performance.
  *
  * @template TItem - The type of the item to render
  * @param props - The ListItem component props
@@ -38,12 +35,8 @@ const ListItem = <TItem,>({
   data,
   index,
   renderComponent,
-}: ListItemProps<TItem>) => {
+}: ListItemProps<TItem>): JSX.Element => {
   return <>{renderComponent({ data, index })}</>;
 };
 
-const MemoizedListItem = memo(ListItem) as <TItem>(
-  props: ListItemProps<TItem>
-) => JSX.Element;
-
-export { MemoizedListItem as ListItem };
+export { ListItem };

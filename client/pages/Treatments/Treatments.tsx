@@ -59,15 +59,19 @@ const TREATMENTS = [
 
 const Treatments = (): JSX.Element => {
   return (
-    <main aria-label="Treatments" className={styles["treatments"]}>
-      <PageTitle aria-label="Page title" pageTitle="Available Treatments" />
-      <section
-        aria-label="Treatment options"
-        className={styles["treatment-list"]}
-      >
-        <Cards treatments={TREATMENTS} />
-      </section>
-    </main>
+    <>
+      <title>Lazy Days Spa - Treatments</title>
+      <meta name="description" content="Lazy Days Spa - Treatments Page" />
+      <main aria-label="Treatments" className={styles["treatments"]}>
+        <PageTitle aria-label="Page title" pageTitle="Available Treatments" />
+        <section
+          aria-label="Treatment options"
+          className={styles["treatment-list"]}
+        >
+          <Cards treatments={TREATMENTS} />
+        </section>
+      </main>
+    </>
   );
 };
 

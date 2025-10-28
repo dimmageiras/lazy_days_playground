@@ -27,27 +27,34 @@ const ApiHealth = (): JSX.Element => {
   const isUnhealthyServerHealth = serverHealthStatus === "error";
 
   return (
-    <main className={styles["api-health"]}>
-      <PageTitle aria-label="Page title" pageTitle="API Health Status" />
-      <section aria-label="Health cards" className={styles["health-cards"]}>
-        <Card
-          apiHealthService={API_HEALTH_ENDPOINTS.DATABASE}
-          data={databaseHealthData}
-          error={databaseHealthError}
-          isHealthy={isHealthyDatabaseHealth}
-          isUnhealthy={isUnhealthyDatabaseHealth}
-          status={databaseHealthStatus}
-        />
-        <Card
-          apiHealthService={API_HEALTH_ENDPOINTS.SERVER}
-          data={serverHealthData}
-          error={serverHealthError}
-          isHealthy={isHealthyServerHealth}
-          isUnhealthy={isUnhealthyServerHealth}
-          status={serverHealthStatus}
-        />
-      </section>
-    </main>
+    <>
+      <title>API Health Status</title>
+      <meta
+        name="description"
+        content="API Health Status - Server and Database Monitoring"
+      />
+      <main className={styles["api-health"]}>
+        <PageTitle aria-label="Page title" pageTitle="API Health Status" />
+        <section aria-label="Health cards" className={styles["health-cards"]}>
+          <Card
+            apiHealthService={API_HEALTH_ENDPOINTS.DATABASE}
+            data={databaseHealthData}
+            error={databaseHealthError}
+            isHealthy={isHealthyDatabaseHealth}
+            isUnhealthy={isUnhealthyDatabaseHealth}
+            status={databaseHealthStatus}
+          />
+          <Card
+            apiHealthService={API_HEALTH_ENDPOINTS.SERVER}
+            data={serverHealthData}
+            error={serverHealthError}
+            isHealthy={isHealthyServerHealth}
+            isUnhealthy={isUnhealthyServerHealth}
+            status={serverHealthStatus}
+          />
+        </section>
+      </main>
+    </>
   );
 };
 

@@ -30,7 +30,6 @@ interface IconifyIconSSRProps extends Omit<IconProps, "icon"> {
 
 /**
  * A flexible icon component supporting both client-side and server-side rendering with type safety and consistent integration.
- * The component is optimized for performance using React.memo to prevent unnecessary re-renders.
  *
  * @example
  * ```tsx
