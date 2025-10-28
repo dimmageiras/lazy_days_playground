@@ -1,3 +1,4 @@
+import type { Route } from "@rr/types/client/+types/root";
 import {
   HydrationBoundary,
   QueryClient,
@@ -16,7 +17,14 @@ import { TIMING } from "@shared/constants/timing.constant";
 
 const { MINUTES_FIFTEEN_IN_MS, MINUTES_TEN_IN_MS } = TIMING;
 
-const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
+interface AppProvidersProps extends PropsWithChildren {
+  matches: Route.ComponentProps["matches"];
+}
+
+const AppProviders = ({
+  children,
+  matches,
+}: AppProvidersProps): JSX.Element => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -30,7 +38,7 @@ const AppProviders = ({ children }: PropsWithChildren): JSX.Element => {
         },
       })
   );
-  const dehydratedState = useDehydratedState();
+  const dehydratedState = useDehydratedState(matches);
 
   return (
     <QueryClientProvider client={queryClient}>

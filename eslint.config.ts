@@ -24,7 +24,7 @@ export default defineConfig([
       tsEslint.configs.recommended,
       pluginReact.configs.flat.recommended ?? {},
       pluginReact.configs.flat["jsx-runtime"] ?? {},
-      pluginReactHooks.configs.flat['recommended-latest'] ?? {},
+      pluginReactHooks.configs.flat["recommended-latest"] ?? {},
       pluginReactRefresh.configs.vite,
       ...pluginTanstackQuery.configs["flat/recommended"],
     ],
@@ -154,6 +154,8 @@ export default defineConfig([
     files: [
       "**/*.config.ts",
       "**/*.d.ts",
+      "client/layouts/**/index.ts",
+      "client/pages/**/index.ts",
       "client/root.tsx",
       "client/routes.ts",
       "server/**/*.ts",

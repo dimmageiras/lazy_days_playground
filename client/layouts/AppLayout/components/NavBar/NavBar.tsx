@@ -1,9 +1,9 @@
 import type { JSX } from "react";
 
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
-import { NavigationWrapper } from "@client/components/NavigationWrapper";
 import { RouterLink } from "@client/components/RouterLink";
 
+import { AuthButton } from "./components/AuthButton";
 import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";
 
@@ -44,18 +44,7 @@ const NavBar = (): JSX.Element => {
           >
             User Profile
           </RouterLink>
-          <NavigationWrapper shouldReplace to="/auth">
-            {(navigateTo) => (
-              <button
-                aria-label="Sign in to your account or sign up for a new one"
-                className={styles["auth-button"]}
-                onClick={navigateTo}
-                type="button"
-              >
-                Sign in / Sign up
-              </button>
-            )}
-          </NavigationWrapper>
+          <AuthButton />
         </div>
       </div>
     </header>

@@ -1,7 +1,6 @@
 import type { IconProps } from "@iconify/react";
 import type { IconifyIcon as IconifyIconType } from "iconify-icon";
 import type { ComponentPropsWithRef, JSX } from "react";
-import { memo } from "react";
 
 import { DynamicElement } from "@client/components/DynamicElement";
 
@@ -73,25 +72,25 @@ interface IconifyIconSSRProps extends Omit<IconProps, "icon"> {
  * @param props.[...iconProps] - All standard iconify-icon (client) or @iconify/react Icon (SSR) props are supported
  * @returns JSX.Element | null - The rendered icon component or null if no icon is provided
  */
-const IconifyIcon = memo(
-  (props: IconifyIconProps | IconifyIconSSRProps): JSX.Element | null => {
-    if (props.icon == undefined) {
-      console.warn("IconifyIcon: No icon provided");
+const IconifyIcon = (
+  props: IconifyIconProps | IconifyIconSSRProps
+): JSX.Element | null => {
+  if (props.icon == undefined) {
+    console.warn("IconifyIcon: No icon provided");
 
-      return null;
-    }
+    return null;
+  }
 
-    if (!props.ssr) {
-      const { icon, ...rest } = props;
-
-      return <DynamicElement as="iconify-icon" icon={icon} {...rest} />;
-    }
-
+  if (!props.ssr) {
     const { icon, ...rest } = props;
 
-    return <ServerIcon icon={icon} {...rest} />;
+    return <DynamicElement as="iconify-icon" icon={icon} {...rest} />;
   }
-);
+
+  const { icon, ...rest } = props;
+
+  return <ServerIcon icon={icon} {...rest} />;
+};
 
 IconifyIcon.displayName = "IconifyIcon";
 

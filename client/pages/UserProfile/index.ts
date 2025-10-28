@@ -1,4 +1,5 @@
 import { meta } from "./meta";
 import { UserProfile } from "./UserProfile";
 
-export { UserProfile as default, meta };
+export { meta };
+export default UserProfile;

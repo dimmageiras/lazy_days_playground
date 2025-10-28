@@ -1,23 +1,22 @@
 import type { JSX } from "react";
-import { memo } from "react";
 import { Outlet } from "react-router";
 
 import "./root.scss";
 import "iconify-icon";
 import "./configs/axios.config";
 
-import RootLayout from "./layouts/RootLayout";
+import type { Route } from "./+types/root";
+import Layout from "./layouts/RootLayout";
 import { ErrorBoundary } from "./root/components/ErrorBoundary";
 import { AppProviders } from "./root/providers/AppProviders";
 
-const Root = memo((): JSX.Element => {
+const Root = ({ matches }: Route.ComponentProps): JSX.Element => {
   return (
-    <AppProviders>
+    <AppProviders matches={matches}>
       <Outlet />
     </AppProviders>
   );
-});
+};
 
-Root.displayName = "Root";
-
-export { ErrorBoundary, Root as default, RootLayout as Layout };
+export { ErrorBoundary, Layout };
+export default Root;

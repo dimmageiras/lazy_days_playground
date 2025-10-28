@@ -1,3 +1,3 @@
 import { RootLayout } from "./RootLayout";
 
-export { RootLayout as default };
+export default RootLayout;

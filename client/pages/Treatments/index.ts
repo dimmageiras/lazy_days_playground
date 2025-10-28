@@ -1,4 +1,5 @@
 import { meta } from "./meta";
 import { Treatments } from "./Treatments";
 
-export { Treatments as default, meta };
+export { meta };
+export default Treatments;
