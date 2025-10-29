@@ -1,12 +1,12 @@
-import type { Route } from "@rr/types/client/+types/root";
 import type { DehydratedState } from "@tanstack/react-query";
 
 import { QueriesHelper } from "@client/helpers/queries.helper";
+import { useMatchesContext } from "@client/providers/MatchesProvider";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 
-const useDehydratedState = (
-  matches: Route.ComponentProps["matches"]
-): DehydratedState => {
+const useDehydratedState = (): DehydratedState => {
+  const matches = useMatchesContext();
+
   const { isDehydratedState } = QueriesHelper;
   const { isPlainObject } = ObjectUtilsHelper;
 
