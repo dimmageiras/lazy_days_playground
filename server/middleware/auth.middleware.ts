@@ -41,9 +41,9 @@ const authMiddleware = async (
     });
   }
 
-  const validation = await validateAuthToken(token);
+  const { expiresAt, identityId, isValid } = await validateAuthToken(token);
 
-  if (!validation.isValid) {
+  if (!isValid) {
     reply.clearCookie(ACCESS_TOKEN);
 
     return reply.status(UNAUTHORIZED).send({
@@ -54,8 +54,8 @@ const authMiddleware = async (
   }
 
   request.user = {
-    expiresAt: validation.expiresAt,
-    identity_id: validation.identityId,
+    expiresAt: expiresAt,
+    identity_id: identityId,
   };
 };
 

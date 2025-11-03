@@ -1,5 +1,6 @@
 import { Auth } from "@gel/auth-core";
-import type { FastifyRequest } from "fastify";
+
+import type { JWTPayload } from "@server/types/jwt-token.type";
 
 import { DateHelper } from "../../shared/helpers/date.helper.ts";
 
@@ -15,10 +16,10 @@ interface TokenValidationResult {
  * Checks:
  * 1. Token expiration using GEL's built-in method
  * 2. Token format and structure
- * 3. Extracts identity_id from token payload
+ * 3. Extracts sub from token payload
  *
  * @param token - JWT token to validate
- * @returns Validation result with identity_id and expiration
+ * @returns Validation result with identityId, expiresAt, and isValid
  *
  * @example
  * ```typescript
@@ -32,10 +33,11 @@ interface TokenValidationResult {
 const validateAuthToken = async (
   token: string
 ): Promise<TokenValidationResult> => {
+  const { getTokenExpiration } = Auth;
   const { getCurrentUTCDate } = DateHelper;
 
   try {
-    const expiresAt = Auth.getTokenExpiration(token);
+    const expiresAt = getTokenExpiration(token);
 
     if (!expiresAt) {
       return {
@@ -65,13 +67,13 @@ const validateAuthToken = async (
       };
     }
 
-    const payload: FastifyRequest["user"] = JSON.parse(
+    const { sub: identityId }: JWTPayload = JSON.parse(
       Buffer.from(Reflect.get(parts, 1), "base64").toString("utf8")
     );
 
     return {
       expiresAt,
-      identityId: payload?.identity_id || null,
+      identityId,
       isValid: true,
     };
   } catch {

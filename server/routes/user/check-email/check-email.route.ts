@@ -3,7 +3,7 @@ import type {
   FastifyZodOpenApiSchema,
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
-import { createClient, QueryError } from "gel";
+import { createClient as createGelClient, QueryError } from "gel";
 
 import type {
   CheckEmailCreateData,
@@ -67,7 +67,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
       try {
         const { email } = request.body;
 
-        const client = createClient({
+        const client = createGelClient({
           dsn: GEL_DSN,
         });
 

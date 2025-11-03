@@ -3,7 +3,7 @@ import type {
   FastifyZodOpenApiSchema,
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
-import { createClient } from "gel";
+import { createClient as createGelClient } from "gel";
 
 import type {
   HealthDatabaseListData,
@@ -60,7 +60,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
       const requestId = fastIdGen();
 
       try {
-        const client = createClient({
+        const client = createGelClient({
           dsn: GEL_DSN,
         });
 
