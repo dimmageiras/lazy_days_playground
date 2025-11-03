@@ -109,6 +109,19 @@
             }
           }
 
+          &[data-testid="react-router-devtools-trigger"] {
+            &::after {
+              content: "React Router Dev Tools";
+            }
+
+            svg {
+              grid-column: 1;
+              grid-row: 1;
+              height: 1rem;
+              width: 1rem;
+            }
+          }
+
           &[class~="tsqd-open-btn-container"] {
             &::after {
               content: "Tanstack Query Dev Tools";
@@ -123,19 +136,6 @@
             }
 
             [class~="tsqd-open-btn"] {
-              grid-column: 1;
-              grid-row: 1;
-              height: 1rem;
-              width: 1rem;
-            }
-          }
-
-          &[data-testid="react-router-devtools-trigger"] {
-            &::after {
-              content: "React Router Dev Tools";
-            }
-
-            svg {
               grid-column: 1;
               grid-row: 1;
               height: 1rem;

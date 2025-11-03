@@ -158,10 +158,10 @@ const DevTools = (): JSX.Element => {
               id="tqdt-button-container"
               onClick={(event) => {
                 const container = event.currentTarget;
-                const firstChild = container.firstChild?.childNodes[1];
+                const button = container.querySelector("button");
 
-                if (firstChild && firstChild instanceof HTMLButtonElement) {
-                  firstChild.click();
+                if (button) {
+                  button.click();
                 }
               }}
             />
