@@ -4,7 +4,7 @@ import { redirect } from "react-router";
 
 import { QueriesHelper } from "@client/helpers/queries.helper";
 import { getVerifyAuthQueryOptions } from "@client/services/auth";
-import type { GetAuthData } from "@shared/types/generated/auth.type";
+import type { VerifyAuthListData } from "@shared/types/generated/auth.type";
 
 import { protectedAuthContext } from "./protected-layout.context";
 
@@ -21,7 +21,7 @@ const protectedLayoutMiddleware: Route.MiddlewareFunction = async (
 
     const dehydratedState = dehydrate(queryClient);
     const authData = dehydratedState.queries[0]?.state
-      .data as GetAuthData | null;
+      .data as VerifyAuthListData | null;
 
     context.set(protectedAuthContext, authData);
 

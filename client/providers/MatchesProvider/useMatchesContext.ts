@@ -13,4 +13,4 @@ const useMatchesContext = (): Route.ComponentProps["matches"] => {
   return context;
 };
 
-export { MatchesContext, useMatchesContext };
+export { useMatchesContext };

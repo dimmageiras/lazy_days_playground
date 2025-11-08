@@ -18,9 +18,12 @@
   },
   "ignore": [".react-router/**", "dist/**", "shared/types/generated/**"],
   "ignoreDependencies": [
+    "@babel/plugin-transform-explicit-resource-management",
+    "@babel/preset-typescript",
     "@gel/generate",
     "@redux-devtools/extension",
     "@total-typescript/ts-reset",
+    "babel-plugin-react-compiler",
     "pino-pretty"
   ]
 }
