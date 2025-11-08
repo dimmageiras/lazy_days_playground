@@ -1,5 +1,5 @@
+import { apiHealthLoader } from "./api-health.loader";
 import { ApiHealth } from "./ApiHealth";
-import { loader } from "./loader";
 
-export { loader };
+export { apiHealthLoader as loader };
 export default ApiHealth;

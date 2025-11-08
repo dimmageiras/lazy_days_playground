@@ -1,6 +1,6 @@
 import type { LinkDescriptor } from "react-router";
 
-const links = (): LinkDescriptor[] => [
+const appLayoutLinks = (): LinkDescriptor[] => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -13,4 +13,4 @@ const links = (): LinkDescriptor[] => [
   },
 ];
 
-export { links };
+export { appLayoutLinks };

@@ -177,7 +177,7 @@ export default defineConfig([
   // Client files: enable restricted imports
   {
     files: ["client/**/*.{ts,tsx}"],
-    ignores: ["client/routes.ts"],
+    ignores: ["client/routes.ts", "client/routes/**/*.ts"],
     rules: {
       "no-restricted-imports": [
         "error",

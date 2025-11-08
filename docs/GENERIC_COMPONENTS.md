@@ -186,7 +186,7 @@ const [selectedPlan, setSelectedPlan] = useState('');
 
 ### TextInput
 
-A styled text input component with enhanced security features, built-in label, error handling, and protection against unwanted autofill interference. This component is memoized to prevent unnecessary re-renders when props haven't changed.
+A styled text input component with enhanced security features, built-in label, error handling, and protection against unwanted autofill interference.
 
 **Props:**
 
@@ -475,7 +475,6 @@ A utility component for efficiently rendering lists with automatic key generatio
 - `MediaCard` is memoized to prevent unnecessary re-renders when props haven't changed
 - `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
 - `RadioButton` is memoized to prevent unnecessary re-renders when props haven't changed
-- `TextInput` is memoized to prevent unnecessary re-renders when props haven't changed
 - Components use appropriate performance optimizations when needed
 
 ### 5. **Consistency**

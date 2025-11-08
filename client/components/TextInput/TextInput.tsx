@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import type { ComponentPropsWithRef, JSX } from "react";
-import { memo, useMemo } from "react";
+import { useMemo } from "react";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 
@@ -42,7 +42,6 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
 /**
  * A styled text input component with enhanced security features, built-in label,
  * error handling, and protection against unwanted autofill interference.
- * The component is optimized for performance using React.memo to prevent unnecessary re-renders.
  *
  * @example
  * ```tsx
@@ -83,93 +82,89 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  * @param props.type - Must be one of: "text", "email", "password"
  * @returns JSX.Element - The rendered input group with label, input, and error message
  */
-const TextInput = memo(
-  ({
-    autoComplete = "off",
-    className,
-    errorMessage,
-    hasFloatingLabel = false,
-    isLoading = false,
-    label,
-    ...props
-  }: TextInputProps): JSX.Element => {
-    const { getNoAutofillProps } = FormUtilsHelper;
+const TextInput = ({
+  autoComplete = "off",
+  className,
+  errorMessage,
+  hasFloatingLabel = false,
+  isLoading = false,
+  label,
+  ...props
+}: TextInputProps): JSX.Element => {
+  const { getNoAutofillProps } = FormUtilsHelper;
 
-    const noAutofillProps = useMemo(
-      () => (autoComplete === "off" ? getNoAutofillProps() : null),
-      [autoComplete, getNoAutofillProps]
-    );
+  const noAutofillProps = useMemo(
+    () => (autoComplete === "off" ? getNoAutofillProps() : null),
+    [autoComplete, getNoAutofillProps]
+  );
 
-    const hasErrorMessage = !!errorMessage;
-    const isDisabled = !!props.disabled;
-    const isRequired = !!props.required;
+  const hasErrorMessage = !!errorMessage;
+  const isDisabled = !!props.disabled;
+  const isRequired = !!props.required;
 
-    return (
-      <div className={styles["text-input-container"]}>
-        {isLoading ? (
-          <>
-            {!hasFloatingLabel ? (
-              <SkeletonLabel
-                className={classNames(styles["label"], styles["skeleton"])}
-                id={`${props.name ?? props.id}-unique-id-label`}
-              />
-            ) : null}
-            <SkeletonInput
-              className={classNames(
-                styles["input"],
-                styles["skeleton"],
-                className
-              )}
-              id={`${props.name ?? props.id}-unique-id-input`}
+  return (
+    <div className={styles["text-input-container"]}>
+      {isLoading ? (
+        <>
+          {!hasFloatingLabel ? (
+            <SkeletonLabel
+              className={classNames(styles["label"], styles["skeleton"])}
+              id={`${props.name ?? props.id}-unique-id-label`}
             />
-          </>
-        ) : (
-          <>
-            <label
-              className={classNames(styles["label"], {
-                [String(styles["floating"])]: hasFloatingLabel,
-              })}
-              htmlFor={props.name}
+          ) : null}
+          <SkeletonInput
+            className={classNames(
+              styles["input"],
+              styles["skeleton"],
+              className
+            )}
+            id={`${props.name ?? props.id}-unique-id-input`}
+          />
+        </>
+      ) : (
+        <>
+          <label
+            className={classNames(styles["label"], {
+              [String(styles["floating"])]: hasFloatingLabel,
+            })}
+            htmlFor={props.name}
+          >
+            {label}
+            {props.required ? (
+              <span aria-hidden="true" className={styles["required"]}>
+                &nbsp;*
+              </span>
+            ) : null}
+          </label>
+          <input
+            className={classNames(
+              styles["input"],
+              { [String(styles["has-value"])]: !!props.value },
+              className
+            )}
+            id={props.name}
+            {...(hasErrorMessage && {
+              "aria-errormessage": `${props.name}-error`,
+              "aria-invalid": "true",
+            })}
+            {...(isDisabled && { "aria-disabled": "true" })}
+            {...(isRequired && { "aria-required": "true" })}
+            {...(noAutofillProps ?? { autoComplete })}
+            {...props}
+          />
+          {errorMessage ? (
+            <small
+              aria-live="polite"
+              className={styles["error-message"]}
+              id={`${props.name}-error`}
             >
-              {label}
-              {props.required ? (
-                <span aria-hidden="true" className={styles["required"]}>
-                  &nbsp;*
-                </span>
-              ) : null}
-            </label>
-            <input
-              className={classNames(
-                styles["input"],
-                { [String(styles["has-value"])]: !!props.value },
-                className
-              )}
-              id={props.name}
-              {...(hasErrorMessage && {
-                "aria-errormessage": `${props.name}-error`,
-                "aria-invalid": "true",
-              })}
-              {...(isDisabled && { "aria-disabled": "true" })}
-              {...(isRequired && { "aria-required": "true" })}
-              {...(noAutofillProps ?? { autoComplete })}
-              {...props}
-            />
-            {errorMessage ? (
-              <small
-                aria-live="polite"
-                className={styles["error-message"]}
-                id={`${props.name}-error`}
-              >
-                {errorMessage}
-              </small>
-            ) : null}
-          </>
-        )}
-      </div>
-    );
-  }
-);
-
-TextInput.displayName = "TextInput";
+              {errorMessage}
+            </small>
+          ) : null}
+        </>
+      )}
+    </div>
+  );
+};
 
 export { TextInput };

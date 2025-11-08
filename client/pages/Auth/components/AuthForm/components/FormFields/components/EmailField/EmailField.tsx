@@ -1,5 +1,5 @@
 import type { ChangeEvent, FocusEvent, JSX } from "react";
-import { useCallback, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useController, useFormContext } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
@@ -53,19 +53,13 @@ const EmailField = (): JSX.Element => {
     SECONDS_HALF_IN_MS
   );
 
-  const handleEmailChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>): void => {
-      handleChange(event, onChange, debouncedEmailValidation, hasBeenValidated);
-    },
-    [debouncedEmailValidation, handleChange, hasBeenValidated, onChange]
-  );
+  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    handleChange(event, onChange, debouncedEmailValidation, hasBeenValidated);
+  };
 
-  const handleEmailBlur = useCallback(
-    (event: FocusEvent<HTMLInputElement>) => {
-      handleBlur(event, onBlur, checkEmailExists, hasBeenValidated);
-    },
-    [checkEmailExists, handleBlur, hasBeenValidated, onBlur]
-  );
+  const handleEmailBlur = (event: FocusEvent<HTMLInputElement>) => {
+    handleBlur(event, onBlur, checkEmailExists, hasBeenValidated);
+  };
 
   useEffect(() => {
     if (isFieldUsedOrDisabled) {

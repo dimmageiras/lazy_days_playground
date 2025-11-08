@@ -1,7 +1,13 @@
+import { ApiHealthQueriesHelper } from "./queries/helpers/api-health-queries.helper";
 import { useGetDatabaseHealth } from "./queries/useGetDatabaseHealth.query";
 import { useGetServerHealth } from "./queries/useGetServerHealth.query";
 
-export const ApiHealthQueries = {
+const { getDatabaseHealthQueryOptions, getServerHealthQueryOptions } =
+  ApiHealthQueriesHelper;
+
+export {
+  getDatabaseHealthQueryOptions,
+  getServerHealthQueryOptions,
   useGetDatabaseHealth,
   useGetServerHealth,
 };

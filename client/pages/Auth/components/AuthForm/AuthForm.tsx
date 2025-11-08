@@ -1,11 +1,15 @@
 import type { JSX } from "react";
 import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { Form as ReactRouterForm } from "react-router";
+import {
+  Form as ReactRouterForm,
+  useNavigate,
+  useSearchParams,
+} from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
-import { AuthMutations } from "@client/services/auth";
-import { UserMutations } from "@client/services/user";
+import { useSignin, useSignup } from "@client/services/auth";
+import { useEmailExistence } from "@client/services/user";
 
 import { FormFields } from "./components/FormFields";
 import { FORM_TYPES } from "./components/FormFields/constants/form-fields.constant";
@@ -16,13 +20,11 @@ const { SIGNIN, SIGNUP } = FORM_TYPES;
 
 const AuthForm = (): JSX.Element => {
   const [wasLoadingBefore, setWasLoadingBefore] = useState(true);
-
-  const { useSignin, useSignup } = AuthMutations;
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const signinMutation = useSignin();
   const signupMutation = useSignup();
-
-  const { useEmailExistence } = UserMutations;
 
   const { isExistingUser, isNewUser, isUnchecked } = useEmailExistence();
 
@@ -50,6 +52,10 @@ const AuthForm = (): JSX.Element => {
     }
 
     formMethods.reset();
+
+    const redirectTo = searchParams.get("redirect") || "/";
+
+    navigate(redirectTo, { replace: true });
   };
 
   useEffect(() => {

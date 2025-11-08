@@ -1,11 +1,12 @@
 import { AUTH_ENDPOINTS } from "@shared/constants/auth.constant";
-import { USER_BASE_URL } from "@shared/constants/base-urls.const";
+import { AUTH_BASE_URL } from "@shared/constants/base-urls.const";
 
-const { SIGNIN, SIGNUP } = AUTH_ENDPOINTS;
+const { ME, SIGNIN, SIGNUP } = AUTH_ENDPOINTS;
 
 const AUTH_QUERY_KEYS = Object.freeze({
-  SIGNIN: [USER_BASE_URL, SIGNIN] as const,
-  SIGNUP: [USER_BASE_URL, SIGNUP] as const,
+  SIGNIN: [AUTH_BASE_URL, SIGNIN] as const,
+  SIGNUP: [AUTH_BASE_URL, SIGNUP] as const,
+  VERIFY_AUTH: [AUTH_BASE_URL, ME] as const,
 } as const);
 
 export { AUTH_QUERY_KEYS };

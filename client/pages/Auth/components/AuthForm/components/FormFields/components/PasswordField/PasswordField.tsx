@@ -1,5 +1,5 @@
 import type { ChangeEvent, JSX } from "react";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useController, useFormContext } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
@@ -41,25 +41,22 @@ const PasswordField = (): JSX.Element => {
     [checkFieldIsRequiredInDiscriminatedUnion, mode]
   );
 
-  const handlePasswordChange = useCallback(
-    async (event: ChangeEvent<HTMLInputElement>) => {
-      const {
-        isTouched,
-        invalid,
-        error: confirmPasswordError,
-      } = getFieldState(confirmPasswordName);
-      const isConfirmPasswordRequired = mode === FORM_TYPES.SIGNUP;
-      const hasConfirmPasswordBeenValidated =
-        isTouched || invalid || !!confirmPasswordError;
+  const handlePasswordChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const {
+      isTouched,
+      invalid,
+      error: confirmPasswordError,
+    } = getFieldState(confirmPasswordName);
+    const isConfirmPasswordRequired = mode === FORM_TYPES.SIGNUP;
+    const hasConfirmPasswordBeenValidated =
+      isTouched || invalid || !!confirmPasswordError;
 
-      onChange(event);
+    onChange(event);
 
-      if (isConfirmPasswordRequired && hasConfirmPasswordBeenValidated) {
-        await trigger(confirmPasswordName);
-      }
-    },
-    [getFieldState, mode, onChange, trigger]
-  );
+    if (isConfirmPasswordRequired && hasConfirmPasswordBeenValidated) {
+      await trigger(confirmPasswordName);
+    }
+  };
 
   return (
     <TextInput

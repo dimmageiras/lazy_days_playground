@@ -3,7 +3,7 @@ import { data } from "react-router";
 
 import { iconifyIconLoader } from "@client/components/IconifyIcon";
 
-const loader = async (): Promise<
+const appLayoutLoader = async (): Promise<
   ReturnType<
     typeof data<{
       dehydratedState: DehydratedState;
@@ -15,4 +15,4 @@ const loader = async (): Promise<
   return data({ dehydratedState: iconifyIconDehydratedState });
 };
 
-export { loader };
+export { appLayoutLoader };

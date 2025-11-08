@@ -1,8 +1,8 @@
 import type { JSX } from "react";
 import { Outlet } from "react-router";
 
-const StandardPageLayout = (): JSX.Element => {
+const ProtectedLayout = (): JSX.Element => {
   return <Outlet />;
 };
 
-export { StandardPageLayout };
+export { ProtectedLayout };

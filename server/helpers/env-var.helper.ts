@@ -1,15 +1,17 @@
 import { MODE, MODES } from "../../shared/constants/root-env.constant.ts";
 import { ZodUtilsHelper } from "../../shared/helpers/zod.helper.ts";
 import { envSchema } from "../schemas/env-var.schema.ts";
+import { PinoLogHelper } from "./pino-log.helper.ts";
 
 const validateEnv = (): void => {
   const { formatError } = ZodUtilsHelper;
+  const { log } = PinoLogHelper;
 
   const result = envSchema.safeParse(process.env);
 
   if (result.success) {
     if (MODE !== MODES.TYPE_GENERATOR) {
-      console.info("✅ Required environment variables are set...");
+      log.info("✅ Required environment variables are set...");
     }
 
     return;

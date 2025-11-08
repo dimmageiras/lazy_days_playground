@@ -3,17 +3,18 @@ import { dehydrate } from "@tanstack/react-query";
 import { data } from "react-router";
 
 import { QueriesHelper } from "@client/helpers/queries.helper";
-import { ApiHealthQueriesHelper } from "@client/services/api-health/queries/helpers/api-health-queries.helper";
+import {
+  getDatabaseHealthQueryOptions,
+  getServerHealthQueryOptions,
+} from "@client/services/api-health";
 
-const loader = async (): Promise<
+const apiHealthLoader = async (): Promise<
   ReturnType<
     typeof data<{
       dehydratedState: DehydratedState;
     }>
   >
 > => {
-  const { getDatabaseHealthQueryOptions, getServerHealthQueryOptions } =
-    ApiHealthQueriesHelper;
   const { fetchServerData } = QueriesHelper;
 
   const queryClient = await fetchServerData([
@@ -26,4 +27,4 @@ const loader = async (): Promise<
   return data({ dehydratedState });
 };
 
-export { loader };
+export { apiHealthLoader };
