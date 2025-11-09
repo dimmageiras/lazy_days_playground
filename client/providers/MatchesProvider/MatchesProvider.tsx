@@ -1,7 +1,7 @@
 import type { Route } from "@rr/types/client/+types/root";
 import type { JSX, PropsWithChildren } from "react";
 
-import { MatchesContext } from "./matches.context";
+import { MatchesContext } from "./contexts/matches.context";
 
 interface MatchesProviderProps extends PropsWithChildren {
   matches: Route.ComponentProps["matches"];

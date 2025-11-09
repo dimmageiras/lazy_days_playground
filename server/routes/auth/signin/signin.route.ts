@@ -5,7 +5,7 @@ import type {
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
 
-import type { SigninRequestBody } from "@server/plugins/gel-auth-fastify/index";
+import type { SigninRequestBody } from "@server/plugins/gel-auth-fastify";
 import type {
   SigninCreateData,
   SigninCreateError,

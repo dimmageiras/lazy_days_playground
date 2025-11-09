@@ -1,6 +1,5 @@
-import { protectedLayoutMiddleware } from "./protected-layout.middleware";
+import { protectedLayoutLoader } from "./loaders/protected-layout.loader";
 import { ProtectedLayout } from "./ProtectedLayout";
 
-export const middleware = [protectedLayoutMiddleware];
+export { protectedLayoutLoader as loader };
 export default ProtectedLayout;
-

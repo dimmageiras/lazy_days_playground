@@ -5,7 +5,7 @@ import type {
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
 
-import type { VerifyRequestBody } from "@server/plugins/gel-auth-fastify/index";
+import type { VerifyRequestBody } from "@server/plugins/gel-auth-fastify";
 import type {
   VerifyCreateData,
   VerifyCreateError,

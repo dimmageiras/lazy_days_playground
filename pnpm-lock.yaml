@@ -34,7 +34,7 @@ importers:
         version: 6.0.2(react@19.2.0)
       '@mcansh/remix-fastify':
         specifier: 4.1.2
-        version: 4.1.2(fastify@5.6.1)(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@24.10.0)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.8.1))
+        version: 4.1.2(fastify@5.6.2)(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@24.10.0)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.8.1))
       '@react-router/node':
         specifier: 7.9.5
         version: 7.9.5(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(typescript@5.9.3)
@@ -54,11 +54,11 @@ importers:
         specifier: 1.11.19
         version: 1.11.19
       fastify:
-        specifier: 5.6.1
-        version: 5.6.1
+        specifier: 5.6.2
+        version: 5.6.2
       fastify-zod-openapi:
         specifier: 5.5.0
-        version: 5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.0)(fastify@5.6.1)(zod@4.1.12)
+        version: 5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.0)(fastify@5.6.2)(zod@4.1.12)
       gel:
         specifier: 2.1.1
         version: 2.1.1
@@ -2324,8 +2324,8 @@ packages:
       '@fastify/swagger-ui':
         optional: true
 
-  fastify@5.6.1:
-    resolution: {integrity: sha512-WjjlOciBF0K8pDUPZoGPhqhKrQJ02I8DKaDIfO51EL0kbSMwQFl85cRwhOvmSDWoukNOdTo27gLN549pLCcH7Q==}
+  fastify@5.6.2:
+    resolution: {integrity: sha512-dPugdGnsvYkBlENLhCgX8yhyGCsCPrpA8lFWbTNU428l+YOnLgYHR69hzV8HWPC79n536EqzqQtvhtdaCE0dKg==}
 
   fastq@1.19.1:
     resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
@@ -3246,10 +3246,6 @@ packages:
     resolution: {integrity: sha512-0zZC2ygfdqvqK8zJIr1e+wT1T/L+LF6qvqvbzEQ6tiMAoTqEVK9a1K3YRu8HEUvGEvNqZyPJTtb2sNIoTkB83w==}
     hasBin: true
 
-  pino@9.14.0:
-    resolution: {integrity: sha512-8OEwKp5juEvb/MjpIc4hjqfgCNysrS94RIOMXYvpYCdm/jglrKEiAYmiumbmGhCvs+IcInsphYDFwqrjr7398w==}
-    hasBin: true
-
   pkg-types@2.3.0:
     resolution: {integrity: sha512-SIqCzDRg0s9npO5XQ3tNZioRY1uK06lA41ynBC1YmFTmnY6FjUjVt6s4LoADmwoig1qqD0oK8h1p/8mlMx8Oig==}
 
@@ -3913,8 +3909,8 @@ packages:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
     engines: {node: '>=20'}
 
-  tailwind-merge@3.3.1:
-    resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
+  tailwind-merge@3.4.0:
+    resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
 
   thread-stream@3.1.0:
     resolution: {integrity: sha512-OqyPZ9u96VohAyMfJykzmivOrY2wfMSf3C5TtFJVgN+Hm6aj+voFhlK+kZEIv2FBh1X6Xp3DlnCOfEQ3B2J86A==}
@@ -4953,11 +4949,11 @@ snapshots:
 
   '@lukeed/ms@2.0.2': {}
 
-  '@mcansh/remix-fastify@4.1.2(fastify@5.6.1)(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@24.10.0)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.8.1))':
+  '@mcansh/remix-fastify@4.1.2(fastify@5.6.2)(react-router@7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(vite@7.2.2(@types/node@24.10.0)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.8.1))':
     dependencies:
       '@fastify/middie': 9.0.3
       '@fastify/static': 8.3.0
-      fastify: 5.6.1
+      fastify: 5.6.2
       fastify-plugin: 5.1.0
       pretty-cache-header: 1.0.0
     optionalDependencies:
@@ -6588,11 +6584,11 @@ snapshots:
 
   fastify-plugin@5.1.0: {}
 
-  fastify-zod-openapi@5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.0)(fastify@5.6.1)(zod@4.1.12):
+  fastify-zod-openapi@5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.0)(fastify@5.6.2)(zod@4.1.12):
     dependencies:
       '@fastify/error': 4.2.0
       fast-json-stringify: 6.1.1
-      fastify: 5.6.1
+      fastify: 5.6.2
       fastify-plugin: 5.1.0
       zod: 4.1.12
       zod-openapi: 5.4.3(zod@4.1.12)
@@ -6600,7 +6596,7 @@ snapshots:
       '@fastify/swagger': 9.6.0
       '@fastify/swagger-ui': 5.2.3
 
-  fastify@5.6.1:
+  fastify@5.6.2:
     dependencies:
       '@fastify/ajv-compiler': 4.0.5
       '@fastify/error': 4.2.0
@@ -6611,7 +6607,7 @@ snapshots:
       fast-json-stringify: 6.1.1
       find-my-way: 9.3.0
       light-my-request: 6.6.0
-      pino: 9.14.0
+      pino: 10.1.0
       process-warning: 5.0.0
       rfdc: 1.4.1
       secure-json-parse: 4.1.0
@@ -7557,20 +7553,6 @@ snapshots:
       sonic-boom: 4.2.0
       thread-stream: 3.1.0
 
-  pino@9.14.0:
-    dependencies:
-      '@pinojs/redact': 0.4.0
-      atomic-sleep: 1.0.0
-      on-exit-leak-free: 2.1.2
-      pino-abstract-transport: 2.0.0
-      pino-std-serializers: 7.0.0
-      process-warning: 5.0.0
-      quick-format-unescaped: 4.0.4
-      real-require: 0.2.0
-      safe-stable-stringify: 2.5.0
-      sonic-boom: 4.2.0
-      thread-stream: 3.1.0
-
   pkg-types@2.3.0:
     dependencies:
       confbox: 0.2.2
@@ -7748,7 +7730,7 @@ snapshots:
       react-hotkeys-hook: 4.6.2(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-router: 7.9.5(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       react-tooltip: 5.30.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-      tailwind-merge: 3.3.1
+      tailwind-merge: 3.4.0
       vite: 7.2.2(@types/node@24.10.0)(jiti@2.6.1)(sass-embedded@1.93.3)(sass@1.93.3)(yaml@2.8.1)
     optionalDependencies:
       '@biomejs/cli-darwin-arm64': 1.9.4
@@ -8328,7 +8310,7 @@ snapshots:
 
   tagged-tag@1.0.0: {}
 
-  tailwind-merge@3.3.1: {}
+  tailwind-merge@3.4.0: {}
 
   thread-stream@3.1.0:
     dependencies:

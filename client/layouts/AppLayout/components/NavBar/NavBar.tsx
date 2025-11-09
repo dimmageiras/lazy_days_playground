@@ -1,13 +1,19 @@
-import type { JSX } from "react";
+import { type JSX } from "react";
 
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { RouterLink } from "@client/components/RouterLink";
+import type { VerifyAuthListData } from "@shared/types/generated/auth.type";
 
 import { AuthButton } from "./components/AuthButton";
 import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";
 
-const NavBar = (): JSX.Element => {
+interface NavBarProps {
+  authData: VerifyAuthListData | null;
+}
+
+const NavBar = ({ authData }: NavBarProps): JSX.Element => {
+  const isAuthenticated = !!authData?.identity_id;
   const { home } = iconifyIcons;
 
   return (
@@ -34,16 +40,18 @@ const NavBar = (): JSX.Element => {
           </nav>
         </div>
         <div className={styles["right"]}>
-          <RouterLink
-            aria-label="User Profile"
-            as="internal"
-            className={styles["profile"]}
-            prioritizeOnClick
-            shouldReplace
-            to="/profile"
-          >
-            User Profile
-          </RouterLink>
+          {isAuthenticated ? (
+            <RouterLink
+              aria-label="User Profile"
+              as="internal"
+              className={styles["profile"]}
+              prioritizeOnClick
+              shouldReplace
+              to="/profile"
+            >
+              User Profile
+            </RouterLink>
+          ) : null}
           <AuthButton />
         </div>
       </div>
