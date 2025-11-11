@@ -2,7 +2,7 @@ name: lazy_days_playground
 
 services:
   gel_db:
-    image: geldata/gel:7.0-rc.2
+    image: geldata/gel:7.0
     environment:
       EDGEDB_SERVER_ADMIN_UI: enabled
       EDGEDB_SERVER_PASSWORD: password
