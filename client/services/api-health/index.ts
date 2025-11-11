@@ -1,4 +1,4 @@
-import { ApiHealthQueriesHelper } from "./queries/helpers/api-health-queries.helper";
+import { ApiHealthQueriesHelper } from "./helpers/api-health-queries.helper";
 import { useGetDatabaseHealth } from "./queries/useGetDatabaseHealth.query";
 import { useGetServerHealth } from "./queries/useGetServerHealth.query";
 
