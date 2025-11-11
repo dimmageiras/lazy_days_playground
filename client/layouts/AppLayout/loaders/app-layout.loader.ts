@@ -4,23 +4,36 @@ import { data } from "react-router";
 
 import { iconifyIconLoader } from "@client/components/IconifyIcon";
 import { authRouteContext } from "@client/contexts/auth-route.context";
-import type { VerifyAuthListData } from "@shared/types/generated/auth.type";
+import { ClientIdRouteContext } from "@client/contexts/client-id-route.context";
+import { CookieHelper } from "@client/helpers/cookie.helper";
 
 const appLayoutLoader = async ({
   context,
 }: Route.LoaderArgs): Promise<
   ReturnType<
     typeof data<{
-      authData: VerifyAuthListData | null;
+      clientId: string | null;
       dehydratedState: DehydratedState;
+      isAuthenticated: boolean;
     }>
   >
 > => {
+  const { getClientId } = ClientIdRouteContext;
+  const { createStandardCookie } = CookieHelper;
+
   const authData = context.get(authRouteContext);
+  const clientIdCookie = createStandardCookie("client-id");
+  const clientId = await getClientId(clientIdCookie);
+
+  const isAuthenticated = !!authData?.identity_id;
 
   const { iconifyIconDehydratedState } = await iconifyIconLoader();
 
-  return data({ authData, dehydratedState: iconifyIconDehydratedState });
+  return data({
+    clientId,
+    dehydratedState: iconifyIconDehydratedState,
+    isAuthenticated,
+  });
 };
 
 export { appLayoutLoader };

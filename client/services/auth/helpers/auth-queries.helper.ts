@@ -10,19 +10,19 @@ import type {
 
 const { VERIFY_AUTH } = AUTH_QUERY_KEYS;
 
-const getVerifyAuthQueryOptions = <TRequest extends Request>(
-  request?: TRequest
+const getVerifyAuthQueryOptions = (
+  clientId: string
 ): UseQueryOptions<
   VerifyAuthListData,
   VerifyAuthListError,
   VerifyAuthListData,
-  readonly [...typeof VERIFY_AUTH, typeof request]
+  readonly [...typeof VERIFY_AUTH, typeof clientId]
 > => {
   const { verifyAuth } = AuthService;
 
   return queryOptions({
-    queryKey: [...VERIFY_AUTH, request] as const,
-    queryFn: () => verifyAuth(request),
+    queryKey: [...VERIFY_AUTH, clientId] as const,
+    queryFn: () => verifyAuth(),
   });
 };
 

@@ -31,12 +31,10 @@ const signup = async (
   return response.data;
 };
 
-const verifyAuth = async (request?: Request): Promise<VerifyAuthListData> => {
+const verifyAuth = async (): Promise<VerifyAuthListData> => {
   const url = `${BASE_URL}/${VERIFY_AUTH}` as const;
 
-  const response = await axios.get<VerifyAuthListData>(url, {
-    ...(request && { headers: { cookie: request?.headers.get("cookie") } }),
-  });
+  const response = await axios.get<VerifyAuthListData>(url);
 
   return response.data;
 };

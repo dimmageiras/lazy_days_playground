@@ -1,6 +1,7 @@
 import type { AxiosError } from "axios";
 import axios from "axios";
 
+import { ClientIdRouteContext } from "@client/contexts/client-id-route.context";
 import { HOST, IS_SSR, PORT } from "@shared/constants/root-env.constant";
 import { TIMING } from "@shared/constants/timing.constant";
 
@@ -17,6 +18,20 @@ if (IS_SSR) {
 
 axios.interceptors.request.use(
   (config) => {
+    if (IS_SSR) {
+      const { getRequest } = ClientIdRouteContext;
+
+      const request = getRequest();
+
+      if (request) {
+        const cookie = request.headers.get("cookie");
+
+        if (cookie) {
+          config.headers.cookie = cookie;
+        }
+      }
+    }
+
     return config;
   },
   (error) => {

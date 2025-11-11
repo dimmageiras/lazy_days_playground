@@ -1,19 +1,16 @@
-import { type JSX } from "react";
+import type { JSX } from "react";
 
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { RouterLink } from "@client/components/RouterLink";
-import type { VerifyAuthListData } from "@shared/types/generated/auth.type";
+import { useClientSessionTrackedValue } from "@client/providers/ClientSessionProvider";
 
 import { AuthButton } from "./components/AuthButton";
 import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";
 
-interface NavBarProps {
-  authData: VerifyAuthListData | null;
-}
+const NavBar = (): JSX.Element => {
+  const isAuthenticated = useClientSessionTrackedValue("isAuthenticated");
 
-const NavBar = ({ authData }: NavBarProps): JSX.Element => {
-  const isAuthenticated = !!authData?.identity_id;
   const { home } = iconifyIcons;
 
   return (
