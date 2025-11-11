@@ -25,8 +25,9 @@ This document provides a comprehensive guide to all generic components available
 ### 🔧 [Utility Components](#utility-components)
 
 1. [ClientOnly](#clientonly)
-2. [DynamicElement](#dynamicelement)
-3. [ListRenderer](#listrenderer)
+2. [ConditionalWrapper](#conditionalwrapper)
+3. [DynamicElement](#dynamicelement)
+4. [ListRenderer](#listrenderer)
 
 ---
 
@@ -376,6 +377,44 @@ Renders its children **only after** the component has mounted on the client. Thi
 <ClientOnly>
   <HeavyChart data={data} />
 </ClientOnly>
+```
+
+### ConditionalWrapper
+
+A utility component that conditionally wraps children with a wrapper function based on a boolean flag. This is useful when you need to optionally wrap content without duplicating JSX.
+
+**Props:**
+
+- `children: ReactNode` - The content to be conditionally wrapped
+- `shouldRender: boolean` - Whether to apply the wrapper function
+- `wrapper: (children: ReactNode) => JSX.Element` - Function that wraps the children when shouldRender is true
+
+**Usage Examples:**
+
+```tsx
+// Conditionally wrap content in a tooltip
+<ConditionalWrapper
+  shouldRender={showTooltip}
+  wrapper={(children) => <Tooltip content="More info">{children}</Tooltip>}
+>
+  <button>Hover me</button>
+</ConditionalWrapper>
+
+// Conditionally wrap in a link
+<ConditionalWrapper
+  shouldRender={isClickable}
+  wrapper={(children) => <RouterLink as="internal" to="/details">{children}</RouterLink>}
+>
+  <div className="card">Card content</div>
+</ConditionalWrapper>
+
+// Conditionally apply a styled container
+<ConditionalWrapper
+  shouldRender={hasError}
+  wrapper={(children) => <div className="error-container">{children}</div>}
+>
+  <TextInput label="Email" name="email" type="email" />
+</ConditionalWrapper>
 ```
 
 ### DynamicElement
