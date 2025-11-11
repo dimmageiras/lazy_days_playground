@@ -5,7 +5,7 @@ import { ROUTES_CONSTANTS } from "./constants/routes.constants";
 const { INDEX_FILE } = ROUTES_CONSTANTS;
 
 // Protected routes
-const userProfile = route("/profile", `pages/UserProfile/${INDEX_FILE}`);
+const userProfile = route("/user-profile", `pages/UserProfile/${INDEX_FILE}`);
 
 const protectedRoutes = [userProfile];
 

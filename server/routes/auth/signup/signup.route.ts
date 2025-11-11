@@ -37,13 +37,14 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
+  const { SIGNUP, VERIFY } = AUTH_ENDPOINTS;
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
 
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()
     .post<SignupRequestBody>(
-      `/${AUTH_ENDPOINTS.SIGNUP}`,
+      `/${SIGNUP}`,
       {
         config: {
           rateLimit: AUTH_RATE_LIMIT,
@@ -84,7 +85,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
             const { emailPasswordHandlers } = createAuth(client);
             const baseUrl = getBaseUrl();
 
-            const verifyUrl = `${baseUrl}/${AUTH_BASE_URL}/${AUTH_ENDPOINTS.VERIFY}`;
+            const verifyUrl = `${baseUrl}/${AUTH_BASE_URL}/${VERIFY}`;
 
             const { signup } = emailPasswordHandlers;
 

@@ -44,10 +44,10 @@ const NavBar = ({ authData }: NavBarProps): JSX.Element => {
             <RouterLink
               aria-label="User Profile"
               as="internal"
-              className={styles["profile"]}
+              className={styles["user-profile"]}
               prioritizeOnClick
               shouldReplace
-              to="/profile"
+              to="/user-profile"
             >
               User Profile
             </RouterLink>
