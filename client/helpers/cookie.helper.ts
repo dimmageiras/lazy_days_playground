@@ -1,7 +1,7 @@
 import type { Cookie } from "react-router";
 import { createCookie } from "react-router";
 
-import { IS_DEVELOPMENT } from "@shared/constants/root-env.constant";
+import { BASE_COOKIE_CONFIG } from "@shared/constants/cookie.constant";
 import { DateHelper } from "@shared/helpers/date.helper";
 
 /**
@@ -18,12 +18,7 @@ import { DateHelper } from "@shared/helpers/date.helper";
  * ```
  */
 const createStandardCookie = (name: string): Cookie => {
-  return createCookie(name, {
-    httpOnly: true,
-    path: "/",
-    sameSite: "strict",
-    secure: !IS_DEVELOPMENT,
-  });
+  return createCookie(name, BASE_COOKIE_CONFIG);
 };
 
 /**

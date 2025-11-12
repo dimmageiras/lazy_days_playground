@@ -1,6 +1,7 @@
 import type { Route } from "@rr/types/client/+types/root";
 import { dehydrate } from "@tanstack/react-query";
 
+import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constants";
 import { authRouteContext } from "@client/contexts/auth-route.context";
 import { ClientIdRouteContext } from "@client/contexts/client-id-route.context";
 import { CookieHelper } from "@client/helpers/cookie.helper";
@@ -9,16 +10,17 @@ import { getVerifyAuthQueryOptions } from "@client/services/auth";
 import { TIMING } from "@shared/constants/timing.constant";
 import type { VerifyAuthListData } from "@shared/types/generated/auth.type";
 
-const { MINUTES_FIVE_IN_S } = TIMING;
-
 const appLayoutMiddleware: Route.MiddlewareFunction = async (
   { request, context },
   next
 ) => {
+  const { CLIENT_ID } = AUTH_COOKIE_NAMES;
+  const { MINUTES_FIVE_IN_S } = TIMING;
+
   const { run, getOrCreateClientId, hasAccessToken } = ClientIdRouteContext;
   const { createStandardCookie, hasCookie, setCookie } = CookieHelper;
 
-  const clientIdCookie = createStandardCookie("client-id");
+  const clientIdCookie = createStandardCookie(CLIENT_ID);
 
   return run(request, async () => {
     const { fetchServerData } = QueriesHelper;

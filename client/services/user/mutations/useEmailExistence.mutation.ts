@@ -10,10 +10,11 @@ const useCheckEmailExists = (): UseMutationResult<
   Error,
   string
 > => {
+  const { CHECK_EMAIL } = USER_QUERY_KEYS;
   const { checkEmailExists } = UserService;
 
   return useMutation({
-    mutationKey: USER_QUERY_KEYS.CHECK_EMAIL,
+    mutationKey: CHECK_EMAIL,
     mutationFn: checkEmailExists,
     retry: false,
   });
@@ -24,8 +25,9 @@ const useEmailExistence = (): {
   isNewUser: boolean;
   isUnchecked: boolean;
 } => {
+  const { CHECK_EMAIL } = USER_QUERY_KEYS;
   const emailExistenceMutations = useMutationState({
-    filters: { mutationKey: USER_QUERY_KEYS.CHECK_EMAIL },
+    filters: { mutationKey: CHECK_EMAIL },
     select: (mutation) => {
       const data = mutation.state.data as CheckEmailCreateData | undefined;
 

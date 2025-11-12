@@ -7,6 +7,86 @@
  * ---------------------------------------------------------------
  */
 
+/** Successful logout response */
+export interface LogoutCreateData {
+  /**
+   * Success message
+   * @example "Logout successful"
+   */
+  message: string;
+  /**
+   * ISO timestamp when the logout was completed
+   * @format date-time
+   * @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+   * @example "2024-01-01T00:00:00Z"
+   */
+  timestamp: string;
+}
+
+/**
+ * Base error response when rate limit is exceeded
+ * Error response when logout fails
+ */
+export type LogoutCreateError =
+  | {
+      /**
+       * Additional details about the logout rate limit error
+       * @example "Rate limit exceeded for logout attempts"
+       */
+      details?: string;
+      /**
+       * Error type
+       * @example "Too Many Requests"
+       */
+      error: string;
+      /**
+       * Human-readable message
+       * @example "Rate limit exceeded. Try again in 30 seconds."
+       */
+      message: string;
+      /**
+       * Seconds until retry
+       * @exclusiveMin 0
+       * @max 9007199254740991
+       * @example 30
+       */
+      retryAfter: number;
+      /**
+       * HTTP status code
+       * @example 429
+       */
+      statusCode: 429;
+    }
+  | {
+      /**
+       * Additional error details (only present for caught errors)
+       * @example "Invalid authentication token"
+       */
+      details?: string;
+      /**
+       * Error message describing what went wrong
+       * @example "Logout failed"
+       */
+      error: string;
+      /**
+       * ISO timestamp when the error occurred
+       * @format date-time
+       * @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+       * @example "2024-01-01T00:00:00Z"
+       */
+      timestamp: string;
+    };
+
+/** Request body for user logout - ACCESS_TOKEN cookie is always deleted plus the specified custom cookie */
+export interface LogoutCreatePayload {
+  /**
+   * Name of the custom cookie to be deleted (ACCESS_TOKEN is always deleted, plus this specified cookie)
+   * @minLength 1
+   * @example "client-id"
+   */
+  cookieName: string;
+}
+
 /** Successful sign in response */
 export interface SigninCreateData {
   /**

@@ -8,6 +8,28 @@ import { ObjectUtilsHelper } from "../../shared/helpers/object-utils.helper.ts";
 import { HTTP_STATUS } from "./http-status.constant.ts";
 
 const { MANY_REQUESTS_ERROR } = HTTP_STATUS;
+const {
+  MINUTES_FIFTEEN_IN_MS,
+  MINUTES_FIVE_IN_MS,
+  MINUTES_ONE_IN_MS,
+  SECONDS_ONE_IN_MS,
+} = TIMING;
+
+/**
+ * Formats time remaining in a user-friendly way
+ * Returns "X minutes" if >= 1 minute, otherwise "X seconds"
+ */
+const formatRetryTime = (seconds: number): string => {
+  const secondsInOneMinute = MINUTES_ONE_IN_MS / SECONDS_ONE_IN_MS;
+
+  if (seconds >= secondsInOneMinute) {
+    const minutes = Math.ceil(seconds / secondsInOneMinute);
+
+    return minutes === 1 ? "1 minute" : `${minutes} minutes`;
+  }
+
+  return seconds === 1 ? "1 second" : `${seconds} seconds`;
+};
 
 const createOnExceededHandler = (bucket: string) => {
   return (request: FastifyRequest): void => {
@@ -50,7 +72,7 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
   max: IS_DEVELOPMENT ? 1000 : 100,
   onExceeded: createOnExceededHandler("global"),
   skipOnError: false, // Don't skip rate limiting on errors
-  timeWindow: TIMING.MINUTES_FIFTEEN_IN_MS,
+  timeWindow: MINUTES_FIFTEEN_IN_MS,
 };
 
 /**
@@ -72,12 +94,13 @@ const AUTH_RATE_LIMIT: RateLimitPluginOptions = {
   continueExceeding: true,
   enableDraftSpec: true,
   errorResponseBuilder: (_request, context) => {
+    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
+    const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
+
     return {
       error: "Too Many Requests",
-      message: `Rate limit exceeded. Please try again in ${Math.ceil(
-        context.ttl / TIMING.SECONDS_ONE_IN_MS
-      )} seconds.`,
-      retryAfter: Math.ceil(context.ttl / TIMING.SECONDS_ONE_IN_MS),
+      message: `Too many authentication attempts. Please wait ${retryTimeFormatted} before trying again.`,
+      retryAfter: retryAfterSeconds,
       statusCode: MANY_REQUESTS_ERROR,
     };
   },
@@ -99,7 +122,7 @@ const AUTH_RATE_LIMIT: RateLimitPluginOptions = {
   max: IS_DEVELOPMENT ? 100 : 5,
   onExceeded: createOnExceededHandler("auth"),
   skipOnError: false,
-  timeWindow: TIMING.MINUTES_FIFTEEN_IN_MS,
+  timeWindow: MINUTES_FIFTEEN_IN_MS,
 };
 
 /**
@@ -121,12 +144,13 @@ const USER_RATE_LIMIT: RateLimitPluginOptions = {
   continueExceeding: true,
   enableDraftSpec: true,
   errorResponseBuilder: (_request, context) => {
+    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
+    const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
+
     return {
       error: "Too Many Requests",
-      message: `Rate limit exceeded. Please try again in ${Math.ceil(
-        context.ttl / TIMING.SECONDS_ONE_IN_MS
-      )} seconds.`,
-      retryAfter: Math.ceil(context.ttl / TIMING.SECONDS_ONE_IN_MS),
+      message: `Too many requests. Please wait ${retryTimeFormatted} before trying again.`,
+      retryAfter: retryAfterSeconds,
       statusCode: MANY_REQUESTS_ERROR,
     };
   },
@@ -148,7 +172,7 @@ const USER_RATE_LIMIT: RateLimitPluginOptions = {
   max: IS_DEVELOPMENT ? 100 : 10,
   onExceeded: createOnExceededHandler("user"),
   skipOnError: false,
-  timeWindow: TIMING.MINUTES_FIVE_IN_MS,
+  timeWindow: MINUTES_FIVE_IN_MS,
 };
 
 /**
@@ -177,7 +201,7 @@ const HEALTH_RATE_LIMIT: RateLimitPluginOptions = {
   max: IS_DEVELOPMENT ? 1000 : 60,
   onExceeded: createOnExceededHandler("health"),
   skipOnError: false,
-  timeWindow: TIMING.MINUTES_ONE_IN_MS,
+  timeWindow: MINUTES_ONE_IN_MS,
 };
 
 export {

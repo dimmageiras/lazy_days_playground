@@ -4,23 +4,23 @@ import { useMutation } from "@tanstack/react-query";
 import { AUTH_QUERY_KEYS } from "@client/services/auth/auth.constants";
 import { AuthService } from "@client/services/auth/auth.services";
 import type {
-  SigninCreateData,
-  SigninCreatePayload,
+  LogoutCreateData,
+  LogoutCreatePayload,
 } from "@shared/types/generated/auth.type";
 
-const useSignin = (): UseMutationResult<
-  SigninCreateData,
+const useLogout = (): UseMutationResult<
+  LogoutCreateData,
   Error,
-  SigninCreatePayload
+  LogoutCreatePayload
 > => {
-  const { SIGNIN } = AUTH_QUERY_KEYS;
-  const { signin } = AuthService;
+  const { LOGOUT } = AUTH_QUERY_KEYS;
+  const { logout } = AuthService;
 
   return useMutation({
-    mutationKey: SIGNIN,
-    mutationFn: signin,
+    mutationKey: LOGOUT,
+    mutationFn: logout,
     retry: false,
   });
 };
 
-export { useSignin };
+export { useLogout };

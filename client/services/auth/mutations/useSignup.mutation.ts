@@ -13,10 +13,11 @@ const useSignup = (): UseMutationResult<
   Error,
   SignupCreatePayload
 > => {
+  const { SIGNUP } = AUTH_QUERY_KEYS;
   const { signup } = AuthService;
 
   return useMutation({
-    mutationKey: AUTH_QUERY_KEYS.SIGNUP,
+    mutationKey: SIGNUP,
     mutationFn: signup,
     retry: false,
   });

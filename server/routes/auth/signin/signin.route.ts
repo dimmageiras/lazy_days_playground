@@ -29,6 +29,8 @@ import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
+  const { SIGNIN } = AUTH_ENDPOINTS;
+
   const { createAuth, createClient, handleAuthError } = AuthClientHelper;
   const { encryptData } = EncryptionHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
@@ -45,7 +47,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()
     .post<SigninRequestBody>(
-      `/${AUTH_ENDPOINTS.SIGNIN}`,
+      `/${SIGNIN}`,
       {
         config: {
           rateLimit: AUTH_RATE_LIMIT,

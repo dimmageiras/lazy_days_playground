@@ -14,12 +14,13 @@ import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { authMiddleware } from "../../../middleware/auth.middleware.ts";
 
 const verifyAuthRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { getCurrentISOTimestamp } = DateHelper;
+  const { VERIFY_AUTH } = AUTH_ENDPOINTS;
 
+  const { getCurrentISOTimestamp } = DateHelper;
   const { OK, UNAUTHORIZED } = HTTP_STATUS;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
-    `/${AUTH_ENDPOINTS.VERIFY_AUTH}`,
+    `/${VERIFY_AUTH}`,
     {
       preHandler: [authMiddleware],
       schema: {

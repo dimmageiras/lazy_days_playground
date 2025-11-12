@@ -40,6 +40,7 @@ import { apiHealthRoutes } from "./routes/api-health/index.ts";
 import { authRoutes } from "./routes/auth/index.ts";
 import { userRoutes } from "./routes/user/index.ts";
 
+const { PRODUCTION, TYPE_GENERATOR } = MODES;
 const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
@@ -58,7 +59,7 @@ app.setSerializerCompiler(serializerCompiler);
 
 await app.register(fastifyZodOpenApiPlugin);
 
-if (MODE !== MODES.TYPE_GENERATOR) {
+if (MODE !== TYPE_GENERATOR) {
   await app.register(cookieFastify, {
     parseOptions: {
       httpOnly: true,
@@ -92,11 +93,11 @@ if (MODE !== MODES.TYPE_GENERATOR) {
 }
 
 await app.register(async (fastify: FastifyInstance) => {
-  if (MODE === MODES.TYPE_GENERATOR) {
+  if (MODE === TYPE_GENERATOR) {
     fastifyWithSwagger = fastify;
   }
 
-  if (MODE !== MODES.PRODUCTION) {
+  if (MODE !== PRODUCTION) {
     await fastify.register(swaggerFastify, {
       openapi: {
         info: {
@@ -111,12 +112,6 @@ await app.register(async (fastify: FastifyInstance) => {
           version: "1.0.0",
         },
         openapi: "3.1.0",
-        servers: [
-          {
-            description: "Development server",
-            url: `http://localhost:${PORT}`,
-          },
-        ],
       },
       ...fastifyZodOpenApiTransformers,
     });
@@ -162,13 +157,33 @@ await app.register(async (fastify: FastifyInstance) => {
           "style-src 'self' https: 'unsafe-inline'"
         );
       },
-      transformSpecification: (swaggerObject, _request, _reply) => {
-        return swaggerObject;
+      transformSpecification: (swaggerObject, request, _reply) => {
+        const host = request.headers.host || `localhost:${PORT}`;
+        // Check X-Forwarded-Proto header first for proxied environments (e.g., behind load balancer, reverse proxy)
+        // This header is set by proxies to indicate the original protocol used by the client
+        const forwardedProto = request.headers["x-forwarded-proto"];
+        // Check if socket is encrypted (TLS) by checking for encrypted property
+        const socket = request.socket as { encrypted?: boolean } | null;
+        const isEncrypted = socket?.encrypted === true;
+        const protocol =
+          forwardedProto ||
+          request.protocol ||
+          (isEncrypted ? "https" : "http");
+
+        return {
+          ...swaggerObject,
+          servers: [
+            {
+              url: `${protocol}://${host}`,
+              description: "Current server",
+            },
+          ],
+        };
       },
       transformSpecificationClone: true,
     });
 
-    if (MODE !== MODES.TYPE_GENERATOR) {
+    if (MODE !== TYPE_GENERATOR) {
       log.info("✅ Swagger plugins registered for API routes only");
     }
   }
@@ -177,12 +192,12 @@ await app.register(async (fastify: FastifyInstance) => {
   await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
   await fastify.register(userRoutes, { prefix: USER_BASE_URL });
 
-  if (MODE !== MODES.TYPE_GENERATOR) {
+  if (MODE !== TYPE_GENERATOR) {
     log.info("✅ All routes are registered");
   }
 });
 
-if (MODE === MODES.TYPE_GENERATOR) {
+if (MODE === TYPE_GENERATOR) {
   try {
     await app.ready();
 

@@ -30,6 +30,8 @@ import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const verifyRoute = async (fastify: FastifyInstance): Promise<void> => {
+  const { VERIFY } = AUTH_ENDPOINTS;
+
   const { createAuth, createClient, handleAuthError } = AuthClientHelper;
   const { encryptData } = EncryptionHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
@@ -41,7 +43,7 @@ const verifyRoute = async (fastify: FastifyInstance): Promise<void> => {
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()
     .post<VerifyRequestBody>(
-      `/${AUTH_ENDPOINTS.VERIFY}`,
+      `/${VERIFY}`,
       {
         config: {
           rateLimit: AUTH_RATE_LIMIT,

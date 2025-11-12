@@ -1,4 +1,4 @@
-import { IS_DEVELOPMENT } from "../../shared/constants/root-env.constant.ts";
+import { BASE_COOKIE_CONFIG } from "../../shared/constants/cookie.constant.ts";
 import { TIMING } from "../../shared/constants/timing.constant.ts";
 
 const { DAYS_SEVEN_IN_S, MINUTES_FIFTEEN_IN_S, MINUTES_TEN_IN_S } = TIMING;
@@ -10,17 +10,6 @@ const AUTH_COOKIE_NAMES = Object.freeze({
   ACCESS_TOKEN: "access-token",
   REFRESH_TOKEN: "refresh-token",
 } as const);
-
-/**
- * Base cookie configuration (shared settings)
- */
-const BASE_COOKIE_CONFIG = {
-  httpOnly: true,
-  path: "/",
-  sameSite: "strict" as const,
-  secure: !IS_DEVELOPMENT,
-  signed: true,
-};
 
 /**
  * Access token cookie configuration

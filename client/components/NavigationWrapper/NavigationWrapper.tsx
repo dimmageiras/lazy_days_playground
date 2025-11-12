@@ -1,73 +1,83 @@
 import type { JSX } from "react";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
+import type { NavigateFunction } from "react-router";
 import { useNavigate } from "react-router";
 
 /**
  * Props interface for the NavigationWrapper component
  */
 interface NavigationWrapperProps {
-  /**
-   * Render function that receives a memoized navigation callback.
-   * This function should return a clickable element that uses the callback.
-   */
-  children: (navigateTo: () => void) => JSX.Element;
-  /** Whether to replace the current history entry instead of pushing a new one */
-  shouldReplace?: boolean;
-  /** Target route to navigate to */
-  to: string;
+  /** Render function that receives the navigate function from React Router */
+  children: (navigate: NavigateFunction) => JSX.Element;
 }
 
 /**
- * A render prop component that provides optimized navigation functionality to child components.
- * Uses memoization to prevent unnecessary re-renders and ensure consistent navigation behavior.
- * Useful for creating custom navigation elements without direct router dependencies.
+ * A render prop component that provides React Router's navigate function to child components.
+ * This component enables custom clickable elements or components to access navigation
+ * functionality without directly using the useNavigate hook themselves.
  *
  * @example
  * ```tsx
- * // Basic button navigation
- * <NavigationWrapper to="/settings">
- *   {(navigateTo) => (
- *     <button onClick={navigateTo} type="button">
- *       Settings
- *     </button>
- *   )}
- * </NavigationWrapper>
+ * import { NavigationWrapper } from '@client/components/NavigationWrapper';
  *
- * // Custom element with history replacement
- * <NavigationWrapper shouldReplace to="/profile">
- *   {(navigateTo) => (
- *     <div
- *       onClick={navigateTo}
- *       role="button"
- *       tabIndex={0}
- *     >
- *       Profile
- *     </div>
- *   )}
- * </NavigationWrapper>
+ * // Create a custom clickable card with navigation
+ * const NavigableCard = () => (
+ *   <NavigationWrapper>
+ *     {(navigate) => (
+ *       <div
+ *         className="card"
+ *         onClick={() => navigate('/dashboard')}
+ *         role="button"
+ *       >
+ *         Click to go to Dashboard
+ *       </div>
+ *     )}
+ *   </NavigationWrapper>
+ * );
+ *
+ * // Navigate with options (replace history)
+ * const SettingsButton = () => (
+ *   <NavigationWrapper>
+ *     {(navigate) => (
+ *       <button
+ *         onClick={() => navigate('/settings', { replace: true })}
+ *       >
+ *         Go to Settings
+ *       </button>
+ *     )}
+ *   </NavigationWrapper>
+ * );
+ *
+ * // Navigate with state
+ * const ProductCard = ({ product }) => (
+ *   <NavigationWrapper>
+ *     {(navigate) => (
+ *       <article
+ *         className="product-card"
+ *         onClick={() => navigate(`/product/${product.id}`, {
+ *           state: { from: 'catalog' }
+ *         })}
+ *       >
+ *         <h3>{product.name}</h3>
+ *         <p>{product.description}</p>
+ *       </article>
+ *     )}
+ *   </NavigationWrapper>
+ * );
  * ```
  *
  * @param props - The NavigationWrapper component props
- * @param props.children - Render function that receives a memoized navigation callback
- * @param props.shouldReplace - Whether to replace current history entry (default: false)
- * @param props.to - Target route to navigate to
- * @returns JSX.Element - The memoized child component with navigation functionality
+ * @param props.children - Render function that receives the navigate function and returns JSX
+ * @returns JSX.Element - The rendered result of the children function
  */
 const NavigationWrapper = ({
   children,
-  shouldReplace = false,
-  to,
 }: NavigationWrapperProps): JSX.Element => {
   const navigate = useNavigate();
 
-  const navigateTo = useCallback((): void => {
-    navigate(to, { replace: shouldReplace });
-  }, [navigate, shouldReplace, to]);
-
-  const memoizedChildren = useMemo(
-    () => children(navigateTo),
-    [children, navigateTo]
-  );
+  const memoizedChildren = useMemo(() => {
+    return children(navigate);
+  }, [children, navigate]);
 
   return <>{memoizedChildren}</>;
 };

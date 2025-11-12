@@ -24,6 +24,8 @@ import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
+  const { CHECK_EMAIL } = USER_ENDPOINTS;
+
   const { handleAuthError } = AuthClientHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
@@ -31,7 +33,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
     HTTP_STATUS;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
-    `/${USER_ENDPOINTS.CHECK_EMAIL}`,
+    `/${CHECK_EMAIL}`,
     {
       config: {
         rateLimit: USER_RATE_LIMIT,

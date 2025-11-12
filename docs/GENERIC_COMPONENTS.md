@@ -35,22 +35,48 @@ This document provides a comprehensive guide to all generic components available
 
 ### NavigationWrapper
 
-A render prop component that provides navigation functionality to child components, useful for creating custom clickable elements.
+A render prop component that provides React Router's navigate function to child components, enabling custom clickable elements or components to access navigation functionality without directly using the useNavigate hook themselves.
 
 **Props:**
 
-- `children: (navigateTo: () => void) => JSX.Element` - Render function that receives navigation callback
-- `to: string` - Destination route
-- `shouldReplace?: boolean` - Replace current history entry (default: false)
+- `children: (navigate: NavigateFunction) => JSX.Element` - Render function that receives the navigate function from React Router
 
 **Usage Examples:**
 
 ```tsx
-<NavigationWrapper to="/settings" shouldReplace>
-  {(navigateTo) => (
-    <button onClick={navigateTo} className="custom-button">
+// Create a custom clickable card with navigation
+<NavigationWrapper>
+  {(navigate) => (
+    <div
+      className="card"
+      onClick={() => navigate('/dashboard')}
+      role="button"
+    >
+      Click to go to Dashboard
+    </div>
+  )}
+</NavigationWrapper>
+
+// Navigate with options (replace history)
+<NavigationWrapper>
+  {(navigate) => (
+    <button onClick={() => navigate('/settings', { replace: true })}>
       Go to Settings
     </button>
+  )}
+</NavigationWrapper>
+
+// Navigate with state
+<NavigationWrapper>
+  {(navigate) => (
+    <article
+      className="product-card"
+      onClick={() => navigate(`/product/${productId}`, {
+        state: { from: 'catalog' }
+      })}
+    >
+      <h3>Product Name</h3>
+    </article>
   )}
 </NavigationWrapper>
 ```
@@ -512,7 +538,6 @@ A utility component for efficiently rendering lists with automatic key generatio
 - `DynamicElement` helper functions are memoized for optimal performance
 - `ListRenderer` uses stable keys to prevent unnecessary re-renders
 - `MediaCard` is memoized to prevent unnecessary re-renders when props haven't changed
-- `NavigationWrapper` uses `useCallback` and `useMemo` for optimization
 - `RadioButton` is memoized to prevent unnecessary re-renders when props haven't changed
 - Components use appropriate performance optimizations when needed
 

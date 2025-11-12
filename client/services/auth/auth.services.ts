@@ -3,6 +3,8 @@ import axios from "axios";
 import { AUTH_ENDPOINTS } from "@shared/constants/auth.constant";
 import { AUTH_BASE_URL } from "@shared/constants/base-urls.const";
 import type {
+  LogoutCreateData,
+  LogoutCreatePayload,
   SigninCreateData,
   SigninCreatePayload,
   SignupCreateData,
@@ -10,12 +12,12 @@ import type {
   VerifyAuthListData,
 } from "@shared/types/generated/auth.type";
 
-const { SIGNIN, SIGNUP, VERIFY_AUTH } = AUTH_ENDPOINTS;
 const BASE_URL = `/${AUTH_BASE_URL}` as const;
 
 const signin = async (
   payload: SigninCreatePayload
 ): Promise<SigninCreateData> => {
+  const { SIGNIN } = AUTH_ENDPOINTS;
   const url = `${BASE_URL}/${SIGNIN}` as const;
   const response = await axios.post<SigninCreateData>(url, payload);
 
@@ -25,6 +27,7 @@ const signin = async (
 const signup = async (
   payload: SignupCreatePayload
 ): Promise<SignupCreateData> => {
+  const { SIGNUP } = AUTH_ENDPOINTS;
   const url = `${BASE_URL}/${SIGNUP}` as const;
   const response = await axios.post<SignupCreateData>(url, payload);
 
@@ -32,6 +35,7 @@ const signup = async (
 };
 
 const verifyAuth = async (): Promise<VerifyAuthListData> => {
+  const { VERIFY_AUTH } = AUTH_ENDPOINTS;
   const url = `${BASE_URL}/${VERIFY_AUTH}` as const;
 
   const response = await axios.get<VerifyAuthListData>(url);
@@ -39,7 +43,19 @@ const verifyAuth = async (): Promise<VerifyAuthListData> => {
   return response.data;
 };
 
+const logout = async (
+  payload: LogoutCreatePayload
+): Promise<LogoutCreateData> => {
+  const { LOGOUT } = AUTH_ENDPOINTS;
+  const url = `${BASE_URL}/${LOGOUT}` as const;
+
+  const response = await axios.post<LogoutCreateData>(url, payload);
+
+  return response.data;
+};
+
 export const AuthService = {
+  logout,
   signin,
   signup,
   verifyAuth,

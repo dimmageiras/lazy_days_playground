@@ -10,9 +10,9 @@ const useClientSessionTrackedValue = <
   selector: TSelector
 ): Readonly<ClientSessionState[TSelector]> => {
   const clientSessionStore = useClientSessionContext();
-  const trackedStore = useTracked(clientSessionStore, selector);
+  const trackedValue = useTracked(clientSessionStore, selector);
 
-  return Object.freeze(trackedStore);
+  return Object.freeze(trackedValue);
 };
 
 export { useClientSessionTrackedValue };

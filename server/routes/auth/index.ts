@@ -1,11 +1,13 @@
 import type { FastifyInstance } from "fastify";
 
+import { logoutRoute } from "./logout/index.ts";
 import { signinRoute } from "./signin/index.ts";
 import { signupRoute } from "./signup/index.ts";
 import { verifyRoute } from "./verify/index.ts";
 import { verifyAuthRoute } from "./verify-auth/index.ts";
 
 const authRoutes = async (fastify: FastifyInstance): Promise<void> => {
+  await logoutRoute(fastify);
   await signinRoute(fastify);
   await signupRoute(fastify);
   await verifyAuthRoute(fastify);
