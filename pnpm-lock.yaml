@@ -18,8 +18,8 @@ importers:
         specifier: 10.3.0
         version: 10.3.0
       '@fastify/swagger':
-        specifier: 9.6.0
-        version: 9.6.0
+        specifier: 9.6.1
+        version: 9.6.1
       '@fastify/swagger-ui':
         specifier: 5.2.3
         version: 5.2.3
@@ -58,7 +58,7 @@ importers:
         version: 5.6.2
       fastify-zod-openapi:
         specifier: 5.5.0
-        version: 5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.0)(fastify@5.6.2)(zod@4.1.12)
+        version: 5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.1)(fastify@5.6.2)(zod@4.1.12)
       gel:
         specifier: 2.1.1
         version: 2.1.1
@@ -691,8 +691,8 @@ packages:
   '@fastify/swagger-ui@5.2.3':
     resolution: {integrity: sha512-e7ivEJi9EpFcxTONqICx4llbpB2jmlI+LI1NQ/mR7QGQnyDOqZybPK572zJtcdHZW4YyYTBHcP3a03f1pOh0SA==}
 
-  '@fastify/swagger@9.6.0':
-    resolution: {integrity: sha512-qYsQtaWgcVTh7V9OVnbtzpo7hHXS01utWeahs43XETgTTF+iYq7u8NKNZbuoLxj+IsluZ2vjWsQLTFOnWiuCbg==}
+  '@fastify/swagger@9.6.1':
+    resolution: {integrity: sha512-fKlpJqFMWoi4H3EdUkDaMteEYRCfQMEkK0HJJ0eaf4aRlKd8cbq0pVkOfXDXmtvMTXYcnx3E+l023eFDBsA1HA==}
 
   '@floating-ui/core@1.7.3':
     resolution: {integrity: sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==}
@@ -4847,7 +4847,7 @@ snapshots:
       rfdc: 1.4.1
       yaml: 2.8.1
 
-  '@fastify/swagger@9.6.0':
+  '@fastify/swagger@9.6.1':
     dependencies:
       fastify-plugin: 5.1.0
       json-schema-resolver: 3.0.0
@@ -6584,7 +6584,7 @@ snapshots:
 
   fastify-plugin@5.1.0: {}
 
-  fastify-zod-openapi@5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.0)(fastify@5.6.2)(zod@4.1.12):
+  fastify-zod-openapi@5.5.0(@fastify/swagger-ui@5.2.3)(@fastify/swagger@9.6.1)(fastify@5.6.2)(zod@4.1.12):
     dependencies:
       '@fastify/error': 4.2.0
       fast-json-stringify: 6.1.1
@@ -6593,7 +6593,7 @@ snapshots:
       zod: 4.1.12
       zod-openapi: 5.4.3(zod@4.1.12)
     optionalDependencies:
-      '@fastify/swagger': 9.6.0
+      '@fastify/swagger': 9.6.1
       '@fastify/swagger-ui': 5.2.3
 
   fastify@5.6.2:
