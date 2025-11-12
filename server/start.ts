@@ -1,4 +1,5 @@
 import cookieFastify from "@fastify/cookie";
+import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
@@ -30,7 +31,9 @@ import {
   MODES,
   PORT,
 } from "../shared/constants/root-env.constant.ts";
+import { TIMING } from "../shared/constants/timing.constant.ts";
 import { ObjectUtilsHelper } from "../shared/helpers/object-utils.helper.ts";
+import { CSP_DIRECTIVES } from "./constants/csp.constant.ts";
 import { HTTP_STATUS } from "./constants/http-status.constant.ts";
 import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
@@ -41,6 +44,8 @@ import { authRoutes } from "./routes/auth/index.ts";
 import { userRoutes } from "./routes/user/index.ts";
 
 const { PRODUCTION, TYPE_GENERATOR } = MODES;
+const { YEARS_ONE_IN_S } = TIMING;
+
 const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
@@ -60,6 +65,20 @@ app.setSerializerCompiler(serializerCompiler);
 await app.register(fastifyZodOpenApiPlugin);
 
 if (MODE !== TYPE_GENERATOR) {
+  await app.register(helmet, {
+    contentSecurityPolicy:
+      MODE !== PRODUCTION ? false : { directives: CSP_DIRECTIVES },
+    // Disabled in development to allow React DevTools to work properly
+    // DevTools requires cross-origin embedding which COEP blocks
+    crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+    hsts: {
+      includeSubDomains: true,
+      maxAge: YEARS_ONE_IN_S,
+      preload: true,
+    },
+  });
+  log.info("✅ Helmet security headers registered");
+
   await app.register(cookieFastify, {
     parseOptions: {
       httpOnly: true,

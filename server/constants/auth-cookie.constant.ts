@@ -22,7 +22,7 @@ const ACCESS_TOKEN_COOKIE_CONFIG = {
 
 /**
  * Gel PKCE verifier cookie configuration
- * Short-lived token for PKCE verification (15 minutes)
+ * Short-lived token for PKCE verification (10 minutes)
  */
 const GEL_PKCE_VERIFIER_COOKIE_CONFIG = {
   ...BASE_COOKIE_CONFIG,

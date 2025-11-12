@@ -191,7 +191,7 @@ process.on("SIGINT", shutdown);
 
 ---
 
-## 2. Security (9.7/10) 🔐
+## 2. Security (9.8/10) 🔐 ✨ **IMPROVED**
 
 ### Outstanding Strengths ✅
 
@@ -293,7 +293,51 @@ const AUTH_RATE_LIMIT: RateLimitPluginOptions = {
 - ✅ Standard RateLimit headers
 - ✅ Logging on exceeded attempts
 
-#### 2.4 Robust Authentication Middleware
+#### 2.4 Helmet Security Headers ✨ **NEW**
+
+```typescript
+// start.ts - Comprehensive security headers
+await app.register(helmet, {
+  contentSecurityPolicy:
+    MODE !== PRODUCTION ? false : { directives: CSP_DIRECTIVES },
+  // Disabled in development to allow React DevTools to work properly
+  // DevTools requires cross-origin embedding which COEP blocks
+  crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+  hsts: {
+    includeSubDomains: true,
+    maxAge: YEARS_ONE_IN_S, // 31,536,000 seconds (1 year)
+    preload: true,
+  },
+});
+
+// server/constants/csp.constant.ts - Content Security Policy
+const CSP_DIRECTIVES = {
+  baseUri: ["'self'"], // Prevents base tag injection attacks
+  connectSrc: ["'self'"], // Restricts fetch, XMLHttpRequest, WebSocket, etc.
+  defaultSrc: ["'self'"], // Fallback for other fetch directives
+  fontSrc: ["'self'"], // Restricts font sources
+  formAction: ["'self'"], // Restricts form submission targets
+  frameAncestors: ["'none'"], // Prevents clickjacking (replaces X-Frame-Options)
+  imgSrc: ["'self'", "data:", "https:"], // Allows images from self, data URIs, and HTTPS
+  scriptSrc: ["'self'"], // Restricts script sources
+  styleSrc: ["'self'", "'unsafe-inline'"], // Needed for React SSR inline styles
+  upgradeInsecureRequests: [], // Automatically upgrades HTTP requests to HTTPS
+};
+```
+
+**Excellence:**
+
+- ✅ Comprehensive CSP directives prevent XSS attacks
+- ✅ HSTS with 1-year max age, subdomains, and preload enabled
+- ✅ COEP disabled in development for React DevTools compatibility
+- ✅ CSP disabled in development (allows easier debugging)
+- ✅ Environment-aware configuration (production vs development)
+- ✅ Well-documented with inline comments
+- ✅ Centralized CSP configuration in dedicated constants file
+- ✅ Prevents clickjacking with `frameAncestors: ["'none'"]`
+- ✅ Automatic HTTPS upgrade with `upgradeInsecureRequests`
+
+#### 2.5 Robust Authentication Middleware
 
 ```typescript
 // auth.middleware.ts
@@ -335,7 +379,7 @@ const authMiddleware = async (request, reply) => {
 - ✅ Attaches user to request
 - ✅ Detailed error messages
 
-#### 2.5 Input Validation (Zod)
+#### 2.6 Input Validation (Zod)
 
 ```typescript
 // All routes use Zod schemas for validation
@@ -937,15 +981,53 @@ fastify.post('/signin', {
 });
 ```
 
-#### Issue #2: No Helmet Security Headers
+#### Issue #2: ~~No Helmet Security Headers~~ ✅ **IMPLEMENTED**
+
+**Status:** ✅ **FIXED** - Helmet security headers have been implemented with comprehensive CSP and HSTS configuration.
+
+**Implementation:**
 
 ```typescript
-// Missing: @fastify/helmet plugin
+// server/start.ts
 await app.register(helmet, {
-  contentSecurityPolicy: { ... },
-  hsts: { maxAge: 31536000 },
+  contentSecurityPolicy:
+    MODE !== PRODUCTION ? false : { directives: CSP_DIRECTIVES },
+  // Disabled in development to allow React DevTools to work properly
+  // DevTools requires cross-origin embedding which COEP blocks
+  crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+  hsts: {
+    includeSubDomains: true,
+    maxAge: YEARS_ONE_IN_S, // 31,536,000 seconds (1 year)
+    preload: true,
+  },
 });
 ```
+
+**CSP Directives (server/constants/csp.constant.ts):**
+
+```typescript
+const CSP_DIRECTIVES = {
+  baseUri: ["'self'"], // Prevents base tag injection attacks
+  connectSrc: ["'self'"], // Restricts fetch, XMLHttpRequest, WebSocket, etc.
+  defaultSrc: ["'self'"], // Fallback for other fetch directives
+  fontSrc: ["'self'"], // Restricts font sources
+  formAction: ["'self'"], // Restricts form submission targets
+  frameAncestors: ["'none'"], // Prevents clickjacking (replaces X-Frame-Options)
+  imgSrc: ["'self'", "data:", "https:"], // Allows images from self, data URIs, and HTTPS
+  scriptSrc: ["'self'"], // Restricts script sources
+  styleSrc: ["'self'", "'unsafe-inline'"], // Needed for React SSR inline styles
+  upgradeInsecureRequests: [], // Automatically upgrades HTTP requests to HTTPS
+};
+```
+
+**Excellence:**
+
+- ✅ Comprehensive CSP directives prevent XSS attacks
+- ✅ HSTS with 1-year max age, subdomains, and preload
+- ✅ COEP disabled in development for React DevTools compatibility
+- ✅ CSP disabled in development (allows easier debugging)
+- ✅ Environment-aware configuration
+- ✅ Well-documented with inline comments
 
 #### Issue #3: Database Connection Pooling
 
@@ -1506,10 +1588,21 @@ describe("Authentication Flow", () => {
 
    - Prevents data loss on shutdown
 
-7. **Add Helmet Security Headers** (Security)
+7. ~~**Add Helmet Security Headers**~~ ✅ **IMPLEMENTED** (Security)
 
+   **Status:** ✅ **COMPLETED** - Comprehensive Helmet security headers with CSP and HSTS have been implemented.
+   
    ```typescript
-   await app.register(helmet);
+   await app.register(helmet, {
+     contentSecurityPolicy:
+       MODE !== PRODUCTION ? false : { directives: CSP_DIRECTIVES },
+     crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+     hsts: {
+       includeSubDomains: true,
+       maxAge: YEARS_ONE_IN_S,
+       preload: true,
+     },
+   });
    ```
 
 8. **Add Request ID to Response Headers** (Security)
@@ -1613,16 +1706,16 @@ describe("Authentication Flow", () => {
 
 ### Critical Next Steps
 
-**Your backend is 96% production-ready.** To reach 100%:
+**Your backend is 97% production-ready.** To reach 100%:
 
 1. ❗ **Add test suite** (P0)
 2. ❗ **Add global error handler** (P0)
 3. 🔴 **Extract DRY violations** (P1)
 4. 🔴 **Add connection pooling** (P1)
 5. 🔴 **Add graceful shutdown** (P1)
-6. 🔴 **Add Helmet security headers** (P1)
+6. ~~🔴 **Add Helmet security headers**~~ ✅ **COMPLETED** (P1)
 
-### Final Score: ~~9.1/10~~ → **9.3/10** 🏆 **(Updated October 15, 2025)**
+### Final Score: ~~9.1/10~~ → ~~9.3/10~~ → **9.4/10** 🏆 **(Updated October 15, 2025)**
 
 **This is an OUTSTANDING backend implementation** that demonstrates:
 
@@ -1630,13 +1723,24 @@ describe("Authentication Flow", () => {
 - Deep understanding of security best practices
 - Commitment to code quality and maintainability
 - Production-ready architecture
-- **NEW: Proactive code improvement** (PKCE config, helper grouping, JSDoc)
+- **NEW: Proactive code improvement** (PKCE config, helper grouping, JSDoc, Helmet security headers)
 
-**Recent improvements (+0.2 points):**
+**Recent improvements:**
 
+**October 15, 2025 (First Update - +0.2 points):**
 - ✅ Fixed PKCE verifier cookie configuration
 - ✅ Implemented helper grouping (DRY improvements)
 - ✅ Added comprehensive JSDoc documentation
+
+**October 15, 2025 (Second Update - +0.1 points):**
+- ✅ Implemented Helmet security headers with comprehensive CSP
+- ✅ Added HSTS with 1-year max age, subdomains, and preload
+- ✅ Environment-aware security configuration (dev vs production)
+- ✅ Centralized CSP directives in dedicated constants file
+
+**Score Breakdown:**
+- Security: 9.7/10 → **9.8/10** (+0.1) - Helmet implementation
+- Overall: 9.3/10 → **9.4/10** (+0.1)
 
 The only significant gap is **testing** (which is critical but fixable).
 

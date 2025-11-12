@@ -14,6 +14,7 @@ const TIMING = Object.freeze({
   SECONDS_TEN_IN_S: 10,
   SECONDS_THIRTY_IN_MS: 30_000,
   SECONDS_TWO_IN_MS: 2_000,
+  YEARS_ONE_IN_S: 31_536_000,
 } as const);
 
 export { TIMING };
