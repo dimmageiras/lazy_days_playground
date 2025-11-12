@@ -36,7 +36,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
 
-  const { createAuth, createClient, getBaseUrl, handleAuthError } =
+  const { createAuth, getClient, getBaseUrl, handleAuthError } =
     AuthClientHelper;
   const { encryptData } = EncryptionHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
@@ -79,55 +79,50 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
         try {
           const { email, password } = request.body;
 
-          const client = createClient();
+          const client = getClient(fastify);
+          const { emailPasswordHandlers } = createAuth(client);
+          const baseUrl = getBaseUrl();
 
-          try {
-            const { emailPasswordHandlers } = createAuth(client);
-            const baseUrl = getBaseUrl();
+          const verifyUrl = `${baseUrl}/${AUTH_BASE_URL}/${VERIFY}`;
 
-            const verifyUrl = `${baseUrl}/${AUTH_BASE_URL}/${VERIFY}`;
+          const { signup } = emailPasswordHandlers;
 
-            const { signup } = emailPasswordHandlers;
+          const result = await signup(email, password, verifyUrl);
 
-            const result = await signup(email, password, verifyUrl);
+          if (result.status === "complete") {
+            // Encrypt the token before storing in cookie
+            const encryptedToken = await encryptData(
+              result.tokenData.auth_token
+            );
 
-            if (result.status === "complete") {
-              // Encrypt the token before storing in cookie
-              const encryptedToken = await encryptData(
-                result.tokenData.auth_token
-              );
+            reply.setCookie(
+              ACCESS_TOKEN,
+              encryptedToken,
+              ACCESS_TOKEN_COOKIE_CONFIG
+            );
 
-              reply.setCookie(
-                ACCESS_TOKEN,
-                encryptedToken,
-                ACCESS_TOKEN_COOKIE_CONFIG
-              );
+            const response: SignupCreateData = {
+              identity_id: result.tokenData.identity_id,
+              status: result.status,
+              timestamp: getCurrentISOTimestamp(),
+            };
 
-              const response: SignupCreateData = {
-                identity_id: result.tokenData.identity_id,
-                status: result.status,
-                timestamp: getCurrentISOTimestamp(),
-              };
+            return reply.status(OK).send(response);
+          } else {
+            reply.setCookie(
+              "gel-pkce-verifier",
+              result.verifier,
+              GEL_PKCE_VERIFIER_COOKIE_CONFIG
+            );
 
-              return reply.status(OK).send(response);
-            } else {
-              reply.setCookie(
-                "gel-pkce-verifier",
-                result.verifier,
-                GEL_PKCE_VERIFIER_COOKIE_CONFIG
-              );
+            const response: SignupCreateData = {
+              identity_id: null,
+              status: result.status,
+              timestamp: getCurrentISOTimestamp(),
+              verifier: result.verifier,
+            };
 
-              const response: SignupCreateData = {
-                identity_id: null,
-                status: result.status,
-                timestamp: getCurrentISOTimestamp(),
-                verifier: result.verifier,
-              };
-
-              return reply.status(OK).send(response);
-            }
-          } finally {
-            await client.close();
+            return reply.status(OK).send(response);
           }
         } catch (rawError) {
           const error =

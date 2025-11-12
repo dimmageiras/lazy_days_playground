@@ -12,6 +12,7 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-zod-openapi";
+import { createClient as createGelClient } from "gel";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
 
@@ -24,6 +25,7 @@ import {
 } from "../shared/constants/base-urls.const.ts";
 import {
   COOKIE_SECRET,
+  GEL_AUTH_BASE_URL,
   HOST,
   IS_DEVELOPMENT,
   LOG_LEVEL,
@@ -59,6 +61,14 @@ const app = fastify({
   loggerInstance: log,
   requestTimeout: SECONDS_TEN_IN_MS,
 });
+
+// Create a single Gel client instance for connection pooling
+const gelClient = createGelClient({
+  dsn: GEL_AUTH_BASE_URL,
+});
+
+// Decorate Fastify instance with the Gel client for reuse across requests
+app.decorate("gelClient", gelClient);
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
@@ -272,7 +282,40 @@ const startServer = async (): Promise<void> => {
     port: portNumbers(desiredPort, desiredPort + 100),
   });
 
+  // Graceful shutdown handler for Gel client connection pool
+  const shutdown = async (signal: string): Promise<void> => {
+    log.info(`Received ${signal}, closing Gel client connection pool...`);
+
+    try {
+      await gelClient.close();
+      log.info("✅ Gel client connection pool closed gracefully");
+    } catch (closeError) {
+      log.error(
+        closeError instanceof Error
+          ? `Failed to close Gel client: ${closeError.message}`
+          : "Failed to close Gel client"
+      );
+    }
+  };
+
+  // Register shutdown handlers
+  process.on("SIGTERM", () => {
+    shutdown("SIGTERM").finally(() => {
+      process.exit(0);
+    });
+  });
+
+  process.on("SIGINT", () => {
+    shutdown("SIGINT").finally(() => {
+      process.exit(0);
+    });
+  });
+
   try {
+    // Ensure the connection pool is ready before starting the server
+    await gelClient.ensureConnected();
+    log.info("✅ Gel database connection pool initialized");
+
     const address = await app.listen({ port: portToUse, host: HOST });
 
     log.info(`🚀 Server started in ${MODE} mode at ${address}`);
@@ -287,6 +330,15 @@ const startServer = async (): Promise<void> => {
     if (error instanceof Error) {
       log.error(error.message);
     }
+
+    // Close the Gel client connection pool on error
+    await gelClient.close().catch((closeError) => {
+      log.error(
+        closeError instanceof Error
+          ? `Failed to close Gel client: ${closeError.message}`
+          : "Failed to close Gel client"
+      );
+    });
 
     process.exit(1);
   }

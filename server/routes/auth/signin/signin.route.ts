@@ -39,7 +39,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
     UNAUTHORIZED,
   } = HTTP_STATUS;
 
-  const { createAuth, createClient, handleAuthError } = AuthClientHelper;
+  const { createAuth, getClient, handleAuthError } = AuthClientHelper;
   const { encryptData } = EncryptionHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
@@ -83,32 +83,27 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
         try {
           const { email, password } = request.body;
 
-          const client = createClient();
+          const client = getClient(fastify);
+          const { emailPasswordHandlers } = createAuth(client);
+          const { signin } = emailPasswordHandlers;
 
-          try {
-            const { emailPasswordHandlers } = createAuth(client);
-            const { signin } = emailPasswordHandlers;
+          const tokenData = await signin(email, password);
 
-            const tokenData = await signin(email, password);
+          // Encrypt the token before storing in cookie
+          const encryptedToken = await encryptData(tokenData.auth_token);
 
-            // Encrypt the token before storing in cookie
-            const encryptedToken = await encryptData(tokenData.auth_token);
+          reply.setCookie(
+            ACCESS_TOKEN,
+            encryptedToken,
+            ACCESS_TOKEN_COOKIE_CONFIG
+          );
 
-            reply.setCookie(
-              ACCESS_TOKEN,
-              encryptedToken,
-              ACCESS_TOKEN_COOKIE_CONFIG
-            );
+          const response: SigninCreateData = {
+            identity_id: tokenData.identity_id,
+            timestamp: getCurrentISOTimestamp(),
+          };
 
-            const response: SigninCreateData = {
-              identity_id: tokenData.identity_id,
-              timestamp: getCurrentISOTimestamp(),
-            };
-
-            return reply.status(OK).send(response);
-          } finally {
-            await client.close();
-          }
+          return reply.status(OK).send(response);
         } catch (rawError) {
           const error =
             rawError instanceof Error ? rawError : new Error(`${rawError}`);

@@ -1,6 +1,12 @@
+import type { Client } from "gel";
+
 import "fastify";
 
 declare module "fastify" {
+  interface FastifyInstance {
+    gelClient: Client;
+  }
+
   interface FastifyRequest {
     user?: {
       expiresAt: Date | null;

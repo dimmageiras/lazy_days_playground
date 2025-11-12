@@ -35,7 +35,7 @@ const verifyRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
 
-  const { createAuth, createClient, handleAuthError } = AuthClientHelper;
+  const { createAuth, getClient, handleAuthError } = AuthClientHelper;
   const { encryptData } = EncryptionHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
@@ -77,38 +77,33 @@ const verifyRoute = async (fastify: FastifyInstance): Promise<void> => {
         try {
           const { verificationToken, verifier } = request.body;
 
-          const client = createClient();
+          const client = getClient(fastify);
+          const { emailPasswordHandlers } = createAuth(client);
 
-          try {
-            const { emailPasswordHandlers } = createAuth(client);
+          const { verifyRegistration } = emailPasswordHandlers;
 
-            const { verifyRegistration } = emailPasswordHandlers;
+          const tokenData = await verifyRegistration(
+            verificationToken,
+            verifier
+          );
 
-            const tokenData = await verifyRegistration(
-              verificationToken,
-              verifier
-            );
+          // Encrypt the token before storing in cookie
+          const encryptedToken = await encryptData(tokenData.auth_token);
 
-            // Encrypt the token before storing in cookie
-            const encryptedToken = await encryptData(tokenData.auth_token);
+          reply.setCookie(
+            ACCESS_TOKEN,
+            encryptedToken,
+            ACCESS_TOKEN_COOKIE_CONFIG
+          );
 
-            reply.setCookie(
-              ACCESS_TOKEN,
-              encryptedToken,
-              ACCESS_TOKEN_COOKIE_CONFIG
-            );
+          reply.clearCookie("gel-pkce-verifier", BASE_COOKIE_CONFIG);
 
-            reply.clearCookie("gel-pkce-verifier", BASE_COOKIE_CONFIG);
+          const response: VerifyCreateData = {
+            identity_id: tokenData.identity_id,
+            timestamp: getCurrentISOTimestamp(),
+          };
 
-            const response: VerifyCreateData = {
-              identity_id: tokenData.identity_id,
-              timestamp: getCurrentISOTimestamp(),
-            };
-
-            return reply.status(OK).send(response);
-          } finally {
-            await client.close();
-          }
+          return reply.status(OK).send(response);
         } catch (rawError) {
           const error =
             rawError instanceof Error ? rawError : new Error(`${rawError}`);

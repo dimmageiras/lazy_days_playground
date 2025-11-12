@@ -1,10 +1,9 @@
+import type { FastifyInstance } from "fastify";
 import type { Client } from "gel";
-import { createClient as createGelClient } from "gel";
 
 import type { GelAuthInstance } from "@server/plugins/gel-auth-fastify";
 
 import {
-  GEL_AUTH_BASE_URL,
   HOST,
   IS_DEVELOPMENT,
   PORT,
@@ -18,10 +17,15 @@ const createAuth = (client: Client): GelAuthInstance => {
   return createGelAuth(client);
 };
 
-const createClient = (): Client => {
-  return createGelClient({
-    dsn: GEL_AUTH_BASE_URL,
-  });
+/**
+ * Gets the Gel client from the Fastify instance.
+ * The client is created once at startup and reused across all requests for connection pooling.
+ *
+ * @param fastify - The Fastify instance decorated with gelClient
+ * @returns The shared Gel client instance
+ */
+const getClient = (fastify: FastifyInstance): Client => {
+  return fastify.gelClient;
 };
 
 const getBaseUrl = (): string => {
@@ -32,7 +36,7 @@ const getBaseUrl = (): string => {
 
 export const AuthClientHelper = {
   createAuth,
-  createClient,
+  getClient,
   getBaseUrl,
   handleAuthError,
 };
