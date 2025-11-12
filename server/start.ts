@@ -44,7 +44,7 @@ import { authRoutes } from "./routes/auth/index.ts";
 import { userRoutes } from "./routes/user/index.ts";
 
 const { PRODUCTION, TYPE_GENERATOR } = MODES;
-const { YEARS_ONE_IN_S } = TIMING;
+const { SECONDS_TEN_IN_MS, YEARS_ONE_IN_S } = TIMING;
 
 const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
@@ -57,6 +57,7 @@ let fastifyWithSwagger = null as FastifyInstance | null;
 const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
   loggerInstance: log,
+  requestTimeout: SECONDS_TEN_IN_MS,
 });
 
 app.setValidatorCompiler(validatorCompiler);
@@ -66,8 +67,9 @@ await app.register(fastifyZodOpenApiPlugin);
 
 if (MODE !== TYPE_GENERATOR) {
   await app.register(helmet, {
-    contentSecurityPolicy:
-      MODE !== PRODUCTION ? false : { directives: CSP_DIRECTIVES },
+    contentSecurityPolicy: IS_DEVELOPMENT
+      ? false
+      : { directives: CSP_DIRECTIVES },
     // Disabled in development to allow React DevTools to work properly
     // DevTools requires cross-origin embedding which COEP blocks
     crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
@@ -146,7 +148,8 @@ await app.register(async (fastify: FastifyInstance) => {
       },
       uiHooks: {
         onRequest: (request, reply, next) => {
-          if (request.url.endsWith("/json")) {
+          // Allow all requests under the swagger route prefix (UI, assets, JSON spec)
+          if (request.url.startsWith(routePrefix)) {
             next();
 
             return;
@@ -154,16 +157,17 @@ await app.register(async (fastify: FastifyInstance) => {
 
           const referer = request.headers.referer;
 
-          if (referer && referer.includes(request.hostname)) {
-            next();
+          // Block requests not from same origin
+          if (!referer || !referer.includes(request.hostname)) {
+            reply.code(NOT_FOUND).send({
+              error: `No routes matched location "${request.url}"`,
+              statusCode: NOT_FOUND,
+            });
 
             return;
           }
 
-          reply.code(NOT_FOUND).send({
-            error: `No routes matched location "${request.url}"`,
-            statusCode: NOT_FOUND,
-          });
+          next();
         },
         preHandler: (_request, _reply, next) => {
           next();

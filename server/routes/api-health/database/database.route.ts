@@ -22,9 +22,9 @@ import { HEALTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
-
   const { MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } = HTTP_STATUS;
+
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${API_HEALTH_ENDPOINTS.DATABASE}`,

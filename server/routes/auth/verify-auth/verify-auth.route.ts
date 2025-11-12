@@ -15,9 +15,9 @@ import { authMiddleware } from "../../../middleware/auth.middleware.ts";
 
 const verifyAuthRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { VERIFY_AUTH } = AUTH_ENDPOINTS;
+  const { OK, UNAUTHORIZED } = HTTP_STATUS;
 
   const { getCurrentISOTimestamp } = DateHelper;
-  const { OK, UNAUTHORIZED } = HTTP_STATUS;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${VERIFY_AUTH}`,

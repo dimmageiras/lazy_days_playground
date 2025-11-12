@@ -24,13 +24,12 @@ import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
+  const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
+    HTTP_STATUS;
   const { CHECK_EMAIL } = USER_ENDPOINTS;
 
   const { handleAuthError } = AuthClientHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
-
-  const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
-    HTTP_STATUS;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
     `/${CHECK_EMAIL}`,

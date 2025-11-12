@@ -31,15 +31,15 @@ import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { createAuth, createClient, getBaseUrl, handleAuthError } =
-    AuthClientHelper;
-  const { encryptData } = EncryptionHelper;
-  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
-
   const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
   const { SIGNUP, VERIFY } = AUTH_ENDPOINTS;
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
+
+  const { createAuth, createClient, getBaseUrl, handleAuthError } =
+    AuthClientHelper;
+  const { encryptData } = EncryptionHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()

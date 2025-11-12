@@ -29,13 +29,8 @@ import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { SIGNIN } = AUTH_ENDPOINTS;
-
-  const { createAuth, createClient, handleAuthError } = AuthClientHelper;
-  const { encryptData } = EncryptionHelper;
-  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
-
   const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
+  const { SIGNIN } = AUTH_ENDPOINTS;
   const {
     BAD_REQUEST,
     MANY_REQUESTS_ERROR,
@@ -43,6 +38,10 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
     SERVICE_UNAVAILABLE,
     UNAUTHORIZED,
   } = HTTP_STATUS;
+
+  const { createAuth, createClient, handleAuthError } = AuthClientHelper;
+  const { encryptData } = EncryptionHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()
