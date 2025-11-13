@@ -30,7 +30,7 @@ import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
+  const { ACCESS_TOKEN, PKCE_VERIFIER } = AUTH_COOKIE_NAMES;
   const { SIGNUP, VERIFY } = AUTH_ENDPOINTS;
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
@@ -113,7 +113,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
             return reply.status(OK).send(response);
           } else {
             reply.setCookie(
-              "gel-pkce-verifier",
+              PKCE_VERIFIER,
               result.verifier,
               GEL_PKCE_VERIFIER_COOKIE_CONFIG
             );

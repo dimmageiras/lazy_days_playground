@@ -8,6 +8,7 @@ const { DAYS_SEVEN_IN_S, MINUTES_FIFTEEN_IN_S, MINUTES_TEN_IN_S } = TIMING;
  */
 const AUTH_COOKIE_NAMES = Object.freeze({
   ACCESS_TOKEN: "access-token",
+  PKCE_VERIFIER: "pkce-verifier",
   REFRESH_TOKEN: "refresh-token",
 } as const);
 
