@@ -10,16 +10,16 @@ import type {
   HealthDatabaseListError,
 } from "@shared/types/generated/api-health.type";
 
-import { API_HEALTH_ENDPOINTS } from "../../../../shared/constants/api.constant.ts";
-import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
+import { API_HEALTH_ENDPOINTS } from "../../../../../shared/constants/api.constant.ts";
+import { GEL_DSN } from "../../../../../shared/constants/root-env.constant.ts";
 import {
   databaseHealthErrorSchema,
   databaseHealthSuccessSchema,
   databaseRateLimitErrorSchema,
-} from "../../../../shared/schemas/api-health/database-route.schema.ts";
-import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
-import { HEALTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
-import { RoutesHelper } from "../../../helpers/routes.helper.ts";
+} from "../../../../../shared/schemas/api-health/database-route.schema.ts";
+import { HTTP_STATUS } from "../../../../constants/http-status.constant.ts";
+import { HEALTH_RATE_LIMIT } from "../../../../constants/rate-limit.constant.ts";
+import { RoutesHelper } from "../../../../helpers/routes.helper.ts";
 
 const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { DATABASE } = API_HEALTH_ENDPOINTS;

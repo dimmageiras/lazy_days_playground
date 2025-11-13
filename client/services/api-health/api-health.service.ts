@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
-import { API_HEALTH_BASE_URL } from "@shared/constants/base-urls.const";
+import { API_HEALTH_BASE_URL } from "@shared/constants/base-urls.constant";
 import type {
   HealthDatabaseListData,
   HealthDatabaseListError,

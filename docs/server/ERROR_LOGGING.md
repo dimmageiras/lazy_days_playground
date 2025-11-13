@@ -50,13 +50,12 @@ try {
 
   log.error(
     {
+      email: request.body?.email,
       error: error.message,
       errorType: error.constructor.name,
+      identityId: request.user?.identity_id,
       requestId,
       stack: error.stack,
-      // Context
-      email: request.body?.email,
-      identityId: request.user?.identity_id,
     },
     "💥 Operation failed"
   );
@@ -147,10 +146,10 @@ app.setErrorHandler((error, request, reply) => {
 
 ```typescript
 {
-  error: string;      // Human-readable error message
   details?: string;   // Optional additional context
-  timestamp: string;  // ISO 8601 timestamp
+  error: string;      // Human-readable error message
   statusCode?: number;  // HTTP status code (optional)
+  timestamp: string;  // ISO 8601 timestamp
 }
 ```
 
@@ -169,10 +168,10 @@ app.setErrorHandler((error, request, reply) => {
 // ✅ Good
 log.error(
   {
+    email: request.body?.email,
     error: error.message,
     requestId,
     stack: error.stack,
-    email: request.body?.email,
   },
   "💥 Signin failed"
 );
@@ -241,13 +240,13 @@ Structured JSON logs:
 
 ```json
 {
-  "level": 50,
-  "time": 1699873800000,
-  "msg": "💥 Signin failed",
   "email": "user@example.com",
   "error": "Invalid password",
+  "level": 50,
+  "msg": "💥 Signin failed",
   "requestId": "abc123",
   "stack": "Error: Invalid password\n  at signin (...)"
+  "time": 1699873800000,
 }
 ```
 

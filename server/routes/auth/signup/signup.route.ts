@@ -12,7 +12,7 @@ import type {
 } from "@shared/types/generated/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
-import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.const.ts";
+import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.constant.ts";
 import {
   signupErrorSchema,
   signupRateLimitErrorSchema,

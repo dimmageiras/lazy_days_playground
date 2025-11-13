@@ -6,5 +6,9 @@
     "types": []
   },
   "include": ["./server/**/*.ts", "./shared/types/**/*.ts"],
-  "exclude": ["./node_modules", "./client/**/*"]
+  "exclude": [
+    "./node_modules",
+    "./client/**/*",
+    "./shared/types/generated/database.type.ts"
+  ]
 }

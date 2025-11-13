@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { USER_BASE_URL } from "@shared/constants/base-urls.const";
+import { USER_BASE_URL } from "@shared/constants/base-urls.constant";
 import { USER_ENDPOINTS } from "@shared/constants/user.constant";
 import type {
   CheckEmailCreateData,

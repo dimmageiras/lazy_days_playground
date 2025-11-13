@@ -98,3 +98,37 @@ issuer,
 created_at
 }
 } ORDER BY .created_at DESC;
+
+create CspReport
+CREATE TYPE default::CspReport {
+CREATE REQUIRED PROPERTY blocked_uri -> std::str;
+CREATE REQUIRED PROPERTY document_uri -> std::str;
+CREATE REQUIRED PROPERTY effective_directive -> std::str;
+CREATE REQUIRED PROPERTY original_policy -> std::str;
+CREATE REQUIRED PROPERTY referrer -> std::str {
+SET default := "";
+};
+CREATE REQUIRED PROPERTY status_code -> std::int16 {
+SET default := 0;
+};
+CREATE PROPERTY violated_directive -> std::str;
+CREATE PROPERTY disposition -> std::str {
+SET default := "enforce";
+};
+CREATE PROPERTY script_sample -> std::str;
+CREATE PROPERTY source_file -> std::str;
+CREATE PROPERTY line_number -> std::int32;
+CREATE PROPERTY column_number -> std::int32;
+CREATE PROPERTY user_agent -> std::str;
+CREATE PROPERTY ip_address -> std::str;
+CREATE REQUIRED PROPERTY created_at -> std::datetime {
+SET default := std::datetime_current();
+SET readonly := true;
+};
+};
+
+deleted the reports
+DELETE CspReport;
+
+drop the reports
+DROP TYPE default::CspReport;

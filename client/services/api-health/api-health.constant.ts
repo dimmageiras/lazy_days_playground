@@ -1,5 +1,5 @@
 import { API_HEALTH_ENDPOINTS } from "@shared/constants/api.constant";
-import { API_BASE_URL, HEALTH_URL } from "@shared/constants/base-urls.const";
+import { API_BASE_URL, HEALTH_URL } from "@shared/constants/base-urls.constant";
 
 const { DATABASE, SERVER } = API_HEALTH_ENDPOINTS;
 

@@ -1,5 +1,5 @@
 import { AUTH_ENDPOINTS } from "@shared/constants/auth.constant";
-import { AUTH_BASE_URL } from "@shared/constants/base-urls.const";
+import { AUTH_BASE_URL } from "@shared/constants/base-urls.constant";
 
 const { LOGOUT, SIGNIN, SIGNUP, VERIFY_AUTH } = AUTH_ENDPOINTS;
 

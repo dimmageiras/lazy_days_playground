@@ -9,7 +9,7 @@ import { useClickOutside } from "@client/hooks/useClickOutside";
 import {
   API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
-} from "@shared/constants/base-urls.const";
+} from "@shared/constants/base-urls.constant";
 import { HAS_RQDT, HAS_RRDT } from "@shared/constants/root-env.constant";
 
 import {

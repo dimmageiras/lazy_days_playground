@@ -68,7 +68,18 @@ echo "password" | gel --host host.docker.internal --tls-security=insecure -P 565
 
 ```bash
 echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin branch list
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin --branch BRANCH_NAME branch list
 ```
+
+**Note:** When using remote connections (with `--host`), you must specify which branch context to use with the `--branch` flag. Replace `BRANCH_NAME` with an existing branch (e.g., `main` or `temp`).
+
+**Create a Branch:**
+
+```bash
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin --branch EXISTING_BRANCH branch create NEW_BRANCH_NAME
+```
+
+**Note:** When using remote connections, you must specify an existing branch context with `--branch` to create a new branch.
 
 **Delete a Branch:**
 
@@ -77,6 +88,16 @@ echo -e "password\nYes" | gel --host host.docker.internal --tls-security=insecur
 ```
 
 **Note:** Branch deletion requires confirmation. The command above provides both the database password and the confirmation ("Yes") automatically.
+
+```bash
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin --branch OTHER_BRANCH branch drop TARGET_BRANCH --non-interactive
+```
+
+**Important:** You cannot delete the currently active branch. To delete a branch, you must connect to a different branch using `--branch`. For example, to delete `main`, connect to `temp` first:
+
+```bash
+echo "password" | gel --host host.docker.internal --tls-security=insecure -P 5656 --password-from-stdin --branch temp branch drop main --non-interactive
+```
 
 ---
 
