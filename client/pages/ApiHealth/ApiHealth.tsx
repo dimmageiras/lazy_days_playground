@@ -22,6 +22,8 @@ const ApiHealth = (): JSX.Element => {
     status: serverHealthStatus,
   } = useGetServerHealth();
 
+  const { DATABASE, SERVER } = API_HEALTH_ENDPOINTS;
+
   const isHealthyDatabaseHealth = databaseHealthStatus === "success";
   const isUnhealthyDatabaseHealth = databaseHealthStatus === "error";
   const isHealthyServerHealth = serverHealthStatus === "success";
@@ -38,7 +40,7 @@ const ApiHealth = (): JSX.Element => {
         <PageTitle aria-label="Page title" pageTitle="API Health Status" />
         <section aria-label="Health cards" className={styles["health-cards"]}>
           <Card
-            apiHealthService={API_HEALTH_ENDPOINTS.DATABASE}
+            apiHealthService={DATABASE}
             data={databaseHealthData}
             error={databaseHealthError}
             isHealthy={isHealthyDatabaseHealth}
@@ -46,7 +48,7 @@ const ApiHealth = (): JSX.Element => {
             status={databaseHealthStatus}
           />
           <Card
-            apiHealthService={API_HEALTH_ENDPOINTS.SERVER}
+            apiHealthService={SERVER}
             data={serverHealthData}
             error={serverHealthError}
             isHealthy={isHealthyServerHealth}

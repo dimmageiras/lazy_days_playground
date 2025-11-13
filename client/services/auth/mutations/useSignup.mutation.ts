@@ -14,6 +14,7 @@ const useSignup = (): UseMutationResult<
   SignupCreatePayload
 > => {
   const { SIGNUP } = AUTH_QUERY_KEYS;
+
   const { signup } = AuthService;
 
   return useMutation({

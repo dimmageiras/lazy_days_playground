@@ -14,7 +14,7 @@ const CSP_DIRECTIVES = {
   frameAncestors: ["'none'"], // Prevents clickjacking (replaces X-Frame-Options)
   imgSrc: ["'self'", "data:", "https:"], // Allows images from self, data URIs, and HTTPS
   objectSrc: ["'none'"], // Prevents embedding objects like Flash or Silverlight
-  reportUri: ["/api/csp-report"], // Optional: where to send CSP violations
+  reportUri: ["/api/health/csp-report"], // Where to send CSP violations
   scriptSrc: ["'self'"], // Restricts script sources
   styleSrc: ["'self'", "'unsafe-inline'"], // Needed for React SSR inline styles
   upgradeInsecureRequests: [], // Automatically upgrades HTTP requests to HTTPS

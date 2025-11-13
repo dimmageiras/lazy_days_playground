@@ -16,11 +16,13 @@ import { HEALTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const serverRoute = async (fastify: FastifyInstance): Promise<void> => {
+  const { SERVER } = API_HEALTH_ENDPOINTS;
   const { MANY_REQUESTS_ERROR, OK } = HTTP_STATUS;
+
   const { getCurrentISOTimestamp } = RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
-    `/${API_HEALTH_ENDPOINTS.SERVER}`,
+    `/${SERVER}`,
     {
       config: {
         rateLimit: HEALTH_RATE_LIMIT,

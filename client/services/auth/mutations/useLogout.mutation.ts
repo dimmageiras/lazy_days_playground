@@ -14,6 +14,7 @@ const useLogout = (): UseMutationResult<
   LogoutCreatePayload
 > => {
   const { LOGOUT } = AUTH_QUERY_KEYS;
+
   const { logout } = AuthService;
 
   return useMutation({

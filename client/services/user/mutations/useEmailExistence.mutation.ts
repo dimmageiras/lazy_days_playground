@@ -11,6 +11,7 @@ const useCheckEmailExists = (): UseMutationResult<
   string
 > => {
   const { CHECK_EMAIL } = USER_QUERY_KEYS;
+
   const { checkEmailExists } = UserService;
 
   return useMutation({
@@ -26,6 +27,7 @@ const useEmailExistence = (): {
   isUnchecked: boolean;
 } => {
   const { CHECK_EMAIL } = USER_QUERY_KEYS;
+
   const emailExistenceMutations = useMutationState({
     filters: { mutationKey: CHECK_EMAIL },
     select: (mutation) => {
