@@ -27,7 +27,6 @@ import {
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
-import { EncryptionHelper } from "../../../helpers/encryption.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
@@ -36,10 +35,14 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
 
-  const { createAuth, getClient, getBaseUrl, handleAuthError } =
-    AuthClientHelper;
-  const { encryptData } = EncryptionHelper;
-  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
+  const { createAuth, getClient, getBaseUrl } = AuthClientHelper;
+  const {
+    encryptData,
+    fastIdGen,
+    getCurrentISOTimestamp,
+    handleAuthError,
+    log,
+  } = RoutesHelper;
 
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()

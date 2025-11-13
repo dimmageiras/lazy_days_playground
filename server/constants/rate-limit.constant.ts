@@ -5,6 +5,7 @@ import crypto from "node:crypto";
 import { IS_DEVELOPMENT } from "../../shared/constants/root-env.constant.ts";
 import { TIMING } from "../../shared/constants/timing.constant.ts";
 import { ObjectUtilsHelper } from "../../shared/helpers/object-utils.helper.ts";
+import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 import { HTTP_STATUS } from "./http-status.constant.ts";
 
 const { MANY_REQUESTS_ERROR } = HTTP_STATUS;
@@ -14,6 +15,8 @@ const {
   MINUTES_ONE_IN_MS,
   SECONDS_ONE_IN_MS,
 } = TIMING;
+
+const { log } = PinoLogHelper;
 
 /**
  * Formats time remaining in a user-friendly way
@@ -33,7 +36,7 @@ const formatRetryTime = (seconds: number): string => {
 
 const createOnExceededHandler = (bucket: string) => {
   return (request: FastifyRequest): void => {
-    request.log.warn(
+    log.warn(
       {
         bucket,
         ip: request.ip,

@@ -45,14 +45,13 @@ import { apiHealthRoutes } from "./routes/api-health/index.ts";
 import { authRoutes } from "./routes/auth/index.ts";
 import { userRoutes } from "./routes/user/index.ts";
 
+const { NOT_FOUND } = HTTP_STATUS;
 const { PRODUCTION, TYPE_GENERATOR } = MODES;
 const { SECONDS_TEN_IN_MS, YEARS_ONE_IN_S } = TIMING;
 
 const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
-
-const { MANY_REQUESTS_ERROR, NOT_FOUND } = HTTP_STATUS;
 
 let fastifyWithSwagger = null as FastifyInstance | null;
 
@@ -103,24 +102,6 @@ if (MODE !== TYPE_GENERATOR) {
 
   await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
   log.info("✅ Rate limiting plugin registered");
-
-  // Add central logging for all 429 errors
-  app.addHook("onError", (request, reply, error, done) => {
-    if (reply.statusCode === MANY_REQUESTS_ERROR) {
-      log.warn(
-        {
-          error: error.message,
-          ip: request.ip,
-          route: request.url,
-          userAgent: request.headers["user-agent"],
-        },
-        "Rate limit exceeded (central log)"
-      );
-    }
-
-    done();
-  });
-  log.info("✅ Rate limit error hook registered");
 }
 
 await app.register(async (fastify: FastifyInstance) => {
@@ -230,6 +211,35 @@ await app.register(async (fastify: FastifyInstance) => {
   }
 });
 
+// Global error handler - catches unhandled errors across all routes
+app.setErrorHandler((error, request, reply) => {
+  const requestId = request.id || "unknown";
+
+  log.error(
+    {
+      error: error instanceof Error ? error.message : String(error),
+      method: request.method,
+      requestId,
+      stack: error instanceof Error ? error.stack : undefined,
+      statusCode: reply.statusCode || 500,
+      url: request.url,
+    },
+    "💥 Unhandled error in request"
+  );
+
+  // For 5xx errors, return sanitized response to hide internal details
+  if (reply.statusCode >= 500 || !reply.statusCode) {
+    return reply.status(500).send({
+      error: "Internal Server Error",
+      message: "An unexpected error occurred. Please try again later.",
+      statusCode: 500,
+    });
+  }
+
+  // For 4xx errors, pass through the original error
+  return reply.send(error);
+});
+
 if (MODE === TYPE_GENERATOR) {
   try {
     await app.ready();
@@ -259,9 +269,11 @@ if (MODE === TYPE_GENERATOR) {
     process.exit(0);
   } catch (error) {
     log.error(
-      error instanceof Error
-        ? `Failed to generate types: ${error.message}`
-        : "Failed to generate types"
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to generate types"
     );
     process.exit(1);
   }
@@ -291,9 +303,14 @@ const startServer = async (): Promise<void> => {
       log.info("✅ Gel client connection pool closed gracefully");
     } catch (closeError) {
       log.error(
-        closeError instanceof Error
-          ? `Failed to close Gel client: ${closeError.message}`
-          : "Failed to close Gel client"
+        {
+          error:
+            closeError instanceof Error
+              ? closeError.message
+              : String(closeError),
+          stack: closeError instanceof Error ? closeError.stack : undefined,
+        },
+        "💥 Failed to close Gel client"
       );
     }
   };
@@ -327,16 +344,25 @@ const startServer = async (): Promise<void> => {
       );
     }
   } catch (error) {
-    if (error instanceof Error) {
-      log.error(error.message);
-    }
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to start server"
+    );
 
     // Close the Gel client connection pool on error
     await gelClient.close().catch((closeError) => {
       log.error(
-        closeError instanceof Error
-          ? `Failed to close Gel client: ${closeError.message}`
-          : "Failed to close Gel client"
+        {
+          error:
+            closeError instanceof Error
+              ? closeError.message
+              : String(closeError),
+          stack: closeError instanceof Error ? closeError.stack : undefined,
+        },
+        "💥 Failed to close Gel client"
       );
     });
 

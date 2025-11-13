@@ -20,7 +20,6 @@ import {
 } from "../../../../shared/schemas/user/check-email-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { USER_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
-import { AuthClientHelper } from "../../../helpers/auth-client.helper.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
@@ -28,8 +27,8 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
     HTTP_STATUS;
   const { CHECK_EMAIL } = USER_ENDPOINTS;
 
-  const { handleAuthError } = AuthClientHelper;
-  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
+  const { fastIdGen, getCurrentISOTimestamp, handleAuthError, log } =
+    RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
     `/${CHECK_EMAIL}`,

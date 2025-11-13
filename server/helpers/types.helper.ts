@@ -89,7 +89,14 @@ const generateContractsForRoute = async ({
       await writeFile(generatedFilePath, content);
     }
   } catch (error) {
-    log.error(error);
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        filePath: generatedFilePath,
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to process generated file"
+    );
   }
 
   if (isLastRoute) {
@@ -99,7 +106,7 @@ const generateContractsForRoute = async ({
       await execAsync(`npx eslint --fix "${generatedDir}"`);
     } catch (_eslintError) {
       log.warn(
-        `⚠️  ESLint had warnings/errors for generated files (this is expected)`
+        "⚠️  ESLint had warnings/errors for generated files (this is expected)"
       );
     }
   }
