@@ -27,44 +27,63 @@ server/routes/<domain>/
 ## Route Template
 
 ```typescript
-import type { FastifyInstance } from 'fastify';
-import type { FastifyZodOpenApiSchema, FastifyZodOpenApiTypeProvider } from 'fastify-zod-openapi';
-import type { MyEndpointCreateData, MyEndpointCreateError } from '@shared/types/generated/<domain>.type';
+import type { FastifyInstance } from "fastify";
+import type {
+  FastifyZodOpenApiSchema,
+  FastifyZodOpenApiTypeProvider,
+} from "fastify-zod-openapi";
+import type {
+  MyEndpointCreateData,
+  MyEndpointCreateError,
+} from "@shared/types/generated/<domain>.type";
 
-import { MY_ENDPOINTS } from '../../../../shared/constants/<domain>.constant.ts';
+import { MY_ENDPOINTS } from "../../../../shared/constants/<domain>.constant.ts";
 import {
   myEndpointRequestSchema,
   myEndpointSuccessSchema,
   myEndpointErrorSchema,
-  myEndpointRateLimitErrorSchema
-} from '../../../../shared/schemas/<domain>/<endpoint>-route.schema.ts';
-import { HTTP_STATUS } from '../../../constants/http-status.constant.ts';
-import { MY_RATE_LIMIT } from '../../../constants/rate-limit.constant.ts';
-import { RoutesHelper } from '../../../helpers/routes.helper.ts';
+  myEndpointRateLimitErrorSchema,
+} from "../../../../shared/schemas/<domain>/<endpoint>-route.schema.ts";
+import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { MY_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 
 const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { MY_ENDPOINT } = MY_ENDPOINTS;
-  const { OK, BAD_REQUEST, MANY_REQUESTS_ERROR, SERVICE_UNAVAILABLE } = HTTP_STATUS;
+  const { OK, BAD_REQUEST, MANY_REQUESTS_ERROR, SERVICE_UNAVAILABLE } =
+    HTTP_STATUS;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
     `/${MY_ENDPOINT}`,
     {
       config: {
-        rateLimit: MY_RATE_LIMIT
+        rateLimit: MY_RATE_LIMIT,
       },
       schema: {
-        description: 'Detailed description of endpoint functionality',
-        summary: 'Short summary (2-5 words)',
-        tags: ['Domain Name'],
+        description: "Detailed description of endpoint functionality",
+        summary: "Short summary (2-5 words)",
+        tags: ["Domain Name"],
         body: myEndpointRequestSchema,
         response: {
-          [OK]: { content: { 'application/json': { schema: myEndpointSuccessSchema } } },
-          [BAD_REQUEST]: { content: { 'application/json': { schema: myEndpointErrorSchema } } },
-          [MANY_REQUESTS_ERROR]: { content: { 'application/json': { schema: myEndpointRateLimitErrorSchema } } },
-          [SERVICE_UNAVAILABLE]: { content: { 'application/json': { schema: myEndpointErrorSchema } } }
-        }
-      } satisfies FastifyZodOpenApiSchema
+          [OK]: {
+            content: {
+              "application/json": { schema: myEndpointSuccessSchema },
+            },
+          },
+          [BAD_REQUEST]: {
+            content: { "application/json": { schema: myEndpointErrorSchema } },
+          },
+          [MANY_REQUESTS_ERROR]: {
+            content: {
+              "application/json": { schema: myEndpointRateLimitErrorSchema },
+            },
+          },
+          [SERVICE_UNAVAILABLE]: {
+            content: { "application/json": { schema: myEndpointErrorSchema } },
+          },
+        },
+      } satisfies FastifyZodOpenApiSchema,
     },
     async (request, reply) => {
       const requestId = fastIdGen();
@@ -80,27 +99,31 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
         const response: MyEndpointCreateData = {
           success: true,
           data: result,
-          timestamp: getCurrentISOTimestamp()
+          timestamp: getCurrentISOTimestamp(),
         };
 
         return reply.status(OK).send(response);
       } catch (rawError) {
         // Normalize error
-        const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
+        const error =
+          rawError instanceof Error ? rawError : new Error(`${rawError}`);
 
         // Log with context
-        log.error({
-          error: error.message,
-          requestId,
-          stack: error.stack,
-          field: request.body?.field
-        }, '💥 My endpoint request failed');
+        log.error(
+          {
+            error: error.message,
+            requestId,
+            stack: error.stack,
+            field: request.body?.field,
+          },
+          "💥 My endpoint request failed"
+        );
 
         // Error response
         const errorResponse: MyEndpointCreateError = {
-          error: 'Operation failed',
+          error: "Operation failed",
           details: error.message,
-          timestamp: getCurrentISOTimestamp()
+          timestamp: getCurrentISOTimestamp(),
         };
 
         return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
@@ -117,39 +140,60 @@ export { myEndpointRoute };
 **Location**: `shared/schemas/<domain>/<endpoint>-route.schema.ts`
 
 ```typescript
-import { zObject, zString, zBoolean, zIsoDateTime } from '../../wrappers/zod.wrapper.ts';
-import { ZodSchemaHelper } from '../../../server/helpers/zod-schema.helper.ts';
+import {
+  zObject,
+  zString,
+  zBoolean,
+  zIsoDateTime,
+} from "../../wrappers/zod.wrapper.ts";
+import { ZodSchemaHelper } from "../../../server/helpers/zod-schema.helper.ts";
 
 const { createBaseRateLimitError } = ZodSchemaHelper;
 
 // Request
 const myRequestSchema = zObject({
   field: zString().min(1).meta({
-    description: 'Field description',
-    example: 'example value'
-  })
-}).meta({ description: 'Request body' });
+    description: "Field description",
+    example: "example value",
+  }),
+}).meta({ description: "Request body" });
 
 // Success
 const mySuccessSchema = zObject({
-  success: zBoolean().meta({ description: 'Success indicator', example: true }),
-  timestamp: zIsoDateTime().meta({ description: 'Timestamp', example: '2024-01-01T00:00:00Z' })
-}).meta({ description: 'Success response' });
+  success: zBoolean().meta({ description: "Success indicator", example: true }),
+  timestamp: zIsoDateTime().meta({
+    description: "Timestamp",
+    example: "2024-01-01T00:00:00Z",
+  }),
+}).meta({ description: "Success response" });
 
 // Error
 const myErrorSchema = zObject({
-  error: zString().meta({ description: 'Error message', example: 'Operation failed' }),
-  details: zString().optional().meta({ description: 'Error details', example: 'Details' }),
-  timestamp: zIsoDateTime().meta({ description: 'Timestamp', example: '2024-01-01T00:00:00Z' })
-}).meta({ description: 'Error response' });
+  error: zString().meta({
+    description: "Error message",
+    example: "Operation failed",
+  }),
+  details: zString()
+    .optional()
+    .meta({ description: "Error details", example: "Details" }),
+  timestamp: zIsoDateTime().meta({
+    description: "Timestamp",
+    example: "2024-01-01T00:00:00Z",
+  }),
+}).meta({ description: "Error response" });
 
 // Rate limit error
 const myRateLimitErrorSchema = createBaseRateLimitError({
-  detailsDescription: 'Rate limit details',
-  detailsExample: 'Rate limit exceeded'
+  detailsDescription: "Rate limit details",
+  detailsExample: "Rate limit exceeded",
 });
 
-export { myRequestSchema, mySuccessSchema, myErrorSchema, myRateLimitErrorSchema };
+export {
+  myRequestSchema,
+  mySuccessSchema,
+  myErrorSchema,
+  myRateLimitErrorSchema,
+};
 ```
 
 **See:** [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for schema patterns and best practices
@@ -159,12 +203,13 @@ export { myRequestSchema, mySuccessSchema, myErrorSchema, myRateLimitErrorSchema
 ### HTTP Methods
 
 ```typescript
-fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>()
-  .get(/*...*/)     // Retrieve data
-  .post(/*...*/)    // Create or perform action
-  .put(/*...*/)     // Update entire resource
-  .patch(/*...*/)   // Update partial resource
-  .delete(/*...*/)  // Remove resource
+fastify
+  .withTypeProvider<FastifyZodOpenApiTypeProvider>()
+  .get(/*...*/) // Retrieve data
+  .post(/*...*/) // Create or perform action
+  .put(/*...*/) // Update entire resource
+  .patch(/*...*/) // Update partial resource
+  .delete(/*...*/); // Remove resource
 ```
 
 ### Rate Limiting
@@ -183,12 +228,18 @@ Choose appropriate tier:
 ### Protected Routes
 
 ```typescript
-import { authMiddleware } from '../../../middleware/auth.middleware.ts';
+import { authMiddleware } from "../../../middleware/auth.middleware.ts";
 
-fastify.get('/protected', {
-  preHandler: [authMiddleware],  // Require authentication
-  schema: { /* ... */ }
-}, handler);
+fastify.get(
+  "/protected",
+  {
+    preHandler: [authMiddleware], // Require authentication
+    schema: {
+      /* ... */
+    },
+  },
+  handler
+);
 ```
 
 **See:** [SECURITY.md](./SECURITY.md) for authentication details
@@ -203,18 +254,21 @@ try {
   return reply.status(OK).send(result);
 } catch (rawError) {
   const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
-  
-  log.error({
-    error: error.message,
-    requestId,
-    stack: error.stack,
-    // Context fields
-  }, '💥 Operation failed');
-  
+
+  log.error(
+    {
+      error: error.message,
+      requestId,
+      stack: error.stack,
+      // Context fields
+    },
+    "💥 Operation failed"
+  );
+
   return reply.status(SERVICE_UNAVAILABLE).send({
-    error: 'Operation failed',
+    error: "Operation failed",
     details: error.message,
-    timestamp: getCurrentISOTimestamp()
+    timestamp: getCurrentISOTimestamp(),
   });
 }
 ```
@@ -223,15 +277,15 @@ try {
 
 ## HTTP Status Codes
 
-| Code | Constant                | Use Case                     |
-| ---- | ----------------------- | ---------------------------- |
-| 200  | `OK`                    | Success                      |
-| 400  | `BAD_REQUEST`           | Validation error             |
-| 401  | `UNAUTHORIZED`          | Authentication required      |
-| 403  | `FORBIDDEN`             | Insufficient permissions     |
-| 404  | `NOT_FOUND`             | Resource not found           |
-| 429  | `MANY_REQUESTS_ERROR`   | Rate limit exceeded          |
-| 503  | `SERVICE_UNAVAILABLE`   | Operation failed             |
+| Code | Constant              | Use Case                 |
+| ---- | --------------------- | ------------------------ |
+| 200  | `OK`                  | Success                  |
+| 400  | `BAD_REQUEST`         | Validation error         |
+| 401  | `UNAUTHORIZED`        | Authentication required  |
+| 403  | `FORBIDDEN`           | Insufficient permissions |
+| 404  | `NOT_FOUND`           | Resource not found       |
+| 429  | `MANY_REQUESTS_ERROR` | Rate limit exceeded      |
+| 503  | `SERVICE_UNAVAILABLE` | Operation failed         |
 
 ## Testing
 
@@ -259,6 +313,32 @@ done
 2. Navigate to `http://localhost:5173/api/docs/swagger`
 3. Find endpoint → "Try it out" → Fill parameters → "Execute"
 
+## Custom Content Type Parsers
+
+For non-standard content types (browser reports, webhooks), add a custom parser before route definition:
+
+```typescript
+fastify.addContentTypeParser(
+  "application/csp-report",
+  { parseAs: "string" },
+  (request, body, done) => {
+    try {
+      done(null, JSON.parse(body as string));
+    } catch (rawError) {
+      const error =
+        rawError instanceof Error ? rawError : new Error(String(rawError));
+      log.error(
+        { error: error.message, requestId: request.id },
+        "💥 Parse failed"
+      );
+      done(error, undefined);
+    }
+  }
+);
+```
+
+**Example**: `server/routes/api/reports/csp/create/create.route.ts`
+
 ## Best Practices
 
 1. ✅ **Type Safety**: Use generated types for requests/responses
@@ -268,22 +348,26 @@ done
 5. ✅ **Rate Limiting**: Apply to sensitive endpoints
 6. ✅ **Documentation**: Clear descriptions and examples
 7. ✅ **Security**: Never log sensitive data
+8. ✅ **Content Type Parsers**: Add custom parsers for non-standard content types
 
 ## Troubleshooting
 
 ### Routes Not Found (404)
+
 1. Check route registration in domain index
 2. Verify domain registered in `server/start.ts`
 3. Check URL path matches prefix + endpoint name
 4. Restart server
 
 ### Schema Validation Errors
+
 1. Verify schema definition and exports
 2. Check Zod types match expected data
 3. Test with Swagger UI
 4. Run `pnpm run typegen:server`
 
 ### Rate Limiting Issues
+
 1. Verify `config.rateLimit` is set
 2. Check rate limit constant import
 3. Include `MANY_REQUESTS_ERROR` response schema
@@ -292,6 +376,7 @@ done
 **See:** [RATE_LIMITING.md](./RATE_LIMITING.md)
 
 ### Logging Not Appearing
+
 1. Check `LOG_LEVEL` environment variable
 2. Verify `log` imported from `RoutesHelper`
 3. Check log structure (object + message)
@@ -305,6 +390,7 @@ When implementing a new route:
 - [ ] Define endpoint constants
 - [ ] Create request/response/error schemas
 - [ ] Include rate limit error schema
+- [ ] Add custom content type parser (if needed)
 - [ ] Implement route with type safety
 - [ ] Apply appropriate rate limiting
 - [ ] Add comprehensive error handling

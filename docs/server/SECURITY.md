@@ -62,6 +62,20 @@ await app.register(helmet, {
 
 **Note**: CSP disabled in development for React DevTools compatibility.
 
+### CSP Violation Reporting
+
+**Endpoint**: `POST /api/reports/csp-report` (see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md))
+
+Browsers automatically send violation reports when CSP policies are violated. Reports are stored in `default::CspReport` with IP tracking for monitoring security issues, policy misconfigurations, and potential XSS attacks.
+
+**Configuration**: Add `report-uri` directive in `server/constants/csp.constant.ts`
+
+```typescript
+const CSP_DIRECTIVES = {
+  reportUri: ["/api/reports/csp-report"],
+};
+```
+
 ## Cookie Security
 
 ### Configuration

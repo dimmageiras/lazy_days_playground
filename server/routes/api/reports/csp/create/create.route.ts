@@ -109,19 +109,19 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
         // Store CSP report in database
         await client.query(INSERT_CSP_REPORT_QUERY, {
           blocked_uri: cspReport["blocked-uri"],
-          column_number: cspReport["column-number"] ?? null,
-          disposition: cspReport["disposition"] ?? null,
+          column_number: cspReport["column-number"],
+          disposition: cspReport["disposition"],
           document_uri: cspReport["document-uri"],
           effective_directive: cspReport["effective-directive"],
           ip_address: request.ip,
-          line_number: cspReport["line-number"] ?? null,
+          line_number: cspReport["line-number"],
           original_policy: cspReport["original-policy"],
           referrer: cspReport["referrer"] || "",
-          source_file: cspReport["source-file"] ?? null,
-          status_code: cspReport["status-code"] || 0,
-          user_agent: request.headers["user-agent"] ?? null,
-          violated_directive: cspReport["violated-directive"] ?? null,
-        } satisfies Omit<CspReport, "created_at" | "id">);
+          source_file: cspReport["source-file"],
+          status_code: cspReport["status-code"],
+          user_agent: request.headers["user-agent"],
+          violated_directive: cspReport["violated-directive"],
+        } as Omit<CspReport, "created_at" | "id">);
 
         // Success response
         const response: ReportsCspReportCreateData = {

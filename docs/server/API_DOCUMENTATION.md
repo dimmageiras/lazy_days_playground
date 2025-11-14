@@ -328,10 +328,22 @@ bio: zString().max(500).optional().meta({ description: "...", example: "..." });
 2. Check for circular references
 3. Verify all schemas have required properties
 
+## Special Routes
+
+### CSP Violation Reporting
+
+**Route**: `POST /api/reports/csp-report`
+
+Receives CSP violation reports automatically sent by browsers. Uses custom `application/csp-report` content type parser, stores reports in `default::CspReport`, and applies `HEALTH_RATE_LIMIT`.
+
+**Implementation**: `server/routes/api/reports/csp/create/create.route.ts`  
+**Schemas**: `shared/schemas/api-health/csp-report-route.schema.ts`  
+**See**: [SECURITY.md](./SECURITY.md) for configuration
+
 ## Related Documentation
 
 - [ROUTE_IMPLEMENTATION.md](./ROUTE_IMPLEMENTATION.md) - Route implementation guide
-- [SECURITY.md](./SECURITY.md) - Security considerations
+- [SECURITY.md](./SECURITY.md) - Security considerations (includes CSP reporting)
 - [RATE_LIMITING.md](./RATE_LIMITING.md) - Rate limiting documentation
 - [ERROR_LOGGING.md](./ERROR_LOGGING.md) - Error logging patterns
 
