@@ -102,30 +102,48 @@ created_at
 create CspReport
 CREATE TYPE default::CspReport {
 CREATE REQUIRED PROPERTY blocked_uri -> std::str;
+CREATE PROPERTY column_number -> std::int32;
+CREATE REQUIRED PROPERTY created_at -> std::datetime { SET default := std::datetime_current(); SET readonly := true; };
+CREATE PROPERTY disposition -> std::str { SET default := "enforce"; };
 CREATE REQUIRED PROPERTY document_uri -> std::str;
 CREATE REQUIRED PROPERTY effective_directive -> std::str;
+CREATE PROPERTY ip_address -> std::str;
+CREATE PROPERTY line_number -> std::int32;
 CREATE REQUIRED PROPERTY original_policy -> std::str;
-CREATE REQUIRED PROPERTY referrer -> std::str {
-SET default := "";
-};
-CREATE REQUIRED PROPERTY status_code -> std::int16 {
-SET default := 0;
-};
-CREATE PROPERTY violated_directive -> std::str;
-CREATE PROPERTY disposition -> std::str {
-SET default := "enforce";
-};
+CREATE REQUIRED PROPERTY referrer -> std::str { SET default := ""; };
 CREATE PROPERTY script_sample -> std::str;
 CREATE PROPERTY source_file -> std::str;
-CREATE PROPERTY line_number -> std::int32;
-CREATE PROPERTY column_number -> std::int32;
+CREATE REQUIRED PROPERTY status_code -> std::int16 { SET default := 0; };
 CREATE PROPERTY user_agent -> std::str;
-CREATE PROPERTY ip_address -> std::str;
-CREATE REQUIRED PROPERTY created_at -> std::datetime {
-SET default := std::datetime_current();
-SET readonly := true;
+CREATE PROPERTY violated_directive -> std::str;
 };
-};
+
+create an easy CSP violation
+
+<div>
+  <script>
+    alert('This will trigger CSP!');
+  </script>
+</div>
+
+find CspReports
+SELECT default::CspReport {
+blocked_uri,
+document_uri,
+effective_directive,
+original_policy,
+referrer,
+status_code,
+violated_directive,
+disposition,
+script_sample,
+source_file,
+line_number,
+column_number,
+user_agent,
+ip_address,
+created_at
+} ORDER BY .created_at DESC;
 
 deleted the reports
 DELETE CspReport;

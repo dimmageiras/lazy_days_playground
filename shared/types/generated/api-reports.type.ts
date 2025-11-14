@@ -90,7 +90,7 @@ export interface ReportsCspReportCreatePayload {
      * The column number in the source file where the violation occurred
      * @example 15
      */
-    "column-number"?: number;
+    "column-number"?: number | null;
     /**
      * The URI of the document where the violation occurred
      * @example "https://example.com/page"
@@ -105,7 +105,7 @@ export interface ReportsCspReportCreatePayload {
      * The line number in the source file where the violation occurred
      * @example 42
      */
-    "line-number"?: number;
+    "line-number"?: number | null;
     /**
      * The original policy as specified by the Content-Security-Policy header
      * @example "default-src 'self'; script-src 'self'"
@@ -115,26 +115,26 @@ export interface ReportsCspReportCreatePayload {
      * The URL of the resource where the violation occurred
      * @example "https://example.com/script.js"
      */
-    "source-file"?: string;
+    "source-file"?: string | null;
     /**
      * The HTTP status code of the resource on which the violation occurred
      * @example 200
      */
-    "status-code"?: number;
+    "status-code": number;
     /**
      * The directive whose enforcement caused the violation (deprecated, use effective-directive)
      * @example "script-src 'self'"
      */
-    "violated-directive": string;
+    "violated-directive"?: string | null;
     /**
      * Whether the user agent enforced or only reported the policy
      * @example "enforce"
      */
-    disposition?: string;
+    disposition?: string | null;
     /**
      * The referrer of the document where the violation occurred
      * @example "https://example.com/"
      */
-    referrer?: string;
+    referrer: string;
   };
 }

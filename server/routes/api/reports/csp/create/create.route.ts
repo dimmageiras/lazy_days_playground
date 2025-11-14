@@ -8,6 +8,7 @@ import type {
   ReportsCspReportCreateData,
   ReportsCspReportCreateError,
 } from "@shared/types/generated/api-reports.type";
+import type { CspReport } from "@shared/types/generated/database.type";
 
 import { API_REPORTS_ENDPOINTS } from "../../../../../../shared/constants/api.constant.ts";
 import {
@@ -20,6 +21,7 @@ import { HTTP_STATUS } from "../../../../../constants/http-status.constant.ts";
 import { HEALTH_RATE_LIMIT } from "../../../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../../../helpers/auth-client.helper.ts";
 import { RoutesHelper } from "../../../../../helpers/routes.helper.ts";
+import { INSERT_CSP_REPORT_QUERY } from "./constants/insert-csp-report-query.constant.ts";
 
 const createRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { CREATE_CSP_REPORT } = API_REPORTS_ENDPOINTS;
@@ -105,40 +107,21 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
         const client = getClient(fastify);
 
         // Store CSP report in database
-        await client.query(
-          `
-          INSERT default::CspReport {
-            blocked_uri := <str>$blocked_uri,
-            document_uri := <str>$document_uri,
-            effective_directive := <str>$effective_directive,
-            original_policy := <str>$original_policy,
-            referrer := <str>$referrer,
-            status_code := <int16>$status_code,
-            violated_directive := <optional str>$violated_directive,
-            disposition := <optional str>$disposition,
-            source_file := <optional str>$source_file,
-            line_number := <optional int32>$line_number,
-            column_number := <optional int32>$column_number,
-            user_agent := <optional str>$user_agent,
-            ip_address := <optional str>$ip_address
-          }
-          `,
-          {
-            blocked_uri: cspReport["blocked-uri"],
-            column_number: cspReport["column-number"],
-            disposition: cspReport["disposition"],
-            document_uri: cspReport["document-uri"],
-            effective_directive: cspReport["effective-directive"],
-            ip_address: request.ip,
-            line_number: cspReport["line-number"],
-            original_policy: cspReport["original-policy"],
-            referrer: cspReport["referrer"] || "",
-            source_file: cspReport["source-file"],
-            status_code: cspReport["status-code"] || 0,
-            user_agent: request.headers["user-agent"],
-            violated_directive: cspReport["violated-directive"],
-          }
-        );
+        await client.query(INSERT_CSP_REPORT_QUERY, {
+          blocked_uri: cspReport["blocked-uri"],
+          column_number: cspReport["column-number"] ?? null,
+          disposition: cspReport["disposition"] ?? null,
+          document_uri: cspReport["document-uri"],
+          effective_directive: cspReport["effective-directive"],
+          ip_address: request.ip,
+          line_number: cspReport["line-number"] ?? null,
+          original_policy: cspReport["original-policy"],
+          referrer: cspReport["referrer"] || "",
+          source_file: cspReport["source-file"] ?? null,
+          status_code: cspReport["status-code"] || 0,
+          user_agent: request.headers["user-agent"] ?? null,
+          violated_directive: cspReport["violated-directive"] ?? null,
+        } satisfies Omit<CspReport, "created_at" | "id">);
 
         // Success response
         const response: ReportsCspReportCreateData = {

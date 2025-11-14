@@ -205,20 +205,20 @@ export namespace sys {
 export namespace $default {
   export interface CspReport extends std.$Object {
     "blocked_uri": string;
+    "column_number"?: number | null;
+    "created_at": Date;
+    "disposition"?: string | null;
     "document_uri": string;
     "effective_directive": string;
+    "ip_address"?: string | null;
+    "line_number"?: number | null;
     "original_policy": string;
     "referrer": string;
-    "status_code": number;
-    "violated_directive"?: string | null;
-    "disposition"?: string | null;
     "script_sample"?: string | null;
     "source_file"?: string | null;
-    "line_number"?: number | null;
-    "column_number"?: number | null;
+    "status_code": number;
     "user_agent"?: string | null;
-    "ip_address"?: string | null;
-    "created_at": Date;
+    "violated_directive"?: string | null;
   }
 }
 export type CspReport = $default.CspReport;

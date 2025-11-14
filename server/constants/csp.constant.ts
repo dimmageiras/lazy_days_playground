@@ -10,9 +10,9 @@ import { API_REPORTS_BASE_URL } from "../../shared/constants/base-urls.constant.
  */
 const CSP_DIRECTIVES = Object.freeze({
   baseUri: ["'self'"], // Prevents base tag injection attacks
-  connectSrc: ["'self'"], // Restricts fetch, XMLHttpRequest, WebSocket, etc.
+  connectSrc: ["'self'", "ws:", "wss:"], // Allow WebSocket connections for Vite HMR
   defaultSrc: ["'self'"], // Fallback for other fetch directives
-  fontSrc: ["'self'"], // Restricts font sources
+  fontSrc: ["'self'", "https://fonts.gstatic.com"], // Allow Google Fonts
   formAction: ["'self'"], // Restricts form submission targets
   frameAncestors: ["'none'"], // Prevents clickjacking (replaces X-Frame-Options)
   imgSrc: ["'self'", "data:", "https:"], // Allows images from self, data URIs, and HTTPS
@@ -20,8 +20,8 @@ const CSP_DIRECTIVES = Object.freeze({
   reportUri: [
     `${API_REPORTS_BASE_URL}/${API_REPORTS_ENDPOINTS.CREATE_CSP_REPORT}`,
   ], // Where to send CSP violations
-  scriptSrc: ["'self'"], // Restricts script sources
-  styleSrc: ["'self'", "'unsafe-inline'"], // Needed for React SSR inline styles
+  scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts for React Router SSR
+  styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Needed for React SSR inline styles and Google Fonts
   upgradeInsecureRequests: [], // Automatically upgrades HTTP requests to HTTPS
 } as const);
 

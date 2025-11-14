@@ -23,6 +23,16 @@ const cspReportRequestSchema = zObject({
       description: "The URI of the resource that was blocked from loading",
       example: "https://evil.example.com/malicious.js",
     }),
+    "column-number": zNumber().nullish().meta({
+      description:
+        "The column number in the source file where the violation occurred",
+      example: 15,
+    }),
+    disposition: zString().nullish().meta({
+      description:
+        "Whether the user agent enforced or only reported the policy",
+      example: "enforce",
+    }),
     "document-uri": zString().meta({
       description: "The URI of the document where the violation occurred",
       example: "https://example.com/page",
@@ -31,43 +41,33 @@ const cspReportRequestSchema = zObject({
       description: "The directive whose enforcement caused the violation",
       example: "script-src",
     }),
+    "line-number": zNumber().nullish().meta({
+      description:
+        "The line number in the source file where the violation occurred",
+      example: 42,
+    }),
     "original-policy": zString().meta({
       description:
         "The original policy as specified by the Content-Security-Policy header",
       example: "default-src 'self'; script-src 'self'",
     }),
-    referrer: zString().optional().meta({
+    referrer: zString().meta({
       description: "The referrer of the document where the violation occurred",
       example: "https://example.com/",
     }),
-    "status-code": zNumber().optional().meta({
+    "source-file": zString().nullish().meta({
+      description: "The URL of the resource where the violation occurred",
+      example: "https://example.com/script.js",
+    }),
+    "status-code": zNumber().meta({
       description:
         "The HTTP status code of the resource on which the violation occurred",
       example: 200,
     }),
-    "violated-directive": zString().meta({
+    "violated-directive": zString().nullish().meta({
       description:
         "The directive whose enforcement caused the violation (deprecated, use effective-directive)",
       example: "script-src 'self'",
-    }),
-    "source-file": zString().optional().meta({
-      description: "The URL of the resource where the violation occurred",
-      example: "https://example.com/script.js",
-    }),
-    "line-number": zNumber().optional().meta({
-      description:
-        "The line number in the source file where the violation occurred",
-      example: 42,
-    }),
-    "column-number": zNumber().optional().meta({
-      description:
-        "The column number in the source file where the violation occurred",
-      example: 15,
-    }),
-    disposition: zString().optional().meta({
-      description:
-        "Whether the user agent enforced or only reported the policy",
-      example: "enforce",
     }),
   }).meta({
     description: "Content Security Policy violation report",
