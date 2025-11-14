@@ -52,6 +52,8 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { MY_ENDPOINT } = MY_ENDPOINTS;
   const { OK, BAD_REQUEST, MANY_REQUESTS_ERROR, SERVICE_UNAVAILABLE } =
     HTTP_STATUS;
+
+  // Import only the helpers you need from RoutesHelper
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
@@ -116,7 +118,7 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
             stack: error.stack,
             field: request.body?.field,
           },
-          "💥 My endpoint request failed"
+          "💥 My endpoint request failed with error"
         );
 
         // Error response
@@ -262,7 +264,7 @@ try {
       stack: error.stack,
       // Context fields
     },
-    "💥 Operation failed"
+    "💥 Operation failed with error"
   );
 
   return reply.status(SERVICE_UNAVAILABLE).send({
@@ -348,7 +350,8 @@ fastify.addContentTypeParser(
 5. ✅ **Rate Limiting**: Apply to sensitive endpoints
 6. ✅ **Documentation**: Clear descriptions and examples
 7. ✅ **Security**: Never log sensitive data
-8. ✅ **Content Type Parsers**: Add custom parsers for non-standard content types
+8. ✅ **Success Responses**: Do NOT log successful operations - only log errors and warnings
+9. ✅ **Content Type Parsers**: Add custom parsers for non-standard content types
 
 ## Troubleshooting
 

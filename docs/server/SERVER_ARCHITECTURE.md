@@ -155,17 +155,52 @@ process.on("SIGTERM", async () => {
 });
 ```
 
-### Query Pattern
+### Query Patterns
+
+#### Using Shared Connection Pool
+
+Most routes should use the shared connection pool via `getClient(fastify)`:
 
 ```typescript
-// Always use parameterized queries
-await fastify.gelClient.query(
-  `
-  SELECT User { id, email }
-  FILTER .email = <str>$email
-`,
-  { email }
-);
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
+const { getClient } = RoutesHelper;
+
+// In route handler
+const client = getClient(fastify);
+await client.query(`SELECT User { id, email } FILTER .email = <str>$email`, {
+  email,
+});
+```
+
+**Use for:** Auth routes, API routes, most operations.
+
+#### Using Separate Connection
+
+Some routes need independent connections (health checks, email verification):
+
+```typescript
+import { createClient as createGelClient } from "gel";
+import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
+
+// In route handler
+const client = createGelClient({ dsn: GEL_DSN });
+try {
+  await client.query("SELECT 1 + 1");
+} finally {
+  await client.close(); // Always close separate connections
+}
+```
+
+**Use for:** Health checks, operations that need isolation from main pool.
+
+**Always use parameterized queries:**
+
+```typescript
+// ✅ SAFE
+await client.query(`SELECT User FILTER .email = <str>$email`, { email });
+
+// ❌ DANGEROUS
+await client.query(`SELECT User FILTER .email = '${email}'`);
 ```
 
 **See:** [GEL_DATABASE_GUIDE.md](../GEL_DATABASE_GUIDE.md)

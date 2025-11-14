@@ -97,7 +97,7 @@ const listRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId,
             stack: error.stack,
           },
-          "💥 CSP report list retrieval failed"
+          "💥 CSP report list retrieval failed with error"
         );
 
         // Error response

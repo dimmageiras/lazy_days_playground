@@ -5,19 +5,19 @@ import type {
 } from "fastify-zod-openapi";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
-import { DateHelper } from "../../../../shared/helpers/date.helper.ts";
 import {
   meErrorSchema,
   meSuccessSchema,
 } from "../../../../shared/schemas/auth/me-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 import { authMiddleware } from "../../../middleware/auth.middleware.ts";
 
 const verifyAuthRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { VERIFY_AUTH } = AUTH_ENDPOINTS;
   const { OK, UNAUTHORIZED } = HTTP_STATUS;
 
-  const { getCurrentISOTimestamp } = DateHelper;
+  const { getCurrentISOTimestamp } = RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${VERIFY_AUTH}`,

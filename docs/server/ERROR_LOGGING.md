@@ -96,10 +96,15 @@ log.warn(
 
 #### Info Logging
 
+Use `log.info` only for server initialization, configuration, and startup messages:
+
 ```typescript
 log.info("✅ Server started successfully");
-log.info({ requestId, userId }, "✅ Profile updated successfully");
+log.info("✅ Swagger plugins registered for API routes only");
+log.info({ address, mode }, "🚀 Server started");
 ```
+
+**Important**: Do NOT use `log.info` for successful route operations. Success responses should simply return the data without logging.
 
 ### Global Error Handler
 
@@ -215,10 +220,21 @@ const requestId = fastIdGen();
 Use emoji prefixes for quick visual scanning:
 
 - `💥` - Errors
-- `✅` - Success
+- `✅` - Success (server startup/config only, NOT route operations)
 - `🚀` - Server/service start
 - `🤖` - Configuration info
-- `!` - Warnings
+- `⚠️` - Warnings
+
+**Error message format:**
+
+```typescript
+// Standard pattern: "💥 [Operation] failed with error"
+log.error({ ... }, "💥 Signin request failed with error");
+log.error({ ... }, "💥 CSP reports clear failed with error");
+log.error({ ... }, "💥 Database health check failed with error");
+```
+
+Always end error messages with "failed with error" for consistency.
 
 ## Monitoring
 

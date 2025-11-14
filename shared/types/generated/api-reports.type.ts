@@ -7,6 +7,159 @@
  * ---------------------------------------------------------------
  */
 
+/** Successful CSP reports clear response */
+export interface ReportsCspClearDeleteData {
+  /**
+   * Number of CSP reports that were deleted
+   * @example 42
+   */
+  count: number;
+  /**
+   * Indicates successful deletion of all CSP reports
+   * @example true
+   */
+  success: boolean;
+  /**
+   * ISO timestamp when the reports were cleared
+   * @format date-time
+   * @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+   * @example "2024-01-01T00:00:00Z"
+   */
+  timestamp: string;
+}
+
+/**
+ * Base error response when rate limit is exceeded
+ * Error response when CSP reports clear fails
+ */
+export type ReportsCspClearDeleteError =
+  | {
+      /**
+       * Additional details about why the CSP reports clear rate limit was triggered
+       * @example "Too many clear requests submitted in a short time period"
+       */
+      details?: string;
+      /**
+       * Error type
+       * @example "Too Many Requests"
+       */
+      error: string;
+      /**
+       * Human-readable message
+       * @example "Rate limit exceeded. Try again in 30 seconds."
+       */
+      message: string;
+      /**
+       * Seconds until retry
+       * @exclusiveMin 0
+       * @max 9007199254740991
+       * @example 30
+       */
+      retryAfter: number;
+      /**
+       * HTTP status code
+       * @example 429
+       */
+      statusCode: 429;
+    }
+  | {
+      /**
+       * Additional error details
+       * @example "Database connection error"
+       */
+      details?: string;
+      /**
+       * Error message describing what went wrong
+       * @example "Failed to clear CSP reports"
+       */
+      error: string;
+      /**
+       * ISO timestamp when the error occurred
+       * @format date-time
+       * @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+       * @example "2024-01-01T00:00:00Z"
+       */
+      timestamp: string;
+    };
+
+/** Successful CSP report deletion response */
+export interface ReportsCspDeleteDeleteData {
+  /**
+   * Indicates successful deletion of the CSP report
+   * @example true
+   */
+  success: boolean;
+  /**
+   * ISO timestamp when the report was deleted
+   * @format date-time
+   * @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+   * @example "2024-01-01T00:00:00Z"
+   */
+  timestamp: string;
+}
+
+/**
+ * Error response when CSP report deletion fails
+ * Base error response when rate limit is exceeded
+ */
+export type ReportsCspDeleteDeleteError =
+  | {
+      /**
+       * Additional error details
+       * @example "Report not found"
+       */
+      details?: string;
+      /**
+       * Error message describing what went wrong
+       * @example "Failed to delete CSP report"
+       */
+      error: string;
+      /**
+       * ISO timestamp when the error occurred
+       * @format date-time
+       * @pattern ^(?:(?:\d\d[2468][048]|\d\d[13579][26]|\d\d0[48]|[02468][048]00|[13579][26]00)-02-29|\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|(?:02)-(?:0[1-9]|1\d|2[0-8])))T(?:(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d(?:\.\d+)?)?(?:Z))$
+       * @example "2024-01-01T00:00:00Z"
+       */
+      timestamp: string;
+    }
+  | {
+      /**
+       * Additional details about why the CSP report deletion rate limit was triggered
+       * @example "Too many deletion requests submitted in a short time period"
+       */
+      details?: string;
+      /**
+       * Error type
+       * @example "Too Many Requests"
+       */
+      error: string;
+      /**
+       * Human-readable message
+       * @example "Rate limit exceeded. Try again in 30 seconds."
+       */
+      message: string;
+      /**
+       * Seconds until retry
+       * @exclusiveMin 0
+       * @max 9007199254740991
+       * @example 30
+       */
+      retryAfter: number;
+      /**
+       * HTTP status code
+       * @example 429
+       */
+      statusCode: 429;
+    };
+
+export interface ReportsCspDeleteDeleteParams {
+  /**
+   * Unique identifier of the CSP report to delete
+   * @example "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+   */
+  id: string;
+}
+
 /** Successful CSP report list retrieval response */
 export interface ReportsCspListListData {
   /**

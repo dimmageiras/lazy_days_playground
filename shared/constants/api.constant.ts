@@ -10,6 +10,7 @@ const API_HEALTH_ENDPOINTS = Object.freeze({
 const API_REPORTS_ENDPOINTS = Object.freeze({
   CLEAR_CSP_REPORTS: "csp-clear",
   CREATE_CSP_REPORT: "csp-report",
+  DELETE_CSP_REPORT: "csp-delete",
   GET_CSP_REPORTS: "csp-list",
 } as const);
 

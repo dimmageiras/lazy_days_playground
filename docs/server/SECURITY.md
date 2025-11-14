@@ -207,11 +207,12 @@ Prevents brute force attacks and abuse.
 
 ### Key Configurations
 
-| Tier               | Limit (Production) | Time Window | Applied To                |
-| ------------------ | ------------------ | ----------- | ------------------------- |
-| **Authentication** | 5 req              | 15 min      | Login, signup, etc.       |
-| **User Ops**       | 10 req             | 5 min       | Email checks, profile ops |
-| **Global**         | 100 req            | 15 min      | All other endpoints       |
+| Tier               | Limit (Production) | Time Window | Applied To                    |
+| ------------------ | ------------------ | ----------- | ----------------------------- |
+| **Authentication** | 5 req              | 15 min      | Login, signup, logout, verify |
+| **User Ops**       | 10 req             | 5 min       | Email checks, profile ops     |
+| **Health Check**   | 60 req             | 1 min       | Health checks, CSP reports    |
+| **Global**         | 100 req            | 15 min      | All other endpoints           |
 
 ### Security Features
 

@@ -54,7 +54,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId: request.id,
             stack: error.stack,
           },
-          "💥 Failed to parse CSP report body"
+          "💥 CSP report body parse failed with error"
         );
 
         done(error, undefined);
@@ -75,7 +75,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
           "These reports are automatically sent when the browser detects a CSP policy violation, " +
           "helping identify potential security issues or misconfigurations in the CSP directives.",
         summary: "Report CSP violation",
-        tags: ["Health & Monitoring"],
+        tags: ["API Monitoring"],
         response: {
           [OK]: {
             content: {
@@ -144,7 +144,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId,
             stack: error.stack,
           },
-          "💥 CSP report processing failed"
+          "💥 CSP report processing failed with error"
         );
 
         // Error response

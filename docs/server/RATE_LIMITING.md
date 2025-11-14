@@ -8,16 +8,17 @@ Rate limiting protects against abuse, brute force attacks, and ensures fair reso
 
 **Location**: `server/constants/rate-limit.constant.ts`
 
-| Tier               | Development      | Production     | Time Window | Applied To                                |
-| ------------------ | ---------------- | -------------- | ----------- | ----------------------------------------- |
-| **Global**         | 1,000 req        | 100 req        | 15 min      | All routes (default)                      |
-| **Authentication** | 100 req          | 5 req          | 15 min      | `/auth/signin`, `/auth/signup`, etc.      |
-| **User Ops**       | 100 req          | 10 req         | 5 min       | `/user/check-email`                       |
-| **Health Check**   | 1,000 req        | 60 req         | 1 min       | `/api-health/server`, `/api-health/database` |
+| Tier               | Development | Production | Time Window | Applied To                                                     |
+| ------------------ | ----------- | ---------- | ----------- | -------------------------------------------------------------- |
+| **Global**         | 1,000 req   | 100 req    | 15 min      | All routes (default)                                           |
+| **Authentication** | 100 req     | 5 req      | 15 min      | `/auth/signin`, `/auth/signup`, `/auth/logout`, `/auth/verify` |
+| **User Ops**       | 100 req     | 10 req     | 5 min       | `/user/check-email`                                            |
+| **Health Check**   | 1,000 req   | 60 req     | 1 min       | `/api-health/*`, `/api/reports/csp/*`                          |
 
 ### Timing Constants
 
 All time windows use constants from `shared/constants/timing.constant.ts`:
+
 - `TIMING.MINUTES_ONE_IN_MS` (60,000 ms)
 - `TIMING.MINUTES_FIVE_IN_MS` (300,000 ms)
 - `TIMING.MINUTES_FIFTEEN_IN_MS` (900,000 ms)
@@ -29,26 +30,33 @@ All time windows use constants from `shared/constants/timing.constant.ts`:
 **Location**: `server/start.ts`
 
 ```typescript
-import { GLOBAL_RATE_LIMIT } from './constants/rate-limit.constant.ts';
+import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
 ```
 
 ### Route-Specific Overrides
 
 ```typescript
-import { AUTH_RATE_LIMIT } from '../../../constants/rate-limit.constant.ts';
+import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 
-fastify.post('/signin', {
-  config: {
-    rateLimit: AUTH_RATE_LIMIT
+fastify.post(
+  "/signin",
+  {
+    config: {
+      rateLimit: AUTH_RATE_LIMIT,
+    },
+    schema: {
+      /* ... */
+    },
   },
-  schema: { /* ... */ }
-}, handler);
+  handler
+);
 ```
 
 ## Response Headers
 
 **On every request:**
+
 ```http
 x-ratelimit-limit: 5
 x-ratelimit-remaining: 3
@@ -56,6 +64,7 @@ x-ratelimit-reset: 1704067200
 ```
 
 **When limit exceeded:**
+
 ```http
 retry-after: 30
 ```
@@ -110,20 +119,26 @@ curl -X POST http://localhost:5173/auth/signin \
 // Global/Health: IP address (hashed)
 keyGenerator: (request) => {
   const rawKey = request.ip;
-  return crypto.createHash('sha256').update(rawKey).digest('hex');
-}
+  return crypto.createHash("sha256").update(rawKey).digest("hex");
+};
 
 // Auth/User: IP + email (hashed)
 keyGenerator: (request) => {
   const { isPlainObject } = ObjectUtilsHelper;
   const body = request.body;
-  const email = (isPlainObject(body) && 'email' in body && typeof body.email === 'string' && body.email.toLowerCase()) || 'anonymous';
+  const email =
+    (isPlainObject(body) &&
+      "email" in body &&
+      typeof body.email === "string" &&
+      body.email.toLowerCase()) ||
+    "anonymous";
   const rawKey = `${request.ip}-${email}`;
-  return crypto.createHash('sha256').update(rawKey).digest('hex');
-}
+  return crypto.createHash("sha256").update(rawKey).digest("hex");
+};
 ```
 
 **Benefits:**
+
 - Privacy (hashed keys)
 - Per-user rate limiting (for auth routes)
 - Consistent key length
@@ -147,12 +162,13 @@ const createOnExceededHandler = (bucket: string) => {
 };
 
 // Usage
-onExceeded: createOnExceededHandler('auth')
+onExceeded: createOnExceededHandler("auth");
 ```
 
 ### User-Friendly Messages
 
 Auth and User rate limits include formatted retry times:
+
 - **< 1 minute**: "30 seconds"
 - **≥ 1 minute**: "5 minutes"
 
@@ -165,29 +181,29 @@ Auth and User rate limits include formatted retry times:
 ```typescript
 const MY_CUSTOM_RATE_LIMIT: RateLimitPluginOptions = {
   addHeaders: {
-    'retry-after': true,
-    'x-ratelimit-limit': true,
-    'x-ratelimit-remaining': true,
-    'x-ratelimit-reset': true
+    "retry-after": true,
+    "x-ratelimit-limit": true,
+    "x-ratelimit-remaining": true,
+    "x-ratelimit-reset": true,
   },
   errorResponseBuilder: (_request, context) => {
     const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
     const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
-    
+
     return {
-      error: 'Too Many Requests',
+      error: "Too Many Requests",
       message: `Custom message. Please wait ${retryTimeFormatted}.`,
       retryAfter: retryAfterSeconds,
-      statusCode: 429
+      statusCode: 429,
     };
   },
   keyGenerator: (request) => {
     const rawKey = request.ip;
-    return crypto.createHash('sha256').update(rawKey).digest('hex');
+    return crypto.createHash("sha256").update(rawKey).digest("hex");
   },
   max: IS_DEVELOPMENT ? 500 : 50,
-  onExceeded: createOnExceededHandler('my-custom'),
-  timeWindow: TIMING.MINUTES_TEN_IN_MS
+  onExceeded: createOnExceededHandler("my-custom"),
+  timeWindow: TIMING.MINUTES_TEN_IN_MS,
 };
 ```
 
@@ -202,6 +218,7 @@ const MY_CUSTOM_RATE_LIMIT: RateLimitPluginOptions = {
 ### Track Violations
 
 Monitor these metrics:
+
 1. **429 response rate**: High values indicate limits or attacks
 2. **Per-endpoint 429s**: Identify abused endpoints
 3. **Unique IPs hitting limits**: Distinguish attacks from traffic spikes
