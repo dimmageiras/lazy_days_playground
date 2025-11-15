@@ -207,6 +207,11 @@ export interface ReportsCspListListData {
      */
     id: string;
     /**
+     * ID of the authenticated user who triggered the violation (if logged in)
+     * @example "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+     */
+    identity_id?: string | null;
+    /**
      * IP address of the client that triggered the violation
      * @example "192.168.1.1"
      */
@@ -227,11 +232,6 @@ export interface ReportsCspListListData {
      */
     referrer: string;
     /**
-     * Sample of the script that caused the violation
-     * @example "eval('malicious code')"
-     */
-    script_sample?: string | null;
-    /**
      * The URL of the resource where the violation occurred
      * @example "https://example.com/script.js"
      */
@@ -246,11 +246,6 @@ export interface ReportsCspListListData {
      * @example "Mozilla/5.0..."
      */
     user_agent?: string | null;
-    /**
-     * The directive whose enforcement caused the violation (deprecated, use effective-directive)
-     * @example "script-src 'self'"
-     */
-    violated_directive?: string | null;
   }[];
   /**
    * Indicates successful retrieval of CSP reports
@@ -434,11 +429,6 @@ export interface ReportsCspReportCreatePayload {
      * @example 200
      */
     "status-code": number;
-    /**
-     * The directive whose enforcement caused the violation (deprecated, use effective-directive)
-     * @example "script-src 'self'"
-     */
-    "violated-directive"?: string | null;
     /**
      * Whether the user agent enforced or only reported the policy
      * @example "enforce"

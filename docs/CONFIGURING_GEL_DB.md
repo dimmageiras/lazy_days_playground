@@ -107,6 +107,7 @@ CREATE REQUIRED PROPERTY created_at -> std::datetime { SET default := std::datet
 CREATE PROPERTY disposition -> std::str { SET default := "enforce"; };
 CREATE REQUIRED PROPERTY document_uri -> std::str;
 CREATE REQUIRED PROPERTY effective_directive -> std::str;
+CREATE PROPERTY identity_id -> std::str;
 CREATE PROPERTY ip_address -> std::str;
 CREATE PROPERTY line_number -> std::int32;
 CREATE REQUIRED PROPERTY original_policy -> std::str;
@@ -134,6 +135,7 @@ referrer,
 status_code,
 disposition,
 source_file,
+identity_id,
 line_number,
 column_number,
 user_agent,

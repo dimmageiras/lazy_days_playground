@@ -210,15 +210,14 @@ export namespace $default {
     "disposition"?: string | null;
     "document_uri": string;
     "effective_directive": string;
+    "identity_id"?: string | null;
     "ip_address"?: string | null;
     "line_number"?: number | null;
     "original_policy": string;
     "referrer": string;
-    "script_sample"?: string | null;
     "source_file"?: string | null;
     "status_code": number;
     "user_agent"?: string | null;
-    "violated_directive"?: string | null;
   }
 }
 export type CspReport = $default.CspReport;

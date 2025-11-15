@@ -7,6 +7,7 @@ const LIST_CSP_REPORTS_QUERY = `
     disposition,
     document_uri,
     effective_directive,
+    identity_id,
     ip_address,
     line_number,
     original_policy,

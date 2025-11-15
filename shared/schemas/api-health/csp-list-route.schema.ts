@@ -53,6 +53,11 @@ const cspListSuccessSchema = zObject({
           description: "The directive whose enforcement caused the violation",
           example: "script-src",
         }),
+        identity_id: zString().nullish().meta({
+          description:
+            "ID of the authenticated user who triggered the violation (if logged in)",
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        }),
         ip_address: zString().nullish().meta({
           description: "IP address of the client that triggered the violation",
           example: "192.168.1.1",

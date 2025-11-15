@@ -21,6 +21,7 @@ import { HTTP_STATUS } from "../../../../../constants/http-status.constant.ts";
 import { HEALTH_RATE_LIMIT } from "../../../../../constants/rate-limit.constant.ts";
 import { AuthClientHelper } from "../../../../../helpers/auth-client.helper.ts";
 import { RoutesHelper } from "../../../../../helpers/routes.helper.ts";
+import { optionalAuthMiddleware } from "../../../../../middleware/optional-auth.middleware.ts";
 import { INSERT_CSP_REPORT_QUERY } from "./constants/insert-csp-report-query.constant.ts";
 
 const createRoute = async (fastify: FastifyInstance): Promise<void> => {
@@ -68,6 +69,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
       config: {
         rateLimit: HEALTH_RATE_LIMIT,
       },
+      preHandler: [optionalAuthMiddleware],
       schema: {
         body: cspReportRequestSchema,
         description:
@@ -113,10 +115,11 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
           disposition: cspReport["disposition"],
           document_uri: cspReport["document-uri"],
           effective_directive: cspReport["effective-directive"],
+          identity_id: request.user?.identity_id,
           ip_address: request.ip,
           line_number: cspReport["line-number"],
           original_policy: cspReport["original-policy"],
-          referrer: cspReport["referrer"] || "",
+          referrer: cspReport["referrer"],
           source_file: cspReport["source-file"],
           status_code: cspReport["status-code"],
           user_agent: request.headers["user-agent"],
