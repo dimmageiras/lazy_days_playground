@@ -7,7 +7,7 @@ import type {
 import type {
   LogoutCreateData,
   LogoutCreateError,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import {

@@ -3,7 +3,7 @@ import { useMutation, useMutationState } from "@tanstack/react-query";
 
 import { USER_QUERY_KEYS } from "@client/services/user/user.constant";
 import { UserService } from "@client/services/user/user.service";
-import type { CheckEmailCreateData } from "@shared/types/generated/user.type";
+import type { CheckEmailCreateData } from "@shared/types/generated/server/user.type";
 
 const useCheckEmailExists = (): UseMutationResult<
   CheckEmailCreateData,

@@ -8,7 +8,7 @@ import { createClient as createGelClient } from "gel";
 import type {
   HealthDatabaseListData,
   HealthDatabaseListError,
-} from "@shared/types/generated/api-health.type";
+} from "@shared/types/generated/server/api-health.type";
 
 import { API_HEALTH_ENDPOINTS } from "../../../../../shared/constants/api.constant.ts";
 import { GEL_DSN } from "../../../../../shared/constants/root-env.constant.ts";

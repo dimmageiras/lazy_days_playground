@@ -9,7 +9,7 @@ import type { VerifyRequestBody } from "@server/plugins/gel-auth-fastify";
 import type {
   VerifyCreateData,
   VerifyCreateError,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import {

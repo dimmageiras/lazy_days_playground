@@ -8,7 +8,7 @@ import { createClient as createGelClient, QueryError } from "gel";
 import type {
   CheckEmailCreateData,
   CheckEmailCreateError,
-} from "@shared/types/generated/user.type";
+} from "@shared/types/generated/server/user.type";
 
 import { GEL_DSN } from "../../../../shared/constants/root-env.constant.ts";
 import { USER_ENDPOINTS } from "../../../../shared/constants/user.constant.ts";

@@ -205,7 +205,7 @@ fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
 7. Run ESLint fixes
 8. Exit
 
-**Output**: `shared/types/generated/<domain>.type.ts`
+**Output**: `shared/types/generated/server/<domain>.type.ts`
 
 ### Generated Type Naming
 

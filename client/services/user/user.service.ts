@@ -5,7 +5,7 @@ import { USER_ENDPOINTS } from "@shared/constants/user.constant";
 import type {
   CheckEmailCreateData,
   CheckEmailCreatePayload,
-} from "@shared/types/generated/user.type";
+} from "@shared/types/generated/server/user.type";
 
 const BASE_URL = `/${USER_BASE_URL}` as const;
 

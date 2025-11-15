@@ -13,7 +13,7 @@
     "start": "node --env-file=.env.local.prod ./dist/fastify/server/index.js",
     "typecheck": "pnpm typegen && tsc --noEmit",
     "typegen": "pnpm typegen:client && pnpm typegen:server && pnpm typegen:db",
-    "typegen:db": "node node_modules/@gel/generate/dist/cli.js interfaces --dsn \"gel://admin:password@host.docker.internal:5656/main?tls_security=insecure\" --file shared/types/generated/database.type.ts",
+    "typegen:db": "node node_modules/@gel/generate/dist/cli.js interfaces --dsn \"gel://admin:password@host.docker.internal:5656/main?tls_security=insecure\" --file shared/types/generated/db/database.type.ts",
     "typegen:client": "react-router typegen",
     "typegen:server": "VITE_APP_TYPE_GENERATOR_MODE=type_generator node --env-file=.env.local.dev ./server/index.ts"
   },

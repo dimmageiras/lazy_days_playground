@@ -10,7 +10,7 @@ import type {
   SignupCreateData,
   SignupCreatePayload,
   VerifyAuthListData,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 const BASE_URL = `/${AUTH_BASE_URL}` as const;
 

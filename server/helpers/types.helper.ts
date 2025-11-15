@@ -33,7 +33,7 @@ const generateContractsForRoute = async ({
   const { log } = PinoLogHelper;
 
   const fileName = `${routePath.replace("/", "-")}.type.ts`;
-  const output = path.resolve(process.cwd(), "./shared/types/generated");
+  const output = path.resolve(process.cwd(), "./shared/types/generated/server");
 
   if (!isPlainObject(spec)) {
     throw new Error("❌ Spec is not an object");

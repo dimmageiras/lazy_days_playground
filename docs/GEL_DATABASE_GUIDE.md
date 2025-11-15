@@ -140,7 +140,7 @@ This command will:
 
 - Connect to your database
 - Introspect the current schema
-- Generate TypeScript interfaces in `shared/types/database.type.ts`
+- Generate TypeScript interfaces in `shared/types/generated`
 - Include only your custom types (system types excluded for cleaner output)
 
 **When to Regenerate:**

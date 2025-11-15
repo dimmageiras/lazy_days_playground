@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 import { IconifyIcon } from "@client/components/IconifyIcon";
 import { DateHelper } from "@shared/helpers/date.helper";
-import type { HealthServerListData } from "@shared/types/generated/api-health.type";
+import type { HealthServerListData } from "@shared/types/generated/server/api-health.type";
 
 import styles from "./ServerMetadata.module.scss";
 

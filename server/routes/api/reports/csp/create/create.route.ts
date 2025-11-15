@@ -4,11 +4,11 @@ import type {
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
 
+import type { CspReport } from "@shared/types/generated/db/database.type";
 import type {
   ReportsCspReportCreateData,
   ReportsCspReportCreateError,
-} from "@shared/types/generated/api-reports.type";
-import type { CspReport } from "@shared/types/generated/database.type";
+} from "@shared/types/generated/server/api-reports.type";
 
 import { API_REPORTS_ENDPOINTS } from "../../../../../../shared/constants/api.constant.ts";
 import {

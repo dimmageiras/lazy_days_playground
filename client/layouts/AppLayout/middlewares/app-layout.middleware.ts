@@ -8,7 +8,7 @@ import { CookieHelper } from "@client/helpers/cookie.helper";
 import { QueriesHelper } from "@client/helpers/queries.helper";
 import { getVerifyAuthQueryOptions } from "@client/services/auth";
 import { TIMING } from "@shared/constants/timing.constant";
-import type { VerifyAuthListData } from "@shared/types/generated/auth.type";
+import type { VerifyAuthListData } from "@shared/types/generated/server/auth.type";
 
 const appLayoutMiddleware: Route.MiddlewareFunction = async (
   { request, context },

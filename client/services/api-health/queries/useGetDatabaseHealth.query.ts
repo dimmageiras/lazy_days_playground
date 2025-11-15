@@ -5,7 +5,7 @@ import { ApiHealthQueriesHelper } from "@client/services/api-health/helpers/api-
 import type {
   HealthDatabaseListData,
   HealthDatabaseListError,
-} from "@shared/types/generated/api-health.type";
+} from "@shared/types/generated/server/api-health.type";
 
 const useGetDatabaseHealth = (): UseQueryResult<
   HealthDatabaseListData | HealthDatabaseListError,

@@ -226,7 +226,7 @@ Zod Schemas → OpenAPI Spec → TypeScript Types
 
 **Command**: `pnpm run typegen:server`
 
-**Output**: `shared/types/generated/<domain>.type.ts`
+**Output**: `shared/types/generated/server/<domain>.type.ts`
 
 **See:** [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 

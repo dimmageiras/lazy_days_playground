@@ -21,7 +21,7 @@ export default defineConfig([
     ".react-router",
     "dist",
     "logs",
-    "shared/types/generated/database.type.ts",
+    "shared/types/generated/db/database.type.ts",
   ]),
   {
     extends: [

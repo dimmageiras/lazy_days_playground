@@ -6,7 +6,7 @@ import type {
   HealthDatabaseListData,
   HealthDatabaseListError,
   HealthServerListData,
-} from "@shared/types/generated/api-health.type";
+} from "@shared/types/generated/server/api-health.type";
 
 const BASE_URL = `/${API_HEALTH_BASE_URL}` as const;
 

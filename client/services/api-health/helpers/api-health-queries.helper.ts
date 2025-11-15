@@ -7,7 +7,7 @@ import type {
   HealthDatabaseListData,
   HealthDatabaseListError,
   HealthServerListData,
-} from "@shared/types/generated/api-health.type";
+} from "@shared/types/generated/server/api-health.type";
 
 const { GET_DATABASE_HEALTH, GET_SERVER_HEALTH } = API_HEALTH_QUERY_KEYS;
 

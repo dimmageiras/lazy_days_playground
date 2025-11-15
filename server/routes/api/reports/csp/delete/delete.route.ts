@@ -7,7 +7,7 @@ import type {
 import type {
   ReportsCspDeleteDeleteData,
   ReportsCspDeleteDeleteError,
-} from "@shared/types/generated/api-reports.type";
+} from "@shared/types/generated/server/api-reports.type";
 
 import { API_REPORTS_ENDPOINTS } from "../../../../../../shared/constants/api.constant.ts";
 import {

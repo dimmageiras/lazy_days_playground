@@ -6,7 +6,7 @@ import { AuthQueriesHelper } from "@client/services/auth/helpers/auth-queries.he
 import type {
   VerifyAuthListData,
   VerifyAuthListError,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 const useVerifyAuth = (): UseQueryResult<
   VerifyAuthListData,

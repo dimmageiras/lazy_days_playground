@@ -9,7 +9,7 @@ import type {
   HealthDatabaseListData,
   HealthDatabaseListError,
   HealthServerListData,
-} from "@shared/types/generated/api-health.type";
+} from "@shared/types/generated/server/api-health.type";
 
 import styles from "./Card.module.scss";
 import { DatabaseMetadata } from "./components/DatabaseMetadata";

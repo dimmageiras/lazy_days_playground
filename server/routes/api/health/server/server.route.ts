@@ -4,7 +4,7 @@ import type {
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
 
-import type { HealthServerListData } from "@shared/types/generated/api-health.type";
+import type { HealthServerListData } from "@shared/types/generated/server/api-health.type";
 
 import { API_HEALTH_ENDPOINTS } from "../../../../../shared/constants/api.constant.ts";
 import {

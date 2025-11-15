@@ -9,7 +9,7 @@ import type { SignupRequestBody } from "@server/plugins/gel-auth-fastify";
 import type {
   SignupCreateData,
   SignupCreateError,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.constant.ts";

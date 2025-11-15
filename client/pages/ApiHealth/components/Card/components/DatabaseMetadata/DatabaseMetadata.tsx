@@ -5,7 +5,7 @@ import { DateHelper } from "@shared/helpers/date.helper";
 import type {
   HealthDatabaseListData,
   HealthDatabaseListError,
-} from "@shared/types/generated/api-health.type";
+} from "@shared/types/generated/server/api-health.type";
 
 import styles from "./DatabaseMetadata.module.scss";
 

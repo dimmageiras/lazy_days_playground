@@ -6,7 +6,7 @@ import { AuthService } from "@client/services/auth/auth.services";
 import type {
   VerifyAuthListData,
   VerifyAuthListError,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 const { VERIFY_AUTH } = AUTH_QUERY_KEYS;
 
