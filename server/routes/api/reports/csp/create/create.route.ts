@@ -120,7 +120,6 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
           source_file: cspReport["source-file"],
           status_code: cspReport["status-code"],
           user_agent: request.headers["user-agent"],
-          violated_directive: cspReport["violated-directive"],
         } as Omit<CspReport, "created_at" | "id">);
 
         // Success response

@@ -11,11 +11,9 @@ const LIST_CSP_REPORTS_QUERY = `
     line_number,
     original_policy,
     referrer,
-    script_sample,
     source_file,
     status_code,
-    user_agent,
-    violated_directive
+    user_agent
   }
   ORDER BY .created_at DESC
 ` as const;

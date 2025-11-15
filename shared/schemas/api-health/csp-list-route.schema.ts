@@ -72,10 +72,6 @@ const cspListSuccessSchema = zObject({
             "The referrer of the document where the violation occurred",
           example: "https://example.com/",
         }),
-        script_sample: zString().nullish().meta({
-          description: "Sample of the script that caused the violation",
-          example: "eval('malicious code')",
-        }),
         source_file: zString().nullish().meta({
           description: "The URL of the resource where the violation occurred",
           example: "https://example.com/script.js",
@@ -88,11 +84,6 @@ const cspListSuccessSchema = zObject({
         user_agent: zString().nullish().meta({
           description: "User agent string of the client",
           example: "Mozilla/5.0...",
-        }),
-        violated_directive: zString().nullish().meta({
-          description:
-            "The directive whose enforcement caused the violation (deprecated, use effective-directive)",
-          example: "script-src 'self'",
         }),
       })
     )

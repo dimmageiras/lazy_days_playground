@@ -9,11 +9,9 @@ const INSERT_CSP_REPORT_QUERY = `
     line_number := <optional int32>$line_number,
     original_policy := <str>$original_policy,
     referrer := <str>$referrer,
-    script_sample := <optional str>$script_sample,
     source_file := <optional str>$source_file,
     status_code := <int16>$status_code,
-    user_agent := <optional str>$user_agent,
-    violated_directive := <optional str>$violated_directive
+    user_agent := <optional str>$user_agent
   }
 ` as const;
 

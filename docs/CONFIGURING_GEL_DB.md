@@ -111,11 +111,9 @@ CREATE PROPERTY ip_address -> std::str;
 CREATE PROPERTY line_number -> std::int32;
 CREATE REQUIRED PROPERTY original_policy -> std::str;
 CREATE REQUIRED PROPERTY referrer -> std::str { SET default := ""; };
-CREATE PROPERTY script_sample -> std::str;
 CREATE PROPERTY source_file -> std::str;
 CREATE REQUIRED PROPERTY status_code -> std::int16 { SET default := 0; };
 CREATE PROPERTY user_agent -> std::str;
-CREATE PROPERTY violated_directive -> std::str;
 };
 
 create an easy CSP violation
@@ -134,9 +132,7 @@ effective_directive,
 original_policy,
 referrer,
 status_code,
-violated_directive,
 disposition,
-script_sample,
 source_file,
 line_number,
 column_number,

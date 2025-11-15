@@ -64,11 +64,6 @@ const cspReportRequestSchema = zObject({
         "The HTTP status code of the resource on which the violation occurred",
       example: 200,
     }),
-    "violated-directive": zString().nullish().meta({
-      description:
-        "The directive whose enforcement caused the violation (deprecated, use effective-directive)",
-      example: "script-src 'self'",
-    }),
   }).meta({
     description: "Content Security Policy violation report",
   }),
