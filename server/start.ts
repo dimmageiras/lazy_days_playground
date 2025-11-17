@@ -1,9 +1,10 @@
 import cookieFastify from "@fastify/cookie";
+import expressFastify from "@fastify/express";
 import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
-import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
+import { createRequestHandler } from "@react-router/express";
 import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import {
@@ -15,6 +16,8 @@ import {
 import { createClient as createGelClient } from "gel";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
+import type { ViteDevServer } from "vite";
+import { createServer } from "vite";
 
 import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import {
@@ -77,33 +80,80 @@ app.setSerializerCompiler(serializerCompiler);
 await app.register(fastifyZodOpenApiPlugin);
 
 if (MODE !== TYPE_GENERATOR) {
-  await app.register(helmet, {
-    contentSecurityPolicy: IS_DEVELOPMENT
-      ? false
-      : { directives: CSP_DIRECTIVES },
-    // Disabled in development to allow React DevTools to work properly
-    // DevTools requires cross-origin embedding which COEP blocks
-    crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
-    hsts: {
-      includeSubDomains: true,
-      maxAge: YEARS_ONE_IN_S,
-      preload: true,
-    },
-  });
-  log.info("✅ Helmet security headers registered");
+  try {
+    await app.register(helmet, {
+      contentSecurityPolicy: IS_DEVELOPMENT
+        ? false
+        : { directives: CSP_DIRECTIVES, useDefaults: false },
+      // Disabled in development to allow React DevTools to work properly
+      // DevTools requires cross-origin embedding which COEP blocks
+      crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+      hsts: {
+        includeSubDomains: true,
+        maxAge: YEARS_ONE_IN_S,
+        preload: true,
+      },
+    });
+    log.info("✅ Helmet security headers registered");
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to register Helmet security plugin"
+    );
+    process.exit(1);
+  }
 
-  await app.register(cookieFastify, {
-    parseOptions: {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: !IS_DEVELOPMENT,
-    },
-    secret: COOKIE_SECRET,
-  });
-  log.info("✅ Cookie plugin registered");
+  try {
+    await app.register(cookieFastify, {
+      parseOptions: {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: !IS_DEVELOPMENT,
+      },
+      secret: COOKIE_SECRET,
+    });
+    log.info("✅ Cookie plugin registered");
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to register Cookie plugin"
+    );
+    process.exit(1);
+  }
 
-  await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
-  log.info("✅ Rate limiting plugin registered");
+  try {
+    await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
+    log.info("✅ Rate limiting plugin registered");
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to register Rate Limit plugin"
+    );
+    process.exit(1);
+  }
+
+  try {
+    await app.register(expressFastify);
+    log.info("✅ Express compatibility plugin registered");
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to register Express compatibility plugin"
+    );
+    process.exit(1);
+  }
 }
 
 await app.register(async (fastify: FastifyInstance) => {
@@ -282,14 +332,59 @@ if (MODE === TYPE_GENERATOR) {
   }
 }
 
-await app.register(reactRouterFastify, {
-  buildDirectory: "dist",
-  serverBuildFile: "index.js",
-  viteOptions: {
+let viteDevServer: ViteDevServer | null = null;
+
+try {
+  viteDevServer = await createServer({
+    build: {
+      outDir: "dist",
+      rollupOptions: {
+        output: {
+          entryFileNames: "index.js",
+        },
+      },
+    },
     mode: MODE,
+    server: { middlewareMode: true },
+  });
+
+  app.use(viteDevServer.middlewares);
+
+  log.info("✅ Vite dev server middleware registered");
+} catch (error) {
+  log.error(
+    {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    },
+    "💥 Failed to create Vite dev server"
+  );
+  process.exit(1);
+}
+
+const reactRouterHandler = createRequestHandler({
+  build: async () => {
+    try {
+      return await viteDevServer.ssrLoadModule(
+        "virtual:react-router/server-build"
+      );
+    } catch (error) {
+      log.error(
+        {
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        "💥 Failed to load React Router server build"
+      );
+      throw error;
+    }
   },
+  mode: MODE,
 });
-log.info("✅ React Router SSR plugin registered");
+
+app.use(reactRouterHandler);
+
+log.info("✅ React Router SSR handler registered");
 
 const startServer = async (): Promise<void> => {
   const desiredPort = Number(PORT);
