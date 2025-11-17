@@ -131,7 +131,7 @@ const token = await getEncryptedCookie(request, ACCESS_TOKEN);
 
 // Set encrypted cookie
 const encrypted = await encryptData(jwtToken);
-reply.setCookie(ACCESS_TOKEN, encrypted, {
+response.setCookie(ACCESS_TOKEN, encrypted, {
   httpOnly: true,
   maxAge: MINUTES_FIFTEEN_IN_S,
   sameSite: "strict",
@@ -192,8 +192,8 @@ fastify.get(
 const { isValid, identityId, expiresAt } = await validateAuthToken(token);
 
 if (!isValid) {
-  reply.clearCookie(ACCESS_TOKEN);
-  return reply.status(401).send({ error: "Invalid or expired token" });
+  response.clearCookie(ACCESS_TOKEN);
+  return response.status(401).send({ error: "Invalid or expired token" });
 }
 
 request.user = { identity_id: identityId, expiresAt };
@@ -260,19 +260,19 @@ fastify.post(
 **Location**: `server/start.ts`
 
 ```typescript
-app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error, request, response) => {
   log.error({ error, requestId, statusCode, url, stack });
 
   // Sanitize 5xx errors (hide internal details)
-  if (reply.statusCode >= 500) {
-    return reply.status(500).send({
+  if (response.statusCode >= 500) {
+    return response.status(500).send({
       error: "Internal Server Error",
       message: "An unexpected error occurred. Please try again later.",
     });
   }
 
   // Pass through 4xx errors (safe client errors)
-  return reply.send(error);
+  return response.send(error);
 });
 ```
 

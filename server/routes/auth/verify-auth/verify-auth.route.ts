@@ -4,6 +4,8 @@ import type {
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
 
+import type { VerifyAuthListData } from "@shared/types/generated/server/auth.type";
+
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import {
   meErrorSchema,
@@ -37,11 +39,13 @@ const verifyAuthRoute = async (fastify: FastifyInstance): Promise<void> => {
         tags: ["Authentication"],
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (request, reply) => {
-      return reply.status(OK).send({
+    async (request, response) => {
+      const dbResponse: VerifyAuthListData = {
         identity_id: request.user?.identity_id || null,
         timestamp: getCurrentISOTimestamp(),
-      });
+      };
+
+      return response.status(OK).send(dbResponse);
     }
   );
 };

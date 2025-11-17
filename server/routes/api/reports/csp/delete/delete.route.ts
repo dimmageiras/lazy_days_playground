@@ -69,7 +69,7 @@ const deleteRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (request, reply) => {
+    async (request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -92,22 +92,22 @@ const deleteRoute = async (fastify: FastifyInstance): Promise<void> => {
             "⚠️ CSP report not found for deletion"
           );
 
-          const notFoundResponse: ReportsCspDeleteDeleteError = {
+          const notFoundError: ReportsCspDeleteDeleteError = {
             error: "CSP report not found",
             details: `No report found with ID: ${id}`,
             timestamp: getCurrentISOTimestamp(),
           };
 
-          return reply.status(NOT_FOUND).send(notFoundResponse);
+          return response.status(NOT_FOUND).send(notFoundError);
         }
 
         // Success response
-        const response: ReportsCspDeleteDeleteData = {
+        const dbResponse: ReportsCspDeleteDeleteData = {
           success: true,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         // Normalize error
         const error =
@@ -131,7 +131,7 @@ const deleteRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );

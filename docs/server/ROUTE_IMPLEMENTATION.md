@@ -87,7 +87,7 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (request, reply) => {
+    async (request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -98,13 +98,13 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
         const result = await performOperation(field);
 
         // Success response
-        const response: MyEndpointCreateData = {
+        const dbResponse: MyEndpointCreateData = {
           success: true,
           data: result,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         // Normalize error
         const error =
@@ -128,7 +128,7 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );
@@ -253,7 +253,7 @@ fastify.get(
 ```typescript
 try {
   const result = await operation();
-  return reply.status(OK).send(result);
+  return response.status(OK).send(result);
 } catch (rawError) {
   const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
 
@@ -267,7 +267,7 @@ try {
     "💥 Operation failed with error"
   );
 
-  return reply.status(SERVICE_UNAVAILABLE).send({
+  return response.status(SERVICE_UNAVAILABLE).send({
     error: "Operation failed",
     details: error.message,
     timestamp: getCurrentISOTimestamp(),

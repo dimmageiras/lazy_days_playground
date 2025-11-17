@@ -190,7 +190,7 @@ await app.register(async (fastify: FastifyInstance) => {
         deepLinking: false,
       },
       uiHooks: {
-        onRequest: (request, reply, next) => {
+        onRequest: (request, response, next) => {
           // Allow all requests under the swagger route prefix (UI, assets, JSON spec)
           if (request.url.startsWith(routePrefix)) {
             next();
@@ -202,7 +202,7 @@ await app.register(async (fastify: FastifyInstance) => {
 
           // Block requests not from same origin
           if (!referer || !referer.includes(request.hostname)) {
-            reply.code(NOT_FOUND).send({
+            response.code(NOT_FOUND).send({
               error: `No routes matched location "${request.url}"`,
               statusCode: NOT_FOUND,
             });
@@ -212,7 +212,7 @@ await app.register(async (fastify: FastifyInstance) => {
 
           next();
         },
-        preHandler: (_request, _reply, next) => {
+        preHandler: (_request, _response, next) => {
           next();
         },
       },
@@ -223,7 +223,7 @@ await app.register(async (fastify: FastifyInstance) => {
           "style-src 'self' https: 'unsafe-inline'"
         );
       },
-      transformSpecification: (swaggerObject, request, _reply) => {
+      transformSpecification: (swaggerObject, request, _response) => {
         const host = request.headers.host || `localhost:${PORT}`;
         // Check X-Forwarded-Proto header first for proxied environments (e.g., behind load balancer, reverse proxy)
         // This header is set by proxies to indicate the original protocol used by the client
@@ -265,7 +265,7 @@ await app.register(async (fastify: FastifyInstance) => {
 });
 
 // Global error handler - catches unhandled errors across all routes
-app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error, request, response) => {
   const requestId = request.id || "unknown";
 
   log.error(
@@ -274,15 +274,15 @@ app.setErrorHandler((error, request, reply) => {
       method: request.method,
       requestId,
       stack: error instanceof Error ? error.stack : undefined,
-      statusCode: reply.statusCode || 500,
+      statusCode: response.statusCode || 500,
       url: request.url,
     },
     "💥 Unhandled error in request"
   );
 
   // For 5xx errors, return sanitized response to hide internal details
-  if (reply.statusCode >= 500 || !reply.statusCode) {
-    return reply.status(500).send({
+  if (response.statusCode >= 500 || !response.statusCode) {
+    return response.status(500).send({
       error: "Internal Server Error",
       message: "An unexpected error occurred. Please try again later.",
       statusCode: 500,
@@ -290,7 +290,7 @@ app.setErrorHandler((error, request, reply) => {
   }
 
   // For 4xx errors, pass through the original error
-  return reply.send(error);
+  return response.send(error);
 });
 
 if (MODE === TYPE_GENERATOR) {

@@ -53,22 +53,22 @@ const logoutRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (request, reply) => {
+    async (request, response) => {
       const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
       const requestId = fastIdGen();
 
       try {
         const { cookieName } = request.body;
 
-        reply.clearCookie(ACCESS_TOKEN);
-        reply.clearCookie(cookieName);
+        response.clearCookie(ACCESS_TOKEN);
+        response.clearCookie(cookieName);
 
-        const response: LogoutCreateData = {
+        const dbResponse: LogoutCreateData = {
           message: "Logout successful",
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         const error =
           rawError instanceof Error ? rawError : new Error(`${rawError}`);
@@ -88,7 +88,7 @@ const logoutRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );

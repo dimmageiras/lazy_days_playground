@@ -25,7 +25,7 @@ interface TokenValidationResult {
  * ```typescript
  * const result = await validateAuthToken(token);
  * if (!result.isValid) {
- *   return reply.status(401).send({ error: "Invalid token" });
+ *   return response.status(401).send({ error: "Invalid token" });
  * }
  * // Use result.identityId
  * ```

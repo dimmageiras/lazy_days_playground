@@ -60,7 +60,7 @@ try {
     "💥 Operation failed"
   );
 
-  return reply.status(503).send({ error: "Operation failed" });
+  return response.status(503).send({ error: "Operation failed" });
 }
 ```
 
@@ -111,7 +111,7 @@ log.info({ address, mode }, "🚀 Server started");
 **Location**: `server/start.ts`
 
 ```typescript
-app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error, request, response) => {
   const requestId = request.id || "unknown";
 
   log.error(
@@ -120,15 +120,15 @@ app.setErrorHandler((error, request, reply) => {
       method: request.method,
       requestId,
       stack: error.stack,
-      statusCode: reply.statusCode || 500,
+      statusCode: response.statusCode || 500,
       url: request.url,
     },
     "💥 Unhandled error in request"
   );
 
   // Sanitize 5xx errors
-  if (reply.statusCode >= 500 || !reply.statusCode) {
-    return reply.status(500).send({
+  if (response.statusCode >= 500 || !response.statusCode) {
+    return response.status(500).send({
       error: "Internal Server Error",
       message: "An unexpected error occurred. Please try again later.",
       statusCode: 500,
@@ -136,7 +136,7 @@ app.setErrorHandler((error, request, reply) => {
   }
 
   // Pass through 4xx errors
-  return reply.send(error);
+  return response.send(error);
 });
 ```
 

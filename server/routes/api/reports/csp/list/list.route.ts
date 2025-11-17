@@ -60,7 +60,7 @@ const listRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (_request, reply) => {
+    async (_request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -77,14 +77,14 @@ const listRoute = async (fastify: FastifyInstance): Promise<void> => {
         }));
 
         // Success response
-        const response: ReportsCspListListData = {
+        const dbResponse: ReportsCspListListData = {
           count: transformedReports.length,
           data: transformedReports,
           success: true,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         // Normalize error
         const error =
@@ -107,7 +107,7 @@ const listRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );

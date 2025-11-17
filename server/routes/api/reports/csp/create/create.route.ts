@@ -98,7 +98,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (request, reply) => {
+    async (request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -126,12 +126,12 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
         } as Omit<CspReport, "created_at" | "id">);
 
         // Success response
-        const response: ReportsCspReportCreateData = {
+        const dbResponse: ReportsCspReportCreateData = {
           success: true,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         // Normalize error
         const error =
@@ -156,7 +156,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );

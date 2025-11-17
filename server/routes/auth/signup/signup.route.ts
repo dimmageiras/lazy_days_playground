@@ -77,7 +77,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
           },
         } satisfies FastifyZodOpenApiSchema,
       },
-      async (request, reply) => {
+      async (request, response) => {
         const requestId = fastIdGen();
 
         try {
@@ -99,34 +99,34 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
               result.tokenData.auth_token
             );
 
-            reply.setCookie(
+            response.setCookie(
               ACCESS_TOKEN,
               encryptedToken,
               ACCESS_TOKEN_COOKIE_CONFIG
             );
 
-            const response: SignupCreateData = {
+            const dbResponse: SignupCreateData = {
               identity_id: result.tokenData.identity_id,
               status: result.status,
               timestamp: getCurrentISOTimestamp(),
             };
 
-            return reply.status(OK).send(response);
+            return response.status(OK).send(dbResponse);
           } else {
-            reply.setCookie(
+            response.setCookie(
               PKCE_VERIFIER,
               result.verifier,
               GEL_PKCE_VERIFIER_COOKIE_CONFIG
             );
 
-            const response: SignupCreateData = {
+            const dbResponse: SignupCreateData = {
               identity_id: null,
               status: result.status,
               timestamp: getCurrentISOTimestamp(),
               verifier: result.verifier,
             };
 
-            return reply.status(OK).send(response);
+            return response.status(OK).send(dbResponse);
           }
         } catch (rawError) {
           const error =
@@ -168,7 +168,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
             timestamp: getCurrentISOTimestamp(),
           };
 
-          return reply.status(statusCode).send(errorResponse);
+          return response.status(statusCode).send(errorResponse);
         }
       }
     );

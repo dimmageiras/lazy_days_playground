@@ -46,13 +46,13 @@ const serverRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (_request, reply) => {
-      const response: HealthServerListData = {
+    async (_request, response) => {
+      const serverResponse: HealthServerListData = {
         service: "lazy_days_playground",
         timestamp: getCurrentISOTimestamp(),
       };
 
-      return reply.status(OK).send(response);
+      return response.status(OK).send(serverResponse);
     }
   );
 };

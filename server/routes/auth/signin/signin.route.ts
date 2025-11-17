@@ -81,7 +81,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
           },
         } satisfies FastifyZodOpenApiSchema,
       },
-      async (request, reply) => {
+      async (request, response) => {
         const requestId = fastIdGen();
 
         try {
@@ -96,18 +96,18 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
           // Encrypt the token before storing in cookie
           const encryptedToken = await encryptData(tokenData.auth_token);
 
-          reply.setCookie(
+          response.setCookie(
             ACCESS_TOKEN,
             encryptedToken,
             ACCESS_TOKEN_COOKIE_CONFIG
           );
 
-          const response: SigninCreateData = {
+          const dbResponse: SigninCreateData = {
             identity_id: tokenData.identity_id,
             timestamp: getCurrentISOTimestamp(),
           };
 
-          return reply.status(OK).send(response);
+          return response.status(OK).send(dbResponse);
         } catch (rawError) {
           const error =
             rawError instanceof Error ? rawError : new Error(`${rawError}`);
@@ -148,7 +148,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
             timestamp: getCurrentISOTimestamp(),
           };
 
-          return reply.status(statusCode).send(errorResponse);
+          return response.status(statusCode).send(errorResponse);
         }
       }
     );

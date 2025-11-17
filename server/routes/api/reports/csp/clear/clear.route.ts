@@ -58,7 +58,7 @@ const clearRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (_request, reply) => {
+    async (_request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -72,13 +72,13 @@ const clearRoute = async (fastify: FastifyInstance): Promise<void> => {
         const deletedCount = result?.length ?? 0;
 
         // Success response
-        const response: ReportsCspClearDeleteData = {
+        const dbResponse: ReportsCspClearDeleteData = {
           success: true,
           count: deletedCount,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         // Normalize error
         const error =
@@ -101,7 +101,7 @@ const clearRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );

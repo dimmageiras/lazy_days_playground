@@ -57,7 +57,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (_request, reply) => {
+    async (_request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -73,7 +73,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
           await client.close();
         }
 
-        const response: HealthDatabaseListData = {
+        const dbResponse: HealthDatabaseListData = {
           database: "gel",
           dsn:
             typeof GEL_DSN === "string"
@@ -83,7 +83,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (error) {
         log.error(
           {
@@ -104,7 +104,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(SERVICE_UNAVAILABLE).send(errorResponse);
+        return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
     }
   );

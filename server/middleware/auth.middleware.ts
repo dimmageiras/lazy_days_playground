@@ -17,14 +17,14 @@ import { RoutesHelper } from "../helpers/routes.helper.ts";
  * ```typescript
  * fastify.get("/protected", {
  *   preHandler: [authMiddleware],
- * }, async (request, reply) => {
+ * }, async (request, response) => {
  *   // request.user.identity_id is available
  * });
  * ```
  */
 const authMiddleware = async (
   request: FastifyRequest,
-  reply: FastifyReply
+  response: FastifyReply
 ): Promise<void> => {
   const { validateAuthToken } = AuthValidationHelper;
   const { getEncryptedCookie } = CookieHelper;
@@ -50,7 +50,7 @@ const authMiddleware = async (
         "Authentication failed: no token provided"
       );
 
-      return reply.status(UNAUTHORIZED).send({
+      return response.status(UNAUTHORIZED).send({
         details: "No authentication token provided",
         error: "Authentication required",
         timestamp: getCurrentISOTimestamp(),
@@ -60,7 +60,7 @@ const authMiddleware = async (
     const { expiresAt, identityId, isValid } = await validateAuthToken(token);
 
     if (!isValid) {
-      reply.clearCookie(ACCESS_TOKEN);
+      response.clearCookie(ACCESS_TOKEN);
 
       log.warn(
         {
@@ -72,7 +72,7 @@ const authMiddleware = async (
         "Authentication failed: invalid or expired token"
       );
 
-      return reply.status(UNAUTHORIZED).send({
+      return response.status(UNAUTHORIZED).send({
         details: "Please sign in again",
         error: "Invalid or expired authentication token",
         timestamp: getCurrentISOTimestamp(),
@@ -96,7 +96,7 @@ const authMiddleware = async (
       "💥 Authentication middleware error"
     );
 
-    return reply.status(UNAUTHORIZED).send({
+    return response.status(UNAUTHORIZED).send({
       details: "Authentication verification failed",
       error: "Authentication required",
       timestamp: getCurrentISOTimestamp(),

@@ -13,7 +13,7 @@ import { EncryptionHelper } from "./encryption.helper.ts";
  * ```typescript
  * const token = await getEncryptedCookie(request, "access-token");
  * if (!token) {
- *   return reply.status(401).send({ error: "Invalid authentication" });
+ *   return response.status(401).send({ error: "Invalid authentication" });
  * }
  * ```
  */
@@ -54,7 +54,7 @@ const getEncryptedCookie = async (
  * ```typescript
  * const isValid = await hasEncryptedSignedCookie(request, "access-token");
  * if (!isValid) {
- *   return reply.status(401).send({ error: "Not authenticated" });
+ *   return response.status(401).send({ error: "Not authenticated" });
  * }
  * ```
  */

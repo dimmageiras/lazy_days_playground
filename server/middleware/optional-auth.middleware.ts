@@ -14,14 +14,14 @@ import { CookieHelper } from "../helpers/cookie.helper.ts";
  * ```typescript
  * fastify.post("/endpoint", {
  *   preHandler: [optionalAuthMiddleware],
- * }, async (request, reply) => {
+ * }, async (request, response) => {
  *   // request.user?.identity_id may or may not be available
  * });
  * ```
  */
 const optionalAuthMiddleware = async (
   request: FastifyRequest,
-  _reply: FastifyReply
+  _response: FastifyReply
 ): Promise<void> => {
   const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
 

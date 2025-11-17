@@ -61,7 +61,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
         },
       } satisfies FastifyZodOpenApiSchema,
     },
-    async (request, reply) => {
+    async (request, response) => {
       const requestId = fastIdGen();
 
       try {
@@ -91,13 +91,13 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
           await client.close();
         }
 
-        const response: CheckEmailCreateData = {
+        const dbResponse: CheckEmailCreateData = {
           email,
           exists: emailExists,
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(OK).send(response);
+        return response.status(OK).send(dbResponse);
       } catch (rawError) {
         const error =
           rawError instanceof Error ? rawError : new Error(`${rawError}`);
@@ -132,7 +132,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
           timestamp: getCurrentISOTimestamp(),
         };
 
-        return reply.status(statusCode).send(errorResponse);
+        return response.status(statusCode).send(errorResponse);
       }
     }
   );

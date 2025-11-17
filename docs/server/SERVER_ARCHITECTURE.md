@@ -79,20 +79,20 @@ Plugins registered in order:
 ### 4. Global Error Handler
 
 ```typescript
-app.setErrorHandler((error, request, reply) => {
+app.setErrorHandler((error, request, response) => {
   // Log with full context
   log.error({ error, requestId, statusCode, url, stack });
 
   // Sanitize 5xx errors (hide internal details)
-  if (reply.statusCode >= 500) {
-    return reply.status(500).send({
+  if (response.statusCode >= 500) {
+    return response.status(500).send({
       error: "Internal Server Error",
       message: "An unexpected error occurred.",
     });
   }
 
   // Pass through 4xx errors (safe client errors)
-  return reply.send(error);
+  return response.send(error);
 });
 ```
 
@@ -237,11 +237,11 @@ Zod Schemas → OpenAPI Spec → TypeScript Types
 ```typescript
 try {
   const result = await operation();
-  return reply.status(200).send(result);
+  return response.status(200).send(result);
 } catch (rawError) {
   const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
   log.error({ error, requestId, stack: error.stack });
-  return reply.status(503).send({ error: "Operation failed" });
+  return response.status(503).send({ error: "Operation failed" });
 }
 ```
 

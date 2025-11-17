@@ -233,13 +233,13 @@ import type {
   SigninCreateError,
 } from "@shared/types/generated/auth.type";
 
-async (request, reply) => {
-  const response: SigninCreateData = {
+async (request, response) => {
+  const dbResponse: SigninCreateData = {
     identity_id: userId,
     timestamp: getCurrentISOTimestamp(),
   };
 
-  return reply.status(200).send(response);
+  return response.status(200).send(dbResponse);
 };
 ```
 
