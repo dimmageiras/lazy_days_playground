@@ -4,10 +4,8 @@ import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
-import {
-  createRequestHandler,
-  type GetLoadContextFunction,
-} from "@react-router/express";
+import type { GetLoadContextFunction } from "@react-router/express";
+import { createRequestHandler } from "@react-router/express";
 import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import {
@@ -19,7 +17,8 @@ import {
 import { createClient as createGelClient } from "gel";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
-import { type AppLoadContext, RouterContextProvider } from "react-router";
+import type { AppLoadContext } from "react-router";
+import { RouterContextProvider } from "react-router";
 import type { ViteDevServer } from "vite";
 import { createServer } from "vite";
 
@@ -146,6 +145,7 @@ if (MODE !== TYPE_GENERATOR) {
       },
       secret: COOKIE_SECRET,
     });
+
     log.info("✅ Cookie plugin registered");
   } catch (error) {
     log.error(
@@ -174,6 +174,7 @@ if (MODE !== TYPE_GENERATOR) {
 
   try {
     await app.register(expressFastify);
+
     log.info("✅ Express compatibility plugin registered");
   } catch (error) {
     log.error(

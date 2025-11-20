@@ -7,13 +7,6 @@ declare module "fastify" {
     gelClient: Client;
   }
 
-  interface FastifyReply {
-    cspNonce: {
-      script: string;
-      style: string;
-    };
-  }
-
   interface FastifyRequest {
     user?: {
       expiresAt: Date | null;
