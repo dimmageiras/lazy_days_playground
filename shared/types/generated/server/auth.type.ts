@@ -46,7 +46,7 @@ export type LogoutCreateError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */
@@ -145,7 +145,7 @@ export type SigninCreateError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */
@@ -239,7 +239,7 @@ export type SignupCreateError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */
@@ -370,7 +370,7 @@ export type VerifyCreateError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */

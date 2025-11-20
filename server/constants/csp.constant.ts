@@ -1,5 +1,5 @@
 import { API_REPORTS_ENDPOINTS } from "../../shared/constants/api.constant.ts";
-import { API_REPORTS_BASE_URL } from "../../shared/constants/base-urls.constant.ts";
+import { API_CSP_REPORTS_BASE_URL } from "../../shared/constants/base-urls.constant.ts";
 
 const { CREATE_CSP_REPORT } = API_REPORTS_ENDPOINTS;
 
@@ -17,11 +17,11 @@ const CSP_DIRECTIVES = Object.freeze({
   fontSrc: ["'self'", "https://fonts.gstatic.com"], // Allow Google Fonts
   formAction: ["'self'"], // Restricts form submission targets
   frameAncestors: ["'none'"], // Prevents clickjacking (replaces X-Frame-Options)
-  imgSrc: ["'self'", "data:", "https:"], // Allows images from self, data URIs, and HTTPS
+  imgSrc: ["'self'", "data:"], // More restrictive - only self, data URIs, and Google Fonts CDN
   objectSrc: ["'none'"], // Prevents embedding objects like Flash or Silverlight
-  reportUri: [`${API_REPORTS_BASE_URL}/${CREATE_CSP_REPORT}`], // Where to send CSP violations
-  scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts for React Router SSR
-  styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], // Needed for React SSR inline styles and Google Fonts
+  reportUri: [`${API_CSP_REPORTS_BASE_URL}/${CREATE_CSP_REPORT}`], // Where to send CSP violations
+  scriptSrc: ["'self'"], // Only same-origin scripts (nonce added per request)
+  styleSrc: ["'self'", "https://fonts.googleapis.com"], // Same-origin styles and Google Fonts (nonce added per request)
   upgradeInsecureRequests: [], // Automatically upgrades HTTP requests to HTTPS
 } as const);
 

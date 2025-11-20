@@ -5,19 +5,19 @@ import { CookieHelper } from "@client/helpers/cookie.helper";
 import { IS_SSR } from "@shared/constants/root-env.constant";
 import { IdUtilsHelper } from "@shared/helpers/id-utils.helper";
 
-interface ClientIdRouteContextStore {
+interface ClientIdRouteContextValue {
   clientId?: string;
   request: Request;
 }
 
-let clientIdRouteContextStorage: AsyncLocalStorage<ClientIdRouteContextStore> | null =
+let clientIdRouteContextStorage: AsyncLocalStorage<ClientIdRouteContextValue> | null =
   null;
 
 if (IS_SSR) {
   const { AsyncLocalStorage } = await import("node:async_hooks");
 
   clientIdRouteContextStorage =
-    new AsyncLocalStorage<ClientIdRouteContextStore>();
+    new AsyncLocalStorage<ClientIdRouteContextValue>();
 }
 
 /**

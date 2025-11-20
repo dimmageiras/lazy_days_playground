@@ -11,6 +11,7 @@ import type {
 } from "@shared/types/generated/server/api-reports.type";
 
 import { API_REPORTS_ENDPOINTS } from "../../../../../../shared/constants/api.constant.ts";
+import { CSP_URL } from "../../../../../../shared/constants/base-urls.constant.ts";
 import {
   cspReportErrorSchema,
   cspReportRateLimitErrorSchema,
@@ -64,7 +65,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
   );
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
-    `/${CREATE_CSP_REPORT}`,
+    `/${CSP_URL}/${CREATE_CSP_REPORT}`,
     {
       config: {
         rateLimit: HEALTH_RATE_LIMIT,

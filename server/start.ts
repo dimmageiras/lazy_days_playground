@@ -4,7 +4,10 @@ import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
-import { createRequestHandler } from "@react-router/express";
+import {
+  createRequestHandler,
+  type GetLoadContextFunction,
+} from "@react-router/express";
 import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import {
@@ -16,8 +19,11 @@ import {
 import { createClient as createGelClient } from "gel";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
+import { type AppLoadContext, RouterContextProvider } from "react-router";
 import type { ViteDevServer } from "vite";
 import { createServer } from "vite";
+
+import type { CSPNonceType } from "@shared/types/csp.type";
 
 import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import {
@@ -85,15 +91,40 @@ if (MODE !== TYPE_GENERATOR) {
       contentSecurityPolicy: IS_DEVELOPMENT
         ? false
         : { directives: CSP_DIRECTIVES, useDefaults: false },
-      // Disabled in development to allow React DevTools to work properly
-      // DevTools requires cross-origin embedding which COEP blocks
       crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+      enableCSPNonces: !IS_DEVELOPMENT,
       hsts: {
         includeSubDomains: true,
         maxAge: YEARS_ONE_IN_S,
         preload: true,
       },
     });
+
+    // Bridge CSP nonces from Fastify to Express res.locals
+    // This hook runs in Fastify's request lifecycle before Express middleware
+    try {
+      app.addHook("onRequest", async (_request, response) => {
+        if (response.cspNonce) {
+          const nodeRes = response.raw;
+
+          if (!nodeRes.locals) {
+            nodeRes.locals = { cspNonce: response.cspNonce };
+          } else {
+            nodeRes.locals.cspNonce = response.cspNonce;
+          }
+        }
+      });
+    } catch (error) {
+      log.error(
+        {
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        "💥 Failed to register CSP nonce bridge hook"
+      );
+      process.exit(1);
+    }
+
     log.info("✅ Helmet security headers registered");
   } catch (error) {
     log.error(
@@ -175,7 +206,7 @@ await app.register(async (fastify: FastifyInstance) => {
           title: "Lazy Days Playground API",
           version: "1.0.0",
         },
-        openapi: "3.1.0",
+        openapi: "3.1.2",
       },
       ...fastifyZodOpenApiTransformers,
     });
@@ -378,6 +409,20 @@ const reactRouterHandler = createRequestHandler({
       );
       throw error;
     }
+  },
+  getLoadContext: (_request, response): ReturnType<GetLoadContextFunction> => {
+    const context = new RouterContextProvider() as unknown as AppLoadContext;
+
+    // Get CSP nonces from response.locals (bridged from Fastify in onRequest hook)
+    const cspNonce: CSPNonceType = response.locals.cspNonce || {
+      script: "",
+      style: "",
+    };
+
+    // Store nonces as a property on context for middleware to access
+    context._cspNonce = cspNonce;
+
+    return context as unknown as ReturnType<GetLoadContextFunction>;
   },
   mode: MODE,
 });

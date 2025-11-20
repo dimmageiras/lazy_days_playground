@@ -51,7 +51,7 @@ export type ReportsCspClearDeleteError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */
@@ -140,7 +140,7 @@ export type ReportsCspDeleteDeleteError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */
@@ -284,7 +284,7 @@ export type ReportsCspListListError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */
@@ -373,7 +373,7 @@ export type ReportsCspReportCreateError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */

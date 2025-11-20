@@ -77,7 +77,7 @@ export type CheckEmailCreateError =
       message: string;
       /**
        * Seconds until retry
-       * @exclusiveMin 0
+       * @exclusiveMin true
        * @max 9007199254740991
        * @example 30
        */

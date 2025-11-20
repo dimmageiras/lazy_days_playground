@@ -10,6 +10,7 @@ import type {
 } from "@shared/types/generated/server/api-reports.type";
 
 import { API_REPORTS_ENDPOINTS } from "../../../../../../shared/constants/api.constant.ts";
+import { CSP_URL } from "../../../../../../shared/constants/base-urls.constant.ts";
 import {
   cspDeleteErrorSchema,
   cspDeleteRateLimitErrorSchema,
@@ -34,7 +35,7 @@ const deleteRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { fastIdGen, getClient, getCurrentISOTimestamp, log } = RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().delete(
-    `/${DELETE_CSP_REPORT}/:id`,
+    `/${CSP_URL}/${DELETE_CSP_REPORT}/:id`,
     {
       config: {
         rateLimit: HEALTH_RATE_LIMIT,
