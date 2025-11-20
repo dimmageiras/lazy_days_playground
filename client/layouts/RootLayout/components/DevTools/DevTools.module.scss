@@ -109,7 +109,13 @@
             }
           }
 
-          &[data-testid="react-router-devtools-trigger"] {
+          &[aria-label="Open TanStack Devtools"] {
+            [data-testid="react-router-devtools-trigger"] {
+              height: 1rem;
+              padding: 0;
+              width: 1rem;
+            }
+
             &::after {
               content: "React Router Dev Tools";
             }
