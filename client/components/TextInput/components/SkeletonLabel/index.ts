@@ -1,3 +1,1 @@
-import { SkeletonLabel } from "./SkeletonLabel";
-
-export { SkeletonLabel };
+export { SkeletonLabel } from "./SkeletonLabel";

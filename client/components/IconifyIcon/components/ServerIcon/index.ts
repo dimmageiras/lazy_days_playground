@@ -1,3 +1,1 @@
-import { ServerIcon } from "./ServerIcon";
-
-export { ServerIcon };
+export { ServerIcon } from "./ServerIcon";

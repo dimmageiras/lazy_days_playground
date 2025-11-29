@@ -1,3 +1,1 @@
-import { SkeletonInput } from "./SkeletonInput";
-
-export { SkeletonInput };
+export { SkeletonInput } from "./SkeletonInput";

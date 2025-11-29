@@ -1,3 +1,1 @@
-import { DynamicElement } from "./DynamicElement";
-
-export { DynamicElement };
+export { DynamicElement } from "./DynamicElement";

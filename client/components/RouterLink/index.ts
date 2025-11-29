@@ -1,3 +1,1 @@
-import { RouterLink } from "./RouterLink";
-
-export { RouterLink };
+export { RouterLink } from "./RouterLink";

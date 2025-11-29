@@ -1,3 +1,1 @@
-import { ListRendererBase } from "./ListRendererBase";
-
-export { ListRendererBase };
+export { ListRendererBase } from "./ListRendererBase";

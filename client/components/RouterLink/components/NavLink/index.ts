@@ -1,3 +1,1 @@
-import { NavLink } from "./NavLink";
-
-export { NavLink };
+export { NavLink } from "./NavLink";

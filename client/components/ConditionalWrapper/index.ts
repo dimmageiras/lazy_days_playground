@@ -1,3 +1,1 @@
-import { ConditionalWrapper } from "./ConditionalWrapper";
-
-export { ConditionalWrapper };
+export { ConditionalWrapper } from "./ConditionalWrapper";

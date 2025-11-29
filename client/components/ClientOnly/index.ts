@@ -1,3 +1,1 @@
-import { ClientOnly } from "./ClientOnly";
-
-export { ClientOnly };
+export { ClientOnly } from "./ClientOnly";

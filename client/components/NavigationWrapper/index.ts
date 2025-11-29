@@ -1,3 +1,1 @@
-import { NavigationWrapper } from "./NavigationWrapper";
-
-export { NavigationWrapper };
+export { NavigationWrapper } from "./NavigationWrapper";

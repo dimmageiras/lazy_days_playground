@@ -1,3 +1,1 @@
-import { InternalLink } from "./InternalLink";
-
-export { InternalLink };
+export { InternalLink } from "./InternalLink";

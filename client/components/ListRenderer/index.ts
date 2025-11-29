@@ -1,3 +1,1 @@
-import { ListRenderer } from "./ListRenderer";
-
-export { ListRenderer };
+export { ListRenderer } from "./ListRenderer";
