@@ -106,7 +106,7 @@ if (MODE !== TYPE_GENERATOR) {
         if (response.cspNonce) {
           const nodeRes = response.raw;
 
-          if (!nodeRes.locals) {
+          if (nodeRes.locals === undefined) {
             nodeRes.locals = { cspNonce: response.cspNonce };
           } else {
             nodeRes.locals.cspNonce = response.cspNonce;
@@ -233,7 +233,7 @@ await app.register(async (fastify: FastifyInstance) => {
           const referer = request.headers.referer;
 
           // Block requests not from same origin
-          if (!referer || !referer.includes(request.hostname)) {
+          if (!referer?.includes(request.hostname)) {
             response.code(NOT_FOUND).send({
               error: `No routes matched location "${request.url}"`,
               statusCode: NOT_FOUND,
