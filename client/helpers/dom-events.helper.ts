@@ -43,13 +43,13 @@ import type { MouseEvent } from "react";
  * This ensures that critical user interactions (like navigation or form submission)
  * take precedence over secondary events like validation or blur handlers.
  */
-const handleMouseDown = <T extends HTMLElement>(
-  event: MouseEvent<T>,
-  { enableLeftClick, enableMiddleClick, enableRightClick } = {
-    enableLeftClick: true,
-    enableMiddleClick: false,
-    enableRightClick: false,
-  }
+const handleMouseDown = <TElement extends HTMLElement>(
+  event: MouseEvent<TElement>,
+  {
+    enableLeftClick = true,
+    enableMiddleClick = false,
+    enableRightClick = false,
+  } = {}
 ): void => {
   event.preventDefault();
   event.stopPropagation();

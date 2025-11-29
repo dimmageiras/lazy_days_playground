@@ -15,6 +15,7 @@ interface EnvironmentVariables {
   KEY_LENGTH: `${number}`;
   LOG_LEVEL: LoggerOptions["level"];
   SALT_LENGTH: `${number}`;
+  SSR: boolean;
   TOKEN_ENCRYPTION_METHOD: CipherGCMTypes;
   VITE_APP_ALL_DEV_TOOLS?: `${boolean}`;
   VITE_APP_HOST: string;

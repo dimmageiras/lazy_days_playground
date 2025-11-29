@@ -1,68 +1,28 @@
 import classNames from "classnames";
-import type { JSX, MouseEvent, Ref } from "react";
-import type { Path } from "react-router";
-import { Link, NavLink } from "react-router";
+import type { JSX } from "react";
 
 import { DomEventsHelper } from "@client/helpers/dom-events.helper";
 
+import { ExternalLink } from "./components/ExternalLink";
+import { InternalLink } from "./components/InternalLink";
+import { NavLink } from "./components/NavLink";
 import { LINK_AS } from "./constants/router-link.constant";
 import styles from "./RouterLink.module.scss";
-
-interface CommonLinkProps {
-  /** Content to be rendered inside the link */
-  children?: JSX.Element | string | null;
-  /** Additional CSS classes for styling */
-  className?: string | undefined;
-  /** Whether to show text decoration on hover */
-  hasTextDecorationOnHover?: boolean;
-  /** onClick event handler */
-  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
-  /** Whether to prioritize onClick event over other events */
-  prioritizeOnClick?: boolean;
-  /** Ref for accessing the underlying anchor element */
-  ref?: Ref<HTMLAnchorElement | null>;
-}
-
-interface ExternalLinkProps extends CommonLinkProps {
-  /** Link type that determines the rendered component:
-   * - 'external': Regular <a> tag with security attributes
-   */
-  as?: "external";
-  /** Whether to open link in new tab */
-  shouldOpenInNewTab?: boolean;
-  /** Destination URL */
-  to?: string | undefined;
-}
-
-interface InternalLinkProps extends CommonLinkProps {
-  /** Link type that determines the rendered component:
-   * - 'internal': React Router's <Link> for client-side navigation
-   */
-  as: "internal";
-  /** Whether to replace current history entry instead of pushing */
-  shouldReplace?: boolean;
-  /** Destination URL or route path */
-  to: string | Partial<Path>;
-}
-
-interface NavLinkProps extends CommonLinkProps {
-  /** CSS class applied when NavLink is active */
-  activeClassName?: string | undefined;
-  /** Link type that determines the rendered component:
-   * - 'navLink': React Router's <NavLink> with active state support
-   */
-  as: "navLink";
-  /** Whether to replace current history entry instead of pushing */
-  shouldReplace?: boolean;
-  /** Destination URL or route path */
-  to: string | Partial<Path>;
-}
+import type {
+  CommonPropsToRemove,
+  ExternalRouterLinkProps,
+  InternalRouterLinkProps,
+  NavRouterLinkProps,
+} from "./types/router-link.type";
 
 /**
  * Props interface for the RouterLink component.
  * Different props are applicable based on the link type (external, internal, or navLink).
  */
-type RouterLinkProps = ExternalLinkProps | InternalLinkProps | NavLinkProps;
+type RouterLinkProps =
+  | ExternalRouterLinkProps
+  | InternalRouterLinkProps
+  | NavRouterLinkProps;
 
 /**
  * A type-safe link component with three variants for handling both internal routing and external links.
@@ -108,22 +68,20 @@ type RouterLinkProps = ExternalLinkProps | InternalLinkProps | NavLinkProps;
  * @param props.to - Destination URL (external) or route path/config (internal/navLink)
  * @returns JSX.Element - The rendered link component: `<a>`, `<Link>`, or `<NavLink>` based on 'as' prop
  */
+
 const RouterLink = (props: RouterLinkProps): JSX.Element => {
   const { handleMouseDown } = DomEventsHelper;
 
   const {
     as = "external",
-    children = null,
     className,
     hasTextDecorationOnHover = false,
-    onClick,
-    prioritizeOnClick = false,
-    ref,
+    ...restProps
   } = props;
 
   const convertedType = Reflect.get(LINK_AS, as);
 
-  const linkClassNames = classNames(
+  const linkClassName = classNames(
     styles["link"],
     {
       [String(styles["hover-text-decoration"])]: hasTextDecorationOnHover,
@@ -132,63 +90,31 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
   );
 
   switch (convertedType) {
-    case LINK_AS.internal: {
+    case LINK_AS.internal:
       return (
-        <Link
-          className={linkClassNames}
-          ref={ref}
-          onClick={onClick}
-          to={"to" in props && typeof props.to === "string" ? props.to : ""}
-          {...("shouldReplace" in props &&
-            props.shouldReplace && { replace: !!props.shouldReplace })}
-          {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
-        >
-          {children}
-        </Link>
+        <InternalLink
+          className={linkClassName}
+          handleMouseDown={handleMouseDown}
+          {...(restProps as Omit<InternalRouterLinkProps, CommonPropsToRemove>)}
+        />
       );
-    }
-
-    case LINK_AS.navLink: {
+    case LINK_AS.navLink:
       return (
         <NavLink
-          className={({ isActive }): string =>
-            classNames(linkClassNames, {
-              ...("activeClassName" in props && {
-                [String(props.activeClassName)]: isActive,
-              }),
-            })
-          }
-          onClick={onClick}
-          ref={ref}
-          to={"to" in props && typeof props.to === "string" ? props.to : ""}
-          {...("shouldReplace" in props &&
-            props.shouldReplace && { replace: !!props.shouldReplace })}
-          {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
-        >
-          {children}
-        </NavLink>
+          className={linkClassName}
+          handleMouseDown={handleMouseDown}
+          {...(restProps as Omit<NavRouterLinkProps, CommonPropsToRemove>)}
+        />
       );
-    }
-
     case LINK_AS.external:
-    default: {
+    default:
       return (
-        <a
-          className={linkClassNames}
-          href={
-            "to" in props && typeof props.to === "string" ? props.to : undefined
-          }
-          onClick={onClick}
-          ref={ref}
-          rel="noopener noreferrer"
-          {...("shouldOpenInNewTab" in props &&
-            props.shouldOpenInNewTab && { target: "_blank" })}
-          {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
-        >
-          {children}
-        </a>
+        <ExternalLink
+          className={linkClassName}
+          handleMouseDown={handleMouseDown}
+          {...(restProps as Omit<ExternalRouterLinkProps, CommonPropsToRemove>)}
+        />
       );
-    }
   }
 };
 

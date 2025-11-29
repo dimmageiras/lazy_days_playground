@@ -15,5 +15,9 @@
     "editor.formatOnSave": false,
     "editor.formatOnType": false,
     "editor.suggest.insertMode": "replace"
+  },
+  "sonarlint.connectedMode.project": {
+    "connectionId": "dimmageiras",
+    "projectKey": "dimmageiras_lazy_days_playground"
   }
 }

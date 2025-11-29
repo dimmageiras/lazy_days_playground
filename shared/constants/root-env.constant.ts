@@ -7,6 +7,7 @@ const {
   KEY_LENGTH,
   LOG_LEVEL,
   SALT_LENGTH,
+  SSR = true,
   TOKEN_ENCRYPTION_METHOD,
   VITE_APP_ALL_DEV_TOOLS,
   VITE_APP_HOST,
@@ -15,13 +16,13 @@ const {
   VITE_APP_RQDT,
   VITE_APP_RRDT,
   VITE_APP_TYPE_GENERATOR_MODE,
-} = typeof process !== "undefined" ? process.env : import.meta.env;
+} = typeof process === "object" ? process.env : import.meta.env;
 
 const HAS_DEV_TOOLS = VITE_APP_ALL_DEV_TOOLS === "true";
 const HAS_RQDT = VITE_APP_RQDT === "true";
 const HAS_RRDT = VITE_APP_RRDT === "true";
 const IS_DEVELOPMENT = VITE_APP_IS_DEVELOPMENT === "true";
-const IS_SSR = typeof window === "undefined";
+const IS_SSR = SSR;
 
 const MODES = Object.freeze({
   DEVELOPMENT: "development",

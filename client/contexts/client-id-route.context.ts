@@ -2,6 +2,7 @@ import type { AsyncLocalStorage } from "node:async_hooks";
 import type { Cookie } from "react-router";
 
 import { CookieHelper } from "@client/helpers/cookie.helper";
+import { IS_SSR } from "@shared/constants/root-env.constant";
 import { IdUtilsHelper } from "@shared/helpers/id-utils.helper";
 
 interface ClientIdRouteContextValue {
@@ -12,7 +13,7 @@ interface ClientIdRouteContextValue {
 let clientIdRouteContextStorage: AsyncLocalStorage<ClientIdRouteContextValue> | null =
   null;
 
-if (import.meta.env.SSR) {
+if (IS_SSR) {
   const { AsyncLocalStorage } = await import("node:async_hooks");
 
   clientIdRouteContextStorage =
@@ -51,7 +52,7 @@ const getRequest = (): Request | undefined => {
  * ```
  */
 const hasAccessToken = (): boolean => {
-  if (!import.meta.env.SSR) {
+  if (!IS_SSR) {
     return false;
   }
 
@@ -97,7 +98,7 @@ const getExistingClientId = async (
     return store.clientId;
   }
 
-  if (!import.meta.env.SSR || !store?.request) {
+  if (!IS_SSR || !store?.request) {
     return null;
   }
 
