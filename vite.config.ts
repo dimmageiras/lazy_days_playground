@@ -6,16 +6,23 @@ import pluginBabel from "vite-plugin-babel";
 import pluginChecker from "vite-plugin-checker";
 import tsConfigPaths from "vite-tsconfig-paths";
 
+import {
+  HAS_DEV_TOOLS,
+  HAS_RRDT,
+} from "./shared/constants/root-env.constant.ts";
+
 const viteConfig = defineConfig(() => {
   return {
     plugins: [
-      reactRouterDevTools({
-        includeInProd: {
-          client: false,
-          devTools: false,
-          server: false,
-        },
-      }),
+      HAS_DEV_TOOLS &&
+        HAS_RRDT &&
+        reactRouterDevTools({
+          includeInProd: {
+            client: false,
+            devTools: false,
+            server: false,
+          },
+        }),
       reactRouter(),
       pluginBabel({
         babelConfig: {
@@ -31,7 +38,6 @@ const viteConfig = defineConfig(() => {
       }),
       tsConfigPaths(),
       pluginChecker({
-        enableBuild: false,
         eslint: {
           dev: {
             logLevel: ["error"],
