@@ -25,6 +25,17 @@ interface HandleAuthErrorReturn<
   statusCode: TErrorStatus | HttpErrorStatuses["SERVICE_UNAVAILABLE"];
 }
 
+const validateErrorParam = <TParam>(
+  param: TParam | undefined,
+  paramName: string
+): TParam => {
+  if (!param) {
+    throw new Error(`${paramName} is required`);
+  }
+
+  return param;
+};
+
 const handleAuthError = <
   TErrorStatus extends HttpErrorStatuses[keyof HttpErrorStatuses]
 >({
@@ -55,91 +66,64 @@ const handleAuthError = <
   const { SERVICE_UNAVAILABLE } = HTTP_STATUS;
 
   switch (true) {
-    case error instanceof INVALID_DATA_ERROR: {
-      if (!invalidDataError) {
-        throw new Error("Invalid data error is required");
-      }
+    case error instanceof INVALID_DATA_ERROR:
+      return validateErrorParam(invalidDataError, "Invalid data error");
 
-      return invalidDataError;
-    }
+    case error instanceof NO_IDENTITY_FOUND_ERROR:
+      return validateErrorParam(
+        noIdentityFoundError,
+        "No identity found error"
+      );
 
-    case error instanceof NO_IDENTITY_FOUND_ERROR: {
-      if (!noIdentityFoundError) {
-        throw new Error("No identity found error is required");
-      }
+    case error instanceof USER_ALREADY_REGISTERED_ERROR:
+      return validateErrorParam(
+        userAlreadyRegisteredError,
+        "User already registered error"
+      );
 
-      return noIdentityFoundError;
-    }
+    case error instanceof VERIFICATION_TOKEN_EXPIRED_ERROR:
+      return validateErrorParam(
+        verificationTokenExpiredError,
+        "Verification token expired error"
+      );
 
-    case error instanceof USER_ALREADY_REGISTERED_ERROR: {
-      if (!userAlreadyRegisteredError) {
-        throw new Error("User already registered error is required");
-      }
+    case error instanceof PKCE_VERIFICATION_FAILED_ERROR:
+      return validateErrorParam(
+        pkceVerificationFailedError,
+        "PKCE verification failed error"
+      );
 
-      return userAlreadyRegisteredError;
-    }
+    case error instanceof VERIFICATION_ERROR:
+      return validateErrorParam(verificationError, "Verification error");
 
-    case error instanceof VERIFICATION_TOKEN_EXPIRED_ERROR: {
-      if (!verificationTokenExpiredError) {
-        throw new Error("Verification token expired error is required");
-      }
+    case error instanceof INVALID_REFERENCE_ERROR:
+      return validateErrorParam(
+        invalidReferenceError,
+        "Invalid reference error"
+      );
 
-      return verificationTokenExpiredError;
-    }
+    case error instanceof QUERY_ERROR:
+      return validateErrorParam(queryError, "Query error");
 
-    case error instanceof PKCE_VERIFICATION_FAILED_ERROR: {
-      if (!pkceVerificationFailedError) {
-        throw new Error("PKCE verification failed error is required");
-      }
-
-      return pkceVerificationFailedError;
-    }
-
-    case error instanceof VERIFICATION_ERROR: {
-      if (!verificationError) {
-        throw new Error("Verification error is required");
-      }
-
-      return verificationError;
-    }
-
-    case error instanceof INVALID_REFERENCE_ERROR: {
-      if (!invalidReferenceError) {
-        throw new Error("Invalid reference error is required");
-      }
-
-      return invalidReferenceError;
-    }
-
-    case error instanceof QUERY_ERROR: {
-      if (!queryError) {
-        throw new Error("Query error is required");
-      }
-
-      return queryError;
-    }
-
-    case error instanceof USER_ERROR: {
-      if (!userError) {
-        throw new Error("User error is required");
-      }
-
-      return userError;
-    }
+    case error instanceof USER_ERROR:
+      return validateErrorParam(userError, "User error");
 
     case error instanceof BACKEND_ERROR:
-    default: {
       if (backendError) {
         return backendError;
       }
 
-      return {
-        details: "An unexpected error occurred. Please try again later.",
-        errorMessageResponse: "Service temporarily unavailable",
-        statusCode: SERVICE_UNAVAILABLE,
-      };
-    }
+      break;
+
+    default:
+      break;
   }
+
+  return {
+    details: "An unexpected error occurred. Please try again later.",
+    errorMessageResponse: "Service temporarily unavailable",
+    statusCode: SERVICE_UNAVAILABLE,
+  };
 };
 
 export const GelDbHelper = { handleAuthError };
