@@ -33,38 +33,36 @@ const FormFields = ({
   const shouldEnableSignUp = isFormValid && isNewUser;
 
   return (
-    <>
-      <fieldset className={styles["fieldset"]}>
-        {isFormLoading ? (
-          <>
-            <TextInput
-              hasFloatingLabel
-              isLoading
-              label={emailLabel}
-              type="email"
-            />
-            <TextInput
-              hasFloatingLabel
-              isLoading
-              label={passwordLabel}
-              type="password"
-            />
-          </>
-        ) : (
-          <>
-            <EmailField />
-            <PasswordField />
-          </>
-        )}
-        {isNewUser ? <ConfirmPassword /> : null}
-        <ActionButtons
-          isExistingUser={isExistingUser}
-          shouldDisableActionButtons={isUnchecked}
-          shouldEnableSignIn={shouldEnableSignIn}
-          shouldEnableSignUp={shouldEnableSignUp}
-        />
-      </fieldset>
-    </>
+    <fieldset className={styles["fieldset"]}>
+      {isFormLoading ? (
+        <>
+          <TextInput
+            hasFloatingLabel
+            isLoading
+            label={emailLabel}
+            type="email"
+          />
+          <TextInput
+            hasFloatingLabel
+            isLoading
+            label={passwordLabel}
+            type="password"
+          />
+        </>
+      ) : (
+        <>
+          <EmailField />
+          <PasswordField />
+        </>
+      )}
+      {isNewUser ? <ConfirmPassword /> : null}
+      <ActionButtons
+        isExistingUser={isExistingUser}
+        shouldDisableActionButtons={isUnchecked}
+        shouldEnableSignIn={shouldEnableSignIn}
+        shouldEnableSignUp={shouldEnableSignUp}
+      />
+    </fieldset>
   );
 };
 

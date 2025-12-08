@@ -98,6 +98,7 @@ const TextInput = ({
     [autoComplete, getNoAutofillProps]
   );
 
+  const doesNotHaveFloatingLabel = !hasFloatingLabel;
   const hasErrorMessage = !!errorMessage;
   const isDisabled = !!props.disabled;
   const isRequired = !!props.required;
@@ -106,7 +107,7 @@ const TextInput = ({
     <div className={styles["text-input-container"]}>
       {isLoading ? (
         <>
-          {!hasFloatingLabel ? (
+          {doesNotHaveFloatingLabel ? (
             <SkeletonLabel
               className={classNames(styles["label"], styles["skeleton"])}
               id={`${props.name ?? props.id}-unique-id-label`}
