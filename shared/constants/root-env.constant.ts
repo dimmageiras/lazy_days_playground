@@ -30,21 +30,18 @@ const MODES = Object.freeze({
   TYPE_GENERATOR: "type_generator",
 } as const);
 
-let MODE: (typeof MODES)[keyof typeof MODES];
+const MODE: (typeof MODES)[keyof typeof MODES] = (() => {
+  switch (true) {
+    case !!VITE_APP_TYPE_GENERATOR_MODE:
+      return MODES.TYPE_GENERATOR;
 
-switch (true) {
-  case !!VITE_APP_TYPE_GENERATOR_MODE:
-    MODE = MODES.TYPE_GENERATOR;
-    break;
+    case IS_DEVELOPMENT:
+      return MODES.DEVELOPMENT;
 
-  case IS_DEVELOPMENT:
-    MODE = MODES.DEVELOPMENT;
-    break;
-
-  default:
-    MODE = MODES.PRODUCTION;
-    break;
-}
+    default:
+      return MODES.PRODUCTION;
+  }
+})();
 
 export {
   AUTH_TAG_LENGTH,

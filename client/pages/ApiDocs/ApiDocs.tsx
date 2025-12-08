@@ -8,7 +8,11 @@ const ApiDocs = (): JSX.Element => {
       <title>API Swagger Documentation</title>
       <meta name="description" content="API Swagger Documentation" />
       <main className={styles["api-swagger"]}>
-        <iframe className={styles["swagger-iframe"]} src="/api/docs/swagger" />
+        <iframe
+          className={styles["swagger-iframe"]}
+          src="/api/docs/swagger"
+          title="API Swagger Documentation"
+        />
       </main>
     </>
   );
