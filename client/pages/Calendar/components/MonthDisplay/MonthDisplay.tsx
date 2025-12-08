@@ -17,7 +17,7 @@ const MonthDisplay = (): JSX.Element => {
   const { getMonthYearDetails } = CalendarUtilsHelper;
   const { lastDate } = getMonthYearDetails(selectedMonth);
 
-  const daysInMonth = [...Array(lastDate)].map((_, index) => index + 1);
+  const daysInMonth = Array.from({ length: lastDate }, (_, index) => index + 1);
 
   return (
     <div className={styles["month-display"]}>
