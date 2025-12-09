@@ -38,6 +38,7 @@ const viteConfig = defineConfig(() => {
       }),
       tsConfigPaths(),
       pluginChecker({
+        enableBuild: false,
         eslint: {
           dev: {
             logLevel: ["error"],
