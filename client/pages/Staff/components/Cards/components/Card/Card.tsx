@@ -30,9 +30,9 @@ const Card = ({
       description={description}
       image={image}
       isHidden={
-        selectedTreatment !== "all"
-          ? !treatmentNames.includes(selectedTreatment)
-          : false
+        selectedTreatment === "all"
+          ? false
+          : !treatmentNames.includes(selectedTreatment)
       }
       name={name}
     />

@@ -37,8 +37,7 @@ const useEmailExistence = (): {
     },
   });
 
-  const latestMutationResult =
-    emailExistenceMutations[emailExistenceMutations.length - 1] ?? null;
+  const latestMutationResult = emailExistenceMutations.at(-1) ?? null;
   const emailExists = latestMutationResult;
 
   const isExistingUser = emailExists === true;

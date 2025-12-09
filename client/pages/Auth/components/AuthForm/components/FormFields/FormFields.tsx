@@ -57,7 +57,6 @@ const FormFields = ({
       )}
       {isNewUser ? <ConfirmPassword /> : null}
       <ActionButtons
-        isExistingUser={isExistingUser}
         shouldDisableActionButtons={isUnchecked}
         shouldEnableSignIn={shouldEnableSignIn}
         shouldEnableSignUp={shouldEnableSignUp}

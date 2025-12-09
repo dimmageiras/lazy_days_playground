@@ -7,7 +7,6 @@ import { DomEventsHelper } from "@client/helpers/dom-events.helper";
 import styles from "./ActionButtons.module.scss";
 
 interface ActionButtonsProps {
-  isExistingUser: boolean;
   shouldDisableActionButtons: boolean;
   shouldEnableSignIn: boolean;
   shouldEnableSignUp: boolean;

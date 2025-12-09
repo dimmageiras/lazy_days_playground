@@ -13,10 +13,10 @@ const hydrate = async (): Promise<void> => {
   });
 };
 
-if (window.requestIdleCallback) {
-  window.requestIdleCallback(hydrate);
+if (globalThis.requestIdleCallback) {
+  globalThis.requestIdleCallback(hydrate);
 } else {
   // Safari doesn't support requestIdleCallback
   // https://caniuse.com/requestidlecallback
-  window.setTimeout(hydrate, 1);
+  globalThis.setTimeout(hydrate, 1);
 }
