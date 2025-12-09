@@ -11,6 +11,7 @@ export default defineConfig({
         "**/coverage/**",
         "dist/",
         "node_modules/",
+        "shared/test-utils/**",
       ],
       provider: "v8",
     },
