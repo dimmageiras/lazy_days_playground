@@ -7,7 +7,6 @@ const {
   KEY_LENGTH,
   LOG_LEVEL,
   SALT_LENGTH,
-  SSR = true,
   TOKEN_ENCRYPTION_METHOD,
   VITE_APP_ALL_DEV_TOOLS,
   VITE_APP_HOST,
@@ -22,7 +21,6 @@ const HAS_DEV_TOOLS = VITE_APP_ALL_DEV_TOOLS === "true";
 const HAS_RQDT = VITE_APP_RQDT === "true";
 const HAS_RRDT = VITE_APP_RRDT === "true";
 const IS_DEVELOPMENT = VITE_APP_IS_DEVELOPMENT === "true";
-const IS_SSR = SSR;
 
 const MODES = Object.freeze({
   DEVELOPMENT: "development",
@@ -52,7 +50,6 @@ export {
   HAS_RQDT,
   HAS_RRDT,
   IS_DEVELOPMENT,
-  IS_SSR,
   IV_LENGTH,
   KEY_LENGTH,
   LOG_LEVEL,
