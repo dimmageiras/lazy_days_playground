@@ -27,6 +27,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta property="csp-nonce" nonce={styleNonce} />
         <Meta />
         <Links nonce={styleNonce} />
       </head>
@@ -37,7 +38,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
           <script src="/@vite-plugin-checker-runtime-entry" type="module" />
         ) : null}
         <ScrollRestoration nonce={scriptNonce} />
-        <Scripts />
+        <Scripts nonce={scriptNonce} />
       </body>
     </html>
   );
