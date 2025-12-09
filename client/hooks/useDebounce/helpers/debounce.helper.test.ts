@@ -3,12 +3,14 @@ import { describe, vi } from "vitest";
 import { DebounceHelper } from "./debounce.helper";
 
 describe("DebounceHelper", () => {
+  const { safeApplyCallback } = DebounceHelper;
+
   describe("safeApplyCallback", (it) => {
     it("calls the callback when it is a function", ({ expect }) => {
       const mockCallback = vi.fn();
       const args = ["arg1", 42, { key: "value" }];
 
-      DebounceHelper.safeApplyCallback(mockCallback, args);
+      safeApplyCallback(mockCallback, args);
 
       expect(mockCallback).toHaveBeenCalledTimes(1);
       expect(mockCallback).toHaveBeenCalledWith(...args);
@@ -17,7 +19,7 @@ describe("DebounceHelper", () => {
     it("does not call the callback when it is undefined", ({ expect }) => {
       const mockCallback = vi.fn();
 
-      DebounceHelper.safeApplyCallback(undefined, []);
+      safeApplyCallback(undefined, []);
 
       expect(mockCallback).not.toHaveBeenCalled();
     });
@@ -25,7 +27,7 @@ describe("DebounceHelper", () => {
     it("passes empty arguments array correctly", ({ expect }) => {
       const mockCallback = vi.fn();
 
-      DebounceHelper.safeApplyCallback(mockCallback, []);
+      safeApplyCallback(mockCallback, []);
 
       expect(mockCallback).toHaveBeenCalledTimes(1);
       expect(mockCallback).toHaveBeenCalledWith();
@@ -35,7 +37,7 @@ describe("DebounceHelper", () => {
       const mockCallback = vi.fn();
       const args = ["string", 123, true, null, undefined, { obj: "value" }];
 
-      DebounceHelper.safeApplyCallback(mockCallback, args);
+      safeApplyCallback(mockCallback, args);
 
       expect(mockCallback).toHaveBeenCalledTimes(1);
       expect(mockCallback).toHaveBeenCalledWith(...args);
@@ -44,7 +46,7 @@ describe("DebounceHelper", () => {
     it("works with async callbacks", async ({ expect }) => {
       const mockAsyncCallback = vi.fn().mockResolvedValue("result");
 
-      DebounceHelper.safeApplyCallback(mockAsyncCallback, []);
+      safeApplyCallback(mockAsyncCallback, []);
 
       expect(mockAsyncCallback).toHaveBeenCalledTimes(1);
       expect(mockAsyncCallback).toHaveBeenCalledWith();
@@ -56,7 +58,7 @@ describe("DebounceHelper", () => {
       });
 
       expect(() => {
-        DebounceHelper.safeApplyCallback(errorCallback, []);
+        safeApplyCallback(errorCallback, []);
       }).toThrow("Test error");
 
       expect(errorCallback).toHaveBeenCalledTimes(1);

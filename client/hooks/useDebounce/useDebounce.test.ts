@@ -1,5 +1,5 @@
 import { renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, vi } from "vitest";
+import { beforeEach, describe, vi } from "vitest";
 
 import { TIMING } from "@shared/constants/timing.constant";
 
@@ -10,11 +10,6 @@ describe("useDebounce", (it) => {
 
   beforeEach(() => {
     vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-    vi.useRealTimers();
   });
 
   it("executes callback after the specified delay", ({ expect }) => {
