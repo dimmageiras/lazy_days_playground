@@ -149,12 +149,13 @@ export default defineConfig([
       },
     },
   },
-  // Test files: disable CSS modules validation
+  // Test files: disable CSS modules validation and SonarJS assertions rule
   {
     files: ["**/*.test.{ts,tsx}"],
     rules: {
-      "css-modules/no-unused-class": "off",
       "css-modules/no-undef-class": "off",
+      "css-modules/no-unused-class": "off",
+      "sonarjs/assertions-in-tests": "off",
     },
   },
   // Config files and entry points: allow default exports

@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef } from "react";
 
 import type { TIMING } from "@shared/constants/timing.constant";
 
+import { DebounceHelper } from "./helpers/debounce.helper";
+
 const useDebounce = <TArgs extends unknown[]>(
   callback: (...args: TArgs) => void | Promise<void>,
   delay: (typeof TIMING)[keyof typeof TIMING]
@@ -29,11 +31,10 @@ const useDebounce = <TArgs extends unknown[]>(
       }
 
       timeoutRef.current = setTimeout(() => {
+        const { safeApplyCallback } = DebounceHelper;
         const currentCallback = Reflect.get(callbackRef, "current");
 
-        if (typeof currentCallback === "function") {
-          Reflect.apply(currentCallback, undefined, args);
-        }
+        safeApplyCallback(currentCallback, args);
       }, delay);
     },
     [delay]
