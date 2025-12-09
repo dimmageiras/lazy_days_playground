@@ -25,7 +25,8 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
   const { DATABASE } = API_HEALTH_ENDPOINTS;
   const { MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } = HTTP_STATUS;
 
-  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log, maskDsnCredentials } =
+    RoutesHelper;
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${DATABASE}`,
@@ -75,10 +76,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
 
         const dbResponse: HealthDatabaseListData = {
           database: "gel",
-          dsn:
-            typeof GEL_DSN === "string"
-              ? GEL_DSN.replace(/\/\/.*@/, "//***@")
-              : GEL_DSN,
+          dsn: maskDsnCredentials(GEL_DSN),
           test_result: queryResult,
           timestamp: getCurrentISOTimestamp(),
         };
@@ -87,10 +85,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
       } catch (error) {
         log.error(
           {
-            dsn:
-              typeof GEL_DSN === "string"
-                ? GEL_DSN.replace(/\/\/.*@/, "//***@")
-                : "undefined",
+            dsn: maskDsnCredentials(GEL_DSN),
             error: error instanceof Error ? error.message : "Unknown error",
             requestId,
             stack: error instanceof Error ? error.stack : undefined,

@@ -1,6 +1,6 @@
 const TEXT_INPUT_TYPES = Object.freeze({
   EMAIL: "email",
-  PASSWORD: "password",
+  PASS: "password",
   TEXT: "text",
 } as const);
 

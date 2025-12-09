@@ -1,8 +1,8 @@
-import type { FastifyInstance } from "fastify";
 import { exec } from "node:child_process";
 import { access, constants, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
 import { promisify } from "node:util";
-import path from "path";
+import type { OpenAPI } from "openapi-types";
 import type { GenerateApiConfiguration } from "swagger-typescript-api";
 import { generateApi } from "swagger-typescript-api";
 
@@ -13,27 +13,8 @@ import { PinoLogHelper } from "./pino-log.helper.ts";
 
 const execAsync = promisify(exec);
 
-type OpenAPIV3_1_Document = Extract<
-  ReturnType<FastifyInstance["swagger"]>,
-  { openapi: string }
->;
-
-const generateContractsForRoute = async ({
-  cleanOnFirstRun,
-  routePath,
-  spec,
-  isLastRoute,
-}: {
-  cleanOnFirstRun: boolean;
-  routePath: (typeof SWAGGER_ROUTES)[keyof typeof SWAGGER_ROUTES];
-  spec: OpenAPIV3_1_Document;
-  isLastRoute: boolean;
-}): Promise<void> => {
-  const { getObjectEntries, isPlainObject } = ObjectUtilsHelper;
-  const { log } = PinoLogHelper;
-
-  const fileName = `${routePath.replace("/", "-")}.type.ts`;
-  const output = path.resolve(process.cwd(), "./shared/types/generated/server");
+const validateOpenApiSpec = (spec: OpenAPI.Document) => {
+  const { isPlainObject } = ObjectUtilsHelper;
 
   if (!isPlainObject(spec)) {
     throw new Error("❌ Spec is not an object");
@@ -43,7 +24,30 @@ const generateContractsForRoute = async ({
     throw new Error("❌ Spec.paths is not an object");
   }
 
-  const { paths, ...specRest } = spec;
+  return {
+    ...spec,
+    paths: spec.paths,
+  };
+};
+
+const generateContractsForRoute = async ({
+  cleanOnFirstRun,
+  routePath,
+  spec,
+  isLastRoute,
+}: {
+  cleanOnFirstRun: boolean;
+  routePath: (typeof SWAGGER_ROUTES)[keyof typeof SWAGGER_ROUTES];
+  spec: OpenAPI.Document;
+  isLastRoute: boolean;
+}): Promise<void> => {
+  const { getObjectEntries } = ObjectUtilsHelper;
+  const { log } = PinoLogHelper;
+
+  const fileName = `${routePath.replace("/", "-")}.type.ts`;
+  const output = path.resolve(process.cwd(), "./shared/types/generated/server");
+
+  const { paths, ...specRest } = validateOpenApiSpec(spec);
 
   const filteredPaths = Object.fromEntries(
     getObjectEntries(paths).filter(([key]) => {
@@ -104,8 +108,15 @@ const generateContractsForRoute = async ({
       const generatedDir = path.join(output, "*.ts");
 
       await execAsync(`npx eslint --fix "${generatedDir}"`);
-    } catch (_eslintError) {
+    } catch (eslintError) {
       log.warn(
+        {
+          eslintError:
+            eslintError instanceof Error
+              ? eslintError.message
+              : String(eslintError),
+          stack: eslintError instanceof Error ? eslintError.stack : undefined,
+        },
         "⚠️  ESLint had warnings/errors for generated files (this is expected)"
       );
     }

@@ -60,7 +60,7 @@ const cspListSuccessSchema = zObject({
         }),
         ip_address: zString().nullish().meta({
           description: "IP address of the client that triggered the violation",
-          example: "192.168.1.1",
+          example: "0.0.0.0",
         }),
         line_number: zNumber().nullish().meta({
           description:

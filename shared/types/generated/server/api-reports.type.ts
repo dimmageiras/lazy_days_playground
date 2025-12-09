@@ -213,7 +213,7 @@ export interface ReportsCspListListData {
     identity_id?: string | null;
     /**
      * IP address of the client that triggered the violation
-     * @example "192.168.1.1"
+     * @example "0.0.0.0"
      */
     ip_address?: string | null;
     /**

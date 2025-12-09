@@ -37,10 +37,9 @@ const Header = (): JSX.Element => {
           />
         </MonthNavigation>
       </section>
-      <div
+      <section
         aria-label="Calendar filters"
         className={styles["filter-controls"]}
-        role="group"
       >
         <CheckBox
           aria-label="Only show available"
@@ -51,7 +50,7 @@ const Header = (): JSX.Element => {
           onChange={() => setShowAvailable(!showAvailable)}
           value="only-show-available"
         />
-      </div>
+      </section>
     </div>
   );
 };

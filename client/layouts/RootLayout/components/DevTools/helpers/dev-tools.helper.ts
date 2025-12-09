@@ -1,4 +1,14 @@
 /**
+ * Creates a cleanup function for MutationObserver instances
+ * @param observer The observer to disconnect
+ */
+const createObserverCleanup = (observer: MutationObserver | null): void => {
+  if (observer) {
+    observer.disconnect();
+  }
+};
+
+/**
  * Sets up the requested DevTools button positioning with automatic detection
  * Observes DOM changes until successful positioning
  * @param buttonSelector - CSS selector for the DevTools button element to be repositioned
@@ -11,28 +21,24 @@ const setupDevToolsButton = (
 ): (() => void) => {
   let observer: MutationObserver | null = null;
 
-  const destroy = () => {
-    if (observer) {
-      observer.disconnect();
-      observer = null;
-    }
-  };
-
   observer = new MutationObserver(() => {
     const button = document.querySelector(buttonSelector);
     const container = document.querySelector(containerSelector);
 
     if (button && container) {
       container.appendChild(button);
-      destroy();
+      createObserverCleanup(observer);
     }
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 
-  return destroy;
+  return () => {
+    createObserverCleanup(observer);
+  };
 };
 
 export const DevToolsHelper = {
+  createObserverCleanup,
   setupDevToolsButton,
 };

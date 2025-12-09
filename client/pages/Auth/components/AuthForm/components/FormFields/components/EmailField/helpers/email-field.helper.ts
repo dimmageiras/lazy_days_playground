@@ -13,7 +13,7 @@ const checkEmailValidity = async (
     unknown
   >
 ): Promise<void> => {
-  const signinSchema = authFormSchema._def.options.find(
+  const signinSchema = authFormSchema.def.options.find(
     (option) => option.shape.mode.value === "signin"
   );
   const emailSchema = Reflect.get(signinSchema!.shape, "email");

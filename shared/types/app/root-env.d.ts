@@ -1,5 +1,6 @@
 /// <reference types="@react-router/node" />
 /// <reference types="vite/client" />
+/// <reference types="vitest/config" />
 
 import type { CipherGCMTypes } from "crypto";
 import type { LoggerOptions } from "pino";

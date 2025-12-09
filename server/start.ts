@@ -345,7 +345,7 @@ if (MODE === TYPE_GENERATOR) {
         await generateContractsForRoute({
           cleanOnFirstRun,
           routePath,
-          spec,
+          spec: spec,
           isLastRoute: index === routes.length - 1,
         });
       }

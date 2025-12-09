@@ -1,6 +1,8 @@
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
 
+import { ClickOutsideHelper } from "./helpers/click-outside.helper";
+
 const DEFAULT_EVENTS = ["mousedown", "touchstart"];
 
 /**
@@ -19,34 +21,35 @@ const DEFAULT_EVENTS = ["mousedown", "touchstart"];
  * return <div ref={ref}>…</div>;
  * ```
  */
-const useClickOutside = <T extends HTMLElement>(
-  callback: () => void,
+const useClickOutside = <TElement extends HTMLElement>(
+  callback: (event: Event) => void,
   events?: string[] | null,
   nodes?: (HTMLElement | null)[]
-): RefObject<T | null> => {
-  const ref = useRef<T>(null);
+): RefObject<TElement | null> => {
+  const ref = useRef<TElement>(null);
   const eventsList = events || DEFAULT_EVENTS;
+
+  const { getEventTarget, shouldIgnoreTarget } = ClickOutsideHelper;
 
   useEffect(() => {
     const listener = (event: Event) => {
-      const { target } = event ?? {};
+      const target = getEventTarget(event);
 
       if (!(target instanceof HTMLElement)) {
         return;
       }
 
       if (Array.isArray(nodes)) {
-        const shouldIgnore =
-          !document.body.contains(target) && target.tagName !== "HTML";
+        const shouldIgnore = shouldIgnoreTarget(target);
         const shouldTrigger = nodes.every(
           (node) => !!node && !event.composedPath().includes(node)
         );
 
         if (shouldTrigger && !shouldIgnore) {
-          callback();
+          callback(event);
         }
       } else if (ref.current && !ref.current.contains(target)) {
-        callback();
+        callback(event);
       }
     };
 
@@ -55,7 +58,7 @@ const useClickOutside = <T extends HTMLElement>(
     return () => {
       eventsList.forEach((fn) => document.removeEventListener(fn, listener));
     };
-  }, [callback, eventsList, nodes]);
+  }, [callback, eventsList, getEventTarget, nodes, shouldIgnoreTarget]);
 
   return ref;
 };

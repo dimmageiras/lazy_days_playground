@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
+import type { DateType } from "@shared/types/date.type";
+
 // Enable UTC plugin
 dayjs.extend(utc);
 
@@ -11,7 +13,7 @@ dayjs.extend(utc);
  * @param date - Date string, number, or Date object
  * @returns Formatted UTC hour string (e.g., "10 am")
  */
-const formatHourForDisplay = (date: string | number | Date): string => {
+const formatHourForDisplay = (date: DateType): string => {
   return dayjs(date).utc().format("h a");
 };
 
@@ -28,7 +30,7 @@ const formatHourForDisplay = (date: string | number | Date): string => {
  * // Returns: "2025-01-03 15:54:56 UTC"
  * ```
  */
-const formatTimestampForDisplay = (date: string | number | Date): string => {
+const formatTimestampForDisplay = (date: DateType): string => {
   return dayjs(date).utc().format("YYYY-MM-DD HH:mm:ss") + " UTC";
 };
 
@@ -39,7 +41,7 @@ const formatTimestampForDisplay = (date: string | number | Date): string => {
  * @param date - Date string, number, or Date object
  * @returns Formatted local timestamp string
  */
-const formatTimestampLocal = (date: string | number | Date): string => {
+const formatTimestampLocal = (date: DateType): string => {
   return dayjs(date).format("MM/DD/YYYY, hh:mm:ss A");
 };
 
@@ -84,7 +86,7 @@ const getCurrentUTCDate = (): Date => {
  * @param date - Date string, number, or Date object (optional, defaults to now)
  * @returns ISO 8601 formatted timestamp string
  */
-const toISOTimestamp = (date?: string | number | Date): string => {
+const toISOTimestamp = (date?: DateType): string => {
   return dayjs(date).utc().toISOString();
 };
 

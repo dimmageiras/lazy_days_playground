@@ -21,7 +21,7 @@ const passwordValidationSchema = zString()
   .refine((password) => /[a-z]/.test(password), {
     message: "Password must contain at least one lowercase letter",
   })
-  .refine((password) => /[0-9]/.test(password), {
+  .refine((password) => /\d/.test(password), {
     message: "Password must contain at least one number",
   });
 

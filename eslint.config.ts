@@ -9,6 +9,7 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactRefresh from "eslint-plugin-react-refresh";
 import pluginSecurity from "eslint-plugin-security";
 import pluginSimpleImportSort from "eslint-plugin-simple-import-sort";
+import pluginSonarjs from "eslint-plugin-sonarjs";
 import globals from "globals";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,6 +20,7 @@ const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig([
   globalIgnores([
     ".react-router",
+    "coverage",
     "dist",
     "logs",
     "shared/types/generated/db/database.type.ts",
@@ -32,6 +34,7 @@ export default defineConfig([
       pluginReactHooks.configs.flat["recommended-latest"] ?? {},
       pluginReactRefresh.configs.vite,
       ...pluginTanstackQuery.configs["flat/recommended"],
+      pluginSonarjs.configs.recommended,
     ],
     languageOptions: {
       ecmaVersion: "latest",
@@ -131,10 +134,10 @@ export default defineConfig([
         "error",
         {
           groups: [
-            ["^@?\\w"],
+            [String.raw`^@?\w`],
             ["^@client", "^@server", "^@shared"],
-            ["^\\u0000"],
-            ["^\\."],
+            [String.raw`^\u0000`],
+            [String.raw`^\.`],
           ],
         },
       ],
@@ -190,17 +193,17 @@ export default defineConfig([
           patterns: [
             {
               message: "Please use @client or @shared instead of ../",
-              regex: "\\.\\.\\/(?!.*\\.module\\.scss).*",
+              regex: String.raw`\.\.\/(?!.*\.module\.scss).*`,
             },
             {
               message:
                 "SCSS files should use ./ (same directory) instead of @client",
-              regex: "^@client\\/.*\\.module\\.scss$",
+              regex: String.raw`^@client\/.*\.module\.scss$`,
             },
             {
               message:
                 "SCSS files should use ./ (same directory) instead of ../",
-              regex: "\\.\\.\\/(.*\\.module\\.scss).*",
+              regex: String.raw`\.\.\/(.*\.module\.scss).*`,
             },
           ],
         },
