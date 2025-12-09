@@ -68,7 +68,7 @@ const ListRenderer = <TItem,>({
   renderComponent,
 }: ListRendererProps<TItem>): JSX.Element => {
   if (!Array.isArray(data)) {
-    throw new Error("ListRenderer: data prop must be an array");
+    throw new TypeError("ListRenderer: data prop must be an array");
   }
 
   return (
