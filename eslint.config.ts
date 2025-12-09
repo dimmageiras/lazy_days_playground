@@ -163,6 +163,7 @@ export default defineConfig([
     files: [
       "**/*.config.ts",
       "**/*.d.ts",
+      "client/entry.server.tsx",
       "client/layouts/**/index.ts",
       "client/pages/**/index.ts",
       "client/root.tsx",

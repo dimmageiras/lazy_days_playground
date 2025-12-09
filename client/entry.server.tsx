@@ -80,4 +80,5 @@ const handleRequest = (
   });
 };
 
-export { handleRequest as default, SECONDS_FIVE_IN_MS as streamTimeout };
+export { SECONDS_FIVE_IN_MS as streamTimeout };
+export default handleRequest;
