@@ -17,7 +17,7 @@ const app = fastify({
 });
 
 app.register(reactRouterFastify, {
-  buildDirectory: "build",
+  buildDirectory: "dist",
   serverBuildFile: "index.js",
   viteOptions: {
     mode: MODE,

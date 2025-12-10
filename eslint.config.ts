@@ -17,7 +17,7 @@ import tsEslint from "typescript-eslint";
 const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default tsEslint.config([
-  globalIgnores([".react-router", "build", "dist", "logs"]),
+  globalIgnores([".react-router", "dist", "logs"]),
   {
     extends: [
       pluginJS.configs.recommended,

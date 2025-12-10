@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "cross-env NODE_ENV=production run-s typegen build:react build:server build:ext",
-    "build:ext": "ts-add-js-extension --dir build/fastify",
+    "build:ext": "ts-add-js-extension --dir dist/fastify",
     "build:react": "react-router build",
     "build:server": "tsc --project tsconfig.server.json",
     "check": "run-p -c \"check:type\" \"lint\"",
@@ -12,7 +12,7 @@
     "dev": "node --env-file=.env.local.dev ./server/index.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\" --rule \"react-hooks/exhaustive-deps: off\"",
     "lint:fix": "pnpm lint --fix",
-    "start": "cross-env NODE_ENV=production node --env-file=.env --env-file-if-exists=.env.production ./build/fastify/server/index.js",
+    "start": "cross-env NODE_ENV=production node --env-file=.env --env-file-if-exists=.env.production ./dist/fastify/server/index.js",
     "typecheck": "pnpm typegen && tsc --noEmit",
     "typegen": "react-router typegen"
   },
