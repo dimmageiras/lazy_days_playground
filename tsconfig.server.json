@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "noEmit": false,
-    "outDir": "./dist/fastify",
+    "outDir": "./build/fastify",
     "types": []
   },
   "include": ["./server/**/*.ts", "./shared/types/**/*.ts"],
