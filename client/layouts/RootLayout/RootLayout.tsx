@@ -1,12 +1,5 @@
-import type { Route } from "@rr/types/client/+types/root";
 import type { JSX, PropsWithChildren } from "react";
-import {
-  Links,
-  Meta,
-  Scripts,
-  ScrollRestoration,
-  useLoaderData,
-} from "react-router";
+import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
 import {
   HAS_DEV_TOOLS,
@@ -16,24 +9,13 @@ import {
 import { DevTools } from "./components/DevTools";
 
 const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
-  const loaderData = useLoaderData<Route.ComponentProps["loaderData"]>();
-
-  const {
-    cspNonce: { script: scriptNonce, style: styleNonce },
-  } = loaderData;
-
   return (
-    <html
-      data-script-nonce={scriptNonce}
-      data-style-nonce={styleNonce}
-      lang="en"
-    >
+    <html lang="en">
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta property="csp-nonce" nonce={styleNonce} />
         <Meta />
-        <Links nonce={styleNonce} />
+        <Links />
       </head>
       <body>
         <div id="app">{children}</div>
@@ -41,8 +23,8 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
         {IS_DEVELOPMENT ? (
           <script src="/@vite-plugin-checker-runtime-entry" type="module" />
         ) : null}
-        <ScrollRestoration nonce={scriptNonce} />
-        <Scripts nonce={scriptNonce} />
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );

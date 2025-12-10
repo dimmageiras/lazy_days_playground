@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "pnpm typegen && pnpm build:react && pnpm build:server",
+    "build": "node --env-file=.env.local.prod -e \"process.exit(0)\" && pnpm typegen && pnpm build:react && pnpm build:server",
     "build:react": "react-router build",
     "build:server": "tsc --project tsconfig.server.json",
     "dev": "node --env-file=.env.local.dev ./server/index.ts",
