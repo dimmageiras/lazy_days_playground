@@ -1,6 +1,6 @@
 import type { Config } from "@react-router/dev/config";
 
-export default {
+const reactRouterConfig = {
   appDirectory: "client",
   buildDirectory: "dist",
   future: {
@@ -13,3 +13,5 @@ export default {
   serverBuildFile: "index.js",
   ssr: true,
 } satisfies Config;
+
+export default reactRouterConfig;
