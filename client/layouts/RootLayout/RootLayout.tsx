@@ -23,13 +23,17 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
   } = loaderData;
 
   return (
-    <html lang="en">
+    <html
+      data-script-nonce={scriptNonce}
+      data-style-nonce={styleNonce}
+      lang="en"
+    >
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="csp-nonce" nonce={styleNonce} />
         <Meta />
-        <Links nonce={styleNonce} />
+        <Links nonce={scriptNonce} />
       </head>
       <body>
         <div id="app">{children}</div>
