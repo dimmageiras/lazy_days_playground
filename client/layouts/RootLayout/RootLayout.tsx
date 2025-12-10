@@ -33,7 +33,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta property="csp-nonce" nonce={styleNonce} />
         <Meta />
-        <Links nonce={scriptNonce} />
+        <Links nonce={styleNonce} />
       </head>
       <body>
         <div id="app">{children}</div>
