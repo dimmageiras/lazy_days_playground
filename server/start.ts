@@ -4,7 +4,7 @@ import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
 import type { ServerBuild } from "react-router";
-import type { InlineConfig } from "vite";
+import { createServer, type ViteDevServer } from "vite";
 
 import {
   HOST,
@@ -22,18 +22,21 @@ const app = fastify({
 
 await app.register(expressFastify);
 
+let viteDevServer: ViteDevServer | null = null;
+
+if (IS_DEVELOPMENT) {
+  viteDevServer = await createServer({
+    mode: MODE,
+    server: { middlewareMode: true },
+  });
+
+  app.use(viteDevServer.middlewares);
+}
+
 const reactRouterHandler = createRequestHandler({
   build: IS_DEVELOPMENT
     ? async () => {
-        const { createServer } = await import("vite");
-        const viteDevServer = await createServer({
-          mode: MODE,
-          server: { middlewareMode: true },
-        } satisfies InlineConfig);
-
-        app.use(viteDevServer.middlewares);
-
-        const build = (await viteDevServer.ssrLoadModule(
+        const build = (await viteDevServer!.ssrLoadModule(
           "virtual:react-router/server-build"
         )) as ServerBuild;
 
