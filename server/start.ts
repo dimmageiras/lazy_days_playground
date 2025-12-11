@@ -42,7 +42,7 @@ const reactRouterHandler = createRequestHandler({
     : async () => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore - File exists at runtime after build
-        const build = (await import("../dist/server/index.js")) as ServerBuild;
+        const build = (await import("../../server/index.js")) as ServerBuild;
 
         return build;
       },
