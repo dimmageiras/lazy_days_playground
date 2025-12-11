@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       tsConfigPaths(),
       !process.env.VITEST &&
         pluginChecker({
+          enableBuild: false,
           eslint: {
             dev: {
               logLevel: ["error"],
