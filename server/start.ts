@@ -4,7 +4,8 @@ import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
 import type { ServerBuild } from "react-router";
-import { createServer, type ViteDevServer } from "vite";
+import type { ViteDevServer } from "vite";
+import { createServer } from "vite";
 
 import {
   HOST,
