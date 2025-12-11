@@ -1,7 +1,7 @@
-import expressFastify from "@fastify/express";
-import { createRequestHandler } from "@react-router/express";
+import fastifyStatic from "@fastify/static";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
+import path from "node:path";
 import process from "node:process";
 import type { ServerBuild } from "react-router";
 import type { ViteDevServer } from "vite";
@@ -15,13 +15,12 @@ import {
   PORT,
 } from "../shared/constants/root-env.constants.ts";
 import { log } from "./helpers/log.helper.ts";
+import { createRequestHandler } from "./plugin/react-router-fastify/index.ts";
 
 const app = fastify({
   loggerInstance: log,
   disableRequestLogging: IS_DEVELOPMENT,
 });
-
-await app.register(expressFastify);
 
 let viteDevServer: ViteDevServer | null = null;
 
@@ -31,29 +30,51 @@ if (IS_DEVELOPMENT) {
     server: { middlewareMode: true },
   });
 
-  app.use(viteDevServer.middlewares);
+  // In development, Vite will handle static assets and dev server requests
+  // through the React Router plugin, so we don't need additional middleware here
 }
 
-const reactRouterHandler = createRequestHandler({
-  build: IS_DEVELOPMENT
-    ? async () => {
-        const build = (await viteDevServer!.ssrLoadModule(
-          "virtual:react-router/server-build"
-        )) as ServerBuild;
+// Serve static files in production BEFORE registering React Router
+if (MODE === "production") {
+  const buildDir = path.join(process.cwd(), "dist", "client");
 
-        return build;
+  await app.register(fastifyStatic, {
+    root: buildDir,
+    prefix: "/", // Serve all files from root
+    decorateReply: false, // Don't decorate the reply with sendFile
+    setHeaders: (res, path) => {
+      if (path.includes("/assets/")) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable"); // 1 year for assets
+      } else {
+        res.setHeader("Cache-Control", "public, max-age=3600"); // 1 hour for other files
       }
-    : async () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore - File exists at runtime after build
-        const build = (await import("../../server/index.js")) as ServerBuild;
+    },
+    wildcard: false, // Don't use wildcard matching to avoid conflicts
+  });
 
-        return build;
-      },
-  mode: MODE,
-});
+  log.info("✅ Static file serving registered for production");
+}
 
-app.use(reactRouterHandler);
+await app.register(
+  createRequestHandler({
+    build: IS_DEVELOPMENT
+      ? async () => {
+          const build = (await viteDevServer!.ssrLoadModule(
+            "virtual:react-router/server-build"
+          )) as ServerBuild;
+
+          return build;
+        }
+      : async () => {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore - File exists at runtime after build
+          const build = (await import("../../server/index.js")) as ServerBuild;
+
+          return build;
+        },
+    mode: MODE,
+  })
+);
 
 log.info("✅ React Router SSR handler registered");
 
