@@ -1,8 +1,8 @@
 import pluginJS from "@eslint/js";
 import { plugin as pluginTanstackQuery } from "@tanstack/eslint-plugin-query";
 import tsParser from "@typescript-eslint/parser";
-import type { FlatConfig } from "@typescript-eslint/utils/ts-eslint";
-import { globalIgnores } from "eslint/config";
+import type { ESLint, Linter } from "eslint";
+import { defineConfig, globalIgnores } from "eslint/config";
 import * as pluginCSSModules from "eslint-plugin-css-modules";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
@@ -16,15 +16,22 @@ import tsEslint from "typescript-eslint";
 
 const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 
-export default tsEslint.config([
-  globalIgnores([".react-router", "dist", "dist_old", "logs"]),
+export default defineConfig([
+  globalIgnores([
+    ".react-router",
+    "coverage",
+    "dist",
+    "dist_old",
+    "logs",
+    "shared/types/generated/db/database.type.ts",
+  ]),
   {
     extends: [
       pluginJS.configs.recommended,
       tsEslint.configs.recommended,
       pluginReact.configs.flat.recommended ?? {},
       pluginReact.configs.flat["jsx-runtime"] ?? {},
-      pluginReactHooks.configs["recommended-latest"],
+      pluginReactHooks.configs.flat["recommended-latest"] ?? {},
       pluginReactRefresh.configs.vite,
       ...pluginTanstackQuery.configs["flat/recommended"],
     ],
@@ -50,7 +57,7 @@ export default tsEslint.config([
       },
     },
     plugins: {
-      "css-modules": pluginCSSModules as FlatConfig.Plugin,
+      "css-modules": pluginCSSModules as ESLint.Plugin,
       "simple-import-sort": pluginSimpleImportSort,
       security: pluginSecurity,
     },
@@ -93,7 +100,7 @@ export default tsEslint.config([
         { blankLine: "always", prev: "block-like", next: "*" },
         { blankLine: "always", prev: "block", next: "*" },
         { blankLine: "always", prev: ["const", "let", "var"], next: "*" },
-        { blankLine: "any", prev: "case", next: "case" },
+        { blankLine: "any", prev: "case", next: ["case", "default"] },
         { blankLine: "any", prev: ["case", "default"], next: "break" },
         {
           blankLine: "any",
@@ -126,10 +133,10 @@ export default tsEslint.config([
         "error",
         {
           groups: [
-            ["^@?\\w"],
+            [String.raw`^@?\w`],
             ["^@client", "^@server", "^@shared"],
-            ["^\\u0000"],
-            ["^\\."],
+            [String.raw`^\u0000`],
+            [String.raw`^\.`],
           ],
         },
       ],
@@ -141,12 +148,13 @@ export default tsEslint.config([
       },
     },
   },
-  // Test files: disable CSS modules validation
+  // Test files: disable CSS modules validation and SonarJS assertions rule
   {
     files: ["**/*.test.{ts,tsx}"],
     rules: {
-      "css-modules/no-unused-class": "off",
       "css-modules/no-undef-class": "off",
+      "css-modules/no-unused-class": "off",
+      "sonarjs/assertions-in-tests": "off",
     },
   },
   // Config files and entry points: allow default exports
@@ -154,6 +162,9 @@ export default tsEslint.config([
     files: [
       "**/*.config.ts",
       "**/*.d.ts",
+      "client/entry.server.tsx",
+      "client/layouts/**/index.ts",
+      "client/pages/**/index.ts",
       "client/root.tsx",
       "client/routes.ts",
       "server/**/*.ts",
@@ -175,6 +186,7 @@ export default tsEslint.config([
   // Client files: enable restricted imports
   {
     files: ["client/**/*.{ts,tsx}"],
+    ignores: ["client/routes.ts", "client/routes/**/*.ts"],
     rules: {
       "no-restricted-imports": [
         "error",
@@ -182,21 +194,21 @@ export default tsEslint.config([
           patterns: [
             {
               message: "Please use @client or @shared instead of ../",
-              regex: "\\.\\.\\/(?!.*\\.module\\.scss).*",
+              regex: String.raw`\.\.\/(?!.*\.module\.scss).*`,
             },
             {
               message:
                 "SCSS files should use ./ (same directory) instead of @client",
-              regex: "^@client\\/.*\\.module\\.scss$",
+              regex: String.raw`^@client\/.*\.module\.scss$`,
             },
             {
               message:
                 "SCSS files should use ./ (same directory) instead of ../",
-              regex: "\\.\\.\\/(.*\\.module\\.scss).*",
+              regex: String.raw`\.\.\/(.*\.module\.scss).*`,
             },
           ],
         },
       ],
     },
   },
-]) satisfies FlatConfig.ConfigArray;
+]) satisfies Linter.Config[];

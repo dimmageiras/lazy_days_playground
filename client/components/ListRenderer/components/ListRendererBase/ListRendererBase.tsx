@@ -1,5 +1,5 @@
 import type { ComponentProps, JSX } from "react";
-import { Fragment, useRef } from "react";
+import { Fragment, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import type { ListRenderer } from "@client/components/ListRenderer";
@@ -13,9 +13,14 @@ const ListRendererBase = <TItem,>({
   getKey,
   renderComponent,
 }: ComponentProps<typeof ListRenderer<TItem>>): JSX.Element[] => {
-  const keyMap = useRef(new WeakMap<WeakKey, string>());
+  const [keyMap] = useState(() => new WeakMap<WeakKey, string>());
 
-  const generateStableKey = (item: TItem, index: number): string => {
+  const generateStableKey = (
+    item: TItem,
+    index: number,
+    keyMap: WeakMap<WeakKey, string>,
+    getKey?: ((item: TItem, index: number) => number | string) | undefined
+  ): string => {
     if (getKey) {
       return String(getKey(item, index));
     }
@@ -29,27 +34,27 @@ const ListRendererBase = <TItem,>({
     }
 
     const { isArray } = ArrayUtilitiesHelper;
-    const { isObject } = ObjectUtilitiesHelper;
+    const { isPlainObject } = ObjectUtilitiesHelper;
 
-    const stringifiedItem = `${index}-${item}`;
-
-    if (isArray(item) || isObject(item)) {
-      if (!keyMap.current.has(item)) {
-        keyMap.current.set(item, uuidv4());
+    if (isArray(item) || isPlainObject(item)) {
+      if (!keyMap.has(item)) {
+        keyMap.set(item, uuidv4());
       }
 
-      const key = keyMap.current.get(item);
+      const key = keyMap.get(item);
 
       if (key) {
         return key;
       }
     }
 
+    const stringifiedItem = `${index}-${item}`;
+
     return stringifiedItem;
   };
 
   const renderedItems = data.map((item: TItem, index: number): JSX.Element => {
-    const key = generateStableKey(item, index);
+    const key = generateStableKey(item, index, keyMap, getKey);
 
     return (
       <Fragment key={key}>
