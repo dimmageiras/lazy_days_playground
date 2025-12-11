@@ -29,10 +29,22 @@ All time windows use constants from `shared/constants/timing.constant.ts`:
 
 **Location**: `server/start.ts`
 
+Rate limiting is registered **after** static file serving and React Router to avoid limiting essential routes like static assets and client-side navigation.
+
 ```typescript
 import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
 ```
+
+### Plugin Loading Order
+
+Rate limiting loads in this sequence:
+
+1. **Static Files** (`@fastify/static`) - Serves built client assets in production
+2. **React Router** (`react-router-fastify`) - Handles client-side routing and SSR
+3. **Rate Limiting** (`@fastify/rate-limit`) - Applied globally after essential routes are set up
+
+This ensures that static assets (CSS, JS, images) and React Router navigation are not rate-limited, preventing broken user experiences during legitimate traffic spikes.
 
 ### Route-Specific Overrides
 

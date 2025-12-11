@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers implementing new routes in the Lazy Days Playground application. For detailed information on specific aspects, see the related documentation below.
+This guide covers implementing new routes with consistent patterns for error handling, validation, authentication, and documentation.
 
 ## Quick Start
 
@@ -12,7 +12,10 @@ This guide covers implementing new routes in the Lazy Days Playground applicatio
 server/routes/<domain>/
 ├── index.ts                    # Domain router registration
 └── <endpoint>/
-    └── <endpoint>.route.ts     # Route implementation
+    ├── <endpoint>.route.ts     # Route implementation
+    ├── index.ts                # Route registration (optional)
+    └── constants/              # Endpoint-specific constants (optional)
+        └── <query>.constant.ts
 ```
 
 ### Implementation Steps
@@ -23,6 +26,27 @@ server/routes/<domain>/
 4. **Register route**: `server/routes/<domain>/index.ts`
 5. **Add to Swagger** (if new domain): `server/constants/swagger-routes.constant.ts`
 6. **Generate types**: `pnpm run typegen:server`
+
+## Common Patterns
+
+### CRUD Operations
+
+- **Create**: `POST /<domain>/<resource>` with request body
+- **Read**: `GET /<domain>/<resource>/<id>` or `GET /<domain>/<resource>` for lists
+- **Update**: `PUT /<domain>/<resource>/<id>` for full update, `PATCH /<domain>/<resource>/<id>` for partial
+- **Delete**: `DELETE /<domain>/<resource>/<id>`
+
+### Response Patterns
+
+- **Success**: Include `success: true` and `timestamp` fields
+- **Errors**: Include `error`, `details` (optional), and `timestamp` fields
+- **Rate Limits**: Use standardized error format with retry information
+
+### Authentication Levels
+
+- **Public**: No middleware (health checks, CSP reports)
+- **Optional**: `optionalAuthMiddleware` (enhanced features for authenticated users)
+- **Required**: `authMiddleware` (user-specific operations)
 
 ## Route Template
 
@@ -200,6 +224,59 @@ export {
 
 **See:** [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for schema patterns and best practices
 
+## Generic Examples
+
+### Simple GET Endpoint
+
+```typescript
+fastify.get(
+  `/${ENDPOINT}`,
+  {
+    schema: {
+      summary: "Get resource",
+      tags: ["Domain"],
+      response: {
+        [OK]: { content: { "application/json": { schema: successSchema } } },
+      },
+    },
+  },
+  async (request, response) => {
+    const requestId = fastIdGen();
+    const result = await getResource();
+    return response.status(OK).send({
+      success: true,
+      data: result,
+      timestamp: getCurrentISOTimestamp(),
+    });
+  }
+);
+```
+
+### Authenticated POST Endpoint
+
+```typescript
+fastify.post(
+  `/${ENDPOINT}`,
+  {
+    preHandler: [authMiddleware],
+    config: { rateLimit: USER_RATE_LIMIT },
+    schema: {
+      /* ... */
+    },
+  },
+  async (request, response) => {
+    const requestId = fastIdGen();
+    const { user } = request;
+    const result = await createResource(request.body, user.identity_id);
+    return response.status(OK).send({
+      success: true,
+      data: result,
+      timestamp: getCurrentISOTimestamp(),
+    });
+  }
+);
+```
+
 ## Route Configuration
 
 ### HTTP Methods
@@ -355,61 +432,61 @@ fastify.addContentTypeParser(
 
 ## Troubleshooting
 
-### Routes Not Found (404)
+### Common Issues
 
-1. Check route registration in domain index
-2. Verify domain registered in `server/start.ts`
-3. Check URL path matches prefix + endpoint name
-4. Restart server
+**Routes Not Found (404)**
 
-### Schema Validation Errors
+- Verify route registration in domain index
+- Check domain registered in server start file
+- Confirm URL path matches prefix + endpoint
+- Restart development server
 
-1. Verify schema definition and exports
-2. Check Zod types match expected data
-3. Test with Swagger UI
-4. Run `pnpm run typegen:server`
+**Schema Validation Errors**
 
-### Rate Limiting Issues
+- Ensure schema exports match imports
+- Verify Zod types align with request/response data
+- Test with Swagger UI for validation details
+- Regenerate types: `pnpm run typegen:server`
 
-1. Verify `config.rateLimit` is set
-2. Check rate limit constant import
-3. Include `MANY_REQUESTS_ERROR` response schema
-4. Test with curl
+**Rate Limiting Problems**
 
-**See:** [RATE_LIMITING.md](./RATE_LIMITING.md)
+- Confirm `config.rateLimit` is configured
+- Verify rate limit constant is imported
+- Include rate limit error schema in responses
+- Test limits with repeated requests
 
-### Logging Not Appearing
+**Authentication Failures**
 
-1. Check `LOG_LEVEL` environment variable
-2. Verify `log` imported from `RoutesHelper`
-3. Check log structure (object + message)
+- Check middleware import and configuration
+- Verify token format and validity
+- Ensure protected routes use correct middleware
 
-**See:** [ERROR_LOGGING.md](./ERROR_LOGGING.md)
+**Logging Issues**
 
-## Summary Checklist
+- Verify `LOG_LEVEL` environment setting
+- Confirm `log` import from RoutesHelper
+- Check log object structure (context + message)
 
-When implementing a new route:
+**Type Errors**
 
-- [ ] Define endpoint constants
-- [ ] Create request/response/error schemas
-- [ ] Include rate limit error schema
-- [ ] Add custom content type parser (if needed)
-- [ ] Implement route with type safety
-- [ ] Apply appropriate rate limiting
-- [ ] Add comprehensive error handling
-- [ ] Include detailed logging with request IDs
-- [ ] Add OpenAPI documentation
+- Run `pnpm run typegen:server` after schema changes
+- Verify generated types match expectations
+- Check import paths for type definitions
+
+## Implementation Checklist
+
+- [ ] Define endpoint constants in domain constants file
+- [ ] Create Zod schemas (request, success, error, rate limit)
+- [ ] Implement route handler with error handling and logging
+- [ ] Configure rate limiting and authentication as needed
+- [ ] Add OpenAPI schema documentation
 - [ ] Register route in domain index
-- [ ] Add to Swagger routes (if new domain)
-- [ ] Generate types (`pnpm run typegen:server`)
-- [ ] Test with curl or Swagger UI
-- [ ] Verify rate limiting works
-- [ ] Check logs for errors
+- [ ] Update Swagger routes for new domains
+- [ ] Generate types: `pnpm run typegen:server`
+- [ ] Test endpoint functionality and error cases
 
 ## Related Documentation
 
-- **[API_DOCUMENTATION.md](./API_DOCUMENTATION.md)** - Schemas, OpenAPI, type generation
-- **[SECURITY.md](./SECURITY.md)** - Authentication, authorization, security
-- **[RATE_LIMITING.md](./RATE_LIMITING.md)** - Rate limit configuration
-- **[ERROR_LOGGING.md](./ERROR_LOGGING.md)** - Logging patterns and best practices
-- **[SERVER_ARCHITECTURE.md](./SERVER_ARCHITECTURE.md)** - Architecture overview
+- [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) - Schema patterns and OpenAPI
+- [RATE_LIMITING.md](./RATE_LIMITING.md) - Rate limiting configuration
+- [ERROR_LOGGING.md](./ERROR_LOGGING.md) - Logging best practices

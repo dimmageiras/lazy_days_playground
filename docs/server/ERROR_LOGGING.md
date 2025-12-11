@@ -10,14 +10,15 @@ Structured error logging using **Pino** provides comprehensive error tracking, d
 
 ### Log Levels
 
-| Level   | Value | Use Case                              |
-| ------- | ----- | ------------------------------------- |
-| `trace` | 10    | Very detailed debugging               |
-| `debug` | 20    | Debugging information                 |
-| `info`  | 30    | General informational messages        |
-| `warn`  | 40    | Warning messages                      |
-| `error` | 50    | Error messages                        |
-| `fatal` | 60    | Fatal errors (application termination |
+| Level    | Value | Use Case                              |
+| -------- | ----- | ------------------------------------- |
+| `trace`  | 10    | Very detailed debugging               |
+| `debug`  | 20    | Debugging information                 |
+| `info`   | 30    | General informational messages        |
+| `warn`   | 40    | Warning messages                      |
+| `error`  | 50    | Error messages                        |
+| `fatal`  | 60    | Fatal errors (application termination |
+| `silent` | 70    | No logging                            |
 
 **Set via**: `LOG_LEVEL` environment variable
 
@@ -306,7 +307,7 @@ Set up alerts for:
 ## Environment Variables
 
 ```bash
-# Log level (trace, debug, info, warn, error, fatal)
+# Log level (trace, debug, info, warn, error, fatal, silent)
 LOG_LEVEL=info
 
 # Mode

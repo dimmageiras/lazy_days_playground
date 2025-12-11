@@ -2,7 +2,7 @@
 
 ## Overview
 
-The application uses **Zod schemas** as the single source of truth for API contracts, automatically generating **OpenAPI specifications** and **TypeScript types**.
+The application uses **Zod schemas** as the single source of truth for API contracts, automatically generating **OpenAPI specifications** and **TypeScript types**. Interactive API documentation is available through **Swagger UI** at `/api/docs/swagger`.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ Zod Schemas (shared/schemas/)
   ↓
 Runtime Validation (Fastify)
   ↓
-OpenAPI Spec (Swagger)
+OpenAPI Spec (Swagger UI)
   ↓
 TypeScript Types (swagger-typescript-api)
 ```
@@ -20,7 +20,7 @@ TypeScript Types (swagger-typescript-api)
 
 - Single source of truth
 - Compile-time + runtime validation
-- Self-documenting APIs
+- Self-documenting APIs via Swagger UI
 - Type-safe client/server communication
 
 ## Technology Stack
@@ -53,7 +53,7 @@ await fastify.register(swaggerFastify, {
       contact: { name: "API Support" },
       license: { name: "MIT" },
     },
-    openapi: "3.1.0",
+    openapi: "3.1.2",
   },
   ...fastifyZodOpenApiTransformers,
 });
@@ -207,24 +207,6 @@ fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
 
 **Output**: `shared/types/generated/server/<domain>.type.ts`
 
-### Generated Type Naming
-
-```typescript
-// For: POST /auth/signin
-SigninCreatePayload; // Request body
-SigninCreateData; // Success response (200)
-SigninCreateError; // Error responses (400, 401, 429, 503)
-
-// For: GET /user/profile
-ProfileListData; // Success response
-ProfileListError; // Error responses
-```
-
-**Pattern**: `<Endpoint><Method><Type>`
-
-- **Method mapping**: POST→Create, GET→List, PUT/PATCH→Update, DELETE→Delete
-- **Types**: Payload (request), Data (success), Error (errors)
-
 ### Using Generated Types
 
 ```typescript
@@ -258,7 +240,7 @@ async (request, response) => {
 
 **Start server**: `pnpm run dev`
 
-**Swagger UI**: `http://localhost:5173/api/docs/swagger`
+**Swagger UI** (Primary API Explorer): `http://localhost:5173/api/docs/swagger`
 
 **OpenAPI Spec**:
 
@@ -304,41 +286,6 @@ status: zEnum(["pending", "active"]).meta({
 // Optional
 bio: zString().max(500).optional().meta({ description: "...", example: "..." });
 ```
-
-## Troubleshooting
-
-### Types Not Generated
-
-1. Check route registration in domain index
-2. Verify domain in `server/start.ts`
-3. Ensure schema exported and used in route
-4. Check `SWAGGER_ROUTES` constant
-5. Run `pnpm run typegen:server` with `LOG_LEVEL=debug`
-
-### Validation Errors
-
-1. Check Zod schema definition
-2. Verify custom error messages
-3. Test with Swagger UI
-4. Check generated types match schema
-
-### OpenAPI Spec Errors
-
-1. Validate spec: `npx @apidevtools/swagger-cli validate http://localhost:5173/api/docs/swagger/json`
-2. Check for circular references
-3. Verify all schemas have required properties
-
-## Special Routes
-
-### CSP Violation Reporting
-
-**Route**: `POST /api/reports/csp-report`
-
-Receives CSP violation reports automatically sent by browsers. Uses custom `application/csp-report` content type parser, stores reports in `default::CspReport`, and applies `HEALTH_RATE_LIMIT`.
-
-**Implementation**: `server/routes/api/reports/csp/create/create.route.ts`  
-**Schemas**: `shared/schemas/api-health/csp-report-route.schema.ts`  
-**See**: [SECURITY.md](./SECURITY.md) for configuration
 
 ## Related Documentation
 

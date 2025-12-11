@@ -201,7 +201,7 @@ ClientSessionProvider/
    │   └─→ Missing: Generate new ID
    │
    ├─→ Fetch auth data from backend
-   │   Query Key: ["auth", "verify", clientId]
+   │   Query Key: ["auth", "verify-auth", clientId]
    │
    ├─→ Store auth data in route context
    │
@@ -275,7 +275,7 @@ const clientId = await getOrCreateClientId(clientIdCookie);
 
 // 2. Used in query key on server
 queryOptions({
-  queryKey: ["auth", "verify", clientId],
+  queryKey: ["auth", "verify-auth", clientId],
   queryFn: () => verifyAuth(),
 });
 
@@ -288,7 +288,7 @@ return data({ clientId, isAuthenticated });
 // 5. Used in query key on client
 const { clientId } = useClientSessionTrackedValue("clientId");
 useQuery({
-  queryKey: ["auth", "verify", clientId],
+  queryKey: ["auth", "verify-auth", clientId],
   queryFn: () => verifyAuth(),
 });
 ```
@@ -574,10 +574,10 @@ try {
 ```typescript
 // Verify query keys match
 // Server (middleware):
-queryKey: ["auth", "verify", clientId];
+queryKey: ["auth", "verify-auth", clientId];
 
 // Client (component):
-queryKey: ["auth", "verify", clientId]; // Must be identical!
+queryKey: ["auth", "verify-auth", clientId]; // Must be identical!
 ```
 
 ### Issue: Client ID Always Null

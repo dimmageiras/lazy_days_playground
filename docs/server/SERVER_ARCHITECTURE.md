@@ -22,13 +22,16 @@ The server uses **Fastify** for HTTP handling, **React Router** for SSR, and **E
 
 ```
 Client → Fastify
-  → Security (Helmet + Rate Limit)
+  → Security (Helmet)
   → Auth Middleware (if protected)
   → Validation (Zod)
   → Route Handler → Database
   → Response / Error Handler
+  → Rate Limiting (applied last)
   → Client
 ```
+
+**Note**: Rate limiting is registered after route handlers to avoid limiting essential routes like static assets and health checks.
 
 ## Entry Points
 
@@ -71,10 +74,76 @@ Plugins registered in order:
 1. `fastifyZodOpenApiPlugin` - Zod validation
 2. `helmet` - Security headers
 3. `cookieFastify` - Cookie management
-4. `rateLimitFastify` - Rate limiting
-5. `swaggerFastify` / `swaggerUIFastify` (dev/type-gen only)
-6. Route plugins (API Health, Auth, User)
-7. `reactRouterFastify` - SSR (last, catches all)
+4. `expressFastify` - Express compatibility (development only)
+5. `rateLimitFastify` - Rate limiting (registered last for performance)
+6. `swaggerFastify` / `swaggerUIFastify` (dev/type-gen only)
+7. Route plugins (API Health, Auth, User)
+8. `reactRouterFastify` - SSR (last, catches all)
+
+### Additional Plugins & Configurations
+
+#### Development-Only Plugins
+
+**Express Compatibility** (`@fastify/express`)
+
+```typescript
+// Only in development for Vite middleware compatibility
+if (IS_DEVELOPMENT) {
+  await app.register(expressFastify);
+}
+```
+
+**Vite Dev Server Integration**
+
+```typescript
+let viteDevServer: ViteDevServer | null = null;
+
+if (IS_DEVELOPMENT) {
+  viteDevServer = await createServer({
+    mode: MODE,
+    server: { middlewareMode: true },
+  });
+  app.use(viteDevServer.middlewares);
+}
+```
+
+#### Production-Only Configuration
+
+**Static File Serving** (`@fastify/static`)
+
+```typescript
+// Serve built React app assets in production
+if (!IS_DEVELOPMENT) {
+  await app.register(fastifyStatic, {
+    root: path.join(process.cwd(), "dist", "client"),
+    prefix: "/",
+    setHeaders: (res, path) => {
+      if (path.includes("/assets/")) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      } else {
+        res.setHeader("Cache-Control", "public, max-age=3600");
+      }
+    },
+  });
+}
+```
+
+#### Graceful Shutdown
+
+**Database Connection Pool Cleanup**
+
+```typescript
+// Graceful shutdown handlers
+process.on("SIGTERM", async () => {
+  log.info(`Received SIGTERM, closing Gel client connection pool...`);
+  try {
+    await gelClient.close();
+    log.info("✅ Gel client connection pool closed gracefully");
+  } catch (closeError) {
+    // Handle cleanup error
+  }
+});
+```
 
 ### 4. Global Error Handler
 
@@ -127,6 +196,7 @@ server/
 - `GEL_AUTH_BASE_URL` - Database connection for main server pool
 - `GEL_DSN` - Database connection for route-specific queries
 - `VITE_APP_IS_DEVELOPMENT` - Development mode flag
+- `VITE_APP_TYPE_GENERATOR_MODE` - Type generation mode (set to `type_generator`)
 
 **Note**: Both `GEL_AUTH_BASE_URL` and `GEL_DSN` are typically set to the same database DSN value.
 
@@ -225,6 +295,14 @@ Zod Schemas → OpenAPI Spec → TypeScript Types
 ```
 
 **Command**: `pnpm run typegen:server`
+
+**Process**:
+
+1. Server starts in type generation mode (`MODE = "type_generator"`)
+2. Registers routes without starting HTTP server
+3. Generates OpenAPI spec from Zod schemas
+4. Outputs TypeScript types to `shared/types/generated/server/<domain>.type.ts`
+5. Server exits automatically
 
 **Output**: `shared/types/generated/server/<domain>.type.ts`
 

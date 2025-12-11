@@ -50,29 +50,34 @@ await app.register(helmet, {
 
 ### Key Directives
 
-| Directive          | Value                       | Protection                          |
-| ------------------ | --------------------------- | ----------------------------------- |
-| `defaultSrc`       | `'self'`                    | Fallback for unspecified directives |
-| `scriptSrc`        | `'self'`                    | Only same-origin scripts            |
-| `styleSrc`         | `'self'`, `'unsafe-inline'` | Inline styles (needed for SSR)      |
-| `frameAncestors`   | `'none'`                    | Prevents clickjacking               |
-| `objectSrc`        | `'none'`                    | Blocks plugins (Flash, etc.)        |
-| `imgSrc`           | `'self'`, `data:`, `https:` | Allows self, data URIs, HTTPS       |
-| `upgradeInsecure…` | `[]`                        | Upgrades HTTP to HTTPS              |
+| Directive          | Value                                    | Protection                          |
+| ------------------ | ---------------------------------------- | ----------------------------------- |
+| `baseUri`          | `'self'`                                 | Prevents base tag injection attacks |
+| `connectSrc`       | `'self'`, `ws:`, `wss:`                  | WebSocket connections for Vite HMR  |
+| `defaultSrc`       | `'self'`                                 | Fallback for unspecified directives |
+| `fontSrc`          | `'self'`, `https://fonts.gstatic.com`    | Google Fonts                        |
+| `formAction`       | `'self'`                                 | Restricts form submission targets   |
+| `frameAncestors`   | `'none'`                                 | Prevents clickjacking               |
+| `imgSrc`           | `'self'`, `data:`                        | Allows self and data URIs           |
+| `objectSrc`        | `'none'`                                 | Blocks plugins (Flash, etc.)        |
+| `reportUri`        | `/api/reports/csp/report`                | CSP violation reporting endpoint    |
+| `scriptSrc`        | `'self'`                                 | Only same-origin scripts            |
+| `styleSrc`         | `'self'`, `https://fonts.googleapis.com` | Same-origin styles and Google Fonts |
+| `upgradeInsecure…` | `[]`                                     | Upgrades HTTP to HTTPS              |
 
 **Note**: CSP disabled in development for React DevTools compatibility.
 
 ### CSP Violation Reporting
 
-**Endpoint**: `POST /api/reports/csp-report` (see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md))
+**Endpoint**: `POST /api/reports/csp/report` (see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md))
 
 Browsers automatically send violation reports when CSP policies are violated. Reports are stored in `default::CspReport` with IP tracking for monitoring security issues, policy misconfigurations, and potential XSS attacks.
 
-**Configuration**: Add `report-uri` directive in `server/constants/csp.constant.ts`
+**Configuration**: Add `reportUri` directive in `server/constants/csp.constant.ts`
 
 ```typescript
 const CSP_DIRECTIVES = {
-  reportUri: ["/api/reports/csp-report"],
+  reportUri: ["/api/reports/csp/report"],
 };
 ```
 

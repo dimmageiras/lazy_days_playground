@@ -329,16 +329,16 @@ if (MODE === TYPE_GENERATOR) {
   }
 }
 
-const viteDevServer: ViteDevServer | null = null;
+let viteDevServer: ViteDevServer | null = null;
 
 if (IS_DEVELOPMENT) {
   try {
-    const viteDevServerInstance = await createServer({
+    viteDevServer = await createServer({
       mode: MODE,
       server: { middlewareMode: true },
     });
 
-    app.use(viteDevServerInstance.middlewares);
+    app.use(viteDevServer.middlewares);
 
     log.info("✅ Vite dev server middleware registered");
   } catch (error) {
