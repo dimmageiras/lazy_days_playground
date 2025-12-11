@@ -1,7 +1,7 @@
 import type { FastifyPluginCallback } from "fastify";
 import type { ServerBuild } from "react-router";
 
-import type { GetLoadContextFunction } from "./load-context.type.ts";
+import type { GetLoadContextFunction } from "./load-context.type";
 
 interface CreateRequestHandlerOptions {
   build: ServerBuild | (() => Promise<ServerBuild>);
