@@ -136,13 +136,8 @@ export const createRequestHandler = ({
   const handleRequest = createRemixRequestHandler(build, mode);
 
   return (fastify, _opts, done) => {
-    // Register a catch-all route for React Router (but skip static files)
+    // Register a catch-all route for React Router - static files are handled by middleware chain
     fastify.all("*", async (req, res) => {
-      // Skip static file requests - let Fastify static handle them
-      if (req.url.startsWith("/assets/") || req.url.includes(".")) {
-        return res.callNotFound();
-      }
-
       // eslint-disable-next-line no-useless-catch
       try {
         const request = createRemixRequest(req, res);

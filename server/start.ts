@@ -1,3 +1,4 @@
+import expressFastify from "@fastify/express";
 import fastifyStatic from "@fastify/static";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
@@ -22,6 +23,8 @@ const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
 });
 
+await app.register(expressFastify);
+
 let viteDevServer: ViteDevServer | null = null;
 
 if (IS_DEVELOPMENT) {
@@ -30,8 +33,8 @@ if (IS_DEVELOPMENT) {
     server: { middlewareMode: true },
   });
 
-  // In development, Vite will handle static assets and dev server requests
-  // through the React Router plugin, so we don't need additional middleware here
+  // In development, Vite middleware handles static assets first
+  app.use(viteDevServer.middlewares);
 }
 
 // Serve static files in production BEFORE registering React Router
@@ -55,26 +58,34 @@ if (MODE === "production") {
   log.info("✅ Static file serving registered for production");
 }
 
-await app.register(
-  createRequestHandler({
-    build: IS_DEVELOPMENT
-      ? async () => {
-          const build = (await viteDevServer!.ssrLoadModule(
-            "virtual:react-router/server-build"
-          )) as ServerBuild;
+if (IS_DEVELOPMENT) {
+  await app.register(
+    createRequestHandler({
+      build: async () => {
+        const build = (await viteDevServer!.ssrLoadModule(
+          "virtual:react-router/server-build"
+        )) as ServerBuild;
 
-          return build;
-        }
-      : async () => {
+        return build;
+      },
+    })
+  );
+} else {
+  await app.register(
+    createRequestHandler({
+      build: async () => {
+        const build = (await import(
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore - File exists at runtime after build
-          const build = (await import("../../server/index.js")) as ServerBuild;
+          "../../server/index.js"
+        )) as ServerBuild;
 
-          return build;
-        },
-    mode: MODE,
-  })
-);
+        return build;
+      },
+      mode: MODE,
+    })
+  );
+}
 
 log.info("✅ React Router SSR handler registered");
 
