@@ -11,15 +11,15 @@ importers:
       '@fastify/cookie':
         specifier: 11.0.2
         version: 11.0.2
-      '@fastify/express':
-        specifier: 4.0.2
-        version: 4.0.2
       '@fastify/helmet':
         specifier: 13.0.2
         version: 13.0.2
       '@fastify/rate-limit':
         specifier: 10.3.0
         version: 10.3.0
+      '@fastify/static':
+        specifier: 8.3.0
+        version: 8.3.0
       '@gel/auth-core':
         specifier: 0.3.1
         version: 0.3.1(gel@2.2.0)
@@ -29,9 +29,6 @@ importers:
       '@iconify/react':
         specifier: 6.0.2
         version: 6.0.2(react@19.2.1)
-      '@react-router/express':
-        specifier: 7.10.1
-        version: 7.10.1(express@4.22.1)(react-router@7.10.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3)
       '@react-router/node':
         specifier: 7.10.1
         version: 7.10.1(react-router@7.10.1(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3)
@@ -117,6 +114,9 @@ importers:
       '@eslint/js':
         specifier: 9.39.1
         version: 9.39.1
+      '@fastify/express':
+        specifier: 4.0.2
+        version: 4.0.2
       '@fastify/swagger':
         specifier: 9.6.1
         version: 9.6.1

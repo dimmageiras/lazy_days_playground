@@ -2,10 +2,9 @@ import cookieFastify from "@fastify/cookie";
 import expressFastify from "@fastify/express";
 import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
+import fastifyStatic from "@fastify/static";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
-import type { GetLoadContextFunction } from "@react-router/express";
-import { createRequestHandler } from "@react-router/express";
 import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import {
@@ -16,8 +15,9 @@ import {
 } from "fastify-zod-openapi";
 import { createClient as createGelClient } from "gel";
 import getPort, { portNumbers } from "get-port";
+import path from "node:path";
 import process from "node:process";
-import type { AppLoadContext } from "react-router";
+import type { AppLoadContext, ServerBuild } from "react-router";
 import { RouterContextProvider } from "react-router";
 import type { ViteDevServer } from "vite";
 import { createServer } from "vite";
@@ -50,6 +50,8 @@ import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
+import type { GetLoadContextFunction } from "./plugins/react-router-fastify/index";
+import { createRequestHandler } from "./plugins/react-router-fastify/index.ts";
 import { apiHealthRoutes } from "./routes/api/health/index.ts";
 import { reportsRoute } from "./routes/api/reports/index.ts";
 import { authRoutes } from "./routes/auth/index.ts";
@@ -99,31 +101,6 @@ if (MODE !== TYPE_GENERATOR) {
       },
     });
 
-    // Bridge CSP nonces from Fastify to Express res.locals
-    // This hook runs in Fastify's request lifecycle before Express middleware
-    try {
-      app.addHook("onRequest", async (_request, response) => {
-        if (response.cspNonce) {
-          const nodeRes = response.raw;
-
-          if (nodeRes.locals === undefined) {
-            nodeRes.locals = { cspNonce: response.cspNonce };
-          } else {
-            nodeRes.locals.cspNonce = response.cspNonce;
-          }
-        }
-      });
-    } catch (error) {
-      log.error(
-        {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-        "💥 Failed to register CSP nonce bridge hook"
-      );
-      process.exit(1);
-    }
-
     log.info("✅ Helmet security headers registered");
   } catch (error) {
     log.error(
@@ -158,33 +135,21 @@ if (MODE !== TYPE_GENERATOR) {
     process.exit(1);
   }
 
-  try {
-    await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
-    log.info("✅ Rate limiting plugin registered");
-  } catch (error) {
-    log.error(
-      {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      },
-      "💥 Failed to register Rate Limit plugin"
-    );
-    process.exit(1);
-  }
+  if (IS_DEVELOPMENT) {
+    try {
+      await app.register(expressFastify);
 
-  try {
-    await app.register(expressFastify);
-
-    log.info("✅ Express compatibility plugin registered");
-  } catch (error) {
-    log.error(
-      {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      },
-      "💥 Failed to register Express compatibility plugin"
-    );
-    process.exit(1);
+      log.info("✅ Express compatibility plugin registered");
+    } catch (error) {
+      log.error(
+        {
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        "💥 Failed to register Express compatibility plugin"
+      );
+      process.exit(1);
+    }
   }
 }
 
@@ -364,73 +329,143 @@ if (MODE === TYPE_GENERATOR) {
   }
 }
 
-let viteDevServer: ViteDevServer | null = null;
+const viteDevServer: ViteDevServer | null = null;
+
+if (IS_DEVELOPMENT) {
+  try {
+    const viteDevServerInstance = await createServer({
+      mode: MODE,
+      server: { middlewareMode: true },
+    });
+
+    app.use(viteDevServerInstance.middlewares);
+
+    log.info("✅ Vite dev server middleware registered");
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to create Vite dev server"
+    );
+    process.exit(1);
+  }
+}
+
+// Serve static files in production BEFORE registering React Router
+if (!IS_DEVELOPMENT) {
+  try {
+    const buildDir = path.join(process.cwd(), "dist", "client");
+
+    await app.register(fastifyStatic, {
+      root: buildDir,
+      prefix: "/", // Serve all files from root
+      decorateReply: false, // Don't decorate the reply with sendFile
+      setHeaders: (res, path) => {
+        if (path.includes("/assets/")) {
+          res.setHeader("Cache-Control", "public, max-age=31536000, immutable"); // 1 year for assets
+        } else {
+          res.setHeader("Cache-Control", "public, max-age=3600"); // 1 hour for other files
+        }
+      },
+      wildcard: false, // Don't use wildcard matching to avoid conflicts
+    });
+
+    log.info("✅ Static file serving registered for production");
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to register static file serving"
+    );
+
+    process.exit(1);
+  }
+}
 
 try {
-  viteDevServer = await createServer({
-    build: {
-      outDir: "dist",
-      rollupOptions: {
-        output: {
-          entryFileNames: "index.js",
-        },
+  await app.register(
+    createRequestHandler({
+      build: async () => {
+        let build: ServerBuild | null = null;
+
+        try {
+          if (IS_DEVELOPMENT) {
+            build = await viteDevServer!.ssrLoadModule(
+              "virtual:react-router/server-build"
+            );
+          } else {
+            build = (await import(
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore - File exists at runtime after build
+              "../../server/index.js"
+            )) as ServerBuild;
+          }
+
+          return build;
+        } catch (error) {
+          log.error(
+            {
+              error: error instanceof Error ? error.message : String(error),
+              stack: error instanceof Error ? error.stack : undefined,
+            },
+            "💥 Failed to load React Router server build"
+          );
+          throw error;
+        }
       },
-    },
-    mode: MODE,
-    server: { middlewareMode: true },
-  });
+      getLoadContext: (
+        _request,
+        response
+      ): ReturnType<GetLoadContextFunction> => {
+        const context =
+          new RouterContextProvider() as unknown as AppLoadContext;
 
-  app.use(viteDevServer.middlewares);
+        // Get CSP nonces from response.locals (bridged from Fastify in onRequest hook)
+        const cspNonce: CSPNonceType = response.cspNonce || {
+          script: "",
+          style: "",
+        };
 
-  log.info("✅ Vite dev server middleware registered");
+        // Store nonces as a property on context for middleware to access
+        context._cspNonce = cspNonce;
+
+        return context as unknown as ReturnType<GetLoadContextFunction>;
+      },
+      mode: MODE,
+    })
+  );
+
+  log.info("✅ React Router Fastify plugin registered");
 } catch (error) {
   log.error(
     {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
     },
-    "💥 Failed to create Vite dev server"
+    "💥 Failed to register React Router Fastify plugin"
   );
   process.exit(1);
 }
 
-const reactRouterHandler = createRequestHandler({
-  build: async () => {
-    try {
-      return await viteDevServer.ssrLoadModule(
-        "virtual:react-router/server-build"
-      );
-    } catch (error) {
-      log.error(
-        {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-        "💥 Failed to load React Router server build"
-      );
-      throw error;
-    }
-  },
-  getLoadContext: (_request, response): ReturnType<GetLoadContextFunction> => {
-    const context = new RouterContextProvider() as unknown as AppLoadContext;
+// Register rate limiting AFTER static files and React Router to avoid limiting essential routes
+try {
+  await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
 
-    // Get CSP nonces from response.locals (bridged from Fastify in onRequest hook)
-    const cspNonce: CSPNonceType = response.locals.cspNonce || {
-      script: "",
-      style: "",
-    };
-
-    // Store nonces as a property on context for middleware to access
-    context._cspNonce = cspNonce;
-
-    return context as unknown as ReturnType<GetLoadContextFunction>;
-  },
-  mode: MODE,
-});
-
-app.use(reactRouterHandler);
-
-log.info("✅ React Router SSR handler registered");
+  log.info("✅ Rate limiting plugin registered");
+} catch (error) {
+  log.error(
+    {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    },
+    "💥 Failed to register Rate Limit plugin"
+  );
+  process.exit(1);
+}
 
 const startServer = async (): Promise<void> => {
   const desiredPort = Number(PORT);

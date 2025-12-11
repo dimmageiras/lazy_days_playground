@@ -78,8 +78,17 @@ const sendRemixResponse = async (
 ): Promise<void> => {
   res.status(nodeResponse.status);
 
+  // Set Content-Type directly on the raw response to ensure it's not overridden
+  const contentType = nodeResponse.headers.get("Content-Type");
+
+  if (contentType) {
+    res.raw.setHeader("Content-Type", contentType);
+  }
+
   for (const [key, value] of nodeResponse.headers.entries()) {
-    res.header(key, value);
+    if (key.toLowerCase() !== "content-type") {
+      res.header(key, value);
+    }
   }
 
   if (nodeResponse.headers.get("Content-Type")?.match(/text\/event-stream/i)) {
