@@ -16,9 +16,11 @@
     "typegen": "react-router typegen"
   },
   "dependencies": {
+    "@fastify/express": "4.0.2",
     "@fastify/swagger": "9.5.1",
     "@fastify/swagger-ui": "5.2.3",
     "@mcansh/remix-fastify": "4.1.1",
+    "@react-router/express": "7.7.1",
     "@react-router/node": "7.7.1",
     "@react-router/serve": "7.7.1",
     "@tanstack/react-query": "5.84.1",
@@ -48,6 +50,7 @@
     "@tanstack/eslint-plugin-query": "5.83.1",
     "@tanstack/react-query-devtools": "5.84.1",
     "@total-typescript/ts-reset": "0.6.1",
+    "@types/express": "5.0.6",
     "@types/lodash": "4.17.20",
     "@types/node": "24.2.0",
     "@types/react": "19.1.9",

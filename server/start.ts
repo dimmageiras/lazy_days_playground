@@ -1,6 +1,10 @@
-import { reactRouterFastify } from "@mcansh/remix-fastify/react-router";
+import expressFastify from "@fastify/express";
+import { createRequestHandler } from "@react-router/express";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
+import process from "node:process";
+import type { ServerBuild } from "react-router";
+import type { InlineConfig } from "vite";
 
 import {
   HOST,
@@ -16,13 +20,38 @@ const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
 });
 
-app.register(reactRouterFastify, {
-  buildDirectory: "dist",
-  serverBuildFile: "index.js",
-  viteOptions: {
-    mode: MODE,
-  },
+await app.register(expressFastify);
+
+const reactRouterHandler = createRequestHandler({
+  build: IS_DEVELOPMENT
+    ? async () => {
+        const { createServer } = await import("vite");
+        const viteDevServer = await createServer({
+          mode: MODE,
+          server: { middlewareMode: true },
+        } satisfies InlineConfig);
+
+        app.use(viteDevServer.middlewares);
+
+        const build = (await viteDevServer.ssrLoadModule(
+          "virtual:react-router/server-build"
+        )) as ServerBuild;
+
+        return build;
+      }
+    : async () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore - File exists at runtime after build
+        const build = (await import("../dist/server/index.js")) as ServerBuild;
+
+        return build;
+      },
+  mode: MODE,
 });
+
+app.use(reactRouterHandler);
+
+log.info("✅ React Router SSR handler registered");
 
 const startServer = async (): Promise<void> => {
   const desiredPort = Number(PORT);
