@@ -1,6 +1,3 @@
-import cookieFastify from "@fastify/cookie";
-import expressFastify from "@fastify/express";
-import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
 import fastifyStatic from "@fastify/static";
 import swaggerFastify from "@fastify/swagger";
@@ -33,7 +30,6 @@ import {
   USER_BASE_URL,
 } from "../shared/constants/base-urls.constant.ts";
 import {
-  COOKIE_SECRET,
   GEL_AUTH_BASE_URL,
   HOST,
   IS_DEVELOPMENT,
@@ -44,12 +40,12 @@ import {
 } from "../shared/constants/root-env.constant.ts";
 import { TIMING } from "../shared/constants/timing.constant.ts";
 import { ObjectUtilsHelper } from "../shared/helpers/object-utils.helper.ts";
-import { CSP_DIRECTIVES } from "./constants/csp.constant.ts";
 import { HTTP_STATUS } from "./constants/http-status.constant.ts";
 import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
+import { SecurityInit } from "./inits/security.init.ts";
 import type { GetLoadContextFunction } from "./plugins/react-router-fastify/index";
 import { createRequestHandler } from "./plugins/react-router-fastify/index.ts";
 import { apiHealthRoutes } from "./routes/api/health/index.ts";
@@ -59,11 +55,13 @@ import { userRoutes } from "./routes/user/index.ts";
 
 const { NOT_FOUND } = HTTP_STATUS;
 const { PRODUCTION, TYPE_GENERATOR } = MODES;
-const { SECONDS_TEN_IN_MS, YEARS_ONE_IN_S } = TIMING;
+const { SECONDS_TEN_IN_MS } = TIMING;
 
 const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
+
+const { initSecurityPlugins } = SecurityInit;
 
 let fastifyWithSwagger = null as FastifyInstance | null;
 
@@ -71,7 +69,7 @@ const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
   loggerInstance: log,
   requestTimeout: SECONDS_TEN_IN_MS,
-});
+}) as unknown as FastifyInstance;
 
 // Create a single Gel client instance for connection pooling
 const gelClient = createGelClient({
@@ -86,72 +84,7 @@ app.setSerializerCompiler(serializerCompiler);
 
 await app.register(fastifyZodOpenApiPlugin);
 
-if (MODE !== TYPE_GENERATOR) {
-  try {
-    await app.register(helmet, {
-      contentSecurityPolicy: IS_DEVELOPMENT
-        ? false
-        : { directives: CSP_DIRECTIVES, useDefaults: false },
-      crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
-      enableCSPNonces: !IS_DEVELOPMENT,
-      hsts: {
-        includeSubDomains: true,
-        maxAge: YEARS_ONE_IN_S,
-        preload: true,
-      },
-    });
-
-    log.info("✅ Helmet security headers registered");
-  } catch (error) {
-    log.error(
-      {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      },
-      "💥 Failed to register Helmet security plugin"
-    );
-    process.exit(1);
-  }
-
-  try {
-    await app.register(cookieFastify, {
-      parseOptions: {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: !IS_DEVELOPMENT,
-      },
-      secret: COOKIE_SECRET,
-    });
-
-    log.info("✅ Cookie plugin registered");
-  } catch (error) {
-    log.error(
-      {
-        error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
-      },
-      "💥 Failed to register Cookie plugin"
-    );
-    process.exit(1);
-  }
-
-  if (IS_DEVELOPMENT) {
-    try {
-      await app.register(expressFastify);
-
-      log.info("✅ Express compatibility plugin registered");
-    } catch (error) {
-      log.error(
-        {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-        "💥 Failed to register Express compatibility plugin"
-      );
-      process.exit(1);
-    }
-  }
-}
+await initSecurityPlugins(app, MODE);
 
 await app.register(async (fastify: FastifyInstance) => {
   if (MODE === TYPE_GENERATOR) {
