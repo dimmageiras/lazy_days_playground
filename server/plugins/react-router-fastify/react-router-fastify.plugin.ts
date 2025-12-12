@@ -21,20 +21,13 @@ const createRequestHandler: CreateRequestHandlerFactory = ({
   const handleRequest = createRemixRequestHandler(build, mode);
 
   return (fastify, _opts, done) => {
-    // Register a catch-all route for React Router - static files are handled by middleware chain
     fastify.all("*", async (req, res) => {
-      // eslint-disable-next-line no-useless-catch
-      try {
-        const request = createRemixRequest(req, res);
-        const loadContext = await getLoadContext?.(req, res);
+      const request = createRemixRequest(req, res);
+      const loadContext = await getLoadContext?.(req, res);
 
-        const response = await handleRequest(request, loadContext);
+      const response = await handleRequest(request, loadContext);
 
-        await sendRemixResponse(res, response);
-      } catch (error: unknown) {
-        // Let Fastify handle the error
-        throw error;
-      }
+      await sendRemixResponse(res, response);
     });
 
     done();
