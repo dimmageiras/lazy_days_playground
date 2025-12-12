@@ -12,8 +12,9 @@ import { TIMING } from "../../shared/constants/timing.constant.ts";
 import { CSP_DIRECTIVES } from "../constants/csp.constant.ts";
 import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 
-const { YEARS_ONE_IN_S } = TIMING;
 const { TYPE_GENERATOR } = MODES;
+const { YEARS_ONE_IN_S } = TIMING;
+
 const { log } = PinoLogHelper;
 
 const registerCookie = async (app: FastifyInstance): Promise<void> => {

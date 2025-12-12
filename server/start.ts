@@ -10,7 +10,6 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "fastify-zod-openapi";
-import { createClient as createGelClient } from "gel";
 import getPort, { portNumbers } from "get-port";
 import path from "node:path";
 import process from "node:process";
@@ -24,7 +23,6 @@ import type { CSPNonceType } from "@shared/types/csp.type";
 import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
 import { API_DOCS_BASE_URL } from "../shared/constants/base-urls.constant.ts";
 import {
-  GEL_AUTH_BASE_URL,
   HOST,
   IS_DEVELOPMENT,
   LOG_LEVEL,
@@ -39,6 +37,7 @@ import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
+import { DatabaseInit } from "./inits/database.init.ts";
 import { RoutesInit } from "./inits/routes.init.ts";
 import { SecurityInit } from "./inits/security.init.ts";
 import type { GetLoadContextFunction } from "./plugins/react-router-fastify/index";
@@ -52,6 +51,7 @@ const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
 
+const { initDatabasePlugins } = DatabaseInit;
 const { initSecurityPlugins } = SecurityInit;
 const { initRoutes } = RoutesInit;
 
@@ -63,13 +63,7 @@ const app = fastify({
   requestTimeout: SECONDS_TEN_IN_MS,
 }) as unknown as FastifyInstance;
 
-// Create a single Gel client instance for connection pooling
-const gelClient = createGelClient({
-  dsn: GEL_AUTH_BASE_URL,
-});
-
-// Decorate Fastify instance with the Gel client for reuse across requests
-app.decorate("gelClient", gelClient);
+await initDatabasePlugins(app, MODE);
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
@@ -396,7 +390,7 @@ const startServer = async (): Promise<void> => {
     log.info(`Received ${signal}, closing Gel client connection pool...`);
 
     try {
-      await gelClient.close();
+      await app.gelClient.close();
       log.info("✅ Gel client connection pool closed gracefully");
     } catch (closeError) {
       log.error(
@@ -427,7 +421,7 @@ const startServer = async (): Promise<void> => {
 
   try {
     // Ensure the connection pool is ready before starting the server
-    await gelClient.ensureConnected();
+    await app.gelClient.ensureConnected();
     log.info("✅ Gel database connection pool initialized");
 
     const address = await app.listen({ port: portToUse, host: HOST });
@@ -450,7 +444,7 @@ const startServer = async (): Promise<void> => {
     );
 
     // Close the Gel client connection pool on error
-    await gelClient.close().catch((closeError) => {
+    await app.gelClient.close().catch((closeError) => {
       log.error(
         {
           error:
