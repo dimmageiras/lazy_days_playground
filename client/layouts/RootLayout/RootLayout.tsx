@@ -20,7 +20,7 @@ const RootLayout = ({ children }: PropsWithChildren): JSX.Element => {
 
   const {
     cspNonce: { script: scriptNonce, style: styleNonce },
-  } = loaderData;
+  } = loaderData || { cspNonce: { script: "", style: "" } };
 
   return (
     <html
