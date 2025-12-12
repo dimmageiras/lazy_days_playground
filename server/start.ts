@@ -22,13 +22,7 @@ import { createServer } from "vite";
 import type { CSPNonceType } from "@shared/types/csp.type";
 
 import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
-import {
-  API_DOCS_BASE_URL,
-  API_HEALTH_BASE_URL,
-  API_REPORTS_BASE_URL,
-  AUTH_BASE_URL,
-  USER_BASE_URL,
-} from "../shared/constants/base-urls.constant.ts";
+import { API_DOCS_BASE_URL } from "../shared/constants/base-urls.constant.ts";
 import {
   GEL_AUTH_BASE_URL,
   HOST,
@@ -45,13 +39,10 @@ import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
+import { RoutesInit } from "./inits/routes.init.ts";
 import { SecurityInit } from "./inits/security.init.ts";
 import type { GetLoadContextFunction } from "./plugins/react-router-fastify/index";
 import { createRequestHandler } from "./plugins/react-router-fastify/index.ts";
-import { apiHealthRoutes } from "./routes/api/health/index.ts";
-import { reportsRoute } from "./routes/api/reports/index.ts";
-import { authRoutes } from "./routes/auth/index.ts";
-import { userRoutes } from "./routes/user/index.ts";
 
 const { NOT_FOUND } = HTTP_STATUS;
 const { PRODUCTION, TYPE_GENERATOR } = MODES;
@@ -62,6 +53,7 @@ const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
 
 const { initSecurityPlugins } = SecurityInit;
+const { initRoutes } = RoutesInit;
 
 let fastifyWithSwagger = null as FastifyInstance | null;
 
@@ -184,14 +176,7 @@ await app.register(async (fastify: FastifyInstance) => {
     }
   }
 
-  await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
-  await fastify.register(reportsRoute, { prefix: API_REPORTS_BASE_URL });
-  await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
-  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
-
-  if (MODE !== TYPE_GENERATOR) {
-    log.info("✅ All routes are registered");
-  }
+  await initRoutes(fastify, MODE);
 });
 
 // Global error handler - catches unhandled errors across all routes
