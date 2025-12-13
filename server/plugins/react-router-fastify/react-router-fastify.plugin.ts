@@ -1,12 +1,13 @@
 import type { FastifyPluginCallback } from "fastify";
 import { createRequestHandler as createRemixRequestHandler } from "react-router";
 
-import { MODES } from "../../../shared/constants/root-env.constant.ts";
-import { RequestHelpers } from "./helpers/request-helpers.helper.ts";
 import type {
   CreateRequestHandlerFactory,
   CreateRequestHandlerOptions,
-} from "./types/plugin-factory.type";
+} from "@server/plugins/react-router-fastify/types/plugin-factory.type";
+
+import { MODES } from "../../../shared/constants/root-env.constant.ts";
+import { RequestHelpers } from "./helpers/request-helpers.helper.ts";
 
 /**
  * Returns a Fastify plugin that serves the response using React Router.

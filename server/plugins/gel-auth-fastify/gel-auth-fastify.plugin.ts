@@ -1,7 +1,11 @@
 import { Auth } from "@gel/auth-core";
 
+import type {
+  GelAuthFactory,
+  GelAuthInstance,
+} from "@server/plugins/gel-auth-fastify/types/auth-core.type";
+
 import { EmailPasswordHandlersHelper } from "./helpers/email-password-handlers.helper.ts";
-import type { GelAuthFactory, GelAuthInstance } from "./types/auth-core.type";
 
 const createGelAuth: GelAuthFactory = (client) => {
   const core = Auth.create(client);

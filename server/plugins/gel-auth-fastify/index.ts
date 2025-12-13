@@ -1,10 +1,11 @@
-import { createGelAuth } from "./gel-auth-fastify.plugin.ts";
-import type { GelAuthInstance } from "./types/auth-core.type";
+import type { GelAuthInstance } from "@server/plugins/gel-auth-fastify/types/auth-core.type";
 import type {
   SigninRequestBody,
   SignupRequestBody,
   VerifyRequestBody,
-} from "./types/request-body.type";
+} from "@server/plugins/gel-auth-fastify/types/request-body.type";
+
+import { createGelAuth } from "./gel-auth-fastify.plugin.ts";
 
 export type {
   GelAuthInstance,

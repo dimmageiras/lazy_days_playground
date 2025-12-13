@@ -1,10 +1,7 @@
 import expressFastify from "@fastify/express";
 import fastifyStatic from "@fastify/static";
-import swaggerFastify from "@fastify/swagger";
-import swaggerUIFastify from "@fastify/swagger-ui";
 import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
-import { fastifyZodOpenApiTransformers } from "fastify-zod-openapi";
 import getPort, { portNumbers } from "get-port";
 import path from "node:path";
 import process from "node:process";
@@ -13,16 +10,9 @@ import { RouterContextProvider } from "react-router";
 import type { ViteDevServer } from "vite";
 import { createServer } from "vite";
 
+import type { GetLoadContextFunction } from "@server/plugins/react-router-fastify/index";
 import type { CSPNonceType } from "@shared/types/csp.type";
 
-import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
-import {
-  API_DOCS_BASE_URL,
-  API_HEALTH_BASE_URL,
-  API_REPORTS_BASE_URL,
-  AUTH_BASE_URL,
-  USER_BASE_URL,
-} from "../shared/constants/base-urls.constant.ts";
 import {
   HOST,
   IS_DEVELOPMENT,
@@ -32,28 +22,14 @@ import {
   PORT,
 } from "../shared/constants/root-env.constant.ts";
 import { TIMING } from "../shared/constants/timing.constant.ts";
-import { ObjectUtilsHelper } from "../shared/helpers/object-utils.helper.ts";
-import { HTTP_STATUS } from "./constants/http-status.constant.ts";
-import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
-import { TypesHelper } from "./helpers/types.helper.ts";
 import { inits } from "./inits/inits.ts";
-import type { GetLoadContextFunction } from "./plugins/react-router-fastify/index";
 import { createRequestHandler } from "./plugins/react-router-fastify/index.ts";
-import { apiHealthRoutes } from "./routes/api/health/index.ts";
-import { reportsRoute } from "./routes/api/reports/index.ts";
-import { authRoutes } from "./routes/auth/index.ts";
-import { userRoutes } from "./routes/user/index.ts";
 
-const { NOT_FOUND } = HTTP_STATUS;
-const { PRODUCTION, TYPE_GENERATOR } = MODES;
+const { TYPE_GENERATOR } = MODES;
 const { SECONDS_TEN_IN_MS } = TIMING;
 
-const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
-const { generateContractsForRoute } = TypesHelper;
-
-let fastifyWithSwagger = null as FastifyInstance | null;
 
 const app = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
@@ -61,206 +37,30 @@ const app = fastify({
   requestTimeout: SECONDS_TEN_IN_MS,
 }) as unknown as FastifyInstance;
 
-await inits(app, MODE);
-
-if (MODE !== TYPE_GENERATOR) {
-  if (IS_DEVELOPMENT) {
-    try {
-      await app.register(expressFastify);
-
-      log.info("✅ Express compatibility plugin registered");
-    } catch (error) {
-      log.error(
-        {
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-        "💥 Failed to register Express compatibility plugin"
-      );
-      process.exit(1);
-    }
-  }
-}
-
-await app.register(async (fastify: FastifyInstance) => {
-  if (MODE === TYPE_GENERATOR) {
-    fastifyWithSwagger = fastify;
-  }
-
-  if (MODE !== PRODUCTION) {
-    await fastify.register(swaggerFastify, {
-      openapi: {
-        info: {
-          contact: {
-            name: "API Support",
-          },
-          description: "API documentation for Lazy Days Playground application",
-          license: {
-            name: "MIT",
-          },
-          title: "Lazy Days Playground API",
-          version: "1.0.0",
-        },
-        openapi: "3.1.2",
-      },
-      ...fastifyZodOpenApiTransformers,
-    });
-
-    const { SWAGGER } = API_DOCS_ENDPOINTS;
-    const routePrefix = `/${API_DOCS_BASE_URL}/${SWAGGER}` as const;
-
-    await fastify.register(swaggerUIFastify, {
-      routePrefix,
-      uiConfig: {
-        docExpansion: "list",
-        deepLinking: false,
-      },
-      uiHooks: {
-        onRequest: (request, response, next) => {
-          // Allow all requests under the swagger route prefix (UI, assets, JSON spec)
-          if (request.url.startsWith(routePrefix)) {
-            next();
-
-            return;
-          }
-
-          const referer = request.headers.referer;
-
-          // Block requests not from same origin
-          if (!referer?.includes(request.hostname)) {
-            response.code(NOT_FOUND).send({
-              error: `No routes matched location "${request.url}"`,
-              statusCode: NOT_FOUND,
-            });
-
-            return;
-          }
-
-          next();
-        },
-        preHandler: (_request, _response, next) => {
-          next();
-        },
-      },
-      staticCSP: true,
-      transformStaticCSP: (header) => {
-        return header.replace(
-          "style-src 'self' https:",
-          "style-src 'self' https: 'unsafe-inline'"
-        );
-      },
-      transformSpecification: (swaggerObject, request, _response) => {
-        const host = request.headers.host || `localhost:${PORT}`;
-        // Check X-Forwarded-Proto header first for proxied environments (e.g., behind load balancer, reverse proxy)
-        // This header is set by proxies to indicate the original protocol used by the client
-        const forwardedProto = request.headers["x-forwarded-proto"];
-        // Check if socket is encrypted (TLS) by checking for encrypted property
-        const socket = request.socket as { encrypted?: boolean } | null;
-        const isEncrypted = socket?.encrypted === true;
-        const protocol =
-          forwardedProto ||
-          request.protocol ||
-          (isEncrypted ? "https" : "http");
-
-        return {
-          ...swaggerObject,
-          servers: [
-            {
-              url: `${protocol}://${host}`,
-              description: "Current server",
-            },
-          ],
-        };
-      },
-      transformSpecificationClone: true,
-    });
-
-    if (MODE !== TYPE_GENERATOR) {
-      log.info("✅ Swagger plugins registered for API routes");
-    }
-  }
-
-  await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
-  await fastify.register(reportsRoute, { prefix: API_REPORTS_BASE_URL });
-  await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
-  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
-
-  if (MODE !== TYPE_GENERATOR) {
-    log.info("✅ All API routes are registered");
-  }
-});
-
-// Global error handler - catches unhandled errors across all routes
-app.setErrorHandler((error, request, response) => {
-  const requestId = request.id || "unknown";
-
-  log.error(
-    {
-      error: error instanceof Error ? error.message : String(error),
-      method: request.method,
-      requestId,
-      stack: error instanceof Error ? error.stack : undefined,
-      statusCode: response.statusCode || 500,
-      url: request.url,
-    },
-    "💥 Unhandled error in request"
-  );
-
-  // For 5xx errors, return sanitized response to hide internal details
-  if (response.statusCode >= 500 || !response.statusCode) {
-    return response.status(500).send({
-      error: "Internal Server Error",
-      message: "An unexpected error occurred. Please try again later.",
-      statusCode: 500,
-    });
-  }
-
-  // For 4xx errors, pass through the original error
-  return response.send(error);
-});
+await inits(app);
 
 if (MODE === TYPE_GENERATOR) {
+  process.exit(0);
+}
+
+let viteDevServer: ViteDevServer | null = null;
+
+if (IS_DEVELOPMENT) {
   try {
-    await app.ready();
+    await app.register(expressFastify);
 
-    if (!fastifyWithSwagger) {
-      throw new Error("Fastify instance with swagger not available");
-    }
-
-    const spec = fastifyWithSwagger.swagger();
-    const routes: (typeof SWAGGER_ROUTES)[keyof typeof SWAGGER_ROUTES][] =
-      getObjectValues(SWAGGER_ROUTES);
-
-    for (let index = 0; index < routes.length; index++) {
-      const cleanOnFirstRun = index === 0;
-      const routePath = Reflect.get(routes, index);
-
-      if ("openapi" in spec) {
-        await generateContractsForRoute({
-          cleanOnFirstRun,
-          routePath,
-          spec: spec,
-          isLastRoute: index === routes.length - 1,
-        });
-      }
-    }
-
-    process.exit(0);
+    log.info("✅ Express compatibility plugin registered");
   } catch (error) {
     log.error(
       {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to generate types"
+      "💥 Failed to register Express compatibility plugin"
     );
     process.exit(1);
   }
-}
 
-let viteDevServer: ViteDevServer | null = null;
-
-if (IS_DEVELOPMENT) {
   try {
     viteDevServer = await createServer({
       mode: MODE,

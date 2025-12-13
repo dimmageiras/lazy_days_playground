@@ -5,19 +5,25 @@ import {
   validatorCompiler,
 } from "fastify-zod-openapi";
 
-import { MODES } from "../../shared/constants/root-env.constant.ts";
+import { MODE, MODES } from "../../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 import { DatabaseInit } from "./database/index.ts";
+import { RoutesInit } from "./routes/index.ts";
 import { SecurityInit } from "./security/index.ts";
+import { SwaggerInit } from "./swagger/index.ts";
 
 const { TYPE_GENERATOR } = MODES;
 
 const { log } = PinoLogHelper;
 
 const { initDatabasePlugins } = DatabaseInit;
+const { initRoutesPlugins } = RoutesInit;
 const { initSecurityPlugins } = SecurityInit;
+const { initSwaggerPlugins } = SwaggerInit;
 
-const inits = async (app: FastifyInstance, mode: string): Promise<void> => {
+const inits = async (app: FastifyInstance): Promise<void> => {
+  const swaggerInstanceRef = { current: null as FastifyInstance | null };
+
   try {
     // Database plugins
     await initDatabasePlugins(app);
@@ -27,10 +33,13 @@ const inits = async (app: FastifyInstance, mode: string): Promise<void> => {
     app.setSerializerCompiler(serializerCompiler);
     await app.register(fastifyZodOpenApiPlugin);
 
-    if (mode !== TYPE_GENERATOR) {
+    if (MODE !== TYPE_GENERATOR) {
       // Security plugins
       await initSecurityPlugins(app);
     }
+
+    // Swagger plugins
+    await initSwaggerPlugins(app, swaggerInstanceRef, initRoutesPlugins);
   } catch (error) {
     log.error(
       {
@@ -42,7 +51,7 @@ const inits = async (app: FastifyInstance, mode: string): Promise<void> => {
     process.exit(1);
   }
 
-  if (mode !== TYPE_GENERATOR) {
+  if (MODE !== TYPE_GENERATOR) {
     log.info("✅ All plugins are initialized");
   }
 };

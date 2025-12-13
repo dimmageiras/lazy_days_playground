@@ -1,9 +1,10 @@
-import { createRequestHandler } from "./react-router-fastify.plugin.ts";
-import type { GetLoadContextFunction } from "./types/load-context.type";
+import type { GetLoadContextFunction } from "@server/plugins/react-router-fastify/types/load-context.type";
 import type {
   CreateRequestHandlerFactory,
   CreateRequestHandlerOptions,
-} from "./types/plugin-factory.type";
+} from "@server/plugins/react-router-fastify/types/plugin-factory.type";
+
+import { createRequestHandler } from "./react-router-fastify.plugin.ts";
 
 export type {
   GetLoadContextFunction,
