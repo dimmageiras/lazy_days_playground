@@ -8,6 +8,7 @@ import {
 import { MODE, MODES } from "../../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 import { DatabaseInit } from "./database/index.ts";
+import { ReactRouterInit } from "./react-router/index.ts";
 import { RoutesInit } from "./routes/index.ts";
 import { SecurityInit } from "./security/index.ts";
 import { SwaggerInit } from "./swagger/index.ts";
@@ -17,6 +18,7 @@ const { TYPE_GENERATOR } = MODES;
 const { log } = PinoLogHelper;
 
 const { initDatabasePlugins } = DatabaseInit;
+const { initReactRouterPlugins } = ReactRouterInit;
 const { initRoutesPlugins } = RoutesInit;
 const { initSecurityPlugins } = SecurityInit;
 const { initSwaggerPlugins } = SwaggerInit;
@@ -40,6 +42,9 @@ const inits = async (app: FastifyInstance): Promise<void> => {
 
     // Swagger plugins
     await initSwaggerPlugins(app, swaggerInstanceRef, initRoutesPlugins);
+
+    // React Router plugins
+    await initReactRouterPlugins(app);
   } catch (error) {
     log.error(
       {
