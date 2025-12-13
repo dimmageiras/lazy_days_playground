@@ -1,15 +1,10 @@
-import rateLimitFastify from "@fastify/rate-limit";
+import expressFastify from "@fastify/express";
 import fastifyStatic from "@fastify/static";
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
 import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
-import {
-  fastifyZodOpenApiPlugin,
-  fastifyZodOpenApiTransformers,
-  serializerCompiler,
-  validatorCompiler,
-} from "fastify-zod-openapi";
+import { fastifyZodOpenApiTransformers } from "fastify-zod-openapi";
 import getPort, { portNumbers } from "get-port";
 import path from "node:path";
 import process from "node:process";
@@ -21,7 +16,13 @@ import { createServer } from "vite";
 import type { CSPNonceType } from "@shared/types/csp.type";
 
 import { API_DOCS_ENDPOINTS } from "../shared/constants/api.constant.ts";
-import { API_DOCS_BASE_URL } from "../shared/constants/base-urls.constant.ts";
+import {
+  API_DOCS_BASE_URL,
+  API_HEALTH_BASE_URL,
+  API_REPORTS_BASE_URL,
+  AUTH_BASE_URL,
+  USER_BASE_URL,
+} from "../shared/constants/base-urls.constant.ts";
 import {
   HOST,
   IS_DEVELOPMENT,
@@ -33,15 +34,16 @@ import {
 import { TIMING } from "../shared/constants/timing.constant.ts";
 import { ObjectUtilsHelper } from "../shared/helpers/object-utils.helper.ts";
 import { HTTP_STATUS } from "./constants/http-status.constant.ts";
-import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
 import { SWAGGER_ROUTES } from "./constants/swagger-routes.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 import { TypesHelper } from "./helpers/types.helper.ts";
-import { DatabaseInit } from "./inits/database.init.ts";
-import { RoutesInit } from "./inits/routes.init.ts";
-import { SecurityInit } from "./inits/security.init.ts";
+import { inits } from "./inits/inits.ts";
 import type { GetLoadContextFunction } from "./plugins/react-router-fastify/index";
 import { createRequestHandler } from "./plugins/react-router-fastify/index.ts";
+import { apiHealthRoutes } from "./routes/api/health/index.ts";
+import { reportsRoute } from "./routes/api/reports/index.ts";
+import { authRoutes } from "./routes/auth/index.ts";
+import { userRoutes } from "./routes/user/index.ts";
 
 const { NOT_FOUND } = HTTP_STATUS;
 const { PRODUCTION, TYPE_GENERATOR } = MODES;
@@ -51,10 +53,6 @@ const { getObjectValues } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
 
-const { initDatabasePlugins } = DatabaseInit;
-const { initSecurityPlugins } = SecurityInit;
-const { initRoutes } = RoutesInit;
-
 let fastifyWithSwagger = null as FastifyInstance | null;
 
 const app = fastify({
@@ -63,14 +61,26 @@ const app = fastify({
   requestTimeout: SECONDS_TEN_IN_MS,
 }) as unknown as FastifyInstance;
 
-await initDatabasePlugins(app, MODE);
+await inits(app, MODE);
 
-app.setValidatorCompiler(validatorCompiler);
-app.setSerializerCompiler(serializerCompiler);
+if (MODE !== TYPE_GENERATOR) {
+  if (IS_DEVELOPMENT) {
+    try {
+      await app.register(expressFastify);
 
-await app.register(fastifyZodOpenApiPlugin);
-
-await initSecurityPlugins(app, MODE);
+      log.info("✅ Express compatibility plugin registered");
+    } catch (error) {
+      log.error(
+        {
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+        "💥 Failed to register Express compatibility plugin"
+      );
+      process.exit(1);
+    }
+  }
+}
 
 await app.register(async (fastify: FastifyInstance) => {
   if (MODE === TYPE_GENERATOR) {
@@ -166,11 +176,18 @@ await app.register(async (fastify: FastifyInstance) => {
     });
 
     if (MODE !== TYPE_GENERATOR) {
-      log.info("✅ Swagger plugins registered for API routes only");
+      log.info("✅ Swagger plugins registered for API routes");
     }
   }
 
-  await initRoutes(fastify, MODE);
+  await fastify.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
+  await fastify.register(reportsRoute, { prefix: API_REPORTS_BASE_URL });
+  await fastify.register(authRoutes, { prefix: AUTH_BASE_URL });
+  await fastify.register(userRoutes, { prefix: USER_BASE_URL });
+
+  if (MODE !== TYPE_GENERATOR) {
+    log.info("✅ All API routes are registered");
+  }
 });
 
 // Global error handler - catches unhandled errors across all routes
@@ -359,22 +376,6 @@ try {
       stack: error instanceof Error ? error.stack : undefined,
     },
     "💥 Failed to register React Router Fastify plugin"
-  );
-  process.exit(1);
-}
-
-// Register rate limiting AFTER static files and React Router to avoid limiting essential routes
-try {
-  await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
-
-  log.info("✅ Rate limiting plugin registered");
-} catch (error) {
-  log.error(
-    {
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    },
-    "💥 Failed to register Rate Limit plugin"
   );
   process.exit(1);
 }

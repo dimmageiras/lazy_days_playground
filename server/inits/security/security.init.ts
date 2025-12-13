@@ -1,18 +1,17 @@
 import cookieFastify from "@fastify/cookie";
-import expressFastify from "@fastify/express";
 import helmet from "@fastify/helmet";
+import rateLimitFastify from "@fastify/rate-limit";
 import type { FastifyInstance } from "fastify";
 
 import {
   COOKIE_SECRET,
   IS_DEVELOPMENT,
-  MODES,
-} from "../../shared/constants/root-env.constant.ts";
-import { TIMING } from "../../shared/constants/timing.constant.ts";
-import { CSP_DIRECTIVES } from "../constants/csp.constant.ts";
-import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
+} from "../../../shared/constants/root-env.constant.ts";
+import { TIMING } from "../../../shared/constants/timing.constant.ts";
+import { CSP_DIRECTIVES } from "../../constants/csp.constant.ts";
+import { GLOBAL_RATE_LIMIT } from "../../constants/rate-limit.constant.ts";
+import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 
-const { TYPE_GENERATOR } = MODES;
 const { YEARS_ONE_IN_S } = TIMING;
 
 const { log } = PinoLogHelper;
@@ -37,8 +36,6 @@ const registerCookie = async (app: FastifyInstance): Promise<void> => {
     );
     process.exit(1);
   }
-
-  log.info("✅ Cookie plugin registered");
 };
 
 const registerHelmet = async (app: FastifyInstance): Promise<void> => {
@@ -65,39 +62,27 @@ const registerHelmet = async (app: FastifyInstance): Promise<void> => {
     );
     process.exit(1);
   }
-
-  log.info("✅ Helmet security headers registered");
 };
 
-const registerExpress = async (app: FastifyInstance): Promise<void> => {
+const ragisterRateLimit = async (app: FastifyInstance): Promise<void> => {
   try {
-    await app.register(expressFastify);
+    await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
   } catch (error) {
     log.error(
       {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register Express compatibility plugin"
+      "💥 Failed to register Rate Limit plugin"
     );
     process.exit(1);
   }
-
-  log.info("✅ Express compatibility plugin registered");
 };
 
-const initSecurityPlugins = async (
-  app: FastifyInstance,
-  mode: string
-): Promise<void> => {
-  if (mode !== TYPE_GENERATOR) {
-    registerHelmet(app);
-    registerCookie(app);
-
-    if (IS_DEVELOPMENT) {
-      registerExpress(app);
-    }
-  }
+const initSecurityPlugins = async (app: FastifyInstance): Promise<void> => {
+  await ragisterRateLimit(app);
+  await registerCookie(app);
+  await registerHelmet(app);
 };
 
 export const SecurityInit = {

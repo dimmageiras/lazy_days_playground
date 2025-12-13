@@ -63,7 +63,19 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
     "x-ratelimit-remaining": true,
     "x-ratelimit-reset": true,
   },
-  allowList: IS_DEVELOPMENT ? ["127.0.0.1", "::1"] : [],
+  allowList: (request) => {
+    // Allow localhost IPs in development
+    if (IS_DEVELOPMENT && ["127.0.0.1", "::1"].includes(request.ip)) {
+      return true;
+    }
+
+    // Exclude static assets from rate limiting
+    if (request.url.startsWith("/assets/")) {
+      return true;
+    }
+
+    return false;
+  },
   cache: 10000, // Maximum number of keys to store
   continueExceeding: true, // Continue to track requests after limit
   enableDraftSpec: true, // Add RateLimit-* headers
@@ -196,6 +208,18 @@ const HEALTH_RATE_LIMIT: RateLimitPluginOptions = {
   },
   continueExceeding: true,
   enableDraftSpec: true,
+  errorResponseBuilder: (_request, context) => {
+    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
+
+    return {
+      error: "Too Many Requests",
+      message: `Too many health check requests. Please wait ${formatRetryTime(
+        retryAfterSeconds
+      )} before trying again.`,
+      retryAfter: retryAfterSeconds,
+      statusCode: MANY_REQUESTS_ERROR,
+    };
+  },
   keyGenerator: (request: FastifyRequest) => {
     const rawKey = request.ip;
 

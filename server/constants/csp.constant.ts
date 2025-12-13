@@ -20,7 +20,10 @@ const CSP_DIRECTIVES = Object.freeze({
   imgSrc: ["'self'", "data:"], // More restrictive - only self, data URIs, and Google Fonts CDN
   objectSrc: ["'none'"], // Prevents embedding objects like Flash or Silverlight
   reportUri: [`${API_CSP_REPORTS_BASE_URL}/${CREATE_CSP_REPORT}`], // Where to send CSP violations
-  scriptSrc: ["'self'"], // Only same-origin scripts (nonce added per request)
+  scriptSrc: [
+    "'self'",
+    "'sha256-VX842AH4rUYmZtQ45ccaOBoBq3VEp9KoFvY7SCaxjTA='",
+  ], // Only same-origin scripts (nonce added per request)
   styleSrc: ["'self'", "https://fonts.googleapis.com"], // Same-origin styles and Google Fonts (nonce added per request)
   upgradeInsecureRequests: [], // Automatically upgrades HTTP requests to HTTPS
 } as const);

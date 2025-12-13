@@ -21,14 +21,22 @@ const createRequestHandler: CreateRequestHandlerFactory = ({
   const handleRequest = createRemixRequestHandler(build, mode);
 
   return (fastify, _opts, done) => {
-    fastify.all("*", async (req, res) => {
-      const request = createRemixRequest(req, res);
-      const loadContext = await getLoadContext?.(req, res);
+    fastify.all(
+      "*",
+      {
+        config: {
+          rateLimit: false, // Exclude React Router routes from rate limiting
+        },
+      },
+      async (req, res) => {
+        const request = createRemixRequest(req, res);
+        const loadContext = await getLoadContext?.(req, res);
 
-      const response = await handleRequest(request, loadContext);
+        const response = await handleRequest(request, loadContext);
 
-      await sendRemixResponse(res, response);
-    });
+        await sendRemixResponse(res, response);
+      }
+    );
 
     done();
   };
