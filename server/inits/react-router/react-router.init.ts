@@ -134,8 +134,6 @@ const registerReactRouter = async (app: FastifyInstance): Promise<void> => {
               );
             } else {
               build = (await import(
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore - File exists at runtime after build
                 "../../../../server/index.js"
               )) as ServerBuild;
             }

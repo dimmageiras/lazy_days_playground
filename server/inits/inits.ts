@@ -12,6 +12,7 @@ import { ReactRouterInit } from "./react-router/index.ts";
 import { RoutesInit } from "./routes/index.ts";
 import { SecurityInit } from "./security/index.ts";
 import { SwaggerInit } from "./swagger/index.ts";
+import { TypeGenerationInit } from "./type-generation/index.ts";
 
 const { TYPE_GENERATOR } = MODES;
 
@@ -22,6 +23,7 @@ const { initReactRouterPlugins } = ReactRouterInit;
 const { initRoutesPlugins } = RoutesInit;
 const { initSecurityPlugins } = SecurityInit;
 const { initSwaggerPlugins } = SwaggerInit;
+const { initTypeGenerationPlugins } = TypeGenerationInit;
 
 const inits = async (app: FastifyInstance): Promise<void> => {
   const swaggerInstanceRef = { current: null as FastifyInstance | null };
@@ -42,6 +44,11 @@ const inits = async (app: FastifyInstance): Promise<void> => {
 
     // Swagger plugins
     await initSwaggerPlugins(app, swaggerInstanceRef, initRoutesPlugins);
+
+    // Type generation plugins (only in type generator mode)
+    if (MODE === TYPE_GENERATOR) {
+      await initTypeGenerationPlugins(app, swaggerInstanceRef);
+    }
 
     // React Router plugins
     await initReactRouterPlugins(app);
