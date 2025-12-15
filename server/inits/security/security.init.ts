@@ -64,7 +64,7 @@ const registerHelmet = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const ragisterRateLimit = async (app: FastifyInstance): Promise<void> => {
+const registerRateLimit = async (app: FastifyInstance): Promise<void> => {
   try {
     await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
   } catch (error) {
@@ -80,7 +80,7 @@ const ragisterRateLimit = async (app: FastifyInstance): Promise<void> => {
 };
 
 const initSecurityPlugins = async (app: FastifyInstance): Promise<void> => {
-  await ragisterRateLimit(app);
+  await registerRateLimit(app);
   await registerCookie(app);
   await registerHelmet(app);
 };
