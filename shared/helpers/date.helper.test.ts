@@ -7,7 +7,8 @@ import {
   MOCK_CURRENT_TIME,
   TEST_DATE_ISO,
   TEST_DATES,
-} from "../test-utils/test-data";
+} from "@shared/test-utils/test-data";
+
 import { DateHelper } from "./date.helper";
 
 // Mock dayjs using shared utility

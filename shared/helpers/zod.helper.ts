@@ -1,12 +1,12 @@
-import type { IssueCodes } from "@shared/types/app/zod.js";
-
-import { ISSUE_CODES } from "../constants/zod.constant.ts";
+import type { IssueCodes } from "@shared/types/app/zod";
 import type {
   ZodConfig,
   ZodError,
   ZodFormattedError,
   ZodLocale,
-} from "../wrappers/zod.wrapper.ts";
+} from "@shared/wrappers/zod.wrapper";
+
+import { ISSUE_CODES } from "../constants/zod.constant.ts";
 import { zConfig } from "../wrappers/zod.wrapper.ts";
 
 const formatError = (zodError: ZodError): ZodFormattedError[] => {

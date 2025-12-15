@@ -6,7 +6,8 @@ import {
   createTestClassInstance,
   PRIMITIVE_VALUES,
   testFunction,
-} from "../test-utils/test-data";
+} from "@shared/test-utils/test-data";
+
 import { ArrayUtilsHelper } from "./array-utils.helper";
 
 describe("ArrayUtilsHelper", () => {

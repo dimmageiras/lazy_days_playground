@@ -7,7 +7,8 @@ import {
   createObjectWithSymbolKeys,
   createTestClassInstance,
   testFunction,
-} from "../test-utils/test-data";
+} from "@shared/test-utils/test-data";
+
 import { ObjectUtilsHelper } from "./object-utils.helper";
 
 describe("ObjectUtilsHelper", () => {
