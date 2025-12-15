@@ -9,7 +9,6 @@ import {
 } from "../../../shared/constants/root-env.constant.ts";
 import { TIMING } from "../../../shared/constants/timing.constant.ts";
 import { CSP_DIRECTIVES } from "../../constants/csp.constant.ts";
-import { GLOBAL_RATE_LIMIT } from "../../constants/rate-limit.constant.ts";
 import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 
 const { YEARS_ONE_IN_S } = TIMING;
@@ -66,7 +65,7 @@ const registerHelmet = async (app: FastifyInstance): Promise<void> => {
 
 const registerRateLimit = async (app: FastifyInstance): Promise<void> => {
   try {
-    await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
+    await app.register(rateLimitFastify);
   } catch (error) {
     log.error(
       {

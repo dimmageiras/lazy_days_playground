@@ -12,6 +12,7 @@ import {
   meSuccessSchema,
 } from "../../../../shared/schemas/auth/me-route.schema.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
+import { GLOBAL_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
 import { authMiddleware } from "../../../middleware/auth.middleware.ts";
 
@@ -24,6 +25,9 @@ const verifyAuthRoute = async (fastify: FastifyInstance): Promise<void> => {
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().get(
     `/${VERIFY_AUTH}`,
     {
+      config: {
+        rateLimit: GLOBAL_RATE_LIMIT,
+      },
       preHandler: [authMiddleware],
       schema: {
         description: "Get current authenticated user information",

@@ -64,17 +64,7 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
     "x-ratelimit-reset": true,
   },
   allowList: (request) => {
-    // Allow localhost IPs in development
-    if (IS_DEVELOPMENT && ["127.0.0.1", "::1"].includes(request.ip)) {
-      return true;
-    }
-
-    // Exclude static assets from rate limiting
-    if (request.url.startsWith("/assets/")) {
-      return true;
-    }
-
-    return false;
+    return request.url.startsWith("/assets/");
   },
   cache: 10000, // Maximum number of keys to store
   continueExceeding: true, // Continue to track requests after limit

@@ -72,13 +72,27 @@ fastify.post(
 ```http
 x-ratelimit-limit: 5
 x-ratelimit-remaining: 3
-x-ratelimit-reset: 1704067200
+x-ratelimit-reset: 900
 ```
 
 **When limit exceeded:**
 
 ```http
-retry-after: 30
+x-ratelimit-limit: 5
+x-ratelimit-remaining: 0
+x-ratelimit-reset: 900
+retry-after: 900
+```
+
+**Draft Spec Headers (when enabled):**
+
+Rate limiting also includes draft IETF specification headers:
+
+```http
+ratelimit-limit: 5
+ratelimit-remaining: 0
+ratelimit-reset: 900
+ratelimit-retry-after: 900
 ```
 
 ## Error Response
@@ -89,33 +103,12 @@ retry-after: 30
 {
   "statusCode": 429,
   "error": "Too Many Requests",
-  "message": "Too many authentication attempts. Please wait 5 minutes before trying again.",
-  "retryAfter": 245
+  "message": "Too many authentication attempts. Please wait 15 minutes before trying again.",
+  "retryAfter": 900
 }
 ```
 
-## Testing
-
-### Using curl
-
-```bash
-# Test rate limit (should block after 5 attempts in production)
-for i in {1..6}; do
-  curl -X POST http://localhost:5173/auth/signin \
-    -H "Content-Type: application/json" \
-    -d '{"email":"test@example.com","password":"test123"}' \
-    -i
-done
-```
-
-### Check Headers
-
-```bash
-curl -X POST http://localhost:5173/auth/signin \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"test"}' \
-  -i | grep -i ratelimit
-```
+**Note**: The `retryAfter` value is in seconds and matches the `x-ratelimit-reset` header. The message formats the time user-friendly (e.g., "15 minutes" instead of "900 seconds").
 
 ## Security Features
 
@@ -186,6 +179,32 @@ Auth and User rate limits include formatted retry times:
 
 ## Customization
 
+### Key Configuration Options
+
+**Header Configuration:**
+
+```typescript
+addHeaders: {
+  "retry-after": true,
+  "x-ratelimit-limit": true,
+  "x-ratelimit-remaining": true,
+  "x-ratelimit-reset": true,
+},
+addHeadersOnExceeding: {
+  "x-ratelimit-limit": true,
+  "x-ratelimit-remaining": true,
+  "x-ratelimit-reset": true,
+},
+```
+
+The `addHeadersOnExceeding` ensures rate limit headers are present even when requests exceed the limit, providing clients with quota information.
+
+**Draft Specification Support:**
+
+```typescript
+enableDraftSpec: true, // Adds RateLimit-* headers per IETF draft
+```
+
 ### Creating Custom Rate Limits
 
 **Example**: `server/constants/rate-limit.constant.ts`
@@ -198,6 +217,12 @@ const MY_CUSTOM_RATE_LIMIT: RateLimitPluginOptions = {
     "x-ratelimit-remaining": true,
     "x-ratelimit-reset": true,
   },
+  addHeadersOnExceeding: {
+    "x-ratelimit-limit": true,
+    "x-ratelimit-remaining": true,
+    "x-ratelimit-reset": true,
+  },
+  enableDraftSpec: true,
   errorResponseBuilder: (_request, context) => {
     const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
     const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
