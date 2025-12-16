@@ -98,8 +98,9 @@ const registerSwagger = async (
             // This header is set by proxies to indicate the original protocol used by the client
             const forwardedProto = request.headers["x-forwarded-proto"];
             // Check if socket is encrypted (TLS) by checking for encrypted property
-            const socket = request.socket as { encrypted?: boolean } | null;
-            const isEncrypted = socket?.encrypted === true;
+            const socket = request.socket;
+            const isEncrypted =
+              "encrypted" in socket && socket.encrypted === true;
             const protocol =
               forwardedProto ||
               request.protocol ||

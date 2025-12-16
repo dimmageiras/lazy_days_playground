@@ -15,14 +15,18 @@ import {
   TOKEN_ENCRYPTION_METHOD,
 } from "../../shared/constants/root-env.constant.ts";
 
-const scryptAsync = promisify(scrypt);
+const scryptAsync: (
+  password: string,
+  salt: Buffer,
+  keylen: number
+) => Promise<Buffer> = promisify(scrypt);
 
 /**
  * Derives a cryptographic key from the COOKIE_SECRET
  * Uses scrypt for key derivation (OWASP recommended)
  */
 const deriveKey = async (salt: Buffer): Promise<Buffer> => {
-  return (await scryptAsync(COOKIE_SECRET, salt, +KEY_LENGTH)) as Buffer;
+  return await scryptAsync(COOKIE_SECRET, salt, +KEY_LENGTH);
 };
 
 /**

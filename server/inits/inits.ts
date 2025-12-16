@@ -26,7 +26,9 @@ const { initSwaggerPlugins } = SwaggerInit;
 const { initTypeGenerationPlugins } = TypeGenerationInit;
 
 const inits = async (app: FastifyInstance): Promise<void> => {
-  const swaggerInstanceRef = { current: null as FastifyInstance | null };
+  const swaggerInstanceRef: { current: FastifyInstance | null } = {
+    current: null,
+  };
 
   try {
     // Database plugins
