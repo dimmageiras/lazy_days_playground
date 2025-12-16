@@ -202,19 +202,25 @@ async function stressTestEndpoint(
   console.info(`\n🧪 Testing endpoint: ${endpoint.method} ${endpoint.path}`);
   console.info(`📊 Making ${targetRequests} requests...`);
 
-  const results = {
-    total: targetRequests,
-    successful: 0,
-    rateLimited: 0,
+  const results: {
+    otherErrors: number;
+    rateLimited: number;
+    responses: Array<Awaited<ReturnType<typeof makeRequest>>>;
+    successful: number;
+    total: number;
+  } = {
     otherErrors: 0,
+    rateLimited: 0,
     responses: [],
+    successful: 0,
+    total: targetRequests,
   };
 
   // Make requests sequentially to avoid overwhelming the server too quickly
   for (let i = 1; i <= targetRequests; i++) {
     const result = await makeRequest(endpoint, i);
 
-    results.responses.push(result as never);
+    results.responses.push(result);
     processRequestResult(result, results);
     logRequestProgress(result, i, targetRequests);
 
