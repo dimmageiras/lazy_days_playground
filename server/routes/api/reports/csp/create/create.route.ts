@@ -4,7 +4,6 @@ import type {
   FastifyZodOpenApiTypeProvider,
 } from "fastify-zod-openapi";
 
-import type { CspReport } from "@shared/types/generated/db/database.type";
 import type {
   ReportsCspReportCreateData,
   ReportsCspReportCreateError,
@@ -40,7 +39,8 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
     { parseAs: "string" },
     (request, body, done) => {
       try {
-        const json = JSON.parse(body as string);
+        const json: typeof body =
+          typeof body === "string" ? JSON.parse(body) : body;
 
         done(null, json);
       } catch (rawError) {
@@ -124,7 +124,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
           source_file: cspReport["source-file"],
           status_code: cspReport["status-code"],
           user_agent: request.headers["user-agent"],
-        } as Omit<CspReport, "created_at" | "id">);
+        });
 
         // Success response
         const dbResponse: ReportsCspReportCreateData = {

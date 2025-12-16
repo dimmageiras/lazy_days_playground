@@ -35,9 +35,9 @@ const createRemixRequest = (
   const xForwardedHostStr = Array.isArray(xForwardedHost)
     ? xForwardedHost[0]
     : xForwardedHost;
-  const hostStr = Array.isArray(host) ? host[0] : host;
-  const [, hostnamePortStr] = (xForwardedHostStr as string)?.split(":") ?? [];
-  const [, hostPortStr] = (hostStr as string)?.split(":") ?? [];
+  const hostStr: string | undefined = Array.isArray(host) ? host[0] : host;
+  const [, hostnamePortStr] = xForwardedHostStr?.split(":") ?? [];
+  const [, hostPortStr] = hostStr?.split(":") ?? [];
   const hostnamePort = Number.parseInt(hostnamePortStr ?? "", 10);
   const hostPort = Number.parseInt(hostPortStr ?? "", 10);
   const port =
@@ -66,7 +66,7 @@ const createRemixRequest = (
 
   if (req.method !== "GET" && req.method !== "HEAD") {
     init.body = createReadableStreamFromReadable(req.raw);
-    (init as { duplex: "half" }).duplex = "half";
+    Reflect.set(init, "duplex", "half");
   }
 
   return new Request(url.href, init);
