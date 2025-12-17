@@ -1,10 +1,10 @@
 import { ZodUtilsHelper } from "../../shared/helpers/zod.helper.ts";
 import { envSchema } from "../schemas/env-var.schema.ts";
 
-const validateEnv = (): void => {
+const validateEnv = (env: NodeJS.ProcessEnv): void => {
   const { formatError } = ZodUtilsHelper;
 
-  const result = envSchema.safeParse(process.env);
+  const result = envSchema.safeParse(env);
 
   if (result.success) {
     return;

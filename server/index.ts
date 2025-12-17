@@ -4,7 +4,7 @@ import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
 try {
   const { validateEnv } = EnvVarHelper;
 
-  validateEnv();
+  validateEnv(process.env);
 } catch (error) {
   const { log } = PinoLogHelper;
 
