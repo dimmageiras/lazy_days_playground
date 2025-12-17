@@ -3,18 +3,19 @@ import { ZodUtilsHelper } from "../../shared/helpers/zod.helper.ts";
 import { envSchema } from "../schemas/env-var.schema.ts";
 import { PinoLogHelper } from "./pino-log.helper.ts";
 
-const validateEnv = (): void => {
-  const { TYPE_GENERATOR } = MODES;
+const handleValidationSuccess = (): void => {
+  if (MODE !== MODES.TYPE_GENERATOR) {
+    PinoLogHelper.log.info("✅ Required environment variables are set...");
+  }
+};
 
+const validateEnv = (): void => {
   const { formatError } = ZodUtilsHelper;
-  const { log } = PinoLogHelper;
 
   const result = envSchema.safeParse(process.env);
 
   if (result.success) {
-    if (MODE !== TYPE_GENERATOR) {
-      log.info("✅ Required environment variables are set...");
-    }
+    handleValidationSuccess();
 
     return;
   }
