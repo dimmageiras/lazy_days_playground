@@ -20,8 +20,8 @@ import { useSyncExternalStore } from "react";
 const useMounted = (): boolean => {
   return useSyncExternalStore(
     () => () => {}, // subscribe: no-op (mounting state never changes)
-    () => !import.meta.env.SSR, // getServerSnapshot: always false during SSR
-    () => import.meta.env.SSR // getSnapshot: always true on client
+    () => !import.meta.env.SSR, // getSnapshot: true on client (!false = true)
+    () => !import.meta.env.SSR // getServerSnapshot: false during SSR (!true = false)
   );
 };
 
