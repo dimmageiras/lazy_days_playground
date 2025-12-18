@@ -117,6 +117,9 @@
       "@parcel/watcher",
       "esbuild",
       "rollup"
-    ]
+    ],
+    "patchedDependencies": {
+      "react-router": "patches/react-router.patch"
+    }
   }
 }

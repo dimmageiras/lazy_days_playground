@@ -5,7 +5,7 @@ const reactRouterConfig = {
   buildDirectory: "dist",
   future: {
     unstable_optimizeDeps: true,
-    unstable_subResourceIntegrity: false,
+    unstable_subResourceIntegrity: true,
     v8_middleware: true,
     v8_splitRouteModules: true,
     v8_viteEnvironmentApi: true,
