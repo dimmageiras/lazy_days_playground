@@ -1,5 +1,5 @@
 import type { ComponentProps, JSX, MouseEvent, Ref } from "react";
-import type { ConditionalKeys } from "type-fest";
+import type { ConditionalKeys, KeyAsString } from "type-fest";
 
 import type { ExternalLink } from "@client/components/RouterLink/components/ExternalLink";
 import type { InternalLink } from "@client/components/RouterLink/components/InternalLink";
@@ -28,17 +28,23 @@ interface CommonLinkProps {
 }
 
 interface ExternalRouterLinkProps
-  extends Omit<ComponentProps<typeof ExternalLink>, keyof CommonLinkProps> {
+  extends Omit<
+    ComponentProps<typeof ExternalLink>,
+    KeyAsString<CommonLinkProps>
+  > {
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.external>;
 }
 
 interface InternalRouterLinkProps
-  extends Omit<ComponentProps<typeof InternalLink>, keyof CommonLinkProps> {
+  extends Omit<
+    ComponentProps<typeof InternalLink>,
+    KeyAsString<CommonLinkProps>
+  > {
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.internal>;
 }
 
 interface NavRouterLinkProps
-  extends Omit<ComponentProps<typeof NavLink>, keyof CommonLinkProps> {
+  extends Omit<ComponentProps<typeof NavLink>, KeyAsString<CommonLinkProps>> {
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.navLink>;
 }
 

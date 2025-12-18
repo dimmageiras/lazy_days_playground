@@ -1,3 +1,9 @@
+import type { ValueOf } from "type-fest";
+
+import { RootEnvHelper } from "../helpers/root-env.helper.ts";
+
+const { getMode } = RootEnvHelper;
+
 const {
   AUTH_TAG_LENGTH,
   COOKIE_SECRET,
@@ -28,18 +34,10 @@ const MODES = Object.freeze({
   TYPE_GENERATOR: "type_generator",
 } as const);
 
-const MODE: (typeof MODES)[keyof typeof MODES] = (() => {
-  switch (true) {
-    case !!VITE_APP_TYPE_GENERATOR_MODE:
-      return MODES.TYPE_GENERATOR;
-
-    case IS_DEVELOPMENT:
-      return MODES.DEVELOPMENT;
-
-    default:
-      return MODES.PRODUCTION;
-  }
-})();
+const MODE: ValueOf<typeof MODES> = getMode(
+  IS_DEVELOPMENT,
+  !!VITE_APP_TYPE_GENERATOR_MODE
+);
 
 export {
   AUTH_TAG_LENGTH,

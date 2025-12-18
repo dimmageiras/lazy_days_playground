@@ -5,6 +5,7 @@ import { promisify } from "node:util";
 import type { OpenAPI } from "openapi-types";
 import type { GenerateApiConfiguration } from "swagger-typescript-api";
 import { generateApi } from "swagger-typescript-api";
+import type { ValueOf } from "type-fest";
 
 import type { SWAGGER_ROUTES } from "@server/constants/swagger-routes.constant";
 
@@ -37,7 +38,7 @@ const generateContractsForRoute = async ({
   isLastRoute,
 }: {
   cleanOnFirstRun: boolean;
-  routePath: (typeof SWAGGER_ROUTES)[keyof typeof SWAGGER_ROUTES];
+  routePath: ValueOf<typeof SWAGGER_ROUTES>;
   spec: OpenAPI.Document;
   isLastRoute: boolean;
 }): Promise<void> => {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from "react";
+import type { ValueOf } from "type-fest";
 
 import type { TIMING } from "@shared/constants/timing.constant";
 
@@ -6,7 +7,7 @@ import { DebounceHelper } from "./helpers/debounce.helper";
 
 const useDebounce = <TArgs extends unknown[]>(
   callback: (...args: TArgs) => void | Promise<void>,
-  delay: (typeof TIMING)[keyof typeof TIMING]
+  delay: ValueOf<typeof TIMING>
 ): ((...args: TArgs) => void) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);

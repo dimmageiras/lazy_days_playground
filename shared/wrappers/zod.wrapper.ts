@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { KeyAsString } from "type-fest";
 import type { ZodDiscriminatedUnion } from "zod";
 import { z } from "zod";
 import type { $ZodConfig } from "zod/v4/core";
@@ -8,7 +9,7 @@ type ZodConfig = $ZodConfig;
 type ZodError<T = unknown> = z.ZodError<T>;
 type ZodFormattedError = z.ZodFormattedError;
 type ZodInfer<T extends z.ZodTypeAny> = z.infer<T>;
-type ZodLocale = keyof typeof zodLocales;
+type ZodLocale = KeyAsString<typeof zodLocales>;
 type ZodObject<
   TShape extends z.core.$ZodShape = z.core.$ZodLooseShape,
   TConfig extends z.core.$ZodObjectConfig = z.core.$strip

@@ -1,4 +1,4 @@
-import type { KeyAsString } from "type-fest";
+import type { KeyAsString, ValueOf } from "type-fest";
 
 /**
  * Gets typed entries from an object, preserving key-value type relationships.
@@ -18,10 +18,10 @@ import type { KeyAsString } from "type-fest";
 const getObjectEntries = <TObject extends Record<string, unknown>>(
   object: TObject
 ): {
-  [Key in KeyAsString<TObject>]: [Key, TObject[Key]];
+  [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
 }[KeyAsString<TObject>][] =>
   Object.entries(object) as {
-    [Key in KeyAsString<TObject>]: [Key, TObject[Key]];
+    [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
   }[KeyAsString<TObject>][];
 
 /**
@@ -41,7 +41,8 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
  */
 const getObjectKeys = <TObject extends Record<string, unknown>>(
   object: TObject
-): KeyAsString<TObject>[] => Object.keys(object) as KeyAsString<TObject>[];
+): KeyAsString<ValueOf<TObject>>[] =>
+  Object.keys(object) as KeyAsString<ValueOf<TObject>>[];
 
 /**
  * Gets typed values from an object.
@@ -53,7 +54,7 @@ const getObjectKeys = <TObject extends Record<string, unknown>>(
  */
 const getObjectValues = <T extends Record<string, unknown>>(
   initialObject: T
-): T[KeyAsString<T>][] => Object.values(initialObject) as T[KeyAsString<T>][];
+): ValueOf<T>[] => Object.values(initialObject) as ValueOf<T>[];
 
 /**
  * Checks if the given value is an object and not an array.

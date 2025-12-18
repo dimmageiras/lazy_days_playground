@@ -1,24 +1,23 @@
-import type { CamelCase } from "type-fest";
+import type { CamelCase, KeyAsString, ValueOf } from "type-fest";
 
 import type { HttpErrorStatuses } from "@server/types/http-status.type";
 
 import { GEL_ERROR_OBJECTS } from "../constants/gel-db.constant.ts";
 import { HTTP_STATUS } from "../constants/http-status.constant.ts";
 
-type HandleAuthErrorArgs<
-  TErrorStatus extends HttpErrorStatuses[keyof HttpErrorStatuses]
-> = Partial<{
-  [key in CamelCase<keyof typeof GEL_ERROR_OBJECTS>]: {
-    details: string;
-    errorMessageResponse: string;
-    statusCode: TErrorStatus;
+type HandleAuthErrorArgs<TErrorStatus extends ValueOf<HttpErrorStatuses>> =
+  Partial<{
+    [key in CamelCase<KeyAsString<typeof GEL_ERROR_OBJECTS>>]: {
+      details: string;
+      errorMessageResponse: string;
+      statusCode: TErrorStatus;
+    };
+  }> & {
+    error: Error;
   };
-}> & {
-  error: Error;
-};
 
 interface HandleAuthErrorReturn<
-  TErrorStatus extends HttpErrorStatuses[keyof HttpErrorStatuses]
+  TErrorStatus extends ValueOf<HttpErrorStatuses>
 > {
   details: string;
   errorMessageResponse: string;
