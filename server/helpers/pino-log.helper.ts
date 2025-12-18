@@ -1,4 +1,6 @@
+import type { FastifyBaseLogger } from "fastify";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import type { LoggerExtras } from "pino";
 import type { Options } from "pino-http";
 import pino from "pino-http";
 
@@ -36,6 +38,6 @@ const loggerOptions: Record<
 };
 
 const opts = Reflect.get(loggerOptions, MODE);
-const log = pino(opts).logger;
+const log: FastifyBaseLogger & LoggerExtras = pino(opts).logger;
 
 export const PinoLogHelper = { log };

@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { ServerInstance } from "@server/types/instance.type";
 
 import {
   API_HEALTH_BASE_URL,
@@ -14,7 +14,7 @@ import { userRoutes } from "../../routes/user/index.ts";
 
 const { log } = PinoLogHelper;
 
-const registerApiHealthRoutes = async (app: FastifyInstance): Promise<void> => {
+const registerApiHealthRoutes = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(apiHealthRoutes, { prefix: API_HEALTH_BASE_URL });
   } catch (error) {
@@ -29,7 +29,7 @@ const registerApiHealthRoutes = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const registerReportsRoutes = async (app: FastifyInstance): Promise<void> => {
+const registerReportsRoutes = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(reportsRoute, { prefix: API_REPORTS_BASE_URL });
   } catch (error) {
@@ -44,7 +44,7 @@ const registerReportsRoutes = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const registerAuthRoutes = async (app: FastifyInstance): Promise<void> => {
+const registerAuthRoutes = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(authRoutes, { prefix: AUTH_BASE_URL });
   } catch (error) {
@@ -59,7 +59,7 @@ const registerAuthRoutes = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const registerUserRoutes = async (app: FastifyInstance): Promise<void> => {
+const registerUserRoutes = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(userRoutes, { prefix: USER_BASE_URL });
   } catch (error) {
@@ -74,7 +74,7 @@ const registerUserRoutes = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const initRoutesPlugins = async (app: FastifyInstance): Promise<void> => {
+const initRoutesPlugins = async (app: ServerInstance): Promise<void> => {
   await registerApiHealthRoutes(app);
   await registerReportsRoutes(app);
   await registerAuthRoutes(app);

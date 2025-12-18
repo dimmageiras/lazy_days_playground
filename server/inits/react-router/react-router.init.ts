@@ -1,6 +1,5 @@
 import expressFastify from "@fastify/express";
 import fastifyStatic from "@fastify/static";
-import type { FastifyInstance } from "fastify";
 import path from "node:path";
 import process from "node:process";
 import type { AppLoadContext, ServerBuild } from "react-router";
@@ -9,6 +8,7 @@ import type { ViteDevServer } from "vite";
 import { createServer } from "vite";
 
 import type { GetLoadContextFunction } from "@server/plugins/react-router-fastify/index";
+import type { ServerInstance } from "@server/types/instance.type";
 import type { CSPNonceType } from "@shared/types/csp.type";
 
 import {
@@ -24,7 +24,7 @@ const { TYPE_GENERATOR } = MODES;
 const { log } = PinoLogHelper;
 
 const createViteDevServer = async (
-  app: FastifyInstance,
+  app: ServerInstance,
   viteDevServerRef: { current: ViteDevServer | null }
 ): Promise<void> => {
   try {
@@ -47,7 +47,7 @@ const createViteDevServer = async (
 };
 
 const registerExpressCompatibility = async (
-  app: FastifyInstance
+  app: ServerInstance
 ): Promise<void> => {
   try {
     await app.register(expressFastify);
@@ -63,7 +63,7 @@ const registerExpressCompatibility = async (
   }
 };
 
-const serveStaticFiles = async (app: FastifyInstance): Promise<void> => {
+const serveStaticFiles = async (app: ServerInstance): Promise<void> => {
   try {
     const buildDir = path.join(process.cwd(), "dist", "client");
 
@@ -94,7 +94,7 @@ const serveStaticFiles = async (app: FastifyInstance): Promise<void> => {
 };
 
 const registerReactRouterForDevelopment = async (
-  app: FastifyInstance,
+  app: ServerInstance,
   viteDevServerRef: { current: ViteDevServer | null }
 ): Promise<void> => {
   await registerExpressCompatibility(app);
@@ -102,12 +102,12 @@ const registerReactRouterForDevelopment = async (
 };
 
 const registerReactRouterForProduction = async (
-  app: FastifyInstance
+  app: ServerInstance
 ): Promise<void> => {
   await serveStaticFiles(app);
 };
 
-const registerReactRouter = async (app: FastifyInstance): Promise<void> => {
+const registerReactRouter = async (app: ServerInstance): Promise<void> => {
   if (MODE === TYPE_GENERATOR) {
     // React Router Fastify plugin not registered in generator mode
     process.exit(0);
@@ -183,7 +183,7 @@ const registerReactRouter = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const initReactRouterPlugins = async (app: FastifyInstance): Promise<void> => {
+const initReactRouterPlugins = async (app: ServerInstance): Promise<void> => {
   await registerReactRouter(app);
 };
 

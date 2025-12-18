@@ -1,7 +1,8 @@
-import type { FastifyInstance } from "fastify";
 import fastify from "fastify";
 import getPort, { portNumbers } from "get-port";
 import process from "node:process";
+
+import type { ServerInstance } from "@server/types/instance.type";
 
 import {
   HOST,
@@ -18,11 +19,11 @@ const { SECONDS_TEN_IN_MS } = TIMING;
 
 const { log } = PinoLogHelper;
 
-const app = fastify({
+const app: ServerInstance = fastify({
   disableRequestLogging: IS_DEVELOPMENT,
   loggerInstance: log,
   requestTimeout: SECONDS_TEN_IN_MS,
-}) as unknown as FastifyInstance;
+});
 
 await inits(app);
 

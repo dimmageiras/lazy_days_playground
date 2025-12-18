@@ -1,9 +1,10 @@
-import type { FastifyInstance } from "fastify";
 import {
   fastifyZodOpenApiPlugin,
   serializerCompiler,
   validatorCompiler,
 } from "fastify-zod-openapi";
+
+import type { ServerInstance } from "@server/types/instance.type";
 
 import { MODE, MODES } from "../../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
@@ -25,8 +26,8 @@ const { initSecurityPlugins } = SecurityInit;
 const { initSwaggerPlugins } = SwaggerInit;
 const { initTypeGenerationPlugins } = TypeGenerationInit;
 
-const inits = async (app: FastifyInstance): Promise<void> => {
-  const swaggerInstanceRef: { current: FastifyInstance | null } = {
+const inits = async (app: ServerInstance): Promise<void> => {
+  const swaggerInstanceRef: { current: ServerInstance | null } = {
     current: null,
   };
 

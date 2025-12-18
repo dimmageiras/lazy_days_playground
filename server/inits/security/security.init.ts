@@ -1,7 +1,8 @@
 import cookieFastify from "@fastify/cookie";
 import helmet from "@fastify/helmet";
 import rateLimitFastify from "@fastify/rate-limit";
-import type { FastifyInstance } from "fastify";
+
+import type { ServerInstance } from "@server/types/instance.type";
 
 import {
   COOKIE_SECRET,
@@ -15,7 +16,7 @@ const { YEARS_ONE_IN_S } = TIMING;
 
 const { log } = PinoLogHelper;
 
-const registerCookie = async (app: FastifyInstance): Promise<void> => {
+const registerCookie = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(cookieFastify, {
       parseOptions: {
@@ -37,7 +38,7 @@ const registerCookie = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const registerHelmet = async (app: FastifyInstance): Promise<void> => {
+const registerHelmet = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(helmet, {
       contentSecurityPolicy: IS_DEVELOPMENT
@@ -63,7 +64,7 @@ const registerHelmet = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const registerRateLimit = async (app: FastifyInstance): Promise<void> => {
+const registerRateLimit = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(rateLimitFastify);
   } catch (error) {
@@ -78,7 +79,7 @@ const registerRateLimit = async (app: FastifyInstance): Promise<void> => {
   }
 };
 
-const initSecurityPlugins = async (app: FastifyInstance): Promise<void> => {
+const initSecurityPlugins = async (app: ServerInstance): Promise<void> => {
   await registerRateLimit(app);
   await registerCookie(app);
   await registerHelmet(app);

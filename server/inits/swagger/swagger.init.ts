@@ -1,7 +1,8 @@
 import swaggerFastify from "@fastify/swagger";
 import swaggerUIFastify from "@fastify/swagger-ui";
-import type { FastifyInstance } from "fastify";
 import { fastifyZodOpenApiTransformers } from "fastify-zod-openapi";
+
+import type { ServerInstance } from "@server/types/instance.type";
 
 import { PinoLogHelper } from "../../../server/helpers/pino-log.helper.ts";
 import { API_DOCS_ENDPOINTS } from "../../../shared/constants/api.constant.ts";
@@ -19,12 +20,12 @@ const { PRODUCTION, TYPE_GENERATOR } = MODES;
 const { log } = PinoLogHelper;
 
 const registerSwagger = async (
-  app: FastifyInstance,
-  swaggerInstanceRef: { current: FastifyInstance | null },
-  initRoutesPlugins: (app: FastifyInstance) => Promise<void>
+  app: ServerInstance,
+  swaggerInstanceRef: { current: ServerInstance | null },
+  initRoutesPlugins: (app: ServerInstance) => Promise<void>
 ): Promise<void> => {
   try {
-    await app.register(async (fastify: FastifyInstance) => {
+    await app.register(async (fastify: ServerInstance) => {
       if (MODE === TYPE_GENERATOR) {
         swaggerInstanceRef.current = fastify;
       }
@@ -135,9 +136,9 @@ const registerSwagger = async (
 };
 
 const initSwaggerPlugins = async (
-  app: FastifyInstance,
-  swaggerInstanceRef: { current: FastifyInstance | null },
-  initRoutesPlugins: (app: FastifyInstance) => Promise<void>
+  app: ServerInstance,
+  swaggerInstanceRef: { current: ServerInstance | null },
+  initRoutesPlugins: (app: ServerInstance) => Promise<void>
 ): Promise<void> => {
   await registerSwagger(app, swaggerInstanceRef, initRoutesPlugins);
 };

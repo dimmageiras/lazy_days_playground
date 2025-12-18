@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { ServerInstance } from "@server/types/instance.type";
 
 import { ObjectUtilsHelper } from "../../../shared/helpers/object-utils.helper.ts";
 import { SWAGGER_ROUTES } from "../../constants/swagger-routes.constant.ts";
@@ -10,8 +10,8 @@ const { log } = PinoLogHelper;
 const { generateContractsForRoute } = TypesHelper;
 
 const startTypeGenerationProcess = async (
-  app: FastifyInstance,
-  swaggerInstanceRef: { current: FastifyInstance | null }
+  app: ServerInstance,
+  swaggerInstanceRef: { current: ServerInstance | null }
 ): Promise<void> => {
   try {
     await app.ready();
@@ -51,8 +51,8 @@ const startTypeGenerationProcess = async (
 };
 
 const initTypeGenerationPlugins = async (
-  app: FastifyInstance,
-  swaggerInstanceRef: { current: FastifyInstance | null }
+  app: ServerInstance,
+  swaggerInstanceRef: { current: ServerInstance | null }
 ): Promise<void> => {
   await startTypeGenerationProcess(app, swaggerInstanceRef);
 };

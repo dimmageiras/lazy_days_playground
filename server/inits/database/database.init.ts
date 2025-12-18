@@ -1,12 +1,13 @@
-import type { FastifyInstance } from "fastify";
 import { createClient as createGelClient } from "gel";
+
+import type { ServerInstance } from "@server/types/instance.type";
 
 import { GEL_AUTH_BASE_URL } from "../../../shared/constants/root-env.constant.ts";
 import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 
 const { log } = PinoLogHelper;
 
-const registerGelClient = (app: FastifyInstance): void => {
+const registerGelClient = (app: ServerInstance): void => {
   try {
     // Create a single Gel client instance for connection pooling
     const gelClient = createGelClient({
@@ -27,7 +28,7 @@ const registerGelClient = (app: FastifyInstance): void => {
   }
 };
 
-const initDatabasePlugins = async (app: FastifyInstance): Promise<void> => {
+const initDatabasePlugins = async (app: ServerInstance): Promise<void> => {
   registerGelClient(app);
 };
 
