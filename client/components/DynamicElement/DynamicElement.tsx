@@ -12,12 +12,11 @@ import { DynamicElementHelper } from "./helpers/dynamic-element.helper";
  * Props type for the DynamicElement component
  * @template TElement - The HTML tag type to render
  */
-type DynamicElementProps<TElement extends CustomHtmlTags> = PropsWithChildren<
-  ComponentPropsWithRef<TElement>
-> & {
-  /** The HTML tag to render */
-  as: TElement;
-};
+type DynamicElementProps<TElement extends CustomHtmlTags & ElementType> =
+  PropsWithChildren<ComponentPropsWithRef<TElement>> & {
+    /** The HTML tag to render */
+    as: TElement;
+  };
 
 /**
  * A type-safe component for rendering dynamic HTML elements, including custom elements like iconify-icon.
@@ -47,7 +46,7 @@ type DynamicElementProps<TElement extends CustomHtmlTags> = PropsWithChildren<
  * @returns JSX.Element - The rendered dynamic element with the specified tag and props
  * @throws {Error} When the provided 'as' prop is not a valid custom HTML tag
  */
-const DynamicElement = <TElement extends CustomHtmlTags>({
+const DynamicElement = <TElement extends CustomHtmlTags & ElementType>({
   children,
   as,
   ...props
@@ -59,7 +58,7 @@ const DynamicElement = <TElement extends CustomHtmlTags>({
     throw new Error(`Invalid wrapper element: ${as}`);
   }
 
-  const Component = as as ElementType;
+  const Component = as;
 
   return <Component {...props}>{children}</Component>;
 };
