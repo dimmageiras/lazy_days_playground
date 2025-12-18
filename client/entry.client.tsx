@@ -7,7 +7,15 @@ const hydrate = async (): Promise<void> => {
     hydrateRoot(
       document,
       <StrictMode>
-        <HydratedRouter />
+        <HydratedRouter
+          onError={(error, errorInfo) => {
+            // Log client-side errors for monitoring/debugging
+            console.error("Client-side error:", error, errorInfo);
+
+            // You can send this to your error reporting service
+            // Example: Sentry.captureException(error, { contexts: { errorInfo } });
+          }}
+        />
       </StrictMode>
     );
   });
