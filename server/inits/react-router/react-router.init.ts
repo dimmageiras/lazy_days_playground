@@ -2,7 +2,7 @@ import expressFastify from "@fastify/express";
 import fastifyStatic from "@fastify/static";
 import path from "node:path";
 import process from "node:process";
-import type { AppLoadContext, ServerBuild } from "react-router";
+import type { ServerBuild } from "react-router";
 import { RouterContextProvider } from "react-router";
 import type { ViteDevServer } from "vite";
 import { createServer } from "vite";
@@ -133,9 +133,11 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
                 "virtual:react-router/server-build"
               );
             } else {
-              build = (await import(
+              const importedBuild: ServerBuild = await import(
                 "../../../../server/index.js"
-              )) as ServerBuild;
+              );
+
+              build = importedBuild;
             }
 
             return build;
@@ -154,8 +156,7 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
           _request,
           response
         ): ReturnType<GetLoadContextFunction> => {
-          const context =
-            new RouterContextProvider() as unknown as AppLoadContext;
+          const context = new RouterContextProvider();
 
           // Get CSP nonces from response.locals (bridged from Fastify in onRequest hook)
           const cspNonce: CSPNonceType = response.cspNonce || {
@@ -164,7 +165,7 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
           };
 
           // Store nonces as a property on context for middleware to access
-          context._cspNonce = cspNonce;
+          Reflect.set(context, "_cspNonce", cspNonce);
 
           return context as unknown as ReturnType<GetLoadContextFunction>;
         },
