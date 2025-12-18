@@ -2,12 +2,19 @@ import type { RateLimitPluginOptions } from "@fastify/rate-limit";
 import type { FastifyRequest } from "fastify";
 import crypto from "node:crypto";
 
-import { IS_DEVELOPMENT } from "../../shared/constants/root-env.constant.ts";
+import {
+  IS_DEVELOPMENT,
+  MODE,
+  MODES,
+} from "../../shared/constants/root-env.constant.ts";
 import { TIMING } from "../../shared/constants/timing.constant.ts";
 import { ObjectUtilsHelper } from "../../shared/helpers/object-utils.helper.ts";
 import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 import { HTTP_STATUS } from "./http-status.constant.ts";
 
+const LOCALHOST_IPS = Object.freeze(["127.0.0.1", "::1"]);
+
+const { DEVELOPMENT } = MODES;
 const { MANY_REQUESTS_ERROR } = HTTP_STATUS;
 const {
   MINUTES_FIFTEEN_IN_MS,
@@ -64,6 +71,11 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
     "x-ratelimit-reset": true,
   },
   allowList: (request) => {
+    // Allow localhost IPs in development
+    if (MODE === DEVELOPMENT && LOCALHOST_IPS.includes(request.ip)) {
+      return true;
+    }
+
     return request.url.startsWith("/assets/");
   },
   cache: 10000, // Maximum number of keys to store

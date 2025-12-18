@@ -13,6 +13,7 @@
     "lint:fix": "pnpm lint --fix",
     "obsolete": "knip",
     "start": "node --env-file=.env.local.prod ./dist/fastify/server/index.js",
+    "start:clean": "pnpm fresh-install && pnpm start",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "pnpm typegen && tsc --noEmit",
