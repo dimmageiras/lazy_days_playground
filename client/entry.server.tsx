@@ -24,19 +24,19 @@ const handleRequest = (
   return new Promise((resolve, reject) => {
     const userAgent = request.headers.get("user-agent");
 
-    let cspNonce: string | null = null;
     let responseStatusCodeNew = responseStatusCode;
+    let scriptNonce: string;
     let shellRendered = false;
 
     if (
       "_cspNonce" in loadContext &&
       isPlainObject(loadContext._cspNonce) &&
-      "scriptNonce" in loadContext._cspNonce &&
-      typeof loadContext._cspNonce.scriptNonce === "string"
+      "script" in loadContext._cspNonce &&
+      typeof loadContext._cspNonce.script === "string"
     ) {
-      cspNonce = loadContext._cspNonce.scriptNonce;
+      scriptNonce = loadContext._cspNonce.script;
     } else {
-      cspNonce = "";
+      scriptNonce = "";
     }
 
     // Ensure requests from bots and SPA Mode renders wait for all content to load before responding
@@ -49,7 +49,7 @@ const handleRequest = (
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter
         context={routerContext}
-        nonce={cspNonce}
+        nonce={scriptNonce}
         url={request.url}
       />,
       {
@@ -69,7 +69,7 @@ const handleRequest = (
 
           pipe(body);
         },
-        nonce: cspNonce,
+        nonce: scriptNonce,
         onShellError(error: unknown) {
           reject(error);
         },
