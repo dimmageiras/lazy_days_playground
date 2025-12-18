@@ -8,9 +8,11 @@ import { ServerRouter } from "react-router";
 import type { KeyAsString } from "type-fest";
 
 import { TIMING } from "@shared/constants/timing.constant";
-import type { CSPNonceType } from "@shared/types/csp.type";
+import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 
 const { SECONDS_FIVE_IN_MS, SECONDS_ONE_IN_MS } = TIMING;
+
+const { isPlainObject } = ObjectUtilsHelper;
 
 const handleRequest = (
   request: Request,
@@ -20,12 +22,22 @@ const handleRequest = (
   loadContext: AppLoadContext
 ): Promise<Response> => {
   return new Promise((resolve, reject) => {
-    let responseStatusCodeNew = responseStatusCode;
-    let shellRendered = false;
     const userAgent = request.headers.get("user-agent");
 
-    const { script: scriptNonce } = (loadContext as { _cspNonce: CSPNonceType })
-      ._cspNonce;
+    let cspNonce: string | null = null;
+    let responseStatusCodeNew = responseStatusCode;
+    let shellRendered = false;
+
+    if (
+      "_cspNonce" in loadContext &&
+      isPlainObject(loadContext._cspNonce) &&
+      "scriptNonce" in loadContext._cspNonce &&
+      typeof loadContext._cspNonce.scriptNonce === "string"
+    ) {
+      cspNonce = loadContext._cspNonce.scriptNonce;
+    } else {
+      cspNonce = "";
+    }
 
     // Ensure requests from bots and SPA Mode renders wait for all content to load before responding
     // https://react.dev/reference/react-dom/server/renderToPipeableStream#waiting-for-all-content-to-load-for-crawlers-and-static-generation
@@ -37,7 +49,7 @@ const handleRequest = (
     const { pipe, abort } = renderToPipeableStream(
       <ServerRouter
         context={routerContext}
-        nonce={scriptNonce}
+        nonce={cspNonce}
         url={request.url}
       />,
       {
@@ -57,7 +69,7 @@ const handleRequest = (
 
           pipe(body);
         },
-        nonce: scriptNonce,
+        nonce: cspNonce,
         onShellError(error: unknown) {
           reject(error);
         },
