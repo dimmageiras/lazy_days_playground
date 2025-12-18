@@ -38,8 +38,6 @@ const AuthForm = (): JSX.Element => {
   const isLoading =
     formMethods.formState.isSubmitting || !formMethods.formState.isReady;
 
-  const isFormLoading = isLoading || wasLoadingBefore;
-
   const onValid = async (data: AuthFormData) => {
     if (data.mode === SIGNIN) {
       const { email, password } = data;
@@ -87,7 +85,6 @@ const AuthForm = (): JSX.Element => {
         >
           <FormFields
             isExistingUser={isExistingUser}
-            isFormLoading={isFormLoading}
             isFormValid={formMethods.formState.isValid}
             isNewUser={isNewUser}
             isUnchecked={isUnchecked}

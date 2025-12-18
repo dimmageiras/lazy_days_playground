@@ -5,6 +5,9 @@ import { z } from "zod";
 import type { $ZodConfig } from "zod/v4/core";
 import type * as zodLocales from "zod/v4/locales";
 
+// Disable JIT compilation to avoid CSP violations with 'unsafe-eval'
+z.config({ jitless: true });
+
 type ZodConfig = $ZodConfig;
 type ZodError<T = unknown> = z.ZodError<T>;
 type ZodFormattedError = z.ZodFormattedError;

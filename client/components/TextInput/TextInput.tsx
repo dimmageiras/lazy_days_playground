@@ -4,8 +4,6 @@ import { useMemo } from "react";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 
-import { SkeletonInput } from "./components/SkeletonInput";
-import { SkeletonLabel } from "./components/SkeletonLabel";
 import styles from "./TextInput.module.scss";
 import type { TextInputType } from "./types/text-input.type";
 
@@ -22,10 +20,6 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
    * Whether the label should float above the input when the input is focused or has content.
    */
   hasFloatingLabel?: boolean;
-  /**
-   * Whether the input is loading.
-   */
-  isLoading?: boolean;
   /**
    * The label text for the input field.
    */
@@ -87,7 +81,6 @@ const TextInput = ({
   className,
   errorMessage,
   hasFloatingLabel = false,
-  isLoading = false,
   label,
   ...props
 }: TextInputProps): JSX.Element => {
@@ -98,72 +91,50 @@ const TextInput = ({
     [autoComplete, getNoAutofillProps]
   );
 
-  const doesNotHaveFloatingLabel = !hasFloatingLabel;
   const hasErrorMessage = !!errorMessage;
   const isDisabled = !!props.disabled;
   const isRequired = !!props.required;
 
   return (
     <div className={styles["text-input-container"]}>
-      {isLoading ? (
-        <>
-          {doesNotHaveFloatingLabel ? (
-            <SkeletonLabel
-              className={classNames(styles["label"], styles["skeleton"])}
-              id={`${props.name ?? props.id}-unique-id-label`}
-            />
-          ) : null}
-          <SkeletonInput
-            className={classNames(
-              styles["input"],
-              styles["skeleton"],
-              className
-            )}
-            id={`${props.name ?? props.id}-unique-id-input`}
-          />
-        </>
-      ) : (
-        <>
-          <label
-            className={classNames(styles["label"], {
-              [String(styles["floating"])]: hasFloatingLabel,
-            })}
-            htmlFor={props.name}
-          >
-            {label}
-            {props.required ? (
-              <span aria-hidden="true" className={styles["required"]}>
-                &nbsp;*
-              </span>
-            ) : null}
-          </label>
-          <input
-            className={classNames(
-              styles["input"],
-              { [String(styles["has-value"])]: !!props.value },
-              className
-            )}
-            id={props.name}
-            {...(hasErrorMessage && {
-              "aria-errormessage": `${props.name}-error`,
-              "aria-invalid": "true",
-            })}
-            {...(isDisabled && { "aria-disabled": "true" })}
-            {...(isRequired && { "aria-required": "true" })}
-            {...(noAutofillProps ?? { autoComplete })}
-            {...props}
-          />
-          {errorMessage ? (
-            <small
-              aria-live="polite"
-              className={styles["error-message"]}
-              id={`${props.name}-error`}
-            >
-              {errorMessage}
-            </small>
-          ) : null}
-        </>
-      )}
+      <label
+        className={classNames(styles["label"], {
+          [String(styles["floating"])]: hasFloatingLabel,
+        })}
+        htmlFor={props.name}
+      >
+        {label}
+        {props.required ? (
+          <span aria-hidden="true" className={styles["required"]}>
+            &nbsp;*
+          </span>
+        ) : null}
+      </label>
+      <input
+        className={classNames(
+          styles["input"],
+          { [String(styles["has-value"])]: !!props.value },
+          className
+        )}
+        id={props.name}
+        {...(hasErrorMessage && {
+          "aria-errormessage": `${props.name}-error`,
+          "aria-invalid": "true",
+        })}
+        {...(isDisabled && { "aria-disabled": "true" })}
+        {...(isRequired && { "aria-required": "true" })}
+        {...(noAutofillProps ?? { autoComplete })}
+        {...props}
+      />
+      {errorMessage ? (
+        <small
+          aria-live="polite"
+          className={styles["error-message"]}
+          id={`${props.name}-error`}
+        >
+          {errorMessage}
+        </small>
+      ) : null}
     </div>
   );
 };

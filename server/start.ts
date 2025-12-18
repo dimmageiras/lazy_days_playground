@@ -13,7 +13,7 @@ import {
 } from "../shared/constants/root-env.constant.ts";
 import { TIMING } from "../shared/constants/timing.constant.ts";
 import { PinoLogHelper } from "./helpers/pino-log.helper.ts";
-import { inits } from "./inits/inits.ts";
+import { inits } from "./inits/index.ts";
 
 const { SECONDS_TEN_IN_MS } = TIMING;
 

@@ -85,9 +85,6 @@ importers:
       react:
         specifier: ^19.2.3
         version: 19.2.3
-      react-content-loader:
-        specifier: ^7.1.1
-        version: 7.1.1(react@19.2.3)
       react-dom:
         specifier: ^19.2.3
         version: 19.2.3(react@19.2.3)
@@ -3341,12 +3338,6 @@ packages:
 
   rc9@2.1.2:
     resolution: {integrity: sha512-btXCnMmRIBINM2LDZoEmOogIZU7Qe7zn4BpomSKZ/ykbLObuBdvG+mFq11DL6fjH1DRwHhrlgtYWG96bJiC7Cg==}
-
-  react-content-loader@7.1.1:
-    resolution: {integrity: sha512-yNkqtd+15wXRLfDKZb5nTqDV2fPTG2kpUgeGRb+WBz43bU0j4DSGXETF0bnFr44fAoTPpm0Dya0WGdhpHSvtYA==}
-    engines: {node: '>=10'}
-    peerDependencies:
-      react: '>=16.0.0'
 
   react-d3-tree@3.6.6:
     resolution: {integrity: sha512-E9ByUdeqvlxLlF9BSL7KWQH3ikYHtHO+g1rAPcVgj6mu92tjRUCan2AWxoD4eTSzzAATf8BZtf+CXGSoSd6ioQ==}
@@ -7568,10 +7559,6 @@ snapshots:
     dependencies:
       defu: 6.1.4
       destr: 2.0.5
-
-  react-content-loader@7.1.1(react@19.2.3):
-    dependencies:
-      react: 19.2.3
 
   react-d3-tree@3.6.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
     dependencies:

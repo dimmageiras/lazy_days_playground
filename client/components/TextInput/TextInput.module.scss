@@ -36,12 +36,6 @@
     .required {
       color: #e53e3e;
     }
-
-    &.skeleton {
-      cursor: default !important;
-      height: 1.25rem;
-      width: 5rem;
-    }
   }
 
   .input {
@@ -58,15 +52,6 @@
     transition-duration: 0.2s;
     transition-property: background-color, border-color, color, fill, stroke,
       opacity, box-shadow, transform;
-
-    &.skeleton {
-      border: none;
-      outline: none;
-      outline-offset: 0;
-      padding: 0;
-      transition: none;
-      width: 100%;
-    }
 
     &.has-value {
       content: "";
