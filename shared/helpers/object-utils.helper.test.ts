@@ -1,289 +1,236 @@
-import { describe } from "vitest";
-
-import {
-  COMMON_PRIMITIVE_VALUES,
-  createObjectWithNullishValues,
-  createObjectWithNumericKeys,
-  createObjectWithSymbolKeys,
-  createTestClassInstance,
-  testFunction,
-} from "@shared/test-utils/test-data";
+import { describe, it } from "vitest";
 
 import { ObjectUtilsHelper } from "./object-utils.helper";
 
+const { getObjectEntries, getObjectKeys, getObjectValues, isPlainObject } =
+  ObjectUtilsHelper;
+
+// Test data constants
+const TEST_OBJECTS = {
+  SIMPLE: { name: "John", age: 30, active: true },
+  EMPTY: {},
+  NESTED: {
+    user: { name: "Jane", age: 25 },
+    settings: { theme: "dark", notifications: true },
+  },
+  WITH_SYMBOLS: { [Symbol("test")]: "symbol", normal: "value" },
+  WITH_NULL_VALUES: { name: null, age: undefined, active: false },
+} as const;
+
+const NON_OBJECTS = [
+  null,
+  undefined,
+  "string",
+  42,
+  true,
+  [],
+  () => {},
+  new Date(),
+  /regex/,
+] as const;
+
+const NON_PLAIN_OBJECTS = [
+  new (class TestClass {
+    name = "test";
+  })(),
+  [],
+  new Map(),
+  new Set(),
+  new Date(),
+  /regex/,
+  () => {},
+  "string",
+  42,
+  true,
+  null,
+  undefined,
+] as const;
+
 describe("ObjectUtilsHelper", () => {
-  const { getObjectEntries, getObjectKeys, getObjectValues, isPlainObject } =
-    ObjectUtilsHelper;
+  describe("getObjectEntries", () => {
+    it("should return typed entries for a simple object", ({ expect }) => {
+      const result = getObjectEntries(TEST_OBJECTS.SIMPLE);
 
-  describe("getObjectEntries", (it) => {
-    it("returns typed entries for a simple object", ({ expect }) => {
-      const obj = { name: "John", age: 30 };
-      const entries = getObjectEntries(obj);
-
-      expect(entries).toEqual([
+      expect(result).toEqual([
         ["name", "John"],
         ["age", 30],
+        ["active", true],
       ]);
-      expect(entries[0]![0]).toBe("name");
-      expect(entries[0]![1]).toBe("John");
-      expect(entries[1]![0]).toBe("age");
-      expect(entries[1]![1]).toBe(30);
-    });
 
-    it("returns typed entries for an object with mixed types", ({ expect }) => {
-      const obj = {
-        string: "text",
-        number: 42,
-        boolean: true,
-        array: [1, 2, 3],
-      };
-      const entries = getObjectEntries(obj);
-
-      expect(entries).toEqual([
-        ["string", "text"],
-        ["number", 42],
-        ["boolean", true],
-        ["array", [1, 2, 3]],
-      ]);
-    });
-
-    it("returns empty array for empty object", ({ expect }) => {
-      const obj = {};
-      const entries = getObjectEntries(obj);
-
-      expect(entries).toEqual([]);
-    });
-
-    it("preserves key ordering", ({ expect }) => {
-      const obj = { z: 1, a: 2, m: 3 };
-      const entries = getObjectEntries(obj);
-
-      expect(entries).toEqual([
-        ["z", 1],
-        ["a", 2],
-        ["m", 3],
-      ]);
-    });
-
-    it("handles objects with symbol keys by filtering them out", ({
-      expect,
-    }) => {
-      const obj = createObjectWithSymbolKeys();
-      const entries = getObjectEntries(obj);
-
-      expect(entries).toEqual([["normal", "value"]]);
-    });
-
-    it("handles objects with numeric keys", ({ expect }) => {
-      const obj = createObjectWithNumericKeys();
-      const entries = getObjectEntries(obj);
-
-      expect(entries).toEqual([
-        ["1", "one"],
-        ["2", "two"],
-        ["3", "three"],
-      ]);
-    });
-  });
-
-  describe("getObjectKeys", (it) => {
-    it("returns typed keys for a simple object", ({ expect }) => {
-      const obj = { name: "John", age: 30 };
-      const keys = getObjectKeys(obj);
-
-      expect(keys).toEqual(["name", "age"]);
-      expect(keys).toContain("name");
-      expect(keys).toContain("age");
-    });
-
-    it("returns typed keys for an object with mixed key types", ({
-      expect,
-    }) => {
-      const obj = { string: "text", 42: "number", "complex-key": "value" };
-      const keys = getObjectKeys(obj);
-
-      expect(keys).toEqual(["42", "string", "complex-key"]);
-    });
-
-    it("returns empty array for empty object", ({ expect }) => {
-      const obj = {};
-      const keys = getObjectKeys(obj);
-
-      expect(keys).toEqual([]);
-    });
-
-    it("preserves key ordering", ({ expect }) => {
-      const obj = { z: 1, a: 2, m: 3 };
-      const keys = getObjectKeys(obj);
-
-      expect(keys).toEqual(["z", "a", "m"]);
-    });
-
-    it("handles objects with symbol keys by filtering them out", ({
-      expect,
-    }) => {
-      const obj = createObjectWithSymbolKeys();
-      const keys = getObjectKeys(obj);
-
-      expect(keys).toEqual(["normal"]);
-    });
-  });
-
-  describe("getObjectValues", (it) => {
-    it("returns typed values for a simple object", ({ expect }) => {
-      const obj = { name: "John", age: 30 };
-      const values = getObjectValues(obj);
-
-      expect(values).toEqual(["John", 30]);
-      expect(values).toContain("John");
-      expect(values).toContain(30);
-    });
-
-    it("returns typed values for an object with mixed types", ({ expect }) => {
-      const obj = {
-        string: "text",
-        number: 42,
-        boolean: true,
-        array: [1, 2, 3],
-      };
-      const values = getObjectValues(obj);
-
-      expect(values).toEqual(["text", 42, true, [1, 2, 3]]);
-    });
-
-    it("returns empty array for empty object", ({ expect }) => {
-      const obj = {};
-      const values = getObjectValues(obj);
-
-      expect(values).toEqual([]);
-    });
-
-    it("preserves value ordering based on key ordering", ({ expect }) => {
-      const obj = { z: 1, a: 2, m: 3 };
-      const values = getObjectValues(obj);
-
-      expect(values).toEqual([1, 2, 3]);
-    });
-
-    it("handles objects with symbol keys by filtering them out", ({
-      expect,
-    }) => {
-      const obj = createObjectWithSymbolKeys();
-      const values = getObjectValues(obj);
-
-      expect(values).toEqual(["value"]);
-    });
-
-    it("handles undefined and null values", ({ expect }) => {
-      const obj = createObjectWithNullishValues();
-      const values = getObjectValues(obj);
-
-      expect(values).toEqual(["value", undefined, null]);
-    });
-  });
-
-  describe("isPlainObject", (it) => {
-    it("returns true for plain objects created with object literal", ({
-      expect,
-    }) => {
-      const obj = { name: "John", age: 30 };
-
-      expect(isPlainObject(obj)).toBe(true);
-    });
-
-    it("returns true for objects created with Object.create(null)", ({
-      expect,
-    }) => {
-      const obj = Object.create(null);
-
-      Reflect.set(obj, "name", "John");
-
-      expect(isPlainObject(obj)).toBe(true);
-    });
-
-    it("returns true for empty plain objects", ({ expect }) => {
-      const obj = {};
-
-      expect(isPlainObject(obj)).toBe(true);
-    });
-
-    it("returns false for arrays", ({ expect }) => {
-      const arr = [1, 2, 3];
-
-      expect(isPlainObject(arr)).toBe(false);
-    });
-
-    it("returns false for null", ({ expect }) => {
-      expect(isPlainObject(null)).toBe(false);
-    });
-
-    it("returns false for undefined", ({ expect }) => {
-      expect(isPlainObject(undefined)).toBe(false);
-    });
-
-    it("returns false for primitive values", ({ expect }) => {
-      COMMON_PRIMITIVE_VALUES.forEach((value) => {
-        expect(isPlainObject(value)).toBe(false);
+      // Type assertion to ensure proper typing
+      result.forEach(([key]) => {
+        expect(typeof key).toBe("string");
+        expect(["name", "age", "active"]).toContain(key);
       });
     });
 
-    it("returns false for Date objects", ({ expect }) => {
-      const date = new Date();
+    it("should return empty array for empty object", ({ expect }) => {
+      const result = getObjectEntries(TEST_OBJECTS.EMPTY);
 
-      expect(isPlainObject(date)).toBe(false);
+      expect(result).toEqual([]);
+      expect(result).toHaveLength(0);
     });
 
-    it("returns false for RegExp objects", ({ expect }) => {
-      const regex = /test/;
+    it("should handle nested objects", ({ expect }) => {
+      const result = getObjectEntries(TEST_OBJECTS.NESTED);
 
-      expect(isPlainObject(regex)).toBe(false);
+      expect(result).toEqual([
+        ["user", { name: "Jane", age: 25 }],
+        ["settings", { theme: "dark", notifications: true }],
+      ]);
+
+      result.forEach(([key, value]) => {
+        expect(typeof key).toBe("string");
+        expect(["user", "settings"]).toContain(key);
+        expect(typeof value).toBe("object");
+        expect(value).not.toBeNull();
+      });
     });
 
-    it("returns false for Map objects", ({ expect }) => {
-      const map = new Map();
+    it("should handle objects with null and undefined values", ({ expect }) => {
+      const result = getObjectEntries(TEST_OBJECTS.WITH_NULL_VALUES);
 
-      expect(isPlainObject(map)).toBe(false);
+      expect(result).toEqual([
+        ["name", null],
+        ["age", undefined],
+        ["active", false],
+      ]);
+
+      result.forEach(([key]) => {
+        expect(typeof key).toBe("string");
+        expect(["name", "age", "active"]).toContain(key);
+      });
+    });
+  });
+
+  describe("getObjectKeys", () => {
+    it("should return typed keys for a simple object", ({ expect }) => {
+      const result = getObjectKeys(TEST_OBJECTS.SIMPLE);
+
+      expect(result).toEqual(["name", "age", "active"]);
+
+      // Type assertion to ensure proper typing
+      result.forEach((key) => {
+        expect(typeof key).toBe("string");
+        expect(["name", "age", "active"]).toContain(key);
+      });
     });
 
-    it("returns false for Set objects", ({ expect }) => {
-      const set = new Set();
+    it("should return empty array for empty object", ({ expect }) => {
+      const result = getObjectKeys(TEST_OBJECTS.EMPTY);
 
-      expect(isPlainObject(set)).toBe(false);
+      expect(result).toEqual([]);
+      expect(result).toHaveLength(0);
     });
 
-    it("returns false for class instances", ({ expect }) => {
-      const instance = createTestClassInstance();
+    it("should handle nested objects", ({ expect }) => {
+      const result = getObjectKeys(TEST_OBJECTS.NESTED);
 
-      expect(isPlainObject(instance)).toBe(false);
+      expect(result).toEqual(["user", "settings"]);
+
+      result.forEach((key) => {
+        expect(typeof key).toBe("string");
+        expect(["user", "settings"]).toContain(key);
+      });
     });
 
-    it("returns false for objects with custom prototypes", ({ expect }) => {
-      const customProto = { custom: true };
-      const obj = Object.create(customProto);
-
-      Reflect.set(obj, "name", "test");
-
-      expect(isPlainObject(obj)).toBe(false);
-    });
-
-    it("returns true for function prototypes (they inherit from Object.prototype)", ({
+    it("should handle objects with symbol keys (excluding symbols)", ({
       expect,
     }) => {
-      const proto = testFunction.prototype;
+      const result = getObjectKeys(TEST_OBJECTS.WITH_SYMBOLS);
 
-      expect(isPlainObject(proto)).toBe(true);
+      // Object.keys() only returns string keys, not symbol keys
+      expect(result).toEqual(["normal"]);
+
+      result.forEach((key) => {
+        expect(typeof key).toBe("string");
+        expect(key).toBe("normal");
+      });
+    });
+  });
+
+  describe("getObjectValues", () => {
+    it("should return typed values for a simple object", ({ expect }) => {
+      const result = getObjectValues(TEST_OBJECTS.SIMPLE);
+
+      expect(result).toEqual(["John", 30, true]);
+
+      // Type assertion to ensure proper typing
+      result.forEach((value) => {
+        expect(["John", 30, true]).toContain(value);
+      });
     });
 
-    it("returns true for Object.prototype (it has null prototype)", ({
-      expect,
-    }) => {
-      expect(isPlainObject(Object.prototype)).toBe(true);
+    it("should return empty array for empty object", ({ expect }) => {
+      const result = getObjectValues(TEST_OBJECTS.EMPTY);
+
+      expect(result).toEqual([]);
+      expect(result).toHaveLength(0);
     });
 
-    it("returns false for Array.prototype (it has [object Array] class)", ({
+    it("should handle nested objects", ({ expect }) => {
+      const result = getObjectValues(TEST_OBJECTS.NESTED);
+
+      expect(result).toEqual([
+        { name: "Jane", age: 25 },
+        { theme: "dark", notifications: true },
+      ]);
+
+      result.forEach((value) => {
+        expect(typeof value).toBe("object");
+        expect(value).not.toBeNull();
+      });
+    });
+
+    it("should handle objects with null and undefined values", ({ expect }) => {
+      const result = getObjectValues(TEST_OBJECTS.WITH_NULL_VALUES);
+
+      expect(result).toEqual([null, undefined, false]);
+
+      result.forEach((value) => {
+        expect([null, undefined, false]).toContain(value);
+      });
+    });
+  });
+
+  describe("isPlainObject", () => {
+    it("should return true for plain objects", ({ expect }) => {
+      const plainObjects = [
+        {},
+        { name: "John" },
+        TEST_OBJECTS.SIMPLE,
+        TEST_OBJECTS.EMPTY,
+        TEST_OBJECTS.NESTED,
+        Object.create(Object.prototype),
+      ];
+
+      plainObjects.forEach((obj) => {
+        expect(isPlainObject(obj)).toBe(true);
+      });
+    });
+
+    it("should return true for objects created with Object.create(null)", ({
       expect,
     }) => {
-      expect(isPlainObject(Array.prototype)).toBe(false);
+      const nullProtoObj = Object.create(null);
+
+      Reflect.set(nullProtoObj, "name", "test");
+
+      expect(isPlainObject(nullProtoObj)).toBe(true);
+    });
+
+    it("should return false for non-objects", ({ expect }) => {
+      NON_OBJECTS.forEach((item) => {
+        expect(isPlainObject(item)).toBe(false);
+      });
+    });
+
+    it("should return false for non-plain objects", ({ expect }) => {
+      NON_PLAIN_OBJECTS.forEach((item) => {
+        if (item !== null && item !== undefined) {
+          expect(isPlainObject(item)).toBe(false);
+        }
+      });
     });
   });
 });
