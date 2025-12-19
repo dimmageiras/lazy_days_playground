@@ -11,7 +11,6 @@ const vitestConfig = defineConfig({
         "**/coverage/**",
         "dist/",
         "node_modules/",
-        "shared/test-utils/**",
       ],
       provider: "v8",
     },

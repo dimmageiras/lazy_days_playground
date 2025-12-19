@@ -6,15 +6,17 @@ const getMode = (
   isDevelopment: boolean,
   isTypeGeneratorMode: boolean
 ): ValueOf<typeof MODES> => {
+  const { DEVELOPMENT, PRODUCTION, TYPE_GENERATOR } = MODES;
+
   switch (true) {
     case isTypeGeneratorMode:
-      return MODES.TYPE_GENERATOR;
+      return TYPE_GENERATOR;
 
     case isDevelopment:
-      return MODES.DEVELOPMENT;
+      return DEVELOPMENT;
 
     default:
-      return MODES.PRODUCTION;
+      return PRODUCTION;
   }
 };
 

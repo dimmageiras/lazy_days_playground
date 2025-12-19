@@ -41,8 +41,7 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
  */
 const getObjectKeys = <TObject extends Record<string, unknown>>(
   object: TObject
-): KeyAsString<ValueOf<TObject>>[] =>
-  Object.keys(object) as KeyAsString<ValueOf<TObject>>[];
+): KeyAsString<TObject>[] => Object.keys(object) as KeyAsString<TObject>[];
 
 /**
  * Gets typed values from an object.

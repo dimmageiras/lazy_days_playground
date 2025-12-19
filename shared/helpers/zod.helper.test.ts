@@ -1,10 +1,14 @@
-import { beforeAll, beforeEach, describe, vi } from "vitest";
+import type { KeyAsString } from "type-fest";
+import { beforeAll, beforeEach, describe, it, vi } from "vitest";
+import type { $ZodIssue } from "zod/v4/core";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
+import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 import type { IssueCodes } from "@shared/types/app/zod";
 import type {
   zConfig as zConfigType,
   ZodError,
+  ZodFormattedError,
   ZodLocale,
 } from "@shared/wrappers/zod.wrapper";
 
@@ -15,395 +19,326 @@ vi.mock("../wrappers/zod.wrapper", () => ({
   zConfig: vi.fn(),
 }));
 
+const {
+  CUSTOM,
+  INVALID_TYPE,
+  INVALID_UNION,
+  NOT_MULTIPLE_OF,
+  TOO_BIG,
+  TOO_SMALL,
+  UNRECOGNIZED_KEYS,
+} = ISSUE_CODES;
+
+const { getObjectKeys } = ObjectUtilsHelper;
+const { formatError, loadLocale } = ZodUtilsHelper;
+
+// Factory functions for creating test data
+const createIssue = (
+  code: IssueCodes | string,
+  overrides: Partial<$ZodIssue> = {}
+): $ZodIssue => ({
+  code,
+  message: overrides.message ?? `Test message for ${code}`,
+  path: overrides.path ?? ["test"],
+  ...overrides,
+});
+
+const createExpectedError = (
+  message: string,
+  path: string | string[],
+  validationCode: IssueCodes | string | undefined
+): ZodFormattedError => ({
+  message,
+  path: Array.isArray(path) ? path.join(".") : path,
+  validation_code: validationCode,
+});
+
+const createScenario = (
+  description: string,
+  issues: $ZodIssue[],
+  expected: ZodFormattedError[]
+) => ({
+  description,
+  issues,
+  expected,
+});
+
+// Test data constants using factories
+const ISSUE_CODE_TEST_CASES = {
+  INVALID_TYPE: {
+    code: INVALID_TYPE,
+    expected: INVALID_TYPE,
+    extraProps: { expected: "string" },
+  },
+  INVALID_UNION: {
+    code: INVALID_UNION,
+    expected: INVALID_UNION,
+    extraProps: { errors: [[], []] },
+  },
+  UNRECOGNIZED_KEYS: {
+    code: UNRECOGNIZED_KEYS,
+    expected: UNRECOGNIZED_KEYS,
+    extraProps: { keys: ["extraKey"] },
+  },
+  TOO_SMALL: {
+    code: TOO_SMALL,
+    expected: TOO_SMALL,
+    extraProps: { minimum: 1, origin: "number" },
+  },
+  TOO_BIG: {
+    code: TOO_BIG,
+    expected: TOO_BIG,
+    extraProps: { maximum: 100, origin: "number" },
+  },
+  NOT_MULTIPLE_OF: {
+    code: NOT_MULTIPLE_OF,
+    expected: NOT_MULTIPLE_OF,
+    extraProps: { divisor: 5 },
+  },
+  CUSTOM: {
+    code: CUSTOM,
+    expected: undefined,
+    extraProps: {},
+  },
+} as const;
+
+// Representative test cases for non-ISSUE_CODES error codes
+const NON_ISSUE_CODE_TEST_CASES = {
+  INVALID_DATE: "invalid_date",
+  INVALID_STRING: "invalid_string",
+} as const;
+
+const FORMAT_ERROR_SCENARIOS = {
+  SINGLE_ERROR: createScenario(
+    "should format a single ZodError issue correctly",
+    [
+      createIssue("too_small", {
+        message: "Number must be greater than or equal to 1",
+        minimum: 1,
+        origin: "number",
+        path: ["age"],
+      }),
+    ],
+    [
+      createExpectedError(
+        "Number must be greater than or equal to 1",
+        "age",
+        TOO_SMALL
+      ),
+    ]
+  ),
+
+  MULTIPLE_ERRORS: createScenario(
+    "should format multiple ZodError issues correctly",
+    [
+      createIssue("too_small", {
+        message: "Number must be greater than or equal to 1",
+        minimum: 1,
+        origin: "number",
+        path: ["age"],
+      }),
+      createIssue("invalid_type", {
+        expected: "string",
+        message: "Expected string, received number",
+        path: ["name"],
+      }),
+    ],
+    [
+      createExpectedError(
+        "Number must be greater than or equal to 1",
+        "age",
+        TOO_SMALL
+      ),
+      createExpectedError(
+        "Expected string, received number",
+        "name",
+        INVALID_TYPE
+      ),
+    ]
+  ),
+
+  NESTED_PATH: createScenario(
+    "should format nested path correctly",
+    [
+      createIssue("invalid_type", {
+        expected: "string",
+        message: "Expected string, received number",
+        path: ["user", "profile", "name"],
+      }),
+    ],
+    [
+      createExpectedError(
+        "Expected string, received number",
+        "user.profile.name",
+        INVALID_TYPE
+      ),
+    ]
+  ),
+
+  CUSTOM_WITH_PARAMS: createScenario(
+    "should handle custom error codes with params",
+    [
+      createIssue("custom", {
+        message: "Custom validation failed",
+        path: ["email"],
+        params: { code: "invalid_email_format" },
+      }),
+    ],
+    [
+      createExpectedError(
+        "Custom validation failed",
+        "email",
+        "invalid_email_format"
+      ),
+    ]
+  ),
+
+  CUSTOM_WITHOUT_PARAMS: createScenario(
+    "should handle custom error codes without params",
+    [
+      createIssue("custom", {
+        message: "Custom validation failed",
+        path: ["field"],
+        params: undefined,
+      }),
+    ],
+    [createExpectedError("Custom validation failed", "field", undefined)]
+  ),
+
+  EMPTY_ISSUES: createScenario(
+    "should return empty array for ZodError with no issues",
+    [],
+    []
+  ),
+
+  EMPTY_PATH: createScenario(
+    "should handle empty path correctly",
+    [
+      createIssue("invalid_type", {
+        expected: "string",
+        message: "Expected string, received number",
+        path: [],
+      }),
+    ],
+    [createExpectedError("Expected string, received number", "", INVALID_TYPE)]
+  ),
+
+  PRESERVE_ORDER: createScenario(
+    "should preserve issue order",
+    [
+      createIssue("invalid_type", {
+        expected: "string",
+        message: "First error",
+        path: ["first"],
+      }),
+      createIssue("too_small", {
+        message: "Second error",
+        minimum: 1,
+        origin: "number",
+        path: ["second"],
+      }),
+      createIssue("custom", {
+        message: "Third error",
+        path: ["third"],
+      }),
+    ],
+    [
+      createExpectedError("First error", "first", INVALID_TYPE),
+      createExpectedError("Second error", "second", TOO_SMALL),
+      createExpectedError("Third error", "third", undefined),
+    ]
+  ),
+} as const;
+
+// Test helper function to create mock ZodError with given issues
+const createMockZodError = (issues: $ZodIssue[] = []): ZodError => ({
+  _zod: {
+    def: [],
+    output: "ZodErrorTest",
+  },
+  addIssue: vi.fn(),
+  addIssues: vi.fn(),
+  cause: "ZodErrorTest",
+  flatten: vi.fn(),
+  format: vi.fn(),
+  isEmpty: false,
+  issues,
+  message: "ZodErrorTest",
+  name: "ZodErrorTest",
+  stack: "ZodErrorTest",
+  type: "ZodErrorTest",
+});
+
+// Test helper function to create test case issues
+const createTestCase = (
+  code: IssueCodes,
+  extraProps: Record<string, unknown> = {}
+) =>
+  createIssue(code, {
+    message: `Test message for ${code}`,
+    path: ["test"],
+    ...extraProps,
+  });
+
+// Test helper function to test format error scenarios
+const testFormatErrorScenario = (
+  key: KeyAsString<typeof FORMAT_ERROR_SCENARIOS>
+) => {
+  const scenario = Reflect.get(FORMAT_ERROR_SCENARIOS, key);
+  const { description, issues, expected } = scenario;
+
+  it(description, ({ expect }) => {
+    const mockZodError = createMockZodError(issues);
+    const result = formatError(mockZodError);
+
+    expect(result).toEqual(expected);
+  });
+};
+
+// Test helper function to test issue code mappings
+const testIssueCodeMapping = (
+  key: KeyAsString<typeof ISSUE_CODE_TEST_CASES>
+) => {
+  const testCase = Reflect.get(ISSUE_CODE_TEST_CASES, key);
+  const { code, expected, extraProps } = testCase;
+
+  it(`should format ${code} error code correctly`, ({ expect }) => {
+    const mockZodError = createMockZodError([createTestCase(code, extraProps)]);
+
+    const result = formatError(mockZodError);
+
+    expect(result[0]?.validation_code).toBe(expected);
+  });
+};
+
+// Test helper function to test non-ISSUE_CODES handling
+// These codes are passed through as-is without special mapping
+const testNonIssueCodeHandling = (
+  key: KeyAsString<typeof NON_ISSUE_CODE_TEST_CASES>
+) => {
+  const code = Reflect.get(NON_ISSUE_CODE_TEST_CASES, key);
+
+  it(`should pass through ${code} error code without mapping`, ({ expect }) => {
+    const mockZodError = createMockZodError([createTestCase(code)]);
+
+    const result = formatError(mockZodError);
+
+    expect(result[0]?.validation_code).toBe(code);
+    expect(result[0]?.message).toBe(`Test message for ${code}`);
+    expect(result[0]?.path).toBe("test");
+  });
+};
+
 describe("ZodUtilsHelper", () => {
-  const {
-    CUSTOM,
-    INVALID_TYPE,
-    INVALID_UNION,
-    NOT_MULTIPLE_OF,
-    TOO_BIG,
-    TOO_SMALL,
-    UNRECOGNIZED_KEYS,
-  } = ISSUE_CODES;
+  describe("formatError", () => {
+    // Data-driven tests for complex scenarios
+    getObjectKeys(FORMAT_ERROR_SCENARIOS).forEach(testFormatErrorScenario);
 
-  const { formatError, loadLocale } = ZodUtilsHelper;
+    // Data-driven tests for ISSUE_CODES
+    getObjectKeys(ISSUE_CODE_TEST_CASES).forEach(testIssueCodeMapping);
 
-  const mockZodErrorBase: ZodError = {
-    addIssue: vi.fn(),
-    addIssues: vi.fn(),
-    cause: "ZodErrorTest",
-    flatten: vi.fn(),
-    format: vi.fn(),
-    isEmpty: false,
-    issues: [],
-    message: "ZodErrorTest",
-    name: "ZodErrorTest",
-    type: "ZodErrorTest",
-    stack: "ZodErrorTest",
-    _zod: {
-      def: [],
-      output: "ZodErrorTest",
-    },
-  };
-
-  describe("formatError", (it) => {
-    it("formats a single ZodError issue correctly", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "too_small",
-            message: "Number must be greater than or equal to 1",
-            minimum: 1,
-            origin: "number",
-            path: ["age"],
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([
-        {
-          message: "Number must be greater than or equal to 1",
-          path: "age",
-          validation_code: TOO_SMALL,
-        },
-      ]);
-    });
-
-    it("formats multiple ZodError issues correctly", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "too_small",
-            message: "Number must be greater than or equal to 1",
-            minimum: 1,
-            origin: "number",
-            path: ["age"],
-          },
-          {
-            code: "invalid_type",
-            expected: "string",
-            message: "Expected string, received number",
-            path: ["name"],
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([
-        {
-          message: "Number must be greater than or equal to 1",
-          path: "age",
-          validation_code: TOO_SMALL,
-        },
-        {
-          message: "Expected string, received number",
-          path: "name",
-          validation_code: INVALID_TYPE,
-        },
-      ]);
-    });
-
-    it("formats nested path correctly", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "invalid_type",
-            expected: "string",
-            message: "Expected string, received number",
-            path: ["user", "profile", "name"],
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([
-        {
-          message: "Expected string, received number",
-          path: "user.profile.name",
-          validation_code: INVALID_TYPE,
-        },
-      ]);
-    });
-
-    it("handles custom error codes with params", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "custom",
-            message: "Custom validation failed",
-            path: ["email"],
-            params: {
-              code: "invalid_email_format",
-            },
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([
-        {
-          message: "Custom validation failed",
-          path: "email",
-          validation_code: "invalid_email_format",
-        },
-      ]);
-    });
-
-    it("handles custom error codes without params", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "custom",
-            message: "Custom validation failed",
-            path: ["field"],
-            params: undefined,
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([
-        {
-          message: "Custom validation failed",
-          path: "field",
-          validation_code: undefined,
-        },
-      ]);
-    });
-
-    it("formats ISSUE_CODES error types correctly", ({ expect }) => {
-      // Test invalid_type
-      const mockZodErrorInvalidType: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: INVALID_TYPE,
-            expected: "string",
-            message: `Test message for ${INVALID_TYPE}`,
-            path: ["test"],
-          },
-        ],
-      };
-
-      const resultInvalidType = formatError(mockZodErrorInvalidType);
-
-      expect(resultInvalidType[0]?.validation_code).toBe(INVALID_TYPE);
-
-      // Test invalid_union
-      const mockZodErrorInvalidUnion: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: INVALID_UNION,
-            errors: [[], []],
-            message: `Test message for ${INVALID_UNION}`,
-            path: ["test"],
-          },
-        ],
-      };
-
-      const resultInvalidUnion = formatError(mockZodErrorInvalidUnion);
-
-      expect(resultInvalidUnion[0]?.validation_code).toBe(INVALID_UNION);
-
-      // Test unrecognized_keys
-      const mockZodErrorUnrecognizedKeys: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: UNRECOGNIZED_KEYS,
-            keys: ["extraKey"],
-            message: `Test message for ${UNRECOGNIZED_KEYS}`,
-            path: ["test"],
-          },
-        ],
-      };
-
-      const resultUnrecognizedKeys = formatError(mockZodErrorUnrecognizedKeys);
-
-      expect(resultUnrecognizedKeys[0]?.validation_code).toBe(
-        UNRECOGNIZED_KEYS
-      );
-
-      // Test too_small
-      const mockZodErrorTooSmall: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: TOO_SMALL,
-            minimum: 1,
-            origin: "number",
-            message: `Test message for ${TOO_SMALL}`,
-            path: ["test"],
-          },
-        ],
-      };
-
-      const resultTooSmall = formatError(mockZodErrorTooSmall);
-
-      expect(resultTooSmall[0]?.validation_code).toBe(TOO_SMALL);
-
-      // Test too_big
-      const mockZodErrorTooBig: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: TOO_BIG,
-            maximum: 100,
-            origin: "number",
-            message: `Test message for ${TOO_BIG}`,
-            path: ["test"],
-          },
-        ],
-      };
-
-      const resultTooBig = formatError(mockZodErrorTooBig);
-
-      expect(resultTooBig[0]?.validation_code).toBe(TOO_BIG);
-
-      // Test not_multiple_of
-      const mockZodErrorNotMultipleOf: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: NOT_MULTIPLE_OF,
-            divisor: 5,
-            message: `Test message for ${NOT_MULTIPLE_OF}`,
-            path: ["test"],
-          },
-        ],
-      };
-      const resultNotMultipleOf = formatError(mockZodErrorNotMultipleOf);
-
-      expect(resultNotMultipleOf[0]?.validation_code).toBe(NOT_MULTIPLE_OF);
-
-      // Test custom
-      const mockZodErrorCustom: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: CUSTOM,
-            message: `Test message for ${CUSTOM}`,
-            path: ["test"],
-          },
-        ],
-      };
-      const resultCustom = formatError(mockZodErrorCustom);
-
-      expect(resultCustom[0]?.validation_code).toBe(undefined);
-    });
-
-    it("formats non-ISSUE_CODES error types as-is", ({ expect }) => {
-      const testCases: IssueCodes[] = [
-        "invalid_arguments",
-        "invalid_date",
-        "invalid_enum_value",
-        "invalid_intersection_types",
-        "invalid_literal",
-        "invalid_return_type",
-        "invalid_string",
-        "invalid_union_discriminator",
-        "not_finite",
-      ];
-
-      testCases.forEach((code) => {
-        const mockZodError: ZodError = {
-          ...mockZodErrorBase,
-          issues: [
-            {
-              code,
-              message: `Test message for ${code}`,
-              path: ["test"],
-            },
-          ],
-        };
-
-        const result = formatError(mockZodError);
-
-        expect(result[0]?.validation_code).toBe(code);
-        expect(result[0]?.message).toBe(`Test message for ${code}`);
-        expect(result[0]?.path).toBe("test");
-      });
-    });
-
-    it("returns empty array for ZodError with no issues", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([]);
-    });
-
-    it("handles empty path correctly", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "invalid_type",
-            expected: "string",
-            message: "Expected string, received number",
-            path: [],
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toEqual([
-        {
-          message: "Expected string, received number",
-          path: "",
-          validation_code: INVALID_TYPE,
-        },
-      ]);
-    });
-
-    it("preserves issue order", ({ expect }) => {
-      const mockZodError: ZodError = {
-        ...mockZodErrorBase,
-        issues: [
-          {
-            code: "invalid_type",
-            expected: "string",
-            message: "First error",
-            path: ["first"],
-          },
-          {
-            code: "too_small",
-            message: "Second error",
-            minimum: 1,
-            origin: "number",
-            path: ["second"],
-          },
-          {
-            code: "custom",
-            message: "Third error",
-            path: ["third"],
-          },
-        ],
-      };
-
-      const result = formatError(mockZodError);
-
-      expect(result).toHaveLength(3);
-      expect(result[0]?.message).toBe("First error");
-      expect(result[1]?.message).toBe("Second error");
-      expect(result[2]?.message).toBe("Third error");
-    });
+    // Data-driven tests for non-ISSUE_CODES
+    getObjectKeys(NON_ISSUE_CODE_TEST_CASES).forEach(testNonIssueCodeHandling);
   });
 
   describe("loadLocale", (it) => {
@@ -419,7 +354,7 @@ describe("ZodUtilsHelper", () => {
       vi.clearAllMocks();
     });
 
-    it("loads all supported locales successfully", async ({ expect }) => {
+    it("should load all supported locales successfully", async ({ expect }) => {
       const locales: ZodLocale[] = [
         "ar",
         "de",
