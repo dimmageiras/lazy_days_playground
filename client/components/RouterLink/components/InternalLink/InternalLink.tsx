@@ -1,5 +1,4 @@
-import type { JSX } from "react";
-import type { To } from "react-router";
+import type { ComponentProps, JSX } from "react";
 import { Link } from "react-router";
 
 import type {
@@ -7,31 +6,26 @@ import type {
   CommonRouterLinkProps,
 } from "@client/components/RouterLink/types/router-link.type";
 
-interface InternalLinkProps extends CommonRouterLinkProps, CommonLinkProps {
+interface InternalLinkProps
+  extends Omit<ComponentProps<typeof Link>, "onMouseDown" | "replace">,
+    CommonRouterLinkProps,
+    CommonLinkProps {
   /** Whether to replace current history entry instead of pushing */
   shouldReplace?: boolean;
-  /** Destination URL or route path */
-  to: To;
 }
 
 const InternalLink = ({
   children,
-  className,
   handleMouseDown,
-  onClick,
   prioritizeOnClick = false,
-  ref,
   shouldReplace = false,
-  to,
+  ...restProps
 }: InternalLinkProps): JSX.Element => {
   return (
     <Link
-      className={className}
-      ref={ref}
-      onClick={onClick}
-      to={to ?? ""}
       {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
       {...(shouldReplace && { replace: true })}
+      {...restProps}
     >
       {children}
     </Link>

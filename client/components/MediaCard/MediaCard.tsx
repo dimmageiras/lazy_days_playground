@@ -88,6 +88,7 @@ const MediaCard = memo(
           <figcaption className={styles["credit"]}>
             Photo by
             <RouterLink
+              aria-label="Author link"
               className={styles["link"]}
               hasTextDecorationOnHover
               shouldOpenInNewTab
@@ -97,6 +98,7 @@ const MediaCard = memo(
             </RouterLink>
             from
             <RouterLink
+              aria-label="Platform link"
               className={styles["link"]}
               hasTextDecorationOnHover
               shouldOpenInNewTab

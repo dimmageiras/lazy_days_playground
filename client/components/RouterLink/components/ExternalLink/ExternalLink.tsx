@@ -1,11 +1,14 @@
-import type { JSX } from "react";
+import type { ComponentProps, JSX } from "react";
 
 import type {
   CommonLinkProps,
   CommonRouterLinkProps,
 } from "@client/components/RouterLink/types/router-link.type";
 
-interface ExternalLinkProps extends CommonRouterLinkProps, CommonLinkProps {
+interface ExternalLinkProps
+  extends Omit<ComponentProps<"a">, "href" | "onMouseDown" | "rel" | "target">,
+    CommonLinkProps,
+    CommonRouterLinkProps {
   /** Whether to open link in new tab */
   shouldOpenInNewTab?: boolean;
   /** Destination URL */
@@ -14,23 +17,19 @@ interface ExternalLinkProps extends CommonRouterLinkProps, CommonLinkProps {
 
 const ExternalLink = ({
   children,
-  className,
   handleMouseDown,
-  onClick,
   prioritizeOnClick = false,
-  ref,
   shouldOpenInNewTab = false,
   to,
+  ...restProps
 }: ExternalLinkProps): JSX.Element => {
   return (
     <a
-      className={className}
       href={to ?? ""}
-      onClick={onClick}
-      ref={ref}
       rel="noopener noreferrer"
       {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
       {...(shouldOpenInNewTab && { target: "_blank" })}
+      {...restProps}
     >
       {children}
     </a>

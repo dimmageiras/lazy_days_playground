@@ -117,6 +117,7 @@ const DevTools = (): JSX.Element => {
         <div className={styles["bubble-content"]}>
           <div className={styles["option-container"]}>
             <RouterLink
+              aria-label="API Health"
               as="internal"
               className={styles["api-health"]}
               onClick={() => {
@@ -134,6 +135,7 @@ const DevTools = (): JSX.Element => {
           </div>
           <div className={styles["option-container"]}>
             <RouterLink
+              aria-label="API Docs"
               as="internal"
               className={styles["api-docs"]}
               onClick={() => {

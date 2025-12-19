@@ -37,7 +37,8 @@ const ConfirmPassword = (): JSX.Element => {
 
   return (
     <TextInput
-      autoComplete="current-password webauthn"
+      // TO-DO: Add webauthn support
+      autoComplete="new-password"
       errorMessage={error?.message}
       hasFloatingLabel
       label={CONFIRM_PASSWORD_FIELD_LABEL}

@@ -20,7 +20,7 @@ const NavBar = (): JSX.Element => {
           <RouterLink
             aria-label="Lazy Days Spa - Home"
             as="navLink"
-            className={styles["home-link"]}
+            className={String(styles["home-link"])}
             prioritizeOnClick
             shouldReplace
             to="/"

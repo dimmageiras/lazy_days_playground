@@ -15,6 +15,7 @@ const {
   CONFIRM_PASSWORD: { name: confirmPasswordName },
   PASSWORD: { name, label },
 } = FORM_FIELDS;
+const { SIGNUP } = FORM_TYPES;
 const PASSWORD_FIELD_NAME = name;
 const PASSWORD_FIELD_LABEL = label;
 
@@ -41,6 +42,11 @@ const PasswordField = (): JSX.Element => {
     [checkFieldIsRequiredInDiscriminatedUnion, mode]
   );
 
+  const autoComplete = useMemo(
+    () => (mode === SIGNUP ? "new-password" : "current-password"),
+    [mode]
+  );
+
   const handlePasswordChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
       isTouched,
@@ -60,7 +66,8 @@ const PasswordField = (): JSX.Element => {
 
   return (
     <TextInput
-      autoComplete="current-password webauthn"
+      // TO-DO: Add webauthn support
+      autoComplete={autoComplete}
       errorMessage={error?.message}
       hasFloatingLabel
       label={PASSWORD_FIELD_LABEL}

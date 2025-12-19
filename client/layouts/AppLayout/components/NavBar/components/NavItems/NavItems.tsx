@@ -7,14 +7,17 @@ import styles from "./NavItems.module.scss";
 
 const NAV_ITEMS = [
   {
+    "aria-label": "Treatments",
     label: "Treatments",
     to: "/treatments",
   },
   {
+    "aria-label": "Staff",
     label: "Staff",
     to: "/staff",
   },
   {
+    "aria-label": "Calendar",
     label: "Calendar",
     to: "/calendar",
   },
@@ -29,8 +32,9 @@ const NavItems = (): JSX.Element => {
         return (
           <RouterLink
             activeClassName={styles["active"]}
+            aria-label={data["aria-label"]}
             as="navLink"
-            className={styles["nav-item"]}
+            className={String(styles["nav-item"])}
             key={data.label}
             prioritizeOnClick
             shouldReplace

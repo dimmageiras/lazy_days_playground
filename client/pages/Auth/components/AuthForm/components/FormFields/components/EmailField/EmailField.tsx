@@ -73,7 +73,8 @@ const EmailField = (): JSX.Element => {
 
   return (
     <TextInput
-      autoComplete="email webauthn"
+      // TO-DO: Add webauthn support
+      autoComplete="email"
       errorMessage={error?.message}
       hasFloatingLabel
       label={EMAIL_FIELD_LABEL}

@@ -1,4 +1,4 @@
-import type { ComponentProps, JSX, MouseEvent, Ref } from "react";
+import type { ComponentProps } from "react";
 import type { ConditionalKeys, KeyAsString } from "type-fest";
 
 import type { ExternalLink } from "@client/components/RouterLink/components/ExternalLink";
@@ -8,18 +8,10 @@ import type { LINK_AS } from "@client/components/RouterLink/constants/router-lin
 import type { DomEventsHelper } from "@client/helpers/dom-events.helper";
 
 interface CommonRouterLinkProps {
-  /** Content to be rendered inside the link */
-  children?: JSX.Element | string | null;
-  /** Additional CSS classes for styling */
-  className?: string | undefined;
   /** Whether to show text decoration on hover */
   hasTextDecorationOnHover?: boolean;
-  /** onClick event handler */
-  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   /** Whether to prioritize onClick event over other events */
   prioritizeOnClick?: boolean;
-  /** Ref for accessing the underlying anchor element */
-  ref?: Ref<HTMLAnchorElement | null>;
 }
 
 interface CommonLinkProps {
@@ -48,7 +40,7 @@ interface NavRouterLinkProps
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.navLink>;
 }
 
-type CommonPropsToRemove = "as" | "className" | "hasTextDecorationOnHover";
+type CommonPropsToRemove = "as" | "hasTextDecorationOnHover";
 
 export type {
   CommonLinkProps,
