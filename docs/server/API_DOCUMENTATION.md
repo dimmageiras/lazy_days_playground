@@ -35,7 +35,7 @@ TypeScript Types (swagger-typescript-api)
 
 ## OpenAPI/Swagger Setup
 
-**Location**: `server/start.ts`
+**Location**: `server/inits/swagger/swagger.init.ts`
 
 ```typescript
 // Set up Zod validators
@@ -70,7 +70,7 @@ await fastify.register(swaggerUIFastify, {
 });
 ```
 
-**Note**: The actual implementation in `server/start.ts` includes additional configuration for UI hooks (request validation), CSP transformation, and dynamic server URL detection based on headers.
+**Note**: The actual implementation in `server/inits/swagger/swagger.init.ts` includes additional configuration for UI hooks (request validation), CSP transformation, and dynamic server URL detection based on headers.
 
 **Modes:**
 

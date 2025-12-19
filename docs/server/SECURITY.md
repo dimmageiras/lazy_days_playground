@@ -17,19 +17,38 @@ HTTP Security Headers (Helmet)
 
 ## HTTP Security Headers
 
-**Location**: `server/start.ts`
+**Location**: `server/inits/security/security.init.ts`
+
+Helmet is configured with conditional application based on request type:
 
 ```typescript
+// Register helmet with global: false for conditional application
 await app.register(helmet, {
+  global: false, // Disable automatic application to all routes
   contentSecurityPolicy: IS_DEVELOPMENT
     ? false
-    : { directives: CSP_DIRECTIVES },
+    : { directives: CSP_DIRECTIVES, useDefaults: false },
   crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
+  enableCSPNonces: !IS_DEVELOPMENT,
   hsts: {
     includeSubDomains: true,
     maxAge: YEARS_ONE_IN_S, // 1 year
     preload: true,
   },
+});
+
+// Apply helmet conditionally based on route type
+app.addHook("onRequest", async (request, reply) => {
+  // Disable CSP for static assets and favicon, keep other security headers
+  if (request.url.startsWith("/assets/") || request.url === "/favicon.ico") {
+    reply.helmet({
+      contentSecurityPolicy: false, // Only disable CSP
+    });
+    return;
+  }
+
+  // Apply full helmet for all other routes
+  reply.helmet();
 });
 ```
 
@@ -65,7 +84,7 @@ await app.register(helmet, {
 | `styleSrc`         | `'self'`, `https://fonts.googleapis.com` | Same-origin styles and Google Fonts |
 | `upgradeInsecure…` | `[]`                                     | Upgrades HTTP to HTTPS              |
 
-**Note**: CSP disabled in development for React DevTools compatibility.
+**Note**: CSP disabled in development for React DevTools compatibility. In production, CSP is selectively disabled for static assets (`/assets/*`) and favicon (`/favicon.ico`) while remaining active for all other routes.
 
 ### CSP Violation Reporting
 

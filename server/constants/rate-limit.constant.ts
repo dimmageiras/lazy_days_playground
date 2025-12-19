@@ -76,6 +76,7 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
       return true;
     }
 
+    // Disable rate limiting for static React Router assets
     return request.url.startsWith("/assets/");
   },
   cache: 10000, // Maximum number of keys to store

@@ -173,6 +173,11 @@ server/
 ├── start.ts                 # Server initialization
 ├── constants/               # Server constants (rate limits, CSP, etc.)
 ├── helpers/                 # Utilities (auth, encryption, logging, etc.)
+├── inits/                   # Modular initialization
+│   ├── index.ts            # Main initialization orchestrator
+│   ├── security/           # Security plugins (helmet, rate-limit, cookies)
+│   ├── swagger/            # API documentation (dev only)
+│   └── react-router/       # SSR setup
 ├── middleware/              # Request middleware (auth)
 ├── plugins/                 # Custom Fastify plugins
 ├── routes/                  # API routes by domain

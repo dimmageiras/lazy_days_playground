@@ -27,7 +27,7 @@ All time windows use constants from `shared/constants/timing.constant.ts`:
 
 ### Server Setup
 
-**Location**: `server/start.ts`
+**Location**: `server/inits/security/security.init.ts`
 
 Rate limiting is registered **after** static file serving and React Router to avoid limiting essential routes like static assets and client-side navigation.
 

@@ -41,6 +41,7 @@ const registerCookie = async (app: ServerInstance): Promise<void> => {
 const registerHelmet = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(helmet, {
+      global: false, // Disable global application, we'll apply conditionally
       contentSecurityPolicy: IS_DEVELOPMENT
         ? false
         : { directives: CSP_DIRECTIVES, useDefaults: false },
@@ -51,6 +52,24 @@ const registerHelmet = async (app: ServerInstance): Promise<void> => {
         maxAge: YEARS_ONE_IN_S,
         preload: true,
       },
+    });
+
+    // Apply helmet conditionally with CSP disabled for static assets
+    app.addHook("onRequest", async (request, reply) => {
+      // Disable CSP for static assets and favicon, keep other security headers
+      if (
+        request.url.startsWith("/assets/") ||
+        request.url === "/favicon.ico"
+      ) {
+        reply.helmet({
+          contentSecurityPolicy: false,
+        });
+
+        return;
+      }
+
+      // Apply full helmet for all other routes
+      reply.helmet();
     });
   } catch (error) {
     log.error(

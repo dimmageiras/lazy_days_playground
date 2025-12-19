@@ -28,6 +28,9 @@ const createRequestHandler: CreateRequestHandlerFactory = ({
         config: {
           rateLimit: false, // Exclude React Router routes from rate limiting
         },
+        helmet: {
+          contentSecurityPolicy: false, // Exclude React Router routes from CSP
+        },
       },
       async (req, res) => {
         const request = createRemixRequest(req, res);
