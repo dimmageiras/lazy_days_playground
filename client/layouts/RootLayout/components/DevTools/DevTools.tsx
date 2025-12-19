@@ -96,6 +96,7 @@ const DevTools = (): JSX.Element => {
       ref={devToolsRef}
     >
       <button
+        aria-label="Toggle DevTools"
         className={styles["dev-tools-toggle"]}
         ref={devToolsToggleRef}
         onClick={() => {
@@ -155,7 +156,8 @@ const DevTools = (): JSX.Element => {
             />
           ) : null}
           {HAS_RQDT ? (
-            <div
+            <button
+              aria-label="Open TanStack Devtools"
               className={styles["option-container"]}
               id="tqdt-button-container"
               onClick={(event) => {
