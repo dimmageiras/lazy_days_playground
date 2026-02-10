@@ -17,7 +17,7 @@ const { getObjectKeys } = ObjectUtilsHelper;
 const { getEnvVariables, getMode } = RootEnvHelper;
 
 // Test data constants
-const TEST_CASES = {
+const TEST_DATA = {
   DEVELOPMENT: {
     isDevelopment: true,
     isTypeGeneratorMode: false,
@@ -36,8 +36,8 @@ const TEST_CASES = {
 } as const;
 
 // Test helper function to test getMode
-const testGetMode = (key: KeyAsString<typeof TEST_CASES>, it: TestAPI) => {
-  const testCase = Reflect.get(TEST_CASES, key);
+const testGetMode = (key: KeyAsString<typeof TEST_DATA>, it: TestAPI) => {
+  const testCase = Reflect.get(TEST_DATA, key);
   const { isDevelopment, isTypeGeneratorMode, expected } = testCase;
 
   it(`should return ${key.toLowerCase()} mode when isDevelopment is ${isDevelopment} and isTypeGeneratorMode is ${isTypeGeneratorMode}`, ({
@@ -85,6 +85,6 @@ describe("RootEnvHelper", () => {
   });
 
   describe("getMode", (it) => {
-    getObjectKeys(TEST_CASES).forEach((key) => testGetMode(key, it));
+    getObjectKeys(TEST_DATA).forEach((key) => testGetMode(key, it));
   });
 });

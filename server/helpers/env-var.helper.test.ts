@@ -56,7 +56,11 @@ const testInvalidEnvVar = (key: string, it: TestAPI) => {
       [key]: Reflect.get(ENV_INVALID, key),
     };
 
-    expect(() => validateEnv(testEnv)).toThrow();
+    expect(() => validateEnv(testEnv)).toThrow(
+      expect.objectContaining({
+        message: expect.stringContaining("❌ Environment variables"),
+      }),
+    );
   });
 };
 
