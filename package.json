@@ -116,6 +116,9 @@
       "@parcel/watcher",
       "esbuild",
       "rollup"
-    ]
+    ],
+    "overrides": {
+      "zustand-x>use-sync-external-store": "1.6.0"
+    }
   }
 }
