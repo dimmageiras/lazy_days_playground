@@ -23,7 +23,7 @@ const TEST_ENDPOINT = {
 // Function to make a single request
 async function makeRequest(
   endpoint: typeof TEST_ENDPOINT,
-  attemptNumber: number
+  attemptNumber: number,
 ) {
   const url = `${BASE_URL}${endpoint.path}`;
   const config = {
@@ -96,16 +96,16 @@ function checkRateLimitHeaders(headers: Record<string, unknown>): {
 
 // Helper function to log headers status for successful requests
 function logHeadersStatus(
-  headersCheck: ReturnType<typeof checkRateLimitHeaders>
+  headersCheck: ReturnType<typeof checkRateLimitHeaders>,
 ) {
   if (headersCheck.allPresent) {
     console.info(`     ✅ All rate limit headers present`);
   } else {
     console.info(
-      `     ⚠️  Missing headers: ${headersCheck.missingHeaders.join(", ")}`
+      `     ⚠️  Missing headers: ${headersCheck.missingHeaders.join(", ")}`,
     );
     console.info(
-      `     ✅ Present headers: ${headersCheck.presentHeaders.join(", ")}`
+      `     ✅ Present headers: ${headersCheck.presentHeaders.join(", ")}`,
     );
   }
 }
@@ -113,7 +113,7 @@ function logHeadersStatus(
 // Helper function to log headers for rate limited requests
 function logRateLimitedHeaders(
   headersCheck: ReturnType<typeof checkRateLimitHeaders>,
-  headers: Record<string, unknown>
+  headers: Record<string, unknown>,
 ) {
   if (headersCheck.allPresent) {
     console.info(`     ✅ All rate limit headers present`);
@@ -123,10 +123,10 @@ function logRateLimitedHeaders(
     });
   } else {
     console.info(
-      `     ❌ Missing headers: ${headersCheck.missingHeaders.join(", ")}`
+      `     ❌ Missing headers: ${headersCheck.missingHeaders.join(", ")}`,
     );
     console.info(
-      `     ✅ Present headers: ${headersCheck.presentHeaders.join(", ")}`
+      `     ✅ Present headers: ${headersCheck.presentHeaders.join(", ")}`,
     );
   }
 }
@@ -135,7 +135,7 @@ function logRateLimitedHeaders(
 function logRequestResult(
   attempt: number,
   result: Awaited<ReturnType<typeof makeRequest>>,
-  headersCheck: ReturnType<typeof checkRateLimitHeaders>
+  headersCheck: ReturnType<typeof checkRateLimitHeaders>,
 ) {
   if (result.success) {
     console.info(`  ✅ Request ${attempt} - Success (${result.status})`);
@@ -156,7 +156,7 @@ function logResultsSummary(
     headersCheck: ReturnType<typeof checkRateLimitHeaders>;
   }>,
   missingText: string,
-  showPresentForMissing: boolean
+  showPresentForMissing: boolean,
 ) {
   console.info(`\n📋 ${title} (${results.length}):`);
   results.forEach((result) => {
@@ -194,44 +194,44 @@ function performFinalAnalysis(testResults: {
   console.info(`🚫 Rate limited requests: ${testResults.rateLimitedRequests}`);
 
   const rateLimitedResults = testResults.headersCheckResults.filter(
-    (r) => r.status === 429
+    (r) => r.status === 429,
   );
   const successfulResults = testResults.headersCheckResults.filter(
-    (r) => r.responseType === "success"
+    (r) => r.responseType === "success",
   );
 
   logResultsSummary(
     "Rate Limited Responses",
     rateLimitedResults,
     "❌ MISSING SOME",
-    false
+    false,
   );
   logResultsSummary(
     "Successful Responses",
     successfulResults,
     "⚠️  SOME MISSING",
-    true
+    true,
   );
 
   const allRateLimitedHaveHeaders = rateLimitedResults.every(
-    (r) => r.headersCheck.allPresent
+    (r) => r.headersCheck.allPresent,
   );
 
   console.info(`\n🏆 ASSESSMENT:`);
   console.info(
     `   Rate Limited Responses: ${
       allRateLimitedHaveHeaders ? "✅" : "❌"
-    } All have complete headers`
+    } All have complete headers`,
   );
   console.info(
     `   Successful Responses: ${
       successfulResults.every((r) => r.headersCheck.allPresent) ? "✅" : "⚠️"
-    } All have complete headers`
+    } All have complete headers`,
   );
 
   if (allRateLimitedHaveHeaders) {
     console.info(
-      `\n🎉 EXCELLENT! Rate limiting headers are working correctly!`
+      `\n🎉 EXCELLENT! Rate limiting headers are working correctly!`,
     );
   } else {
     console.info(`\n⚠️  ISSUE: Some rate limit headers are missing!`);
@@ -245,7 +245,7 @@ async function runHeadersTest() {
   console.info("🧪 Starting Rate Limit Headers Test");
   console.info(`🌐 Server: ${BASE_URL}`);
   console.info(
-    `🎯 Testing endpoint: ${TEST_ENDPOINT.method} ${TEST_ENDPOINT.path}`
+    `🎯 Testing endpoint: ${TEST_ENDPOINT.method} ${TEST_ENDPOINT.path}`,
   );
   console.info(`📋 Expected headers: ${EXPECTED_HEADERS.join(", ")}\n`);
 
@@ -290,7 +290,7 @@ async function runHeadersTest() {
 }
 
 // Run the test
-runHeadersTest().catch((error) => {
+await runHeadersTest().catch((error) => {
   console.error("💥 Headers test failed:", error);
   process.exit(1);
 });

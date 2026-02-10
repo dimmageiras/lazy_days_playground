@@ -60,7 +60,7 @@ const endpoints = [
 // Function to make a request to an endpoint
 async function makeRequest(
   endpoint: { method: string; path: string; body?: Record<string, unknown> },
-  attemptNumber: number
+  attemptNumber: number,
 ) {
   const url = `${BASE_URL}${endpoint.path}`;
   const config = {
@@ -125,7 +125,7 @@ function processRequestResult(
     successful: number;
     rateLimited: number;
     otherErrors: number;
-  }
+  },
 ) {
   if (result?.success) {
     results.successful++;
@@ -140,7 +140,7 @@ function processRequestResult(
 function logRequestProgress(
   result: Awaited<ReturnType<typeof makeRequest>>,
   requestNumber: number,
-  totalRequests: number
+  totalRequests: number,
 ) {
   if (!result) {
     return;
@@ -149,19 +149,19 @@ function logRequestProgress(
   if (result.success) {
     if (requestNumber % 50 === 0) {
       console.info(
-        `  ✅ Request ${requestNumber}/${totalRequests} - Success (${result.status})`
+        `  ✅ Request ${requestNumber}/${totalRequests} - Success (${result.status})`,
       );
     }
   } else if (result.status === 429) {
     if (requestNumber === 1) {
       console.info(
-        `  🚫 Request ${requestNumber}/${totalRequests} - RATE LIMITED! (${result.status})`
+        `  🚫 Request ${requestNumber}/${totalRequests} - RATE LIMITED! (${result.status})`,
       );
       console.info(`     Rate limit headers:`, result.headers);
     }
   } else if (requestNumber % 50 === 0) {
     console.info(
-      `  ❌ Request ${requestNumber}/${totalRequests} - Error (${result.status})`
+      `  ❌ Request ${requestNumber}/${totalRequests} - Error (${result.status})`,
     );
   }
 }
@@ -174,7 +174,7 @@ function logEndpointSummary(
     successful: number;
     rateLimited: number;
     otherErrors: number;
-  }
+  },
 ) {
   console.info(`\n📈 Results for ${endpoint.method} ${endpoint.path}:`);
   console.info(`   ✅ Successful: ${results.successful}`);
@@ -185,11 +185,11 @@ function logEndpointSummary(
     console.info(
       `   🎯 Rate limiter activated after ~${
         results.total - results.rateLimited + 1
-      } requests`
+      } requests`,
     );
   } else {
     console.info(
-      `   ⚠️  No rate limiting detected with ${results.total} requests`
+      `   ⚠️  No rate limiting detected with ${results.total} requests`,
     );
   }
 }
@@ -197,7 +197,7 @@ function logEndpointSummary(
 // Function to stress test a single endpoint
 async function stressTestEndpoint(
   endpoint: { method: string; path: string; body?: Record<string, unknown> },
-  targetRequests = 200
+  targetRequests = 200,
 ) {
   console.info(`\n🧪 Testing endpoint: ${endpoint.method} ${endpoint.path}`);
   console.info(`📊 Making ${targetRequests} requests...`);
@@ -239,7 +239,7 @@ async function main() {
   console.info("🚀 Starting comprehensive rate limit stress test");
   console.info(`🌐 Server: ${BASE_URL}`);
   console.info(
-    `📋 Testing ${endpoints.length} endpoints with 200 requests each`
+    `📋 Testing ${endpoints.length} endpoints with 200 requests each`,
   );
   console.info(`⏱️  This may take several minutes...\n`);
 
@@ -273,7 +273,7 @@ async function main() {
     } catch (error) {
       console.error(
         `💥 Failed to test endpoint ${endpoint.method} ${endpoint.path}:`,
-        error instanceof Error ? error.message : "Unknown error"
+        error instanceof Error ? error.message : "Unknown error",
       );
     }
   }
@@ -284,13 +284,13 @@ async function main() {
   console.info("=".repeat(60));
   console.info(`📊 Endpoints tested: ${overallResults.endpointsTested}`);
   console.info(
-    `🚫 Endpoints that triggered rate limiting: ${overallResults.rateLimitedEndpoints}`
+    `🚫 Endpoints that triggered rate limiting: ${overallResults.rateLimitedEndpoints}`,
   );
   console.info(
-    `📈 Total requests made: ${overallResults.totalRequests.toLocaleString()}`
+    `📈 Total requests made: ${overallResults.totalRequests.toLocaleString()}`,
   );
   console.info(
-    `⛔ Total requests rate limited: ${overallResults.totalRateLimited.toLocaleString()}`
+    `⛔ Total requests rate limited: ${overallResults.totalRateLimited.toLocaleString()}`,
   );
 
   const rateLimitedPercentage = (
@@ -310,16 +310,16 @@ async function main() {
       const status = result.rateLimited > 0 ? "🚫 LIMITED" : "✅ OK";
 
       console.info(
-        `   ${status} ${result.endpoint}: ${result.rateLimited}/${result.total} (${rateLimitedPercent}%)`
+        `   ${status} ${result.endpoint}: ${result.rateLimited}/${result.total} (${rateLimitedPercent}%)`,
       );
-    }
+    },
   );
 
   console.info("\n✨ Stress test completed!");
 }
 
 // Run the stress test
-main().catch((error) => {
+await main().catch((error) => {
   console.error("💥 Stress test failed:", error);
   process.exit(1);
 });
