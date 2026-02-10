@@ -15,7 +15,7 @@ const validateEnv = (env: NodeJS.ProcessEnv): void => {
   throw new Error(
     `❌ Environment variables:\n${formattedErrors
       .map((err) => `- ${err.path}: ${err.message}`)
-      .join("\n")}`
+      .join("\n")}`,
   );
 };
 

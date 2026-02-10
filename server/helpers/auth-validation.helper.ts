@@ -31,7 +31,7 @@ interface TokenValidationResult {
  * ```
  */
 const validateAuthToken = async (
-  token: string
+  token: string,
 ): Promise<TokenValidationResult> => {
   const { getTokenExpiration } = Auth;
   const { getCurrentUTCDate } = DateHelper;
@@ -68,7 +68,7 @@ const validateAuthToken = async (
     }
 
     const { sub: identityId }: JWTPayload = JSON.parse(
-      Buffer.from(Reflect.get(parts, 1), "base64").toString("utf8")
+      Buffer.from(Reflect.get(parts, 1), "base64").toString("utf8"),
     );
 
     return {

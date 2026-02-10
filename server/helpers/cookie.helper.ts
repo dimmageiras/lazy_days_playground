@@ -19,7 +19,7 @@ import { EncryptionHelper } from "./encryption.helper.ts";
  */
 const getEncryptedCookie = async (
   request: FastifyRequest,
-  cookieName: string
+  cookieName: string,
 ): Promise<string | null> => {
   const { decryptData } = EncryptionHelper;
   const cookieValue = Reflect.get(request.cookies, cookieName);
@@ -60,7 +60,7 @@ const getEncryptedCookie = async (
  */
 const hasEncryptedCookie = async (
   request: FastifyRequest,
-  cookieName: string
+  cookieName: string,
 ): Promise<boolean> => {
   const value = await getEncryptedCookie(request, cookieName);
 

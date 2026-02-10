@@ -2,7 +2,7 @@ import type { ValueOf } from "type-fest";
 
 import { RootEnvHelper } from "../helpers/root-env.helper.ts";
 
-const { getMode } = RootEnvHelper;
+const { getEnvVariables, getMode } = RootEnvHelper;
 
 const {
   AUTH_TAG_LENGTH,
@@ -21,7 +21,7 @@ const {
   VITE_APP_RQDT,
   VITE_APP_RRDT,
   VITE_APP_TYPE_GENERATOR_MODE,
-} = typeof process === "object" ? process.env : import.meta.env;
+} = getEnvVariables();
 
 const HAS_DEV_TOOLS = VITE_APP_ALL_DEV_TOOLS === "true";
 const HAS_RQDT = VITE_APP_RQDT === "true";
@@ -36,7 +36,7 @@ const MODES = Object.freeze({
 
 const MODE: ValueOf<typeof MODES> = getMode(
   IS_DEVELOPMENT,
-  !!VITE_APP_TYPE_GENERATOR_MODE
+  !!VITE_APP_TYPE_GENERATOR_MODE,
 );
 
 export {

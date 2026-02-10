@@ -1,5 +1,6 @@
 import type { KeyAsString } from "type-fest";
-import { describe, it } from "vitest";
+import type { TestAPI } from "vitest";
+import { describe, vi } from "vitest";
 
 import { MODES } from "@shared/constants/root-env.constant";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
@@ -13,7 +14,7 @@ const {
 } = MODES;
 
 const { getObjectKeys } = ObjectUtilsHelper;
-const { getMode } = RootEnvHelper;
+const { getEnvVariables, getMode } = RootEnvHelper;
 
 // Test data constants
 const TEST_CASES = {
@@ -35,7 +36,7 @@ const TEST_CASES = {
 } as const;
 
 // Test helper function to test getMode
-const testGetMode = (key: KeyAsString<typeof TEST_CASES>) => {
+const testGetMode = (key: KeyAsString<typeof TEST_CASES>, it: TestAPI) => {
   const testCase = Reflect.get(TEST_CASES, key);
   const { isDevelopment, isTypeGeneratorMode, expected } = testCase;
 
@@ -47,7 +48,43 @@ const testGetMode = (key: KeyAsString<typeof TEST_CASES>) => {
 };
 
 describe("RootEnvHelper", () => {
-  describe("getMode", () => {
-    getObjectKeys(TEST_CASES).forEach(testGetMode);
+  describe("getEnvVariables", (it) => {
+    it("should return import.meta.env when process is not available", ({
+      expect,
+    }) => {
+      const originalProcess = globalThis.process;
+
+      vi.stubGlobal("process", undefined);
+
+      try {
+        const result = getEnvVariables();
+
+        expect(result).toBe(import.meta.env);
+      } finally {
+        vi.stubGlobal("process", originalProcess);
+      }
+    });
+
+    it("should throw when process and import.meta.env are not available", ({
+      expect,
+    }) => {
+      const originalProcess = globalThis.process;
+
+      vi.stubGlobal("process", undefined);
+      vi.spyOn(ObjectUtilsHelper, "isObject").mockReturnValue(false);
+
+      try {
+        expect(() => getEnvVariables()).toThrow(
+          "Environment variables are not available",
+        );
+      } finally {
+        vi.stubGlobal("process", originalProcess);
+        vi.restoreAllMocks();
+      }
+    });
+  });
+
+  describe("getMode", (it) => {
+    getObjectKeys(TEST_CASES).forEach((key) => testGetMode(key, it));
   });
 });

@@ -21,14 +21,14 @@ const createQueryClientForServer = (): QueryClient => {
 };
 
 const fetchServerData = async <TQueryOptions extends AnyUseQueryOptions>(
-  queryOptionsList: TQueryOptions[]
+  queryOptionsList: TQueryOptions[],
 ): Promise<QueryClient> => {
   const queryClient = createQueryClientForServer();
 
   await Promise.all(
     queryOptionsList.map((queryOptions) =>
-      queryClient.ensureQueryData(queryOptions)
-    )
+      queryClient.ensureQueryData(queryOptions),
+    ),
   );
 
   return queryClient;

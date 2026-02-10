@@ -16,7 +16,7 @@ import type { KeyAsString, ValueOf } from "type-fest";
  * ```
  */
 const getObjectEntries = <TObject extends Record<string, unknown>>(
-  object: TObject
+  object: TObject,
 ): {
   [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
 }[KeyAsString<TObject>][] =>
@@ -40,7 +40,7 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
  * ```
  */
 const getObjectKeys = <TObject extends Record<string, unknown>>(
-  object: TObject
+  object: TObject,
 ): KeyAsString<TObject>[] => Object.keys(object) as KeyAsString<TObject>[];
 
 /**
@@ -52,7 +52,7 @@ const getObjectKeys = <TObject extends Record<string, unknown>>(
  * @returns Array of object values with proper typing
  */
 const getObjectValues = <T extends Record<string, unknown>>(
-  initialObject: T
+  initialObject: T,
 ): ValueOf<T>[] => Object.values(initialObject) as ValueOf<T>[];
 
 /**
@@ -88,5 +88,6 @@ export const ObjectUtilsHelper = {
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
+  isObject,
   isPlainObject,
 };

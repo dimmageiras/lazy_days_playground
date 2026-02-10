@@ -121,7 +121,7 @@ const MediaCard = memo(
         </div>
       </BaseCard>
     );
-  }
+  },
 );
 
 MediaCard.displayName = "MediaCard";

@@ -27,7 +27,7 @@ const useDehydratedState = (): DehydratedState => {
       queries: [...combined.queries, ...current.queries],
       mutations: [...combined.mutations, ...current.mutations],
     }),
-    { queries: [], mutations: [] }
+    { queries: [], mutations: [] },
   );
 
   return combinedDehydratedState;

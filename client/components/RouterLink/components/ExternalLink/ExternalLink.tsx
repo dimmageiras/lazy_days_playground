@@ -6,7 +6,8 @@ import type {
 } from "@client/components/RouterLink/types/router-link.type";
 
 interface ExternalLinkProps
-  extends Omit<ComponentProps<"a">, "href" | "onMouseDown" | "rel" | "target">,
+  extends
+    Omit<ComponentProps<"a">, "href" | "onMouseDown" | "rel" | "target">,
     CommonLinkProps,
     CommonRouterLinkProps {
   /** Whether to open link in new tab */

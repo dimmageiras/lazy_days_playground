@@ -11,7 +11,7 @@ import type {
 const { VERIFY_AUTH } = AUTH_QUERY_KEYS;
 
 const getVerifyAuthQueryOptions = (
-  clientId: string
+  clientId: string,
 ): UseQueryOptions<
   VerifyAuthListData,
   VerifyAuthListError,

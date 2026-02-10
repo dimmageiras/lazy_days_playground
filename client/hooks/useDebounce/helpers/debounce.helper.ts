@@ -7,7 +7,7 @@
  */
 const safeApplyCallback = <TArgs extends unknown[]>(
   callback: ((...args: TArgs) => void | Promise<void>) | undefined,
-  args: TArgs
+  args: TArgs,
 ): void => {
   if (typeof callback === "function") {
     Reflect.apply(callback, undefined, args);

@@ -7,7 +7,8 @@ import type {
 } from "@client/components/RouterLink/types/router-link.type";
 
 interface InternalLinkProps
-  extends Omit<ComponentProps<typeof Link>, "onMouseDown" | "replace">,
+  extends
+    Omit<ComponentProps<typeof Link>, "onMouseDown" | "replace">,
     CommonRouterLinkProps,
     CommonLinkProps {
   /** Whether to replace current history entry instead of pushing */

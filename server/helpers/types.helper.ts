@@ -55,7 +55,7 @@ const generateContractsForRoute = async ({
       const pathPrefix = `/${routePath}`;
 
       return key === pathPrefix || key.startsWith(`${pathPrefix}/`);
-    })
+    }),
   );
 
   const filteredSpec = { ...specRest, paths: filteredPaths };
@@ -100,7 +100,7 @@ const generateContractsForRoute = async ({
         filePath: generatedFilePath,
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to process generated file"
+      "💥 Failed to process generated file",
     );
   }
 
@@ -118,7 +118,7 @@ const generateContractsForRoute = async ({
               : String(eslintError),
           stack: eslintError instanceof Error ? eslintError.stack : undefined,
         },
-        "⚠️  ESLint had warnings/errors for generated files (this is expected)"
+        "⚠️  ESLint had warnings/errors for generated files (this is expected)",
       );
     }
   }

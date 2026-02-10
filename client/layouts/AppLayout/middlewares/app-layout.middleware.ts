@@ -12,7 +12,7 @@ import type { VerifyAuthListData } from "@shared/types/generated/server/auth.typ
 
 const appLayoutMiddleware: Route.MiddlewareFunction = async (
   { request, context },
-  next
+  next,
 ) => {
   const { CLIENT_ID } = AUTH_COOKIE_NAMES;
   const { MINUTES_FIVE_IN_S } = TIMING;

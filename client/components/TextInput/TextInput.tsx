@@ -88,7 +88,7 @@ const TextInput = ({
 
   const noAutofillProps = useMemo(
     () => (autoComplete === "off" ? getNoAutofillProps() : null),
-    [autoComplete, getNoAutofillProps]
+    [autoComplete, getNoAutofillProps],
   );
 
   const hasErrorMessage = !!errorMessage;
@@ -114,7 +114,7 @@ const TextInput = ({
         className={classNames(
           styles["input"],
           { [String(styles["has-value"])]: !!props.value },
-          className
+          className,
         )}
         id={props.name}
         {...(hasErrorMessage && {

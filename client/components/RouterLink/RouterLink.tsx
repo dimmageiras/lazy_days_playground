@@ -86,7 +86,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
     {
       [String(styles["hover-text-decoration"])]: hasTextDecorationOnHover,
     },
-    className
+    className,
   );
 
   switch (convertedType) {

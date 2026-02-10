@@ -37,7 +37,7 @@ const createStandardCookie = (name: string): Cookie => {
  */
 const parseCookie = async <TReturnValue = string>(
   cookieInstance: Cookie,
-  cookieHeader: string | null
+  cookieHeader: string | null,
 ): Promise<TReturnValue | null> => {
   if (!cookieHeader) {
     return null;
@@ -71,7 +71,7 @@ const parseCookie = async <TReturnValue = string>(
 const serializeCookie = async <TValue = string>(
   cookieInstance: Cookie,
   value: TValue,
-  maxAge: number
+  maxAge: number,
 ): Promise<string> => {
   const { getCurrentUTCDate } = DateHelper;
 
@@ -99,7 +99,7 @@ const serializeCookie = async <TValue = string>(
  */
 const hasCookie = async (
   cookieInstance: Cookie,
-  cookieHeader: string | null
+  cookieHeader: string | null,
 ): Promise<boolean> => {
   const value = await parseCookie(cookieInstance, cookieHeader);
 
@@ -125,7 +125,7 @@ const setCookie = async <TValue = string>(
   response: Response,
   cookieInstance: Cookie,
   value: TValue,
-  maxAge: number
+  maxAge: number,
 ): Promise<void> => {
   const serialized = await serializeCookie(cookieInstance, value, maxAge);
 

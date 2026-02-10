@@ -61,7 +61,7 @@ const getMonthYearDetails = (initialDate: Dayjs): MonthYear => {
  */
 const getUpdatedMonthYear = (
   monthYear: MonthYear,
-  monthIncrement: number
+  monthIncrement: number,
 ): Dayjs => {
   return monthYear.startDate.clone().add(monthIncrement, "months");
 };

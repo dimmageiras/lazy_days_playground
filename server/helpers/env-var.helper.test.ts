@@ -1,4 +1,5 @@
-import { describe, it } from "vitest";
+import type { TestAPI } from "vitest";
+import { describe } from "vitest";
 
 import type { MODES } from "@shared/constants/root-env.constant";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
@@ -48,7 +49,7 @@ const ENV_INVALID = {
 } as const;
 
 // Test helper function to test invalid environment variables
-const testInvalidEnvVar = (key: string) => {
+const testInvalidEnvVar = (key: string, it: TestAPI) => {
   it(`should throw an error if ${key} is invalid`, ({ expect }) => {
     const testEnv = {
       ...ENV_VALID,
@@ -65,6 +66,6 @@ describe("EnvVarHelper", () => {
       expect(() => validateEnv(ENV_VALID)).not.toThrow();
     });
 
-    getObjectKeys(ENV_INVALID).forEach(testInvalidEnvVar);
+    getObjectKeys(ENV_INVALID).forEach((key) => testInvalidEnvVar(key, it));
   });
 });

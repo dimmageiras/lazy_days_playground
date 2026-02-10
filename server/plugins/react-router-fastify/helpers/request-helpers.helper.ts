@@ -5,7 +5,7 @@ import {
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 const createRemixHeaders = (
-  requestHeaders: FastifyRequest["headers"]
+  requestHeaders: FastifyRequest["headers"],
 ): Headers => {
   const headers = new Headers();
 
@@ -26,7 +26,7 @@ const createRemixHeaders = (
 
 const createRemixRequest = (
   req: FastifyRequest,
-  res: FastifyReply
+  res: FastifyReply,
 ): Request => {
   // req.hostname doesn't include port information so grab that from
   // `X-Forwarded-Host` or `Host`
@@ -74,7 +74,7 @@ const createRemixRequest = (
 
 const sendRemixResponse = async (
   res: FastifyReply,
-  nodeResponse: Response
+  nodeResponse: Response,
 ): Promise<void> => {
   res.raw.statusMessage = nodeResponse.statusText;
   res.raw.statusCode = nodeResponse.status;

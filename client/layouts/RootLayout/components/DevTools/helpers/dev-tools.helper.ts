@@ -17,7 +17,7 @@ const createObserverCleanup = (observer: MutationObserver | null): void => {
  */
 const setupDevToolsButton = (
   buttonSelector: string,
-  containerSelector: string
+  containerSelector: string,
 ): (() => void) => {
   let observer: MutationObserver | null = null;
 

@@ -35,7 +35,7 @@ const { formatError, loadLocale } = ZodUtilsHelper;
 // Factory functions for creating test data
 const createIssue = (
   code: IssueCodes | string,
-  overrides: Partial<$ZodIssue> = {}
+  overrides: Partial<$ZodIssue> = {},
 ): $ZodIssue => ({
   code,
   message: overrides.message ?? `Test message for ${code}`,
@@ -46,7 +46,7 @@ const createIssue = (
 const createExpectedError = (
   message: string,
   path: string | string[],
-  validationCode: IssueCodes | string | undefined
+  validationCode: IssueCodes | string | undefined,
 ): ZodFormattedError => ({
   message,
   path: Array.isArray(path) ? path.join(".") : path,
@@ -56,7 +56,7 @@ const createExpectedError = (
 const createScenario = (
   description: string,
   issues: $ZodIssue[],
-  expected: ZodFormattedError[]
+  expected: ZodFormattedError[],
 ) => ({
   description,
   issues,
@@ -123,9 +123,9 @@ const FORMAT_ERROR_SCENARIOS = {
       createExpectedError(
         "Number must be greater than or equal to 1",
         "age",
-        TOO_SMALL
+        TOO_SMALL,
       ),
-    ]
+    ],
   ),
 
   MULTIPLE_ERRORS: createScenario(
@@ -147,14 +147,14 @@ const FORMAT_ERROR_SCENARIOS = {
       createExpectedError(
         "Number must be greater than or equal to 1",
         "age",
-        TOO_SMALL
+        TOO_SMALL,
       ),
       createExpectedError(
         "Expected string, received number",
         "name",
-        INVALID_TYPE
+        INVALID_TYPE,
       ),
-    ]
+    ],
   ),
 
   NESTED_PATH: createScenario(
@@ -170,9 +170,9 @@ const FORMAT_ERROR_SCENARIOS = {
       createExpectedError(
         "Expected string, received number",
         "user.profile.name",
-        INVALID_TYPE
+        INVALID_TYPE,
       ),
-    ]
+    ],
   ),
 
   CUSTOM_WITH_PARAMS: createScenario(
@@ -188,9 +188,9 @@ const FORMAT_ERROR_SCENARIOS = {
       createExpectedError(
         "Custom validation failed",
         "email",
-        "invalid_email_format"
+        "invalid_email_format",
       ),
-    ]
+    ],
   ),
 
   CUSTOM_WITHOUT_PARAMS: createScenario(
@@ -202,13 +202,13 @@ const FORMAT_ERROR_SCENARIOS = {
         params: undefined,
       }),
     ],
-    [createExpectedError("Custom validation failed", "field", undefined)]
+    [createExpectedError("Custom validation failed", "field", undefined)],
   ),
 
   EMPTY_ISSUES: createScenario(
     "should return empty array for ZodError with no issues",
     [],
-    []
+    [],
   ),
 
   EMPTY_PATH: createScenario(
@@ -220,7 +220,7 @@ const FORMAT_ERROR_SCENARIOS = {
         path: [],
       }),
     ],
-    [createExpectedError("Expected string, received number", "", INVALID_TYPE)]
+    [createExpectedError("Expected string, received number", "", INVALID_TYPE)],
   ),
 
   PRESERVE_ORDER: createScenario(
@@ -246,7 +246,7 @@ const FORMAT_ERROR_SCENARIOS = {
       createExpectedError("First error", "first", INVALID_TYPE),
       createExpectedError("Second error", "second", TOO_SMALL),
       createExpectedError("Third error", "third", undefined),
-    ]
+    ],
   ),
 } as const;
 
@@ -272,7 +272,7 @@ const createMockZodError = (issues: $ZodIssue[] = []): ZodError => ({
 // Test helper function to create test case issues
 const createTestCase = (
   code: IssueCodes,
-  extraProps: Record<string, unknown> = {}
+  extraProps: Record<string, unknown> = {},
 ) =>
   createIssue(code, {
     message: `Test message for ${code}`,
@@ -282,7 +282,7 @@ const createTestCase = (
 
 // Test helper function to test format error scenarios
 const testFormatErrorScenario = (
-  key: KeyAsString<typeof FORMAT_ERROR_SCENARIOS>
+  key: KeyAsString<typeof FORMAT_ERROR_SCENARIOS>,
 ) => {
   const scenario = Reflect.get(FORMAT_ERROR_SCENARIOS, key);
   const { description, issues, expected } = scenario;
@@ -297,7 +297,7 @@ const testFormatErrorScenario = (
 
 // Test helper function to test issue code mappings
 const testIssueCodeMapping = (
-  key: KeyAsString<typeof ISSUE_CODE_TEST_CASES>
+  key: KeyAsString<typeof ISSUE_CODE_TEST_CASES>,
 ) => {
   const testCase = Reflect.get(ISSUE_CODE_TEST_CASES, key);
   const { code, expected, extraProps } = testCase;
@@ -314,7 +314,7 @@ const testIssueCodeMapping = (
 // Test helper function to test non-ISSUE_CODES handling
 // These codes are passed through as-is without special mapping
 const testNonIssueCodeHandling = (
-  key: KeyAsString<typeof NON_ISSUE_CODE_TEST_CASES>
+  key: KeyAsString<typeof NON_ISSUE_CODE_TEST_CASES>,
 ) => {
   const code = Reflect.get(NON_ISSUE_CODE_TEST_CASES, key);
 

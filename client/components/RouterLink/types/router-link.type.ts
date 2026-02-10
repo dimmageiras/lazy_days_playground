@@ -19,24 +19,24 @@ interface CommonLinkProps {
   handleMouseDown: typeof DomEventsHelper.handleMouseDown;
 }
 
-interface ExternalRouterLinkProps
-  extends Omit<
-    ComponentProps<typeof ExternalLink>,
-    KeyAsString<CommonLinkProps>
-  > {
+interface ExternalRouterLinkProps extends Omit<
+  ComponentProps<typeof ExternalLink>,
+  KeyAsString<CommonLinkProps>
+> {
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.external>;
 }
 
-interface InternalRouterLinkProps
-  extends Omit<
-    ComponentProps<typeof InternalLink>,
-    KeyAsString<CommonLinkProps>
-  > {
+interface InternalRouterLinkProps extends Omit<
+  ComponentProps<typeof InternalLink>,
+  KeyAsString<CommonLinkProps>
+> {
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.internal>;
 }
 
-interface NavRouterLinkProps
-  extends Omit<ComponentProps<typeof NavLink>, KeyAsString<CommonLinkProps>> {
+interface NavRouterLinkProps extends Omit<
+  ComponentProps<typeof NavLink>,
+  KeyAsString<CommonLinkProps>
+> {
   as?: ConditionalKeys<typeof LINK_AS, typeof LINK_AS.navLink>;
 }
 

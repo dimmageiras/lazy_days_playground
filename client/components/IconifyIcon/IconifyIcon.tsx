@@ -10,8 +10,10 @@ import type { IconifyIconName } from "./types/iconify-icon.type";
 /**
  * Props interface for client-side rendering mode (default)
  */
-interface IconifyIconProps
-  extends Omit<ComponentPropsWithRef<"iconify-icon">, "icon"> {
+interface IconifyIconProps extends Omit<
+  ComponentPropsWithRef<"iconify-icon">,
+  "icon"
+> {
   /** Iconify icon name or icon object (e.g., "material-symbols:home") */
   icon: string | IconifyIconType | undefined;
   /** Enables client-side rendering (default behavior) */
@@ -72,7 +74,7 @@ interface IconifyIconSSRProps extends Omit<IconProps, "icon"> {
  * @returns JSX.Element | null - The rendered icon component or null if no icon is provided
  */
 const IconifyIcon = (
-  props: IconifyIconProps | IconifyIconSSRProps
+  props: IconifyIconProps | IconifyIconSSRProps,
 ): JSX.Element | null => {
   if (props.icon == undefined) {
     console.warn("IconifyIcon: No icon provided");

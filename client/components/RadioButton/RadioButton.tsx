@@ -103,7 +103,7 @@ const RadioButton = memo(
         </span>
       </label>
     );
-  }
+  },
 );
 
 RadioButton.displayName = "RadioButton";

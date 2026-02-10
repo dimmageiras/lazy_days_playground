@@ -24,7 +24,7 @@ const DEFAULT_EVENTS = ["mousedown", "touchstart"];
 const useClickOutside = <TElement extends HTMLElement>(
   callback: (event: Event) => void,
   events?: string[] | null,
-  nodes?: (HTMLElement | null)[]
+  nodes?: (HTMLElement | null)[],
 ): RefObject<TElement | null> => {
   const ref = useRef<TElement>(null);
   const eventsList = events || DEFAULT_EVENTS;
@@ -42,7 +42,7 @@ const useClickOutside = <TElement extends HTMLElement>(
       if (Array.isArray(nodes)) {
         const shouldIgnore = shouldIgnoreTarget(target);
         const shouldTrigger = nodes.every(
-          (node) => !!node && !event.composedPath().includes(node)
+          (node) => !!node && !event.composedPath().includes(node),
         );
 
         if (shouldTrigger && !shouldIgnore) {

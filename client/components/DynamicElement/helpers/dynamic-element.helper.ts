@@ -16,7 +16,7 @@ import memoize from "lodash/memoize";
  */
 const getCustomTags = memoize((): CustomHtmlTags[] => {
   return (["iconify-icon", ...htmlTags] as const).filter(
-    (tag) => tag !== "math" && tag !== "selectedcontent"
+    (tag) => tag !== "math" && tag !== "selectedcontent",
   );
 });
 

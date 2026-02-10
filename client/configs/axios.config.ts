@@ -36,7 +36,7 @@ axios.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 axios.interceptors.response.use(
@@ -46,10 +46,10 @@ axios.interceptors.response.use(
   (error: AxiosError) => {
     if (error.code === "ECONNABORTED" && error.message.includes("timeout")) {
       console.error(
-        `Request timeout: The request took longer than ${SECONDS_TEN_IN_S} seconds`
+        `Request timeout: The request took longer than ${SECONDS_TEN_IN_S} seconds`,
       );
     }
 
     return Promise.reject(error);
-  }
+  },
 );

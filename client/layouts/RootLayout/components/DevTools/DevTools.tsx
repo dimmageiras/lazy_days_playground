@@ -29,7 +29,7 @@ import { devToolsStore } from "./stores/dev-tools.store";
 const DevTools = (): JSX.Element => {
   const [isExpanded, setIsExpanded] = useStoreState(
     devToolsStore,
-    "isDevToolsMenuOpen"
+    "isDevToolsMenuOpen",
   );
   const { isRRDTOpen, isRQDTOpen } = useTrackedStore(devToolsStore);
   const devToolsBubbleRef = useRef<HTMLDivElement>(null);
@@ -41,7 +41,7 @@ const DevTools = (): JSX.Element => {
       }
     },
     undefined,
-    []
+    [],
   );
 
   const iconRotation = isExpanded ? "0deg" : "180deg";

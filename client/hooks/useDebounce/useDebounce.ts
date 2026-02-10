@@ -7,7 +7,7 @@ import { DebounceHelper } from "./helpers/debounce.helper";
 
 const useDebounce = <TArgs extends unknown[]>(
   callback: (...args: TArgs) => void | Promise<void>,
-  delay: ValueOf<typeof TIMING>
+  delay: ValueOf<typeof TIMING>,
 ): ((...args: TArgs) => void) => {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
@@ -22,7 +22,7 @@ const useDebounce = <TArgs extends unknown[]>(
         clearTimeout(timeoutRef.current);
       }
     },
-    []
+    [],
   );
 
   return useCallback(
@@ -38,7 +38,7 @@ const useDebounce = <TArgs extends unknown[]>(
         safeApplyCallback(currentCallback, args);
       }, delay);
     },
-    [delay]
+    [delay],
   );
 };
 

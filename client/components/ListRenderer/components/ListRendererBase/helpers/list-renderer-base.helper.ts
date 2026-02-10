@@ -25,7 +25,7 @@ const generateStableKey = <TItem>(
   item: TItem,
   index: number,
   keyMap: WeakMap<WeakKey, string>,
-  getKey?: ((item: TItem, index: number) => number | string) | undefined
+  getKey?: ((item: TItem, index: number) => number | string) | undefined,
 ): string => {
   if (getKey) {
     return String(getKey(item, index));
@@ -35,7 +35,7 @@ const generateStableKey = <TItem>(
     console.warn(
       "Performance warning: No getKey function provided. Generating UUID or stringified item as key for item:",
       item,
-      "Consider providing a getKey function for better performance."
+      "Consider providing a getKey function for better performance.",
     );
   }
 

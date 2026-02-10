@@ -64,16 +64,16 @@ const getNoAutofillProps = (): {
  * @returns The matching schema or undefined if no match is found
  */
 const getSchemaFromDiscriminatedUnion = <
-  TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>
+  TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>,
 >(
   schema: TSchema,
-  discriminator: ZodInfer<TSchema>["mode"]
+  discriminator: ZodInfer<TSchema>["mode"],
 ): ZodObject | undefined => {
   return schema.def.options.find((option) => {
     const discriminatorKey: keyof ZodInfer<TSchema> = schema.def.discriminator;
     const discriminatorSchema: ZodObject = Reflect.get(
       option.shape,
-      discriminatorKey
+      discriminatorKey,
     );
 
     return (
@@ -129,7 +129,7 @@ const isFieldSchemaRequired = (fieldSchema: unknown): boolean => {
  */
 const checkFieldIsRequired = <TSchema extends ZodObject>(
   schema: TSchema,
-  field: KeyAsString<ZodInfer<TSchema>>
+  field: KeyAsString<ZodInfer<TSchema>>,
 ): boolean => {
   const fieldSchema = Reflect.get(schema.shape, field);
 
@@ -152,15 +152,15 @@ const checkFieldIsRequired = <TSchema extends ZodObject>(
  * @returns True if the field is required, false otherwise
  */
 const checkFieldIsRequiredInDiscriminatedUnion = <
-  TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>
+  TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>,
 >(
   schema: TSchema,
   field: KeyAsString<ZodInfer<TSchema>>,
-  discriminator: ZodInfer<TSchema>["mode"]
+  discriminator: ZodInfer<TSchema>["mode"],
 ): boolean => {
   const schemaFromDiscriminatedUnion = getSchemaFromDiscriminatedUnion(
     schema,
-    discriminator
+    discriminator,
   );
 
   if (!schemaFromDiscriminatedUnion) {
@@ -195,7 +195,7 @@ const checkFieldIsRequiredInDiscriminatedUnion = <
  * @returns True if the form has any validation errors, false otherwise
  */
 const hasFormErrors = <TFormErrors extends FieldErrors>(
-  errors: TFormErrors
+  errors: TFormErrors,
 ): boolean => {
   const { getObjectKeys } = ObjectUtilsHelper;
 

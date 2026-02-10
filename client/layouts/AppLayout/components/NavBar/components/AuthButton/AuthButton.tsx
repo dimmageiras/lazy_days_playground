@@ -17,7 +17,7 @@ const AuthButton = (): JSX.Element => {
 
   const handleLogout = async (
     _event: MouseEvent<HTMLButtonElement>,
-    navigate: NavigateFunction
+    navigate: NavigateFunction,
   ): Promise<void> => {
     try {
       const { CLIENT_ID } = AUTH_COOKIE_NAMES;

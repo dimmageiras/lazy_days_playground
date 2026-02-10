@@ -17,7 +17,7 @@ type HandleAuthErrorArgs<TErrorStatus extends ValueOf<HttpErrorStatuses>> =
   };
 
 interface HandleAuthErrorReturn<
-  TErrorStatus extends ValueOf<HttpErrorStatuses>
+  TErrorStatus extends ValueOf<HttpErrorStatuses>,
 > {
   details: string;
   errorMessageResponse: string;
@@ -26,7 +26,7 @@ interface HandleAuthErrorReturn<
 
 const validateErrorParam = <TParam>(
   param: TParam | undefined,
-  paramName: string
+  paramName: string,
 ): TParam => {
   if (!param) {
     throw new Error(`${paramName} is required`);
@@ -36,7 +36,7 @@ const validateErrorParam = <TParam>(
 };
 
 const handleAuthError = <
-  TErrorStatus extends HttpErrorStatuses[keyof HttpErrorStatuses]
+  TErrorStatus extends HttpErrorStatuses[keyof HttpErrorStatuses],
 >({
   backendError,
   error,
@@ -71,25 +71,25 @@ const handleAuthError = <
     case error instanceof NO_IDENTITY_FOUND_ERROR:
       return validateErrorParam(
         noIdentityFoundError,
-        "No identity found error"
+        "No identity found error",
       );
 
     case error instanceof USER_ALREADY_REGISTERED_ERROR:
       return validateErrorParam(
         userAlreadyRegisteredError,
-        "User already registered error"
+        "User already registered error",
       );
 
     case error instanceof VERIFICATION_TOKEN_EXPIRED_ERROR:
       return validateErrorParam(
         verificationTokenExpiredError,
-        "Verification token expired error"
+        "Verification token expired error",
       );
 
     case error instanceof PKCE_VERIFICATION_FAILED_ERROR:
       return validateErrorParam(
         pkceVerificationFailedError,
-        "PKCE verification failed error"
+        "PKCE verification failed error",
       );
 
     case error instanceof VERIFICATION_ERROR:
@@ -98,7 +98,7 @@ const handleAuthError = <
     case error instanceof INVALID_REFERENCE_ERROR:
       return validateErrorParam(
         invalidReferenceError,
-        "Invalid reference error"
+        "Invalid reference error",
       );
 
     case error instanceof QUERY_ERROR:

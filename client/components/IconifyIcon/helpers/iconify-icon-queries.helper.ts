@@ -8,7 +8,7 @@ import type {
 } from "@client/components/IconifyIcon/types/iconify-icon.type";
 
 interface GetIconifyIconQueryOptionsParams<
-  TIconifyIconName extends IconifyIconName
+  TIconifyIconName extends IconifyIconName,
 > {
   iconName: TIconifyIconName;
   /** When true, caches the icon indefinitely in the browser */

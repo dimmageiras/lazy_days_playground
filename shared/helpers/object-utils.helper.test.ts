@@ -1,4 +1,4 @@
-import { describe, it } from "vitest";
+import { describe } from "vitest";
 
 import { ObjectUtilsHelper } from "./object-utils.helper";
 
@@ -47,7 +47,7 @@ const NON_PLAIN_OBJECTS = [
 ] as const;
 
 describe("ObjectUtilsHelper", () => {
-  describe("getObjectEntries", () => {
+  describe("getObjectEntries", (it) => {
     it("should return typed entries for a simple object", ({ expect }) => {
       const result = getObjectEntries(TEST_OBJECTS.SIMPLE);
 
@@ -103,7 +103,7 @@ describe("ObjectUtilsHelper", () => {
     });
   });
 
-  describe("getObjectKeys", () => {
+  describe("getObjectKeys", (it) => {
     it("should return typed keys for a simple object", ({ expect }) => {
       const result = getObjectKeys(TEST_OBJECTS.SIMPLE);
 
@@ -149,7 +149,7 @@ describe("ObjectUtilsHelper", () => {
     });
   });
 
-  describe("getObjectValues", () => {
+  describe("getObjectValues", (it) => {
     it("should return typed values for a simple object", ({ expect }) => {
       const result = getObjectValues(TEST_OBJECTS.SIMPLE);
 
@@ -193,7 +193,7 @@ describe("ObjectUtilsHelper", () => {
     });
   });
 
-  describe("isPlainObject", () => {
+  describe("isPlainObject", (it) => {
     it("should return true for plain objects", ({ expect }) => {
       const plainObjects = [
         {},

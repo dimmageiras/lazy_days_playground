@@ -37,14 +37,14 @@ const PasswordField = (): JSX.Element => {
       checkFieldIsRequiredInDiscriminatedUnion(
         authFormSchema,
         PASSWORD_FIELD_NAME,
-        mode
+        mode,
       ),
-    [checkFieldIsRequiredInDiscriminatedUnion, mode]
+    [checkFieldIsRequiredInDiscriminatedUnion, mode],
   );
 
   const autoComplete = useMemo(
     () => (mode === SIGNUP ? "new-password" : "current-password"),
-    [mode]
+    [mode],
   );
 
   const handlePasswordChange = async (event: ChangeEvent<HTMLInputElement>) => {

@@ -49,7 +49,7 @@ const handleMouseDown = <TElement extends HTMLElement>(
     enableLeftClick = true,
     enableMiddleClick = false,
     enableRightClick = false,
-  } = {}
+  } = {},
 ): void => {
   event.preventDefault();
   event.stopPropagation();

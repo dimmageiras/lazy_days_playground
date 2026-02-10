@@ -17,12 +17,12 @@ import type {
  * @returns Query result containing the icon data
  */
 const useGetIconifyIconData = <TIconifyIconName extends IconifyIconName>(
-  iconName: TIconifyIconName
+  iconName: TIconifyIconName,
 ): IconifyIconQueryResult<TIconifyIconName> => {
   const { getIconifyIconQueryOptions } = IconifyIconQueriesHelper;
 
   return useQuery(
-    getIconifyIconQueryOptions({ iconName, isClientFetch: true })
+    getIconifyIconQueryOptions({ iconName, isClientFetch: true }),
   );
 };
 

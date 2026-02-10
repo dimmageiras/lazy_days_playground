@@ -11,10 +11,10 @@ const checkEmailValidity = async (
     Error,
     string,
     unknown
-  >
+  >,
 ): Promise<void> => {
   const signinSchema = authFormSchema.def.options.find(
-    (option) => option.shape.mode.value === "signin"
+    (option) => option.shape.mode.value === "signin",
   );
   const emailSchema = Reflect.get(signinSchema!.shape, "email");
   const isEmailValid = emailSchema.safeParse(email).success;
@@ -33,7 +33,7 @@ const handleBlur = async (
     string,
     unknown
   >,
-  hasBeenValidated: boolean
+  hasBeenValidated: boolean,
 ): Promise<void> => {
   onBlur();
 
@@ -50,7 +50,7 @@ const handleChange = (
   event: ChangeEvent<HTMLInputElement>,
   onChange: (event: ChangeEvent<HTMLInputElement>) => void,
   debouncedEmailValidation: (email: string) => void,
-  hasBeenValidated: boolean
+  hasBeenValidated: boolean,
 ): void => {
   const { value } = event.currentTarget;
 

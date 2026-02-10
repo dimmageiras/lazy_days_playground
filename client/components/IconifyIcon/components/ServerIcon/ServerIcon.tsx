@@ -5,11 +5,10 @@ import type { IconifyIcon } from "@client/components/IconifyIcon";
 import { useGetIconifyIconData } from "@client/components/IconifyIcon/queries/useGetIconifyIconData.query";
 import type { IconifyIconName } from "@client/components/IconifyIcon/types/iconify-icon.type";
 
-interface ServerIconProps
-  extends Omit<
-    Extract<ComponentProps<typeof IconifyIcon>, { ssr: true }>,
-    "icon"
-  > {
+interface ServerIconProps extends Omit<
+  Extract<ComponentProps<typeof IconifyIcon>, { ssr: true }>,
+  "icon"
+> {
   icon: IconifyIconName;
 }
 

@@ -89,7 +89,7 @@ const hasAccessToken = (): boolean => {
  * ```
  */
 const getExistingClientId = async (
-  clientIdCookie: Cookie
+  clientIdCookie: Cookie,
 ): Promise<string | null> => {
   const store = clientIdRouteContextStorage?.getStore();
 
@@ -190,7 +190,7 @@ const getClientId = async (clientIdCookie: Cookie): Promise<string | null> => {
  */
 const run = <TResponse>(
   request: Request,
-  callback: () => TResponse
+  callback: () => TResponse,
 ): TResponse => {
   if (clientIdRouteContextStorage) {
     return clientIdRouteContextStorage.run({ request }, callback);
