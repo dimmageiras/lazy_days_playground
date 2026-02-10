@@ -1,7 +1,8 @@
 // React Router DevTools
-const RRDT_BUTTON_SELECTOR = "[aria-label='Open TanStack Devtools']";
+const RRDT_BUTTON_SELECTOR =
+  "button[aria-label='Open TanStack Devtools']:not(#tqdt-button-container)";
 const RRDT_CONTAINER_SELECTOR = "#rrdt-button-container";
-const RRDT_PANEL_SELECTOR = "[data-testid='data-testid']";
+const RRDT_PANEL_SELECTOR = "#tanstack_devtools";
 
 // TanStack Query DevTools
 const TQDT_BUTTON_SELECTOR = ".tsqd-open-btn-container";
