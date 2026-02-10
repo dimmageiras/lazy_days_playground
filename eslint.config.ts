@@ -31,7 +31,7 @@ export default defineConfig([
       tsEslint.configs.recommended,
       pluginReact.configs.flat.recommended ?? {},
       pluginReact.configs.flat["jsx-runtime"] ?? {},
-      pluginReactHooks.configs.flat["recommended-latest"] ?? {},
+      pluginReactHooks.configs.flat["recommended-latest"],
       pluginReactRefresh.configs.vite,
       ...pluginTanstackQuery.configs["flat/recommended"],
       pluginSonarjs.configs.recommended,
