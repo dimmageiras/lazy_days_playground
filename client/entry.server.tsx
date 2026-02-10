@@ -19,7 +19,7 @@ const handleRequest = (
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  loadContext: AppLoadContext
+  loadContext: AppLoadContext,
 ): Promise<Response> => {
   return new Promise((resolve, reject) => {
     const userAgent = request.headers.get("user-agent");
@@ -64,7 +64,7 @@ const handleRequest = (
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCodeNew,
-            })
+            }),
           );
 
           pipe(body);
@@ -83,12 +83,14 @@ const handleRequest = (
             console.error(error);
           }
         },
-      }
+      },
     );
 
     // Abort the rendering stream after the `streamTimeout` so it has time to
     // flush down the rejected boundaries
-    setTimeout(abort, SECONDS_FIVE_IN_MS + SECONDS_ONE_IN_MS);
+    setTimeout(() => {
+      abort();
+    }, SECONDS_FIVE_IN_MS + SECONDS_ONE_IN_MS);
   });
 };
 
