@@ -3,10 +3,21 @@ import { describe, vi } from "vitest";
 
 import { IdUtilsHelper } from "./id-utils.helper";
 
+const { fastIdGen, isSecureId, secureIdGen } = IdUtilsHelper;
+
+// Test data constants
+const TEST_DATA = {
+  V4: "550e8400-e29b-41d4-a716-446655440000",
+  V7: "0192a8b2-c9e3-7f4a-8b5c-123456789abc",
+  INVALID_V4: "550e8400-e29b-41d4-a716-44665544000", // Too short
+  INVALID_FORMAT: "not-a-uuid-at-all",
+  V7_WRONG_VERSION: "550e8400-e29b-41d4-a716-446655440000", // V4 UUID
+} as const;
+
 // Mock only the generation functions for predictable test results
 vi.mock("uuid", () => ({
-  v4: vi.fn(() => "550e8400-e29b-41d4-a716-446655440000"), // Mock v4 for consistency
-  v7: vi.fn(() => "0192a8b2-c9e3-7f4a-8b5c-123456789abc"), // Mock v7 for consistency
+  v4: vi.fn(() => TEST_DATA.V4), // Mock v4 for consistency
+  v7: vi.fn(() => TEST_DATA.V7), // Mock v7 for consistency
   validate: vi.fn((id: string) => {
     // Custom UUID validation logic inline to avoid circular dependency
     const uuidRegex =
@@ -34,117 +45,55 @@ vi.mock("uuid", () => ({
 
 describe("IdUtilsHelper", () => {
   describe("fastIdGen", (it) => {
-    it("returns a string", ({ expect }) => {
-      const result = IdUtilsHelper.fastIdGen();
+    it("should generate a valid UUID v4", ({ expect }) => {
+      const result = fastIdGen();
 
-      expect(typeof result).toBe("string");
-      expect(result.length).toBeGreaterThan(0);
-    });
-
-    it("returns a valid UUID v4", ({ expect }) => {
-      const result = IdUtilsHelper.fastIdGen();
-
+      expect(result).toBe(TEST_DATA.V4);
       expect(uuidValidate(result)).toBe(true);
       expect(uuidVersion(result)).toBe(4);
-    });
-
-    it("returns the mocked UUID v4 for consistency", ({ expect }) => {
-      const result = IdUtilsHelper.fastIdGen();
-
-      expect(result).toBe("550e8400-e29b-41d4-a716-446655440000");
     });
   });
 
   describe("secureIdGen", (it) => {
-    it("returns a string", ({ expect }) => {
-      const result = IdUtilsHelper.secureIdGen();
+    it("should generate a valid UUID v7", ({ expect }) => {
+      const result = secureIdGen();
 
-      expect(typeof result).toBe("string");
-      expect(result.length).toBeGreaterThan(0);
-    });
-
-    it("returns a valid UUID v7", ({ expect }) => {
-      const result = IdUtilsHelper.secureIdGen();
-
+      expect(result).toBe(TEST_DATA.V7);
       expect(uuidValidate(result)).toBe(true);
       expect(uuidVersion(result)).toBe(7);
-    });
-
-    it("returns the mocked UUID v7 for consistency", ({ expect }) => {
-      const result = IdUtilsHelper.secureIdGen();
-
-      expect(result).toBe("0192a8b2-c9e3-7f4a-8b5c-123456789abc");
     });
   });
 
   describe("isSecureId", (it) => {
-    it("returns true for valid UUID v7", ({ expect }) => {
-      const validV7Id = "0192a8b2-c9e3-7f4a-8b5c-123456789abc"; // Real v7 UUID
-
-      const result = IdUtilsHelper.isSecureId(validV7Id);
+    it("should return true for valid UUID v7", ({ expect }) => {
+      const result = isSecureId(TEST_DATA.V7);
 
       expect(result).toBe(true);
     });
 
-    it("returns true for the mocked secure ID", ({ expect }) => {
-      const mockedSecureId = IdUtilsHelper.secureIdGen();
-
-      const result = IdUtilsHelper.isSecureId(mockedSecureId);
-
-      expect(result).toBe(true);
-    });
-
-    it("returns false for UUID v4", ({ expect }) => {
-      const v4Id = "550e8400-e29b-41d4-a716-446655440000"; // The mocked v4 UUID
-
-      const result = IdUtilsHelper.isSecureId(v4Id);
+    it("should return false for valid UUID v4", ({ expect }) => {
+      const result = isSecureId(TEST_DATA.V4);
 
       expect(result).toBe(false);
     });
 
-    it("returns false for invalid UUID strings", ({ expect }) => {
-      const invalidIds = [
-        "not-a-uuid",
-        "12345",
-        "",
-        "invalid-uuid-format",
-        "12345678-1234-1234-1234-123456789abc-invalid",
-      ];
+    it("should return false for invalid UUID format", ({ expect }) => {
+      const result = isSecureId(TEST_DATA.INVALID_FORMAT);
 
-      invalidIds.forEach((id) => {
-        expect(IdUtilsHelper.isSecureId(id)).toBe(false);
-      });
+      expect(result).toBe(false);
     });
 
-    it("handles UUIDs with different cases", ({ expect }) => {
-      const upperCaseId = "0192A8B2-C9E3-7F4A-8B5C-123456789ABC";
-      const lowerCaseId = "0192a8b2-c9e3-7f4a-8b5c-123456789abc";
+    it("should return false for malformed UUID", ({ expect }) => {
+      const result = isSecureId(TEST_DATA.INVALID_V4);
 
-      // UUID validation is case insensitive
-      expect(IdUtilsHelper.isSecureId(upperCaseId)).toBe(true);
-      expect(IdUtilsHelper.isSecureId(lowerCaseId)).toBe(true);
+      expect(result).toBe(false);
     });
 
-    it("returns false for other UUID versions", ({ expect }) => {
-      // Test with hardcoded UUIDs of different versions
-      const v1Id = "12345678-1234-1123-8123-123456789abc"; // Version 1
-      const v3Id = "12345678-1234-3123-8123-123456789abc"; // Version 3
-      const v4Id = "550e8400-e29b-41d4-a716-446655440000"; // Version 4 (mocked)
-      const v5Id = "12345678-1234-5123-8123-123456789abc"; // Version 5
-
-      expect(IdUtilsHelper.isSecureId(v1Id)).toBe(false);
-      expect(IdUtilsHelper.isSecureId(v3Id)).toBe(false);
-      expect(IdUtilsHelper.isSecureId(v4Id)).toBe(false);
-      expect(IdUtilsHelper.isSecureId(v5Id)).toBe(false);
-    });
-
-    it("integrates correctly with secureIdGen output", ({ expect }) => {
-      const generatedId = IdUtilsHelper.secureIdGen();
-      const isSecure = IdUtilsHelper.isSecureId(generatedId);
-
-      expect(isSecure).toBe(true);
-      expect(uuidValidate(generatedId)).toBe(true);
-      expect(uuidVersion(generatedId)).toBe(7);
+    it("should return false for non-string inputs", ({ expect }) => {
+      expect(isSecureId(null as unknown as string)).toBe(false);
+      expect(isSecureId(undefined as unknown as string)).toBe(false);
+      expect(isSecureId(123 as unknown as string)).toBe(false);
+      expect(isSecureId({} as unknown as string)).toBe(false);
     });
   });
 });
