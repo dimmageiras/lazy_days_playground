@@ -8,7 +8,7 @@
     "build:server": "tsc --project tsconfig.server.json",
     "build:no-typegen": "pnpm build:react && pnpm build:server",
     "dev": "node --env-file=.env.local.dev ./server/index.ts",
-    "fresh-install": "rm -rf node_modules && pnpm store prune && rm -rf .react-router && rm -rf coverage && rm -rf dist && rm pnpm-lock.yaml && pnpm update && pnpm test:coverage && pnpm typegen && pnpm lint && pnpm typecheck:no-typegen && pnpm build:no-typegen",
+    "fresh-install": "rm -rf node_modules && pnpm store prune && rm -rf .react-router && rm -rf coverage && rm -rf dist && rm pnpm-lock.yaml && pnpm update && pnpm test:cov && pnpm typegen && pnpm lint && pnpm typecheck:no-typegen && pnpm build:no-typegen",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\" --rule \"react-hooks/exhaustive-deps: off\"",
     "lint:fix": "pnpm lint --fix",
     "obsolete": "knip",
@@ -74,7 +74,7 @@
     "@total-typescript/ts-reset": "^0.6.1",
     "@types/express": "^5.0.6",
     "@types/lodash": "^4.17.21",
-    "@types/node": "^24.10.4",
+    "@types/node": "^24.10.12",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.50.0",
@@ -110,7 +110,7 @@
   "engines": {
     "node": ">=24.0.0"
   },
-  "packageManager": "pnpm@10.26.0",
+  "packageManager": "pnpm@10.29.2",
   "pnpm": {
     "ignoredBuiltDependencies": [
       "@parcel/watcher",
