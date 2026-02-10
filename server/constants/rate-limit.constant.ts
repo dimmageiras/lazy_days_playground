@@ -26,6 +26,32 @@ const {
 const { log } = PinoLogHelper;
 
 /**
+ * Shared header configurations for rate limiting
+ */
+const RATE_LIMIT_HEADERS = Object.freeze({
+  addHeaders: {
+    "retry-after": true,
+    "x-ratelimit-limit": true,
+    "x-ratelimit-remaining": true,
+    "x-ratelimit-reset": true,
+  },
+  addHeadersOnExceeding: {
+    "x-ratelimit-limit": true,
+    "x-ratelimit-remaining": true,
+    "x-ratelimit-reset": true,
+  },
+});
+
+/**
+ * Shared properties for rate limiting configurations
+ */
+const SHARED_RATE_LIMIT_PROPS = Object.freeze({
+  continueExceeding: true,
+  enableDraftSpec: true,
+  skipOnError: false,
+});
+
+/**
  * Formats time remaining in a user-friendly way
  * Returns "X minutes" if >= 1 minute, otherwise "X seconds"
  */
@@ -39,6 +65,23 @@ const formatRetryTime = (seconds: number): string => {
   }
 
   return seconds === 1 ? "1 second" : `${seconds} seconds`;
+};
+
+/**
+ * Creates a standardized error response builder for rate limiting
+ */
+const createErrorResponseBuilder = (message: string) => {
+  return (_request: FastifyRequest, context: { ttl: number }) => {
+    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
+    const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
+
+    return {
+      error: "Too Many Requests",
+      message: `${message} Please wait ${retryTimeFormatted} before trying again.`,
+      retryAfter: retryAfterSeconds,
+      statusCode: MANY_REQUESTS_ERROR,
+    };
+  };
 };
 
 const createOnExceededHandler = (bucket: string) => {
@@ -55,21 +98,44 @@ const createOnExceededHandler = (bucket: string) => {
 };
 
 /**
+ * Creates an IP-based key generator for rate limiting
+ */
+const createIpKeyGenerator = () => {
+  return (request: FastifyRequest) => {
+    const rawKey = request.ip;
+
+    return crypto.createHash("sha256").update(rawKey).digest("hex");
+  };
+};
+
+/**
+ * Creates an email-based key generator for rate limiting
+ */
+const createEmailKeyGenerator = () => {
+  return (request: FastifyRequest) => {
+    const { isPlainObject } = ObjectUtilsHelper;
+
+    const body = request.body;
+    const email =
+      (isPlainObject(body) &&
+        "email" in body &&
+        typeof body.email === "string" &&
+        body.email.toLowerCase()) ||
+      "anonymous";
+
+    const rawKey = `${request.ip}-${email}`;
+
+    return crypto.createHash("sha256").update(rawKey).digest("hex");
+  };
+};
+
+/**
  * Global rate limit configuration
  * Applies to all routes unless overridden
  */
 const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
-  addHeaders: {
-    "retry-after": true,
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  addHeadersOnExceeding: {
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
+  ...RATE_LIMIT_HEADERS,
+  ...SHARED_RATE_LIMIT_PROPS,
   allowList: (request) => {
     // Allow localhost IPs in development
     if (MODE === DEVELOPMENT && LOCALHOST_IPS.includes(request.ip)) {
@@ -80,16 +146,9 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
     return request.url.startsWith("/assets/");
   },
   cache: 10000, // Maximum number of keys to store
-  continueExceeding: true, // Continue to track requests after limit
-  enableDraftSpec: true, // Add RateLimit-* headers
-  keyGenerator: (request: FastifyRequest) => {
-    const rawKey = request.ip;
-
-    return crypto.createHash("sha256").update(rawKey).digest("hex");
-  },
+  keyGenerator: createIpKeyGenerator(),
   max: IS_DEVELOPMENT ? 1000 : 100,
   onExceeded: createOnExceededHandler("global"),
-  skipOnError: false, // Don't skip rate limiting on errors
   timeWindow: MINUTES_FIFTEEN_IN_MS,
 };
 
@@ -98,48 +157,12 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
  * Protects against brute force attacks
  */
 const AUTH_RATE_LIMIT: RateLimitPluginOptions = {
-  addHeaders: {
-    "retry-after": true,
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  addHeadersOnExceeding: {
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  continueExceeding: true,
-  enableDraftSpec: true,
-  errorResponseBuilder: (_request, context) => {
-    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
-    const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
-
-    return {
-      error: "Too Many Requests",
-      message: `Too many authentication attempts. Please wait ${retryTimeFormatted} before trying again.`,
-      retryAfter: retryAfterSeconds,
-      statusCode: MANY_REQUESTS_ERROR,
-    };
-  },
-  keyGenerator: (request: FastifyRequest) => {
-    const { isPlainObject } = ObjectUtilsHelper;
-
-    const body = request.body;
-    const email =
-      (isPlainObject(body) &&
-        "email" in body &&
-        typeof body.email === "string" &&
-        body.email.toLowerCase()) ||
-      "anonymous";
-
-    const rawKey = `${request.ip}-${email}`;
-
-    return crypto.createHash("sha256").update(rawKey).digest("hex");
-  },
+  ...RATE_LIMIT_HEADERS,
+  ...SHARED_RATE_LIMIT_PROPS,
+  errorResponseBuilder: createErrorResponseBuilder("Too many authentication attempts."),
+  keyGenerator: createEmailKeyGenerator(),
   max: IS_DEVELOPMENT ? 100 : 5,
   onExceeded: createOnExceededHandler("auth"),
-  skipOnError: false,
   timeWindow: MINUTES_FIFTEEN_IN_MS,
 };
 
@@ -148,48 +171,12 @@ const AUTH_RATE_LIMIT: RateLimitPluginOptions = {
  * Prevents email enumeration attacks while allowing legitimate use
  */
 const USER_RATE_LIMIT: RateLimitPluginOptions = {
-  addHeaders: {
-    "retry-after": true,
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  addHeadersOnExceeding: {
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  continueExceeding: true,
-  enableDraftSpec: true,
-  errorResponseBuilder: (_request, context) => {
-    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
-    const retryTimeFormatted = formatRetryTime(retryAfterSeconds);
-
-    return {
-      error: "Too Many Requests",
-      message: `Too many requests. Please wait ${retryTimeFormatted} before trying again.`,
-      retryAfter: retryAfterSeconds,
-      statusCode: MANY_REQUESTS_ERROR,
-    };
-  },
-  keyGenerator: (request: FastifyRequest) => {
-    const { isPlainObject } = ObjectUtilsHelper;
-
-    const body = request.body;
-    const email =
-      (isPlainObject(body) &&
-        "email" in body &&
-        typeof body.email === "string" &&
-        body.email.toLowerCase()) ||
-      "anonymous";
-
-    const rawKey = `${request.ip}-${email}`;
-
-    return crypto.createHash("sha256").update(rawKey).digest("hex");
-  },
+  ...RATE_LIMIT_HEADERS,
+  ...SHARED_RATE_LIMIT_PROPS,
+  errorResponseBuilder: createErrorResponseBuilder("Too many requests."),
+  keyGenerator: createEmailKeyGenerator(),
   max: IS_DEVELOPMENT ? 100 : 10,
   onExceeded: createOnExceededHandler("user"),
-  skipOnError: false,
   timeWindow: MINUTES_FIVE_IN_MS,
 };
 
@@ -198,39 +185,12 @@ const USER_RATE_LIMIT: RateLimitPluginOptions = {
  * Allows frequent monitoring without blocking
  */
 const HEALTH_RATE_LIMIT: RateLimitPluginOptions = {
-  addHeaders: {
-    "retry-after": true,
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  addHeadersOnExceeding: {
-    "x-ratelimit-limit": true,
-    "x-ratelimit-remaining": true,
-    "x-ratelimit-reset": true,
-  },
-  continueExceeding: true,
-  enableDraftSpec: true,
-  errorResponseBuilder: (_request, context) => {
-    const retryAfterSeconds = Math.ceil(context.ttl / SECONDS_ONE_IN_MS);
-
-    return {
-      error: "Too Many Requests",
-      message: `Too many health check requests. Please wait ${formatRetryTime(
-        retryAfterSeconds
-      )} before trying again.`,
-      retryAfter: retryAfterSeconds,
-      statusCode: MANY_REQUESTS_ERROR,
-    };
-  },
-  keyGenerator: (request: FastifyRequest) => {
-    const rawKey = request.ip;
-
-    return crypto.createHash("sha256").update(rawKey).digest("hex");
-  },
+  ...RATE_LIMIT_HEADERS,
+  ...SHARED_RATE_LIMIT_PROPS,
+  errorResponseBuilder: createErrorResponseBuilder("Too many health check requests."),
+  keyGenerator: createIpKeyGenerator(),
   max: IS_DEVELOPMENT ? 1000 : 60,
   onExceeded: createOnExceededHandler("health"),
-  skipOnError: false,
   timeWindow: MINUTES_ONE_IN_MS,
 };
 
