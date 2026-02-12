@@ -25,11 +25,9 @@ Helmet is configured with conditional application based on request type:
 // Register helmet with global: false for conditional application
 await app.register(helmet, {
   global: false, // Disable automatic application to all routes
-  contentSecurityPolicy: IS_DEVELOPMENT
-    ? false
-    : { directives: CSP_DIRECTIVES, useDefaults: false },
+  contentSecurityPolicy: { directives: CSP_DIRECTIVES, useDefaults: false },
   crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
-  enableCSPNonces: !IS_DEVELOPMENT,
+  enableCSPNonces: true,
   hsts: {
     includeSubDomains: true,
     maxAge: YEARS_ONE_IN_S, // 1 year
@@ -87,7 +85,7 @@ app.addHook("onRequest", async (request, reply) => {
 | `styleSrc`         | `'self'`, `https://fonts.googleapis.com` | Same-origin styles and Google Fonts |
 | `upgradeInsecure…` | `[]`                                     | Upgrades HTTP to HTTPS              |
 
-**Note**: CSP disabled in development for React DevTools compatibility. In production, CSP is disabled for non-asset routes (e.g., React Router pages, API routes) to allow proper CSP nonce handling in the response pipeline, while asset routes (`/assets/*`, `/favicon.ico`) receive full helmet protection.
+**Note**: CSP nonces are always enabled in all environments. CSP is disabled for non-asset routes (e.g., React Router pages, API routes) to allow proper CSP nonce handling in the response pipeline, while asset routes (`/assets/*`, `/favicon.ico`) receive full helmet protection including CSP headers.
 
 ### CSP Violation Reporting
 
@@ -421,7 +419,7 @@ openssl rand -base64 32
 | Feature           | Development                    | Production                  |
 | ----------------- | ------------------------------ | --------------------------- |
 | **HTTPS**         | Not required                   | Required (`secure` flag)    |
-| **CSP**           | Disabled (DevTools compatible) | Fully enforced              |
+| **CSP**           | Enabled (nonces always active) | Fully enforced              |
 | **Rate Limits**   | 10-200x higher                 | Strict                      |
 | **Error Details** | Verbose                        | Sanitized (no stack traces) |
 

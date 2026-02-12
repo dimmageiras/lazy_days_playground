@@ -42,11 +42,9 @@ const registerHelmet = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(helmet, {
       global: false, // Disable global application, we'll apply conditionally
-      contentSecurityPolicy: IS_DEVELOPMENT
-        ? false
-        : { directives: CSP_DIRECTIVES, useDefaults: false },
+      contentSecurityPolicy: { directives: CSP_DIRECTIVES, useDefaults: false },
       crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
-      enableCSPNonces: !IS_DEVELOPMENT,
+      enableCSPNonces: true,
       hsts: {
         includeSubDomains: true,
         maxAge: YEARS_ONE_IN_S,
