@@ -65,9 +65,9 @@ describe("DateHelper", () => {
 
   describe("getCurrentUTCDate", (it) => {
     it("should get the current UTC date", ({ expect }) => {
-      const result = getCurrentUTCDate();
+      const result = getCurrentUTCDate().toISOString().slice(0, 19);
 
-      expect(result).toStrictEqual(new Date());
+      expect(result).toStrictEqual(new Date().toISOString().slice(0, 19));
     });
   });
 

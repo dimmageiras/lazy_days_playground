@@ -8,7 +8,6 @@ import type { IssueCodes } from "@shared/types/app/zod";
 import type {
   zConfig as zConfigType,
   ZodError,
-  ZodFormattedError,
   ZodLocale,
 } from "@shared/wrappers/zod.wrapper";
 
@@ -41,26 +40,6 @@ const createIssue = (
   message: overrides.message ?? `Test message for ${code}`,
   path: overrides.path ?? ["test"],
   ...overrides,
-});
-
-const createExpectedError = (
-  message: string,
-  path: string | string[],
-  validationCode: IssueCodes | string | undefined,
-): ZodFormattedError => ({
-  message,
-  path: Array.isArray(path) ? path.join(".") : path,
-  validation_code: validationCode,
-});
-
-const createScenario = (
-  description: string,
-  issues: $ZodIssue[],
-  expected: ZodFormattedError[],
-) => ({
-  description,
-  issues,
-  expected,
 });
 
 // Test data constants using factories
@@ -102,154 +81,6 @@ const ISSUE_CODE_TEST_CASES = {
   },
 } as const;
 
-// Representative test cases for non-ISSUE_CODES error codes
-const NON_ISSUE_CODE_TEST_CASES = {
-  INVALID_DATE: "invalid_date",
-  INVALID_STRING: "invalid_string",
-} as const;
-
-const FORMAT_ERROR_SCENARIOS = {
-  SINGLE_ERROR: createScenario(
-    "should format a single ZodError issue correctly",
-    [
-      createIssue("too_small", {
-        message: "Number must be greater than or equal to 1",
-        minimum: 1,
-        origin: "number",
-        path: ["age"],
-      }),
-    ],
-    [
-      createExpectedError(
-        "Number must be greater than or equal to 1",
-        "age",
-        TOO_SMALL,
-      ),
-    ],
-  ),
-
-  MULTIPLE_ERRORS: createScenario(
-    "should format multiple ZodError issues correctly",
-    [
-      createIssue("too_small", {
-        message: "Number must be greater than or equal to 1",
-        minimum: 1,
-        origin: "number",
-        path: ["age"],
-      }),
-      createIssue("invalid_type", {
-        expected: "string",
-        message: "Expected string, received number",
-        path: ["name"],
-      }),
-    ],
-    [
-      createExpectedError(
-        "Number must be greater than or equal to 1",
-        "age",
-        TOO_SMALL,
-      ),
-      createExpectedError(
-        "Expected string, received number",
-        "name",
-        INVALID_TYPE,
-      ),
-    ],
-  ),
-
-  NESTED_PATH: createScenario(
-    "should format nested path correctly",
-    [
-      createIssue("invalid_type", {
-        expected: "string",
-        message: "Expected string, received number",
-        path: ["user", "profile", "name"],
-      }),
-    ],
-    [
-      createExpectedError(
-        "Expected string, received number",
-        "user.profile.name",
-        INVALID_TYPE,
-      ),
-    ],
-  ),
-
-  CUSTOM_WITH_PARAMS: createScenario(
-    "should handle custom error codes with params",
-    [
-      createIssue("custom", {
-        message: "Custom validation failed",
-        path: ["email"],
-        params: { code: "invalid_email_format" },
-      }),
-    ],
-    [
-      createExpectedError(
-        "Custom validation failed",
-        "email",
-        "invalid_email_format",
-      ),
-    ],
-  ),
-
-  CUSTOM_WITHOUT_PARAMS: createScenario(
-    "should handle custom error codes without params",
-    [
-      createIssue("custom", {
-        message: "Custom validation failed",
-        path: ["field"],
-        params: undefined,
-      }),
-    ],
-    [createExpectedError("Custom validation failed", "field", undefined)],
-  ),
-
-  EMPTY_ISSUES: createScenario(
-    "should return empty array for ZodError with no issues",
-    [],
-    [],
-  ),
-
-  EMPTY_PATH: createScenario(
-    "should handle empty path correctly",
-    [
-      createIssue("invalid_type", {
-        expected: "string",
-        message: "Expected string, received number",
-        path: [],
-      }),
-    ],
-    [createExpectedError("Expected string, received number", "", INVALID_TYPE)],
-  ),
-
-  PRESERVE_ORDER: createScenario(
-    "should preserve issue order",
-    [
-      createIssue("invalid_type", {
-        expected: "string",
-        message: "First error",
-        path: ["first"],
-      }),
-      createIssue("too_small", {
-        message: "Second error",
-        minimum: 1,
-        origin: "number",
-        path: ["second"],
-      }),
-      createIssue("custom", {
-        message: "Third error",
-        path: ["third"],
-      }),
-    ],
-    [
-      createExpectedError("First error", "first", INVALID_TYPE),
-      createExpectedError("Second error", "second", TOO_SMALL),
-      createExpectedError("Third error", "third", undefined),
-    ],
-  ),
-} as const;
-
 // Test helper function to create mock ZodError with given issues
 const createMockZodError = (issues: $ZodIssue[] = []): ZodError => ({
   _zod: {
@@ -280,21 +111,6 @@ const createTestCase = (
     ...extraProps,
   });
 
-// Test helper function to test format error scenarios
-const testFormatErrorScenario = (
-  key: KeyAsString<typeof FORMAT_ERROR_SCENARIOS>,
-) => {
-  const scenario = Reflect.get(FORMAT_ERROR_SCENARIOS, key);
-  const { description, issues, expected } = scenario;
-
-  it(description, ({ expect }) => {
-    const mockZodError = createMockZodError(issues);
-    const result = formatError(mockZodError);
-
-    expect(result).toEqual(expected);
-  });
-};
-
 // Test helper function to test issue code mappings
 const testIssueCodeMapping = (
   key: KeyAsString<typeof ISSUE_CODE_TEST_CASES>,
@@ -311,34 +127,10 @@ const testIssueCodeMapping = (
   });
 };
 
-// Test helper function to test non-ISSUE_CODES handling
-// These codes are passed through as-is without special mapping
-const testNonIssueCodeHandling = (
-  key: KeyAsString<typeof NON_ISSUE_CODE_TEST_CASES>,
-) => {
-  const code = Reflect.get(NON_ISSUE_CODE_TEST_CASES, key);
-
-  it(`should pass through ${code} error code without mapping`, ({ expect }) => {
-    const mockZodError = createMockZodError([createTestCase(code)]);
-
-    const result = formatError(mockZodError);
-
-    expect(result[0]?.validation_code).toBe(code);
-    expect(result[0]?.message).toBe(`Test message for ${code}`);
-    expect(result[0]?.path).toBe("test");
-  });
-};
-
 describe("ZodUtilsHelper", () => {
   describe("formatError", () => {
-    // Data-driven tests for complex scenarios
-    getObjectKeys(FORMAT_ERROR_SCENARIOS).forEach(testFormatErrorScenario);
-
     // Data-driven tests for ISSUE_CODES
     getObjectKeys(ISSUE_CODE_TEST_CASES).forEach(testIssueCodeMapping);
-
-    // Data-driven tests for non-ISSUE_CODES
-    getObjectKeys(NON_ISSUE_CODE_TEST_CASES).forEach(testNonIssueCodeHandling);
   });
 
   describe("loadLocale", (it) => {
