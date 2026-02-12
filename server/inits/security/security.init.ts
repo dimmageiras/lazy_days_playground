@@ -32,7 +32,7 @@ const registerCookie = async (app: ServerInstance): Promise<void> => {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register Cookie plugin"
+      "💥 Failed to register Cookie plugin",
     );
     process.exit(1);
   }
@@ -54,22 +54,22 @@ const registerHelmet = async (app: ServerInstance): Promise<void> => {
       },
     });
 
-    // Apply helmet conditionally with CSP disabled for static assets
+    // Apply helmet conditionally with CSP disabled for non-asset routes
     app.addHook("onRequest", async (request, reply) => {
-      // Disable CSP for static assets and favicon, keep other security headers
-      if (
-        request.url.startsWith("/assets/") ||
-        request.url === "/favicon.ico"
-      ) {
-        reply.helmet({
-          contentSecurityPolicy: false,
-        });
+      const isAsset =
+        request.url.startsWith("/assets/") || request.url === "/favicon.ico";
+
+      // For asset routes, apply full helmet with CSP
+      if (isAsset) {
+        reply.helmet();
 
         return;
       }
 
-      // Apply full helmet for all other routes
-      reply.helmet();
+      // For non-asset routes (React Router, API), disable CSP to allow dynamic content
+      reply.helmet({
+        contentSecurityPolicy: false,
+      });
     });
   } catch (error) {
     log.error(
@@ -77,7 +77,7 @@ const registerHelmet = async (app: ServerInstance): Promise<void> => {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register Helmet security plugin"
+      "💥 Failed to register Helmet security plugin",
     );
     process.exit(1);
   }
@@ -92,7 +92,7 @@ const registerRateLimit = async (app: ServerInstance): Promise<void> => {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register Rate Limit plugin"
+      "💥 Failed to register Rate Limit plugin",
     );
     process.exit(1);
   }

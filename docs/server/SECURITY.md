@@ -39,16 +39,19 @@ await app.register(helmet, {
 
 // Apply helmet conditionally based on route type
 app.addHook("onRequest", async (request, reply) => {
-  // Disable CSP for static assets and favicon, keep other security headers
-  if (request.url.startsWith("/assets/") || request.url === "/favicon.ico") {
-    reply.helmet({
-      contentSecurityPolicy: false, // Only disable CSP
-    });
+  const isAsset =
+    request.url.startsWith("/assets/") || request.url === "/favicon.ico";
+
+  // For asset routes, apply full helmet with CSP
+  if (isAsset) {
+    reply.helmet();
     return;
   }
 
-  // Apply full helmet for all other routes
-  reply.helmet();
+  // For non-asset routes (React Router, API), disable CSP to allow dynamic content
+  reply.helmet({
+    contentSecurityPolicy: false,
+  });
 });
 ```
 
@@ -84,7 +87,7 @@ app.addHook("onRequest", async (request, reply) => {
 | `styleSrc`         | `'self'`, `https://fonts.googleapis.com` | Same-origin styles and Google Fonts |
 | `upgradeInsecure…` | `[]`                                     | Upgrades HTTP to HTTPS              |
 
-**Note**: CSP disabled in development for React DevTools compatibility. In production, CSP is selectively disabled for static assets (`/assets/*`) and favicon (`/favicon.ico`) while remaining active for all other routes.
+**Note**: CSP disabled in development for React DevTools compatibility. In production, CSP is disabled for non-asset routes (e.g., React Router pages, API routes) to allow proper CSP nonce handling in the response pipeline, while asset routes (`/assets/*`, `/favicon.ico`) receive full helmet protection.
 
 ### CSP Violation Reporting
 
@@ -189,7 +192,7 @@ fastify.get(
       /* ... */
     },
   },
-  handler
+  handler,
 );
 ```
 
@@ -265,7 +268,7 @@ fastify.post(
   {
     schema: { body: requestSchema },
   },
-  handler
+  handler,
 );
 ```
 
@@ -330,7 +333,7 @@ await gelClient.query(
   SELECT User { id, email }
   FILTER .email = <str>$email
 `,
-  { email }
+  { email },
 );
 
 // ❌ DANGEROUS - Never do this
