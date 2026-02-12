@@ -3,11 +3,13 @@ import { describe } from "vitest";
 
 import type { MODES } from "@shared/constants/root-env.constant";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { EnvVarHelper } from "./env-var.helper";
 
 const { validateEnv } = EnvVarHelper;
 const { getObjectKeys } = ObjectUtilsHelper;
+const { castAsType } = TypeHelper;
 
 // Test data constants
 const ENV_VALID = {
@@ -39,13 +41,14 @@ const ENV_INVALID = {
   LOG_LEVEL: "invalid",
   SALT_LENGTH: "-1",
   TOKEN_ENCRYPTION_METHOD: "",
-  VITE_APP_ALL_DEV_TOOLS: "invalid" as `${boolean}`,
+  VITE_APP_ALL_DEV_TOOLS: castAsType<`${boolean}`>("invalid"),
   VITE_APP_HOST: "",
-  VITE_APP_IS_DEVELOPMENT: "invalid" as `${boolean}`,
+  VITE_APP_IS_DEVELOPMENT: castAsType<`${boolean}`>("invalid"),
   VITE_APP_PORT: "-1",
-  VITE_APP_RQDT: "invalid" as `${boolean}`,
-  VITE_APP_RRDT: "invalid" as `${boolean}`,
-  VITE_APP_TYPE_GENERATOR_MODE: "invalid" as typeof MODES.TYPE_GENERATOR,
+  VITE_APP_RQDT: castAsType<`${boolean}`>("invalid"),
+  VITE_APP_RRDT: castAsType<`${boolean}`>("invalid"),
+  VITE_APP_TYPE_GENERATOR_MODE:
+    castAsType<typeof MODES.TYPE_GENERATOR>("invalid"),
 } as const;
 
 // Test helper function to test invalid environment variables

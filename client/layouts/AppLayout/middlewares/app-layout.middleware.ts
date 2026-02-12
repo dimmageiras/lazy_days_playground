@@ -8,6 +8,7 @@ import { CookieHelper } from "@client/helpers/cookie.helper";
 import { QueriesHelper } from "@client/helpers/queries.helper";
 import { getVerifyAuthQueryOptions } from "@client/services/auth";
 import { TIMING } from "@shared/constants/timing.constant";
+import { TypeHelper } from "@shared/helpers/type.helper";
 import type { VerifyAuthListData } from "@shared/types/generated/server/auth.type";
 
 const appLayoutMiddleware: Route.MiddlewareFunction = async (
@@ -19,6 +20,7 @@ const appLayoutMiddleware: Route.MiddlewareFunction = async (
 
   const { run, getOrCreateClientId, hasAccessToken } = ClientIdRouteContext;
   const { createStandardCookie, hasCookie, setCookie } = CookieHelper;
+  const { castAsType } = TypeHelper;
 
   const clientIdCookie = createStandardCookie(CLIENT_ID);
 
@@ -44,8 +46,9 @@ const appLayoutMiddleware: Route.MiddlewareFunction = async (
       ]);
 
       const dehydratedState = dehydrate(queryClient);
-      const authData = dehydratedState.queries[0]?.state
-        .data as VerifyAuthListData | null;
+      const authData = castAsType<VerifyAuthListData | null>(
+        dehydratedState.queries[0]?.state.data,
+      );
 
       context.set(authRouteContext, authData);
 

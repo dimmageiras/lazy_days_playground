@@ -3,7 +3,10 @@ import { useMutation, useMutationState } from "@tanstack/react-query";
 
 import { USER_QUERY_KEYS } from "@client/services/user/user.constant";
 import { UserService } from "@client/services/user/user.service";
+import { TypeHelper } from "@shared/helpers/type.helper";
 import type { CheckEmailCreateData } from "@shared/types/generated/server/user.type";
+
+const { castAsType } = TypeHelper;
 
 const useCheckEmailExists = (): UseMutationResult<
   CheckEmailCreateData,
@@ -31,7 +34,9 @@ const useEmailExistence = (): {
   const emailExistenceMutations = useMutationState({
     filters: { mutationKey: CHECK_EMAIL },
     select: (mutation) => {
-      const data = mutation.state.data as CheckEmailCreateData | undefined;
+      const data = castAsType<CheckEmailCreateData | undefined>(
+        mutation.state.data,
+      );
 
       return data?.exists ?? null;
     },

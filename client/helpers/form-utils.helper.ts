@@ -90,22 +90,16 @@ const getSchemaFromDiscriminatedUnion = <
  * @param fieldSchema - The Zod schema of the field
  * @returns True if the field is required, false otherwise
  */
-const isFieldSchemaRequired = (fieldSchema: unknown): boolean => {
+const isFieldSchemaRequired = <TSchema extends ZodObject>(
+  fieldSchema: TSchema,
+): boolean => {
   const { isPlainObject } = ObjectUtilsHelper;
 
-  if (!isPlainObject(fieldSchema)) {
+  if (!isPlainObject(fieldSchema) || !("safeParse" in fieldSchema)) {
     return false;
   }
 
-  if (!("safeParse" in fieldSchema)) {
-    return false;
-  }
-
-  const safeParse = fieldSchema.safeParse as (value: unknown) => {
-    success: boolean;
-  };
-
-  return !safeParse(undefined).success;
+  return !fieldSchema.safeParse(undefined).success;
 };
 
 /**

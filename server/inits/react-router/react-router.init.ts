@@ -16,16 +16,18 @@ import {
   MODE,
   MODES,
 } from "../../../shared/constants/root-env.constant.ts";
+import { TypeHelper } from "../../../shared/helpers/type.helper.ts";
 import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 import { createRequestHandler } from "../../plugins/react-router-fastify/index.ts";
 
 const { TYPE_GENERATOR } = MODES;
 
 const { log } = PinoLogHelper;
+const { castAsType } = TypeHelper;
 
 const createViteDevServer = async (
   app: ServerInstance,
-  viteDevServerRef: { current: ViteDevServer | null }
+  viteDevServerRef: { current: ViteDevServer | null },
 ): Promise<void> => {
   try {
     viteDevServerRef.current = await createServer({
@@ -40,14 +42,14 @@ const createViteDevServer = async (
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to create Vite dev server"
+      "💥 Failed to create Vite dev server",
     );
     process.exit(1);
   }
 };
 
 const registerExpressCompatibility = async (
-  app: ServerInstance
+  app: ServerInstance,
 ): Promise<void> => {
   try {
     await app.register(expressFastify);
@@ -57,7 +59,7 @@ const registerExpressCompatibility = async (
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register Express compatibility plugin"
+      "💥 Failed to register Express compatibility plugin",
     );
     process.exit(1);
   }
@@ -71,11 +73,14 @@ const serveStaticFiles = async (app: ServerInstance): Promise<void> => {
       root: buildDir,
       prefix: "/", // Serve all files from root
       decorateReply: false, // Don't decorate the reply with sendFile
-      setHeaders: (res, path) => {
+      setHeaders: (reply, path) => {
         if (path.includes("/assets/")) {
-          res.setHeader("Cache-Control", "public, max-age=31536000, immutable"); // 1 year for assets
+          reply.setHeader(
+            "Cache-Control",
+            "public, max-age=31536000, immutable",
+          ); // 1 year for assets
         } else {
-          res.setHeader("Cache-Control", "public, max-age=3600"); // 1 hour for other files
+          reply.setHeader("Cache-Control", "public, max-age=3600"); // 1 hour for other files
         }
       },
       wildcard: false, // Don't use wildcard matching to avoid conflicts
@@ -86,7 +91,7 @@ const serveStaticFiles = async (app: ServerInstance): Promise<void> => {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register static file serving"
+      "💥 Failed to register static file serving",
     );
 
     process.exit(1);
@@ -95,14 +100,14 @@ const serveStaticFiles = async (app: ServerInstance): Promise<void> => {
 
 const registerReactRouterForDevelopment = async (
   app: ServerInstance,
-  viteDevServerRef: { current: ViteDevServer | null }
+  viteDevServerRef: { current: ViteDevServer | null },
 ): Promise<void> => {
   await registerExpressCompatibility(app);
   await createViteDevServer(app, viteDevServerRef);
 };
 
 const registerReactRouterForProduction = async (
-  app: ServerInstance
+  app: ServerInstance,
 ): Promise<void> => {
   await serveStaticFiles(app);
 };
@@ -130,12 +135,11 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
           try {
             if (IS_DEVELOPMENT) {
               build = await viteDevServerRef.current!.ssrLoadModule(
-                "virtual:react-router/server-build"
+                "virtual:react-router/server-build",
               );
             } else {
-              const importedBuild: ServerBuild = await import(
-                "../../../../server/index.js"
-              );
+              const importedBuild: ServerBuild =
+                await import("../../../../server/index.js");
 
               build = importedBuild;
             }
@@ -147,14 +151,14 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
                 error: error instanceof Error ? error.message : String(error),
                 stack: error instanceof Error ? error.stack : undefined,
               },
-              "💥 Failed to load React Router server build"
+              "💥 Failed to load React Router server build",
             );
             throw error;
           }
         },
         getLoadContext: (
           _request,
-          response
+          response,
         ): ReturnType<GetLoadContextFunction> => {
           const context = new RouterContextProvider();
 
@@ -167,10 +171,10 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
           // Store nonces as a property on context for middleware to access
           Reflect.set(context, "_cspNonce", cspNonce);
 
-          return context as unknown as ReturnType<GetLoadContextFunction>;
+          return castAsType<ReturnType<GetLoadContextFunction>>(context);
         },
         mode: MODE,
-      })
+      }),
     );
   } catch (error) {
     log.error(
@@ -178,7 +182,7 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register React Router Fastify plugin"
+      "💥 Failed to register React Router Fastify plugin",
     );
     process.exit(1);
   }

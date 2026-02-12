@@ -25,13 +25,13 @@ const createRemixHeaders = (
 };
 
 const createRemixRequest = (
-  req: FastifyRequest,
-  res: FastifyReply,
+  request: FastifyRequest,
+  reply: FastifyReply,
 ): Request => {
-  // req.hostname doesn't include port information so grab that from
+  // request.hostname doesn't include port information so grab that from
   // `X-Forwarded-Host` or `Host`
-  const xForwardedHost = req.headers["x-forwarded-host"];
-  const host = req.headers.host;
+  const xForwardedHost = request.headers["x-forwarded-host"];
+  const host = request.headers.host;
   const xForwardedHostStr = Array.isArray(xForwardedHost)
     ? xForwardedHost[0]
     : xForwardedHost;
@@ -44,16 +44,16 @@ const createRemixRequest = (
     Number.isSafeInteger(hostnamePort) || Number.isSafeInteger(hostPort)
       ? hostnamePort || hostPort || ""
       : "";
-  // Use req.hostname here as it respects the "trust proxy" setting
-  const resolvedHost = `${req.hostname}${port ? ":" + port : ""}`;
-  // Use `req.url` so Remix is aware of the full path
-  const url = new URL(`${req.protocol}://${resolvedHost}${req.url}`);
+  // Use request.hostname here as it respects the "trust proxy" setting
+  const resolvedHost = `${request.hostname}${port ? ":" + port : ""}`;
+  // Use `request.url` so Remix is aware of the full path
+  const url = new URL(`${request.protocol}://${resolvedHost}${request.url}`);
 
   // Abort action/loaders once we can no longer write a response
   let controller: AbortController | null = new AbortController();
   const init: RequestInit = {
-    method: req.method,
-    headers: createRemixHeaders(req.headers),
+    method: request.method,
+    headers: createRemixHeaders(request.headers),
     signal: controller.signal,
   };
 
@@ -61,11 +61,11 @@ const createRemixRequest = (
   // not yet sent a response (i.e., `close` without `finish`)
   // `finish` -> done rendering the response
   // `close` -> response can no longer be written to
-  res.raw.on("finish", () => (controller = null));
-  res.raw.on("close", () => controller?.abort());
+  reply.raw.on("finish", () => (controller = null));
+  reply.raw.on("close", () => controller?.abort());
 
-  if (req.method !== "GET" && req.method !== "HEAD") {
-    init.body = createReadableStreamFromReadable(req.raw);
+  if (request.method !== "GET" && request.method !== "HEAD") {
+    init.body = createReadableStreamFromReadable(request.raw);
     Reflect.set(init, "duplex", "half");
   }
 
@@ -73,24 +73,24 @@ const createRemixRequest = (
 };
 
 const sendRemixResponse = async (
-  res: FastifyReply,
+  reply: FastifyReply,
   nodeResponse: Response,
 ): Promise<void> => {
-  res.raw.statusMessage = nodeResponse.statusText;
-  res.raw.statusCode = nodeResponse.status;
+  reply.raw.statusMessage = nodeResponse.statusText;
+  reply.raw.statusCode = nodeResponse.status;
 
   for (const [key, value] of nodeResponse.headers.entries()) {
-    res.raw.setHeader(key, value);
+    reply.raw.setHeader(key, value);
   }
 
   if (nodeResponse.headers.get("Content-Type")?.match(/text\/event-stream/i)) {
-    res.raw.flushHeaders();
+    reply.raw.flushHeaders();
   }
 
   if (nodeResponse.body) {
-    await writeReadableStreamToWritable(nodeResponse.body, res.raw);
+    await writeReadableStreamToWritable(nodeResponse.body, reply.raw);
   } else {
-    res.raw.end();
+    reply.raw.end();
   }
 };
 

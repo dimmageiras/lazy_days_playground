@@ -1,5 +1,9 @@
 import type { KeyAsString, ValueOf } from "type-fest";
 
+import { TypeHelper } from "./type.helper.ts";
+
+const { castAsType } = TypeHelper;
+
 /**
  * Gets typed entries from an object, preserving key-value type relationships.
  * This is a type-safe wrapper around Object.entries() that maintains proper typing.
@@ -20,9 +24,11 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
 ): {
   [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
 }[KeyAsString<TObject>][] =>
-  Object.entries(object) as {
-    [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
-  }[KeyAsString<TObject>][];
+  castAsType<
+    {
+      [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
+    }[KeyAsString<TObject>][]
+  >(Object.entries(object));
 
 /**
  * Gets typed keys from an object.
@@ -41,7 +47,8 @@ const getObjectEntries = <TObject extends Record<string, unknown>>(
  */
 const getObjectKeys = <TObject extends Record<string, unknown>>(
   object: TObject,
-): KeyAsString<TObject>[] => Object.keys(object) as KeyAsString<TObject>[];
+): KeyAsString<TObject>[] =>
+  castAsType<KeyAsString<TObject>[]>(Object.keys(object));
 
 /**
  * Gets typed values from an object.
@@ -53,7 +60,7 @@ const getObjectKeys = <TObject extends Record<string, unknown>>(
  */
 const getObjectValues = <T extends Record<string, unknown>>(
   initialObject: T,
-): ValueOf<T>[] => Object.values(initialObject) as ValueOf<T>[];
+): ValueOf<T>[] => castAsType<ValueOf<T>[]>(Object.values(initialObject));
 
 /**
  * Checks if the given value is an object and not an array.

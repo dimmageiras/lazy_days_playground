@@ -2,8 +2,10 @@ import { validate as uuidValidate, version as uuidVersion } from "uuid";
 import { describe, vi } from "vitest";
 
 import { IdUtilsHelper } from "./id-utils.helper";
+import { TypeHelper } from "./type.helper";
 
 const { fastIdGen, isSecureId, secureIdGen } = IdUtilsHelper;
+const { castAsType } = TypeHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -90,10 +92,10 @@ describe("IdUtilsHelper", () => {
     });
 
     it("should return false for non-string inputs", ({ expect }) => {
-      expect(isSecureId(null as unknown as string)).toBe(false);
-      expect(isSecureId(undefined as unknown as string)).toBe(false);
-      expect(isSecureId(123 as unknown as string)).toBe(false);
-      expect(isSecureId({} as unknown as string)).toBe(false);
+      expect(isSecureId(castAsType<string>(null))).toBe(false);
+      expect(isSecureId(castAsType<string>(undefined))).toBe(false);
+      expect(isSecureId(castAsType<string>(123))).toBe(false);
+      expect(isSecureId(castAsType<string>({}))).toBe(false);
     });
   });
 });

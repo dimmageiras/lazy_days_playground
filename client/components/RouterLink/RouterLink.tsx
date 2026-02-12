@@ -2,6 +2,7 @@ import classNames from "classnames";
 import type { JSX } from "react";
 
 import { DomEventsHelper } from "@client/helpers/dom-events.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { ExternalLink } from "./components/ExternalLink";
 import { InternalLink } from "./components/InternalLink";
@@ -71,6 +72,7 @@ type RouterLinkProps =
 
 const RouterLink = (props: RouterLinkProps): JSX.Element => {
   const { handleMouseDown } = DomEventsHelper;
+  const { castAsType } = TypeHelper;
 
   const {
     as = "external",
@@ -95,7 +97,9 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
         <InternalLink
           className={linkClassName}
           handleMouseDown={handleMouseDown}
-          {...(restProps as Omit<InternalRouterLinkProps, CommonPropsToRemove>)}
+          {...castAsType<Omit<InternalRouterLinkProps, CommonPropsToRemove>>(
+            restProps,
+          )}
         />
       );
     case LINK_AS.navLink:
@@ -103,7 +107,9 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
         <NavLink
           className={linkClassName}
           handleMouseDown={handleMouseDown}
-          {...(restProps as Omit<NavRouterLinkProps, CommonPropsToRemove>)}
+          {...castAsType<Omit<NavRouterLinkProps, CommonPropsToRemove>>(
+            restProps,
+          )}
         />
       );
     case LINK_AS.external:
@@ -112,7 +118,9 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
         <ExternalLink
           className={linkClassName}
           handleMouseDown={handleMouseDown}
-          {...(restProps as Omit<ExternalRouterLinkProps, CommonPropsToRemove>)}
+          {...castAsType<Omit<ExternalRouterLinkProps, CommonPropsToRemove>>(
+            restProps,
+          )}
         />
       );
   }

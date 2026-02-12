@@ -32,14 +32,14 @@ const createRequestHandler: CreateRequestHandlerFactory = ({
           contentSecurityPolicy: false, // Exclude React Router routes from CSP
         },
       },
-      async (req, res) => {
-        const request = createRemixRequest(req, res);
-        const loadContext = await getLoadContext?.(req, res);
+      async (request, reply) => {
+        const remixRequest = createRemixRequest(request, reply);
+        const loadContext = await getLoadContext?.(request, reply);
 
-        const response = await handleRequest(request, loadContext);
+        const response = await handleRequest(remixRequest, loadContext);
 
-        await sendRemixResponse(res, response);
-      }
+        await sendRemixResponse(reply, response);
+      },
     );
 
     done();
