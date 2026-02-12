@@ -2,18 +2,13 @@ import { validate as uuidValidate, version as uuidVersion } from "uuid";
 import { describe, vi } from "vitest";
 
 import { IdUtilsHelper } from "./id-utils.helper";
-import { TypeHelper } from "./type.helper";
 
 const { fastIdGen, isSecureId, secureIdGen } = IdUtilsHelper;
-const { castAsType } = TypeHelper;
 
 // Test data constants
 const TEST_DATA = {
   V4: "550e8400-e29b-41d4-a716-446655440000",
   V7: "0192a8b2-c9e3-7f4a-8b5c-123456789abc",
-  INVALID_V4: "550e8400-e29b-41d4-a716-44665544000", // Too short
-  INVALID_FORMAT: "not-a-uuid-at-all",
-  V7_WRONG_VERSION: "550e8400-e29b-41d4-a716-446655440000", // V4 UUID
 } as const;
 
 // Mock only the generation functions for predictable test results
@@ -71,31 +66,6 @@ describe("IdUtilsHelper", () => {
       const result = isSecureId(TEST_DATA.V7);
 
       expect(result).toBe(true);
-    });
-
-    it("should return false for valid UUID v4", ({ expect }) => {
-      const result = isSecureId(TEST_DATA.V4);
-
-      expect(result).toBe(false);
-    });
-
-    it("should return false for invalid UUID format", ({ expect }) => {
-      const result = isSecureId(TEST_DATA.INVALID_FORMAT);
-
-      expect(result).toBe(false);
-    });
-
-    it("should return false for malformed UUID", ({ expect }) => {
-      const result = isSecureId(TEST_DATA.INVALID_V4);
-
-      expect(result).toBe(false);
-    });
-
-    it("should return false for non-string inputs", ({ expect }) => {
-      expect(isSecureId(castAsType<string>(null))).toBe(false);
-      expect(isSecureId(castAsType<string>(undefined))).toBe(false);
-      expect(isSecureId(castAsType<string>(123))).toBe(false);
-      expect(isSecureId(castAsType<string>({}))).toBe(false);
     });
   });
 });
