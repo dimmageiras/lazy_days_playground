@@ -1,6 +1,8 @@
 import type { RefObject } from "react";
 import { useEffect, useRef } from "react";
 
+import { ArrayUtilsHelper } from "@shared/helpers/array-utils.helper";
+
 import { ClickOutsideHelper } from "./helpers/click-outside.helper";
 
 const DEFAULT_EVENTS = ["mousedown", "touchstart"];
@@ -33,13 +35,15 @@ const useClickOutside = <TElement extends HTMLElement>(
 
   useEffect(() => {
     const listener = (event: Event) => {
+      const { isArray } = ArrayUtilsHelper;
+
       const target = getEventTarget(event);
 
       if (!(target instanceof HTMLElement)) {
         return;
       }
 
-      if (Array.isArray(nodes)) {
+      if (isArray(nodes)) {
         const shouldIgnore = shouldIgnoreTarget(target);
         const shouldTrigger = nodes.every(
           (node) => !!node && !event.composedPath().includes(node),

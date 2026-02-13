@@ -4,6 +4,10 @@ import {
 } from "@react-router/node";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
+import { ArrayUtilsHelper } from "../../../../shared/helpers/array-utils.helper.ts";
+
+const { isArray } = ArrayUtilsHelper;
+
 const createRemixHeaders = (
   requestHeaders: FastifyRequest["headers"],
 ): Headers => {
@@ -11,7 +15,7 @@ const createRemixHeaders = (
 
   for (const [key, values] of Object.entries(requestHeaders)) {
     if (values) {
-      if (Array.isArray(values)) {
+      if (isArray(values)) {
         for (const value of values) {
           headers.append(key, value);
         }
@@ -32,10 +36,10 @@ const createRemixRequest = (
   // `X-Forwarded-Host` or `Host`
   const xForwardedHost = request.headers["x-forwarded-host"];
   const host = request.headers.host;
-  const xForwardedHostStr = Array.isArray(xForwardedHost)
+  const xForwardedHostStr = isArray(xForwardedHost)
     ? xForwardedHost[0]
     : xForwardedHost;
-  const hostStr: string | undefined = Array.isArray(host) ? host[0] : host;
+  const hostStr: string | undefined = isArray(host) ? host[0] : host;
   const [, hostnamePortStr] = xForwardedHostStr?.split(":") ?? [];
   const [, hostPortStr] = hostStr?.split(":") ?? [];
   const hostnamePort = Number.parseInt(hostnamePortStr ?? "", 10);

@@ -1,7 +1,9 @@
 import type { KeyAsString, ValueOf } from "type-fest";
 
+import { ArrayUtilsHelper } from "./array-utils.helper.ts";
 import { TypeHelper } from "./type.helper.ts";
 
+const { isArray } = ArrayUtilsHelper;
 const { castAsType } = TypeHelper;
 
 /**
@@ -69,7 +71,7 @@ const getObjectValues = <T extends Record<string, unknown>>(
  * @returns True if the value is an object and not an array, false otherwise
  */
 const isObject = (item: unknown): item is Record<string, unknown> => {
-  return typeof item === "object" && item !== null && !Array.isArray(item);
+  return typeof item === "object" && item !== null && !isArray(item);
 };
 
 /**

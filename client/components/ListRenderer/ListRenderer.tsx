@@ -1,5 +1,7 @@
 import type { JSX } from "react";
 
+import { ArrayUtilsHelper } from "@shared/helpers/array-utils.helper";
+
 import { ListRendererBase } from "./components/ListRendererBase";
 
 /**
@@ -67,7 +69,9 @@ const ListRenderer = <TItem,>({
   getKey,
   renderComponent,
 }: ListRendererProps<TItem>): JSX.Element => {
-  if (!Array.isArray(data)) {
+  const { isArray } = ArrayUtilsHelper;
+
+  if (!isArray(data)) {
     throw new TypeError("ListRenderer: data prop must be an array");
   }
 

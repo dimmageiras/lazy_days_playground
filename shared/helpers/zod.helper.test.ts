@@ -1,5 +1,6 @@
 import type { KeyAsString } from "type-fest";
-import { beforeAll, beforeEach, describe, it, vi } from "vitest";
+import type { TestAPI } from "vitest";
+import { beforeAll, beforeEach, describe, vi } from "vitest";
 import type { $ZodIssue } from "zod/v4/core";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
@@ -114,6 +115,7 @@ const createTestCase = (
 // Test helper function to test issue code mappings
 const testIssueCodeMapping = (
   key: KeyAsString<typeof ISSUE_CODE_TEST_CASES>,
+  it: TestAPI,
 ) => {
   const testCase = Reflect.get(ISSUE_CODE_TEST_CASES, key);
   const { code, expected, extraProps } = testCase;
@@ -128,9 +130,11 @@ const testIssueCodeMapping = (
 };
 
 describe("ZodUtilsHelper", () => {
-  describe("formatError", () => {
+  describe("formatError", (it) => {
     // Data-driven tests for ISSUE_CODES
-    getObjectKeys(ISSUE_CODE_TEST_CASES).forEach(testIssueCodeMapping);
+    getObjectKeys(ISSUE_CODE_TEST_CASES).forEach((key) =>
+      testIssueCodeMapping(key, it),
+    );
   });
 
   describe("loadLocale", (it) => {

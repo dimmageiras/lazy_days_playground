@@ -80,6 +80,17 @@ const getCurrentUTCDate = (): Date => {
 };
 
 /**
+ * Gets a future UTC date/time as a Date object in UTC.
+ * Use this for accurate time comparisons regardless of server timezone.
+ *
+ * @param maxAge - Maximum age in seconds (e.g., 300 for 5 minutes)
+ * @returns Future date/time as Date object (UTC)
+ */
+const getFutureUTCDate = (maxAge: number): Date => {
+  return dayjs().utc().add(maxAge, "seconds").toDate();
+};
+
+/**
  * Converts any date to UTC ISO 8601 format.
  * Use this when you need to format a specific date/time.
  *
@@ -96,5 +107,6 @@ export const DateHelper = {
   formatTimestampLocal,
   getCurrentISOTimestamp,
   getCurrentUTCDate,
+  getFutureUTCDate,
   toISOTimestamp,
 };

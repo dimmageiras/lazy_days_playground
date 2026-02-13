@@ -10,8 +10,15 @@ const vitestConfig = defineConfig({
         "**/*.d.ts",
         "**/coverage/**",
         "dist/",
+        "index.ts",
         "node_modules/",
       ],
+      // TO-DO: Re-enable include when we have more tests in place
+      // include: [
+      //   "client/**/*.{ts,tsx}",
+      //   "server/**/*.{ts,tsx}",
+      //   "shared/**/*.{ts,tsx}",
+      // ],
       provider: "v8",
     },
     environment: "jsdom",
