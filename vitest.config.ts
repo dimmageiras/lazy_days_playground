@@ -8,6 +8,8 @@ const vitestConfig = defineConfig({
       exclude: [
         "**/*.config.*",
         "**/*.d.ts",
+        "**/*.schema.ts",
+        "**/*.type.ts",
         "**/coverage/**",
         "dist/",
         "index.ts",
