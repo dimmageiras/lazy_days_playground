@@ -88,9 +88,7 @@ describe("AuthClientHelper", () => {
     it("should return http URL in development mode", ({ expect }) => {
       vi.spyOn(RootEnvModule, "IS_DEVELOPMENT", "get").mockReturnValue(true);
       vi.spyOn(RootEnvModule, "HOST", "get").mockReturnValue(TEST_DATA.HOST);
-      vi.spyOn(RootEnvModule, "PORT", "get").mockReturnValue(
-        TEST_DATA.PORT as never,
-      );
+      vi.spyOn(RootEnvModule, "PORT", "get").mockReturnValue(TEST_DATA.PORT);
 
       const result = getBaseUrl();
 
@@ -100,7 +98,7 @@ describe("AuthClientHelper", () => {
     it("should return https URL in production mode", ({ expect }) => {
       vi.spyOn(RootEnvModule, "IS_DEVELOPMENT", "get").mockReturnValue(false);
       vi.spyOn(RootEnvModule, "HOST", "get").mockReturnValue("example.com");
-      vi.spyOn(RootEnvModule, "PORT", "get").mockReturnValue("8080" as never);
+      vi.spyOn(RootEnvModule, "PORT", "get").mockReturnValue("8080");
 
       const result = getBaseUrl();
 

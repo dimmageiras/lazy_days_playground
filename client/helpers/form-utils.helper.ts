@@ -9,6 +9,8 @@ import type {
   ZodObject,
 } from "@shared/wrappers/zod.wrapper";
 
+const { getObjectKeys, isObject } = ObjectUtilsHelper;
+
 /**
  * Generates props to prevent browser/password manager autofill on form inputs.
  * Supports multiple password managers: 1Password, Bitwarden, LastPass, Dashlane.
@@ -93,13 +95,13 @@ const getSchemaFromDiscriminatedUnion = <
 const isFieldSchemaRequired = <TSchema extends ZodObject>(
   fieldSchema: TSchema,
 ): boolean => {
-  const { isPlainObject } = ObjectUtilsHelper;
+  const isZodObject = isObject(fieldSchema) && "safeParse" in fieldSchema;
 
-  if (!isPlainObject(fieldSchema) || !("safeParse" in fieldSchema)) {
-    return false;
+  if (isZodObject) {
+    return !fieldSchema.safeParse(undefined).success;
   }
 
-  return !fieldSchema.safeParse(undefined).success;
+  return false;
 };
 
 /**
@@ -191,8 +193,6 @@ const checkFieldIsRequiredInDiscriminatedUnion = <
 const hasFormErrors = <TFormErrors extends FieldErrors>(
   errors: TFormErrors,
 ): boolean => {
-  const { getObjectKeys } = ObjectUtilsHelper;
-
   return getObjectKeys(errors).length > 0;
 };
 

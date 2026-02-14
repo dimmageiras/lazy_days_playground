@@ -66,13 +66,8 @@ const testHandlerCall = (
   key: KeyAsString<typeof HANDLER_TEST_CASES>,
   it: TestAPI,
 ) => {
-  const testCase = Reflect.get(HANDLER_TEST_CASES, key) as unknown;
-  const { handlerName, params, mockMethod, expectedResult } = testCase as {
-    handlerName: string;
-    params: readonly unknown[];
-    mockMethod: string;
-    expectedResult: unknown;
-  };
+  const testCase = Reflect.get(HANDLER_TEST_CASES, key);
+  const { handlerName, params, mockMethod, expectedResult } = testCase;
 
   it(`should call ${mockMethod} with correct parameters`, async ({
     expect,
@@ -81,14 +76,12 @@ const testHandlerCall = (
     const corePromise = Promise.resolve(castAsType<Auth>(mockAuthCore));
 
     const handlers = getEmailPasswordHandlers(corePromise);
-    const handlerFn = Reflect.get(handlers, handlerName) as (
-      ...args: unknown[]
-    ) => Promise<unknown>;
+    const handlerFn = castAsType<(...args: unknown[]) => Promise<unknown>>(
+      Reflect.get(handlers, handlerName),
+    );
     const result = await handlerFn(...params);
 
-    const mockFn = Reflect.get(mockAuthCore, mockMethod) as ReturnType<
-      typeof vi.fn
-    >;
+    const mockFn = Reflect.get(mockAuthCore, mockMethod);
 
     expect(mockFn).toHaveBeenCalledTimes(1);
     expect(mockFn).toHaveBeenCalledWith(...params);
