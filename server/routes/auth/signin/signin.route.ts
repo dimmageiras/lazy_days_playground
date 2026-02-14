@@ -99,7 +99,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
           response.setCookie(
             ACCESS_TOKEN,
             encryptedToken,
-            ACCESS_TOKEN_COOKIE_CONFIG
+            ACCESS_TOKEN_COOKIE_CONFIG,
           );
 
           const dbResponse: SigninCreateData = {
@@ -120,7 +120,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
               requestId,
               stack: error instanceof Error ? error.stack : undefined,
             },
-            "💥 Signin request failed with error"
+            "💥 Signin request failed with error",
           );
 
           const signinValidationError = {
@@ -139,7 +139,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
               },
               noIdentityFoundError: signinValidationError,
               userError: signinValidationError,
-            }
+            },
           );
 
           const errorResponse: SigninCreateError = {
@@ -150,7 +150,7 @@ const signinRoute = async (fastify: FastifyInstance): Promise<void> => {
 
           return response.status(statusCode).send(errorResponse);
         }
-      }
+      },
     );
 };
 

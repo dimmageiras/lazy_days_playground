@@ -90,7 +90,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId,
             stack: error instanceof Error ? error.stack : undefined,
           },
-          "💥 Database health check failed with error"
+          "💥 Database health check failed with error",
         );
 
         const errorResponse: HealthDatabaseListError = {
@@ -101,7 +101,7 @@ const databaseRoute = async (fastify: FastifyInstance): Promise<void> => {
 
         return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
-    }
+    },
   );
 };
 

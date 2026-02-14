@@ -96,13 +96,13 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
           if (result.status === "complete") {
             // Encrypt the token before storing in cookie
             const encryptedToken = await encryptData(
-              result.tokenData.auth_token
+              result.tokenData.auth_token,
             );
 
             response.setCookie(
               ACCESS_TOKEN,
               encryptedToken,
-              ACCESS_TOKEN_COOKIE_CONFIG
+              ACCESS_TOKEN_COOKIE_CONFIG,
             );
 
             const dbResponse: SignupCreateData = {
@@ -116,7 +116,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
             response.setCookie(
               PKCE_VERIFIER,
               result.verifier,
-              GEL_PKCE_VERIFIER_COOKIE_CONFIG
+              GEL_PKCE_VERIFIER_COOKIE_CONFIG,
             );
 
             const dbResponse: SignupCreateData = {
@@ -140,7 +140,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
               requestId,
               stack: error instanceof Error ? error.stack : undefined,
             },
-            "💥 Signup request failed with error"
+            "💥 Signup request failed with error",
           );
 
           const signupValidationError = {
@@ -159,7 +159,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
                 statusCode: BAD_REQUEST,
               },
               userError: signupValidationError,
-            }
+            },
           );
 
           const errorResponse: SignupCreateError = {
@@ -170,7 +170,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
 
           return response.status(statusCode).send(errorResponse);
         }
-      }
+      },
     );
 };
 

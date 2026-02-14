@@ -1,11 +1,9 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { IdUtilsHelper } from "../../shared/helpers/id-utils.helper.ts";
 import { AUTH_COOKIE_NAMES } from "../constants/auth-cookie.constant.ts";
 import { HTTP_STATUS } from "../constants/http-status.constant.ts";
 import { AuthValidationHelper } from "../helpers/auth-validation.helper.ts";
 import { CookieHelper } from "../helpers/cookie.helper.ts";
-import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 import { RoutesHelper } from "../helpers/routes.helper.ts";
 
 /**
@@ -24,13 +22,11 @@ import { RoutesHelper } from "../helpers/routes.helper.ts";
  */
 const authMiddleware = async (
   request: FastifyRequest,
-  response: FastifyReply
+  response: FastifyReply,
 ): Promise<void> => {
   const { validateAuthToken } = AuthValidationHelper;
   const { getEncryptedCookie } = CookieHelper;
-  const { fastIdGen } = IdUtilsHelper;
-  const { log } = PinoLogHelper;
-  const { getCurrentISOTimestamp } = RoutesHelper;
+  const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
 
   const requestId = fastIdGen();
   const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
@@ -47,7 +43,7 @@ const authMiddleware = async (
           requestId,
           url: request.url,
         },
-        "Authentication failed: no token provided"
+        "Authentication failed: no token provided",
       );
 
       return response.status(UNAUTHORIZED).send({
@@ -69,7 +65,7 @@ const authMiddleware = async (
           requestId,
           url: request.url,
         },
-        "Authentication failed: invalid or expired token"
+        "Authentication failed: invalid or expired token",
       );
 
       return response.status(UNAUTHORIZED).send({
@@ -93,7 +89,7 @@ const authMiddleware = async (
         stack: error instanceof Error ? error.stack : undefined,
         url: request.url,
       },
-      "💥 Authentication middleware error"
+      "💥 Authentication middleware error",
     );
 
     return response.status(UNAUTHORIZED).send({

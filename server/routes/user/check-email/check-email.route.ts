@@ -81,7 +81,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
               FILTER .email = <str>$email
             )
           `,
-            { email }
+            { email },
           );
 
           const [isEmailInDb = false] = result;
@@ -111,7 +111,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId,
             stack: error.stack,
           },
-          "💥 Check email request failed with error"
+          "💥 Check email request failed with error",
         );
 
         const emailCheckError = {
@@ -134,7 +134,7 @@ const checkEmailRoute = async (fastify: FastifyInstance): Promise<void> => {
 
         return response.status(statusCode).send(errorResponse);
       }
-    }
+    },
   );
 };
 

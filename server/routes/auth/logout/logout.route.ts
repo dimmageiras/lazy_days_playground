@@ -79,7 +79,7 @@ const logoutRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId,
             stack: error.stack,
           },
-          "💥 Logout request failed with error"
+          "💥 Logout request failed with error",
         );
 
         const errorResponse: LogoutCreateError = {
@@ -90,7 +90,7 @@ const logoutRoute = async (fastify: FastifyInstance): Promise<void> => {
 
         return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
-    }
+    },
   );
 };
 

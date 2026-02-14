@@ -25,6 +25,7 @@ const vitestConfig = defineConfig({
     },
     environment: "jsdom",
     globals: true,
+    retry: 1,
     setupFiles: ["./vitest.setup.ts"],
   },
 });

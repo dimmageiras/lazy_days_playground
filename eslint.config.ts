@@ -1,7 +1,7 @@
 import pluginJS from "@eslint/js";
 import { plugin as pluginTanstackQuery } from "@tanstack/eslint-plugin-query";
 import tsParser from "@typescript-eslint/parser";
-import type { ESLint, Linter } from "eslint";
+import type { Linter } from "eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 import * as pluginCSSModules from "eslint-plugin-css-modules";
 import pluginReact from "eslint-plugin-react";
@@ -9,7 +9,7 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactRefresh from "eslint-plugin-react-refresh";
 import pluginSecurity from "eslint-plugin-security";
 import pluginSimpleImportSort from "eslint-plugin-simple-import-sort";
-import pluginSonarjs from "eslint-plugin-sonarjs";
+import { configs as pluginSonarjsConfigs } from "eslint-plugin-sonarjs";
 import globals from "globals";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -33,8 +33,8 @@ export default defineConfig([
       pluginReact.configs.flat["jsx-runtime"] ?? {},
       pluginReactHooks.configs.flat["recommended-latest"],
       pluginReactRefresh.configs.vite,
-      ...pluginTanstackQuery.configs["flat/recommended"],
-      pluginSonarjs.configs.recommended,
+      pluginTanstackQuery.configs["flat/recommended"],
+      pluginSonarjsConfigs.recommended,
     ],
     languageOptions: {
       ecmaVersion: "latest",
@@ -58,7 +58,7 @@ export default defineConfig([
       },
     },
     plugins: {
-      "css-modules": pluginCSSModules as ESLint.Plugin,
+      "css-modules": pluginCSSModules,
       "simple-import-sort": pluginSimpleImportSort,
       security: pluginSecurity,
     },
