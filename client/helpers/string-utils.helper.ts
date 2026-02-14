@@ -16,6 +16,18 @@ const safeCamelCase = <TString extends string>(
   return castAsType<CamelCase<TString>>(camelCase(str));
 };
 
+/**
+ * Converts a string to uppercase while preserving type-level information
+ * @param str - The input string to convert to uppercase
+ * @returns The uppercase version of the input string with preserved type information
+ */
+const toUpperCase = <TString extends string>(
+  str: TString,
+): Uppercase<TString> => {
+  return castAsType<Uppercase<TString>>(str.toUpperCase());
+};
+
 export const StringUtilsHelper = {
   safeCamelCase,
+  toUpperCase,
 };

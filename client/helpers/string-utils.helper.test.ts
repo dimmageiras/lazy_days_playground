@@ -2,7 +2,7 @@ import { describe } from "vitest";
 
 import { StringUtilsHelper } from "./string-utils.helper";
 
-const { safeCamelCase } = StringUtilsHelper;
+const { safeCamelCase, toUpperCase } = StringUtilsHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -22,6 +22,14 @@ describe("StringUtilsHelper", () => {
       const result = safeCamelCase(TEST_DATA.SNAKE);
 
       expect(result).toBe("userId");
+    });
+  });
+
+  describe("toUpperCase", (it) => {
+    it("should convert a string to uppercase", ({ expect }) => {
+      const result = toUpperCase(TEST_DATA.BASIC);
+
+      expect(result).toBe("HELLO WORLD");
     });
   });
 });

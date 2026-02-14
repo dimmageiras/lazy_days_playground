@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
+import { IS_EXISTING_USER } from "@client/constants/user.constants";
 import { useSignin, useSignup } from "@client/services/auth";
 import { useEmailExistence } from "@client/services/user";
 
@@ -26,7 +27,7 @@ const AuthForm = (): JSX.Element => {
   const signinMutation = useSignin();
   const signupMutation = useSignup();
 
-  const { isExistingUser, isNewUser, isUnchecked } = useEmailExistence();
+  const isExistingUser = useEmailExistence();
 
   const formMethods = useForm<AuthFormData>({
     ...AUTH_FORM_INITIAL_VALUES,
@@ -63,14 +64,14 @@ const AuthForm = (): JSX.Element => {
 
     const mode = getValues("mode");
 
-    if (isExistingUser && mode !== SIGNIN) {
+    if (isExistingUser === IS_EXISTING_USER.TRUE && mode !== SIGNIN) {
       setValue("mode", SIGNIN);
     }
 
-    if (isNewUser && mode !== SIGNUP) {
+    if (isExistingUser === IS_EXISTING_USER.FALSE && mode !== SIGNUP) {
       setValue("mode", SIGNUP);
     }
-  }, [getValues, isExistingUser, isLoading, isNewUser, setValue]);
+  }, [getValues, isExistingUser, isLoading, setValue]);
 
   if (wasLoadingBefore && !isLoading) {
     setWasLoadingBefore(false);
@@ -86,8 +87,6 @@ const AuthForm = (): JSX.Element => {
           <FormFields
             isExistingUser={isExistingUser}
             isFormValid={formMethods.formState.isValid}
-            isNewUser={isNewUser}
-            isUnchecked={isUnchecked}
           />
         </ReactRouterForm>
       </FormProvider>
