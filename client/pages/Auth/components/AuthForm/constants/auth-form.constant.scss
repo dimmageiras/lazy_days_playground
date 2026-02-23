@@ -1,0 +1,20 @@
+@use "@client/components/BaseCard/constants/base-card.constant.scss" as
+  BaseCardConstants;
+@use "@client/components/TextInput/constants/text-input.constant.scss" as
+  TextInputConstants;
+
+$fieldset-gap: 1rem;
+$fieldset-horizontal-padding: 0.5rem;
+$fieldset-vertical-padding: 0.5rem;
+$form-actions-height: 2.5rem;
+$form-fields-gap: 0.5rem;
+
+@function calculate-form-card-height() {
+  @return calc(
+    #{(2 * BaseCardConstants.$card-vertical-padding)} +
+      #{(2 * BaseCardConstants.$card-content-vertical-padding)} +
+      #{(2 * $fieldset-vertical-padding)} +
+      #{(3 * TextInputConstants.$total-input-height)} + $fieldset-gap +
+      #{(2 * $form-fields-gap)} + $form-actions-height
+  );
+}

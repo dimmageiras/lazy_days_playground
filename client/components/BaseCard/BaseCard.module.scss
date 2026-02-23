@@ -1,8 +1,10 @@
+@use "@client/components/BaseCard/constants/base-card.constant.scss" as *;
+
 .base-card {
   align-items: center;
   display: flex;
   justify-content: center;
-  padding: 3rem 0;
+  padding: $card-vertical-padding $card-horizontal-padding;
 
   &.hidden {
     display: none;
@@ -15,7 +17,7 @@
     height: 100%;
     max-width: 20.625rem;
     min-width: 20.625rem;
-    padding: 1.5rem;
+    padding: $card-content-vertical-padding $card-content-horizontal-padding;
     width: 100%;
   }
 }

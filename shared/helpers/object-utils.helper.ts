@@ -60,9 +60,10 @@ const getObjectKeys = <TObject extends Record<string, unknown>>(
  * @param object - The object to get values from
  * @returns Array of object values with proper typing
  */
-const getObjectValues = <T extends Record<string, unknown>>(
-  initialObject: T,
-): ValueOf<T>[] => castAsType<ValueOf<T>[]>(Object.values(initialObject));
+const getObjectValues = <TObject extends Record<string, unknown>>(
+  initialObject: TObject,
+): ValueOf<TObject>[] =>
+  castAsType<ValueOf<TObject>[]>(Object.values(initialObject));
 
 /**
  * Checks if the given value is an object and not an array.
@@ -72,6 +73,25 @@ const getObjectValues = <T extends Record<string, unknown>>(
  */
 const isObject = (item: unknown): item is Record<string, unknown> => {
   return typeof item === "object" && item !== null && !isArray(item);
+};
+
+/**
+ * Checks if an object has a specific key.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param initialObject - The object to check
+ * @param key - The key to check for
+ * @returns True if the object has the key, false otherwise
+ */
+const hasObjectKey = <TObject extends object, TKey extends string>(
+  initialObject: TObject,
+  key: TKey,
+): initialObject is TObject & Record<TKey, unknown> => {
+  if (!isObject(initialObject)) {
+    return false;
+  }
+
+  return Reflect.has(initialObject, key);
 };
 
 /**
@@ -97,6 +117,7 @@ export const ObjectUtilsHelper = {
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
+  hasObjectKey,
   isObject,
   isPlainObject,
 };

@@ -1,5 +1,4 @@
 import type { JSX } from "react";
-import { useCallback } from "react";
 import { useStoreState } from "zustand-x";
 
 import { RadioButton } from "@client/components/RadioButton";
@@ -17,17 +16,12 @@ interface FilterProps {
 const Filter = ({ filter }: FilterProps): JSX.Element => {
   const [selectedTreatment, setSelectedTreatment] = useStoreState(
     staffStore,
-    "selectedTreatment"
+    "selectedTreatment",
   );
 
   const { safeCamelCase } = StringUtilsHelper;
 
   const treatmentValue = safeCamelCase(filter.name);
-
-  const handleTreatmentChange = useCallback(
-    () => setSelectedTreatment(treatmentValue),
-    [setSelectedTreatment, treatmentValue]
-  );
 
   return (
     <RadioButton
@@ -35,7 +29,7 @@ const Filter = ({ filter }: FilterProps): JSX.Element => {
       isChecked={selectedTreatment === treatmentValue}
       label={filter.name}
       name="treatment"
-      onChange={handleTreatmentChange}
+      onChange={() => setSelectedTreatment(treatmentValue)}
       value={treatmentValue}
     />
   );

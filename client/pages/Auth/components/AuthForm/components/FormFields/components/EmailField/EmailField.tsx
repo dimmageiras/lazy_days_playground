@@ -1,85 +1,42 @@
-import type { ChangeEvent, FocusEvent, JSX } from "react";
-import { useEffect, useMemo } from "react";
-import { useController, useFormContext } from "react-hook-form";
+import type { JSX } from "react";
+import { useController, useFormContext, useWatch } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
-import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
-import { useDebounce } from "@client/hooks/useDebounce";
-import { FORM_FIELDS } from "@client/pages/Auth/components/AuthForm/components/FormFields/constants/form-fields.constant";
-import { authFormSchema } from "@client/pages/Auth/components/AuthForm/schemas/auth-form.schema";
+import { useAuthFieldFocus } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldFocus";
+import { useFieldRequired } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldRequired";
+import {
+  FORM_FIELDS,
+  FORM_MODES,
+} from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
-import { useCheckEmailExists } from "@client/services/user/mutations/useEmailExistence.mutation";
-import { TIMING } from "@shared/constants/timing.constant";
-
-import { EmailFieldHelper } from "./helpers/email-field.helper";
 
 const {
   EMAIL: { name: EMAIL_FIELD_NAME, label: EMAIL_FIELD_LABEL },
 } = FORM_FIELDS;
-const { SECONDS_HALF_IN_MS } = TIMING;
+const { CHECK_EMAIL } = FORM_MODES;
 
 const EmailField = (): JSX.Element => {
-  const { setFocus, watch } = useFormContext();
+  const formMethods = useFormContext<AuthFormData>();
+  const mode = useWatch({ control: formMethods.control, name: "mode" });
   const {
-    field: { onBlur, onChange, ...fieldProps },
-    fieldState: { error, invalid, isDirty, isTouched },
+    field: fieldProps,
+    fieldState: { error },
   } = useController<AuthFormData, typeof EMAIL_FIELD_NAME>({
     name: EMAIL_FIELD_NAME,
   });
-  const { mutateAsync: checkEmailExists } = useCheckEmailExists();
 
-  const { checkEmailValidity, handleBlur, handleChange } = EmailFieldHelper;
-  const { checkFieldIsRequiredInDiscriminatedUnion } = FormUtilsHelper;
+  const isRequired = useFieldRequired(EMAIL_FIELD_NAME);
 
-  const mode = watch("mode");
-
-  const isRequired = useMemo(
-    () =>
-      checkFieldIsRequiredInDiscriminatedUnion(
-        authFormSchema,
-        EMAIL_FIELD_NAME,
-        mode
-      ),
-    [checkFieldIsRequiredInDiscriminatedUnion, mode]
-  );
-
-  const hasBeenValidated = isTouched || invalid || !!error;
-  const isFieldUsedOrDisabled = fieldProps.disabled || isDirty || isTouched;
-
-  const debouncedEmailValidation = useDebounce(
-    async (email: string): Promise<void> => {
-      await checkEmailValidity(email, checkEmailExists);
-    },
-    SECONDS_HALF_IN_MS
-  );
-
-  const handleEmailChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    handleChange(event, onChange, debouncedEmailValidation, hasBeenValidated);
-  };
-
-  const handleEmailBlur = (event: FocusEvent<HTMLInputElement>) => {
-    handleBlur(event, onBlur, checkEmailExists, hasBeenValidated);
-  };
-
-  useEffect(() => {
-    if (isFieldUsedOrDisabled) {
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      setFocus(EMAIL_FIELD_NAME);
-    });
-  }, [isFieldUsedOrDisabled, setFocus]);
+  useAuthFieldFocus();
 
   return (
     <TextInput
       // TO-DO: Add webauthn support
       autoComplete="email"
+      disabled={mode !== CHECK_EMAIL}
       errorMessage={error?.message}
       hasFloatingLabel
       label={EMAIL_FIELD_LABEL}
-      onBlur={handleEmailBlur}
-      onChange={handleEmailChange}
       required={isRequired}
       type="email"
       {...fieldProps}

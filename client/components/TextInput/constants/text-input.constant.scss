@@ -1,0 +1,9 @@
+$container-gap: 0.5rem;
+$error-message-height: 1.0625rem;
+$input-height: 2.5rem;
+$label-height: 1.2rem;
+
+$total-input-height: calc(
+  $label-height + $container-gap + $input-height + $container-gap +
+    $error-message-height
+);

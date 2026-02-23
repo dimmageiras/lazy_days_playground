@@ -1,4 +1,5 @@
 import { reactRouter } from "@react-router/dev/vite";
+import path from "node:path";
 import { reactRouterDevTools } from "react-router-devtools";
 import type { UserConfigFnObject } from "vite";
 import { defineConfig } from "vite";
@@ -56,6 +57,11 @@ const viteConfig = defineConfig(() => {
         typescript: true,
       }),
     ],
+    resolve: {
+      alias: {
+        "@client": path.resolve(__dirname, "client"),
+      },
+    },
     server: {
       hmr: {
         clientPort: 24678,

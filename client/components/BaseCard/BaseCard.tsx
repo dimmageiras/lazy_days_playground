@@ -7,7 +7,17 @@ import styles from "./BaseCard.module.scss";
  * Props interface for the BaseCard component
  */
 interface BaseCardProps extends PropsWithChildren {
-  /** Whether the BaseCard is hidden */
+  /**
+   * Optional CSS class to apply to the BaseCard
+   * */
+  cardClassName?: string | undefined;
+  /**
+   * Optional CSS class to apply to the content element
+   * */
+  contentClassName?: string | undefined;
+  /**
+   * Whether the BaseCard is hidden
+   * */
   isHidden?: boolean;
 }
 
@@ -29,16 +39,24 @@ interface BaseCardProps extends PropsWithChildren {
  * @returns JSX.Element - The rendered BaseCard component
  */
 const BaseCard = ({
+  cardClassName,
   children,
+  contentClassName,
   isHidden = false,
 }: BaseCardProps): JSX.Element => {
   return (
     <article
-      className={classNames(styles["base-card"], {
-        [String(styles["hidden"])]: isHidden,
-      })}
+      className={classNames(
+        styles["base-card"],
+        {
+          [String(styles["hidden"])]: isHidden,
+        },
+        cardClassName,
+      )}
     >
-      <div className={styles["content"]}>{children}</div>
+      <div className={classNames(styles["content"], contentClassName)}>
+        {children}
+      </div>
     </article>
   );
 };

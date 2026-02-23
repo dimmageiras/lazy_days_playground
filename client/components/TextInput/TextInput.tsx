@@ -11,7 +11,14 @@ import type { TextInputType } from "./types/text-input.type";
  * Props interface for the TextInput component.
  * Extends standard input props while enforcing specific text-based input types.
  */
-interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
+interface TextInputProps extends Omit<
+  ComponentPropsWithRef<"input">,
+  "className" | "type"
+> {
+  /**
+   * Optional CSS class to apply to the container element.
+   */
+  containerClassName?: string | undefined;
   /**
    * Optional error message to display below the input.
    */
@@ -20,6 +27,10 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
    * Whether the label should float above the input when the input is focused or has content.
    */
   hasFloatingLabel?: boolean;
+  /**
+   * Optional CSS class to apply to the input element.
+   */
+  inputClassName?: string | undefined;
   /**
    * The label text for the input field.
    */
@@ -78,9 +89,10 @@ interface TextInputProps extends Omit<ComponentPropsWithRef<"input">, "type"> {
  */
 const TextInput = ({
   autoComplete = "off",
-  className,
+  containerClassName,
   errorMessage,
   hasFloatingLabel = false,
+  inputClassName,
   label,
   ...props
 }: TextInputProps): JSX.Element => {
@@ -96,7 +108,9 @@ const TextInput = ({
   const isRequired = !!props.required;
 
   return (
-    <div className={styles["text-input-container"]}>
+    <div
+      className={classNames(styles["text-input-container"], containerClassName)}
+    >
       <label
         className={classNames(styles["label"], {
           [String(styles["floating"])]: hasFloatingLabel,
@@ -114,7 +128,7 @@ const TextInput = ({
         className={classNames(
           styles["input"],
           { [String(styles["has-value"])]: !!props.value },
-          className,
+          inputClassName,
         )}
         id={props.name}
         {...(hasErrorMessage && {

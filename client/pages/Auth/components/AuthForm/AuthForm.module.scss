@@ -1,0 +1,27 @@
+@use "@client/pages/Auth/components/AuthForm/constants/auth-form.constant.scss"
+  as *;
+
+.form-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  justify-content: center;
+  margin: 1.5rem;
+
+  .form-card {
+    align-items: flex-end;
+    height: calculate-form-card-height();
+
+    .content {
+      height: fit-content;
+
+      .fieldset {
+        display: flex;
+        flex-direction: column;
+        gap: $fieldset-gap;
+        padding: $fieldset-vertical-padding $fieldset-horizontal-padding;
+      }
+    }
+  }
+}

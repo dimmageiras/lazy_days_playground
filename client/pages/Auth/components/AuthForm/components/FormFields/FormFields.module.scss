@@ -1,18 +1,34 @@
-.fieldset {
+@use "@client/pages/Auth/components/AuthForm/constants/auth-form.constant.scss"
+  as *;
+@use "@client/components/TextInput/constants/text-input.constant.scss" as
+  TextInputConstants;
+
+.form-fields {
   display: grid;
-  gap: 0.5rem;
+  gap: $form-fields-gap;
+  overflow: hidden;
+  transition: 0.5s ease-out;
 
-  padding: 0.5rem;
-
-  &:has(div:first-child:nth-last-child(3)) {
-    grid-template-rows: 1fr 1fr 1fr auto;
-
-    div:nth-child(3) {
-      grid-area: 4 / 1;
-    }
+  &:has(> *:first-child:nth-last-child(1)) {
+    height: calc(TextInputConstants.$total-input-height);
+    max-height: calc(TextInputConstants.$total-input-height);
   }
 
-  &:has(div:first-child:nth-last-child(4)) {
-    grid-template-rows: 1fr 1fr 1fr auto;
+  &:has(> *:first-child:nth-last-child(2)) {
+    height: calc(
+      (2 * TextInputConstants.$total-input-height) + $form-fields-gap
+    );
+    max-height: calc(
+      (2 * TextInputConstants.$total-input-height) + $form-fields-gap
+    );
+  }
+
+  &:has(> *:first-child:nth-last-child(3)) {
+    height: calc(
+      (3 * TextInputConstants.$total-input-height) + (2 * $form-fields-gap)
+    );
+    max-height: calc(
+      (3 * TextInputConstants.$total-input-height) + (2 * $form-fields-gap)
+    );
   }
 }

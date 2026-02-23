@@ -16,7 +16,7 @@
       "client/pages/**/index.ts"
     ]
   },
-  "ignore": [".react-router/**", "dist/**", "shared/types/generated/**"],
+  "ignore": ["shared/types/generated/**"],
   "ignoreDependencies": [
     "@babel/plugin-transform-explicit-resource-management",
     "@babel/preset-typescript",

@@ -1,68 +1,59 @@
 import type { ChangeEvent, JSX } from "react";
-import { useMemo } from "react";
-import { useController, useFormContext } from "react-hook-form";
+import { useController, useFormContext, useWatch } from "react-hook-form";
 
 import { TextInput } from "@client/components/TextInput";
-import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
+import { useAuthFieldFocus } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldFocus";
+import { useFieldRequired } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldRequired";
 import {
   FORM_FIELDS,
-  FORM_TYPES,
-} from "@client/pages/Auth/components/AuthForm/components/FormFields/constants/form-fields.constant";
-import { authFormSchema } from "@client/pages/Auth/components/AuthForm/schemas/auth-form.schema";
+  FORM_MODES,
+} from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
 const {
-  CONFIRM_PASSWORD: { name: confirmPasswordName },
-  PASSWORD: { name, label },
+  CONFIRM_PASSWORD: { name: CONFIRM_PASSWORD_FIELD_NAME },
+  PASSWORD: { name: PASSWORD_FIELD_NAME, label: PASSWORD_FIELD_LABEL },
 } = FORM_FIELDS;
-const { SIGNUP } = FORM_TYPES;
-const PASSWORD_FIELD_NAME = name;
-const PASSWORD_FIELD_LABEL = label;
+const { SIGNUP } = FORM_MODES;
 
 const PasswordField = (): JSX.Element => {
-  const { getFieldState, trigger, watch } = useFormContext<AuthFormData>();
+  const formMethods = useFormContext<AuthFormData>();
+  const mode = useWatch({ control: formMethods.control, name: "mode" });
   const {
     field: { onChange, ...fieldProps },
     fieldState: { error },
   } = useController<AuthFormData, typeof PASSWORD_FIELD_NAME>({
+    defaultValue: "",
     name: PASSWORD_FIELD_NAME,
   });
 
-  const { checkFieldIsRequiredInDiscriminatedUnion } = FormUtilsHelper;
+  const isRequired = useFieldRequired(PASSWORD_FIELD_NAME);
 
-  const mode = watch("mode");
+  const autoComplete = mode === SIGNUP ? "new-password" : "current-password";
 
-  const isRequired = useMemo(
-    () =>
-      checkFieldIsRequiredInDiscriminatedUnion(
-        authFormSchema,
-        PASSWORD_FIELD_NAME,
-        mode,
-      ),
-    [checkFieldIsRequiredInDiscriminatedUnion, mode],
-  );
+  const handlePasswordChange = async (
+    event: ChangeEvent<HTMLInputElement>,
+  ): Promise<void> => {
+    onChange(event);
 
-  const autoComplete = useMemo(
-    () => (mode === SIGNUP ? "new-password" : "current-password"),
-    [mode],
-  );
+    if (mode !== SIGNUP) {
+      return;
+    }
 
-  const handlePasswordChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const {
-      isTouched,
-      invalid,
       error: confirmPasswordError,
-    } = getFieldState(confirmPasswordName);
-    const isConfirmPasswordRequired = mode === FORM_TYPES.SIGNUP;
+      invalid,
+      isTouched,
+    } = formMethods.getFieldState(CONFIRM_PASSWORD_FIELD_NAME);
     const hasConfirmPasswordBeenValidated =
       isTouched || invalid || !!confirmPasswordError;
 
-    onChange(event);
-
-    if (isConfirmPasswordRequired && hasConfirmPasswordBeenValidated) {
-      await trigger(confirmPasswordName);
+    if (hasConfirmPasswordBeenValidated) {
+      await formMethods.trigger(CONFIRM_PASSWORD_FIELD_NAME);
     }
   };
+
+  useAuthFieldFocus();
 
   return (
     <TextInput

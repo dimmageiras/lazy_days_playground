@@ -2,8 +2,13 @@ import { describe } from "vitest";
 
 import { ObjectUtilsHelper } from "./object-utils.helper";
 
-const { getObjectEntries, getObjectKeys, getObjectValues, isPlainObject } =
-  ObjectUtilsHelper;
+const {
+  getObjectEntries,
+  getObjectKeys,
+  getObjectValues,
+  hasObjectKey,
+  isPlainObject,
+} = ObjectUtilsHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -75,6 +80,28 @@ describe("ObjectUtilsHelper", () => {
       result.forEach((value) => {
         expect(TEST_DATA.EXPECTED_VALUES).toContain(value);
       });
+    });
+  });
+
+  describe("hasObjectKey", (it) => {
+    it("should return true when the key exists", ({ expect }) => {
+      expect(hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, "name")).toBe(true);
+    });
+
+    it("should return false when the key does not exist", ({ expect }) => {
+      expect(hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, "unknown")).toBe(false);
+    });
+
+    it("should return false for an empty object", ({ expect }) => {
+      expect(hasObjectKey(TEST_DATA.OBJECTS.EMPTY, "name")).toBe(false);
+    });
+
+    it("should return false for arrays", ({ expect }) => {
+      expect(hasObjectKey([], "length")).toBe(false);
+    });
+
+    it("should return true for inherited prototype keys", ({ expect }) => {
+      expect(hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, "toString")).toBe(true);
     });
   });
 

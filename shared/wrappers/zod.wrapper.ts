@@ -15,7 +15,7 @@ type ZodInfer<T extends z.ZodTypeAny> = z.infer<T>;
 type ZodLocale = KeyAsString<typeof zodLocales>;
 type ZodObject<
   TShape extends z.core.$ZodShape = z.core.$ZodLooseShape,
-  TConfig extends z.core.$ZodObjectConfig = z.core.$strip
+  TConfig extends z.core.$ZodObjectConfig = z.core.$strip,
 > = z.ZodObject<TShape, TConfig>;
 
 const zBoolean = z.boolean;

@@ -35,6 +35,8 @@ export default defineConfig([
       pluginReactRefresh.configs.vite,
       pluginTanstackQuery.configs["flat/recommended"],
       pluginSonarjsConfigs.recommended,
+      // @ts-expect-error - eslint-plugin-security is not typed correctly
+      pluginSecurity.configs.recommended,
     ],
     languageOptions: {
       ecmaVersion: "latest",
@@ -60,7 +62,6 @@ export default defineConfig([
     plugins: {
       "css-modules": pluginCSSModules,
       "simple-import-sort": pluginSimpleImportSort,
-      security: pluginSecurity,
     },
     rules: {
       "@typescript-eslint/consistent-type-definitions": "error",

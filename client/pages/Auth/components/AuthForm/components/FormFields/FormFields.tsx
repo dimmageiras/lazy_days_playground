@@ -1,38 +1,29 @@
 import type { JSX } from "react";
+import { useFormContext, useWatch } from "react-hook-form";
 
-import { IS_EXISTING_USER } from "@client/constants/user.constants";
+import { FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
-import { ActionButtons } from "./components/ActionButtons";
-import { ConfirmPassword } from "./components/ConfirmPassword";
-import { EmailField } from "./components/EmailField";
-import { PasswordField } from "./components/PasswordField";
+import { ConfirmPasswordField } from "./components/ConfirmPasswordField/index.ts";
+import { EmailField } from "./components/EmailField/index.ts";
+import { PasswordField } from "./components/PasswordField/index.ts";
 import styles from "./FormFields.module.scss";
 
-interface FormFieldsProps {
-  isExistingUser: (typeof IS_EXISTING_USER)[keyof typeof IS_EXISTING_USER];
-  isFormValid: boolean;
-}
+const { CHECK_EMAIL, SIGNUP } = FORM_MODES;
 
-const FormFields = ({
-  isExistingUser,
-  isFormValid,
-}: FormFieldsProps): JSX.Element => {
-  const shouldEnableSignIn =
-    isFormValid && isExistingUser === IS_EXISTING_USER.TRUE;
-  const shouldEnableSignUp =
-    isFormValid && isExistingUser === IS_EXISTING_USER.FALSE;
+const FormFields = (): JSX.Element => {
+  const formMethods = useFormContext<AuthFormData>();
+  const mode = useWatch({ control: formMethods.control, name: "mode" });
+
+  const isNotCheckEmailMode = mode !== CHECK_EMAIL;
+  const isSignupMode = mode === SIGNUP;
 
   return (
-    <fieldset className={styles["fieldset"]}>
+    <div className={styles["form-fields"]}>
       <EmailField />
-      <PasswordField />
-      {isExistingUser === IS_EXISTING_USER.FALSE ? <ConfirmPassword /> : null}
-      <ActionButtons
-        shouldDisableActionButtons={isExistingUser === IS_EXISTING_USER.NULL}
-        shouldEnableSignIn={shouldEnableSignIn}
-        shouldEnableSignUp={shouldEnableSignUp}
-      />
-    </fieldset>
+      {isNotCheckEmailMode ? <PasswordField /> : null}
+      {isSignupMode ? <ConfirmPasswordField /> : null}
+    </div>
   );
 };
 

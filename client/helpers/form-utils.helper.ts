@@ -151,7 +151,11 @@ const checkFieldIsRequiredInDiscriminatedUnion = <
   TSchema extends ZodDiscriminatedUnion<Array<ZodObject>>,
 >(
   schema: TSchema,
-  field: KeyAsString<ZodInfer<TSchema>>,
+  field: ZodInfer<TSchema> extends infer TBranch
+    ? TBranch extends Record<string, unknown>
+      ? keyof TBranch
+      : never
+    : never,
   discriminator: ZodInfer<TSchema>["mode"],
 ): boolean => {
   const schemaFromDiscriminatedUnion = getSchemaFromDiscriminatedUnion(

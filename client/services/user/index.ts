@@ -1,3 +1,3 @@
-import { useEmailExistence } from "./mutations/useEmailExistence.mutation";
+import { useCheckEmailExists } from "./mutations/useEmailExistence.mutation";
 
-export { useEmailExistence };
+export { useCheckEmailExists };
