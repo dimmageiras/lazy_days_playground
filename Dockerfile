@@ -30,7 +30,7 @@ ENV HOME=/home/full_stack
 
 # Install nvm
 ENV NVM_DIR=/home/full_stack/.nvm
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
 
 # Install Node.js 24
 RUN . "$NVM_DIR/nvm.sh" \
