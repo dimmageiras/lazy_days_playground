@@ -1,7 +1,7 @@
 import type { RouteConfig } from "@react-router/dev/routes";
 import { layout } from "@react-router/dev/routes";
 
-import { ROUTES_CONSTANTS } from "./constants/routes.constants";
+import { ROUTES_CONSTANTS } from "./constants/routes.constant";
 import { protectedRoutes } from "./protected.route";
 import { publicRoutes } from "./public.route";
 

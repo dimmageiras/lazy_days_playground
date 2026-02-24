@@ -10,9 +10,9 @@ The `react-router-fastify` plugin is a bridge between React Router and Fastify t
 
 This plugin is part of the `lazy_days_playground` project and is located at `server/plugins/react-router-fastify/`. It depends on:
 
-- `react-router` (^7.10.1): React Router framework
-- `@react-router/node` (^7.10.1): Node.js utilities for React Router
-- `fastify` (^5.6.2): Web framework
+- `react-router` (^7.13.1): React Router framework
+- `@react-router/node` (^7.13.1): Node.js utilities for React Router
+- `fastify` (^5.7.4): Web framework
 
 ## Quick Start
 
@@ -249,9 +249,49 @@ Fastify-level errors (connection errors, etc.) should be handled at the Fastify 
 
 ## Dependencies
 
-- `react-router` (^7.10.1): Core React Router framework
-- `@react-router/node` (^7.10.1): Node.js specific utilities for React Router
-- `fastify` (^5.6.2): Web framework
+- `react-router` (^7.13.1): Core React Router framework
+- `@react-router/node` (^7.13.1): Node.js specific utilities for React Router
+- `fastify` (^5.7.4): Web framework
+
+## Differences from `@react-router/express`
+
+This plugin is a Fastify adaptation of the official [`@react-router/express`](https://www.npmjs.com/package/@react-router/express) adapter. The core logic is intentionally kept as close as possible to the Express version to simplify maintenance when upstream changes occur. Below are the intentional differences and their rationale.
+
+> **Reference version:** `@react-router/express@7.13.1`
+
+### Framework Adaptations
+
+These differences exist because Fastify and Express have different APIs:
+
+| Area | `@react-router/express` | This plugin (Fastify) | Reason |
+|---|---|---|---|
+| **Return type** | Express middleware `(req, res, next) => Promise<void>` | `FastifyPluginCallback` registered via `fastify.register()` | Fastify uses a plugin system instead of middleware |
+| **Error handling** | `try-catch` → `next(error)` to delegate to Express error middleware | No explicit `try-catch`; Fastify automatically catches errors from async route handlers | Fastify's native async error handling makes this unnecessary |
+| **Header access** | `req.get("X-Forwarded-Host")` returns a string | `request.headers["x-forwarded-host"]` can return `string \| string[]`; explicitly handles arrays via `isArray()` | Fastify exposes raw Node.js headers which preserve arrays |
+| **URL source** | `req.originalUrl` | `request.url` | Equivalent in Fastify context; both provide the full path + query string |
+| **Body source** | `createReadableStreamFromReadable(req)` | `createReadableStreamFromReadable(request.raw)` | Fastify wraps the raw Node.js request; `.raw` is needed to get the readable stream |
+| **Response object** | Writes directly to `res` (Express response) | Writes to `reply.raw` (underlying Node.js `http.ServerResponse`) | Bypasses Fastify's response abstraction to match the raw streaming behavior |
+| **Response headers** | `res.append(key, value)` | `reply.raw.appendHeader(key, value)` | Node.js `appendHeader` (available since v18.3+) is the raw equivalent of Express's `append()` |
+| **Status code** | `res.status(nodeResponse.status)` | `reply.raw.statusCode = nodeResponse.status` | Direct property assignment on the raw response |
+| **Rate limiting** | N/A | Route config includes `rateLimit: false` | Excludes React Router catch-all from Fastify rate-limiting plugins |
+
+### Intentional Behavioral Differences
+
+| Area | `@react-router/express` | This plugin (Fastify) | Reason |
+|---|---|---|---|
+| **Default mode** | `process.env.NODE_ENV` | `MODES.DEVELOPMENT` (from shared constants) | Explicit default aligned with the project's shared constants pattern |
+| **Mode type** | `string` (any value) | `"development" \| "production" \| "test"` | Stricter type safety; React Router only uses these three values |
+| **Duplex property** | `init.duplex = "half"` | `Reflect.set(init, "duplex", "half")` | `RequestInit` type doesn't include `duplex`; `Reflect.set` avoids TypeScript errors without type assertions |
+| **Array utility** | `Array.isArray()` | `ArrayUtilsHelper.isArray()` | Project convention for shared utility usage |
+
+### Keeping in Sync
+
+When updating to a new `@react-router/express` version:
+
+1. Check the [@react-router/express CHANGELOG](https://github.com/remix-run/react-router/blob/main/packages/react-router-express/CHANGELOG.md) — most releases are dependency-only bumps with no code changes
+2. If code changes exist, compare the [source](https://github.com/remix-run/react-router/blob/main/packages/react-router-express/server.ts) against `helpers/request-helpers.helper.ts` and `react-router-fastify.plugin.ts`
+3. Apply the same logic changes, translating Express APIs to their Fastify equivalents per the tables above
+4. Update the dependency versions in this README
 
 ## License
 

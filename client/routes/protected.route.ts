@@ -1,6 +1,6 @@
 import { route } from "@react-router/dev/routes";
 
-import { ROUTES_CONSTANTS } from "./constants/routes.constants";
+import { ROUTES_CONSTANTS } from "./constants/routes.constant";
 
 const { INDEX_FILE } = ROUTES_CONSTANTS;
 

@@ -1,7 +1,7 @@
 import { index, route } from "@react-router/dev/routes";
 
 import { IS_DEVELOPMENT } from "../../shared/constants/root-env.constant";
-import { ROUTES_CONSTANTS } from "./constants/routes.constants";
+import { ROUTES_CONSTANTS } from "./constants/routes.constant";
 
 const { INDEX_FILE } = ROUTES_CONSTANTS;
 

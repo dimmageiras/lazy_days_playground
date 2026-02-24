@@ -3,7 +3,7 @@ import type { JSX, MouseEvent } from "react";
 import type { NavigateFunction } from "react-router";
 
 import { NavigationWrapper } from "@client/components/NavigationWrapper";
-import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constants";
+import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constant";
 import { useClientSessionStoreState } from "@client/providers/ClientSessionProvider";
 import { useLogout } from "@client/services/auth";
 

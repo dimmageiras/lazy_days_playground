@@ -84,7 +84,7 @@ const sendRemixResponse = async (
   reply.raw.statusCode = nodeResponse.status;
 
   for (const [key, value] of nodeResponse.headers.entries()) {
-    reply.raw.setHeader(key, value);
+    reply.raw.appendHeader(key, value);
   }
 
   if (nodeResponse.headers.get("Content-Type")?.match(/text\/event-stream/i)) {

@@ -1,7 +1,7 @@
 import type { Route } from "@rr/types/client/+types/root";
 import { dehydrate } from "@tanstack/react-query";
 
-import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constants";
+import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constant";
 import { authRouteContext } from "@client/contexts/auth-route.context";
 import { ClientIdRouteContext } from "@client/contexts/client-id-route.context";
 import { CookieHelper } from "@client/helpers/cookie.helper";

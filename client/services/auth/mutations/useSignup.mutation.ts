@@ -1,7 +1,7 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
 
-import { AUTH_QUERY_KEYS } from "@client/services/auth/auth.constants";
+import { AUTH_QUERY_KEYS } from "@client/services/auth/auth.constant";
 import { AuthService } from "@client/services/auth/auth.services";
 import type {
   SignupCreateData,
