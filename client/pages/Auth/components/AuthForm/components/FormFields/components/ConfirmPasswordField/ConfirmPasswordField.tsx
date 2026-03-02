@@ -4,7 +4,7 @@ import { useController } from "react-hook-form";
 import { TextInput } from "@client/components/TextInput";
 import { useAuthFieldFocus } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldFocus";
 import { useFieldRequired } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldRequired";
-import { FORM_FIELDS } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import { AUTH_FORM_FIELDS } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
 const {
@@ -12,7 +12,7 @@ const {
     name: CONFIRM_PASSWORD_FIELD_NAME,
     label: CONFIRM_PASSWORD_FIELD_LABEL,
   },
-} = FORM_FIELDS;
+} = AUTH_FORM_FIELDS;
 
 const ConfirmPasswordField = (): JSX.Element => {
   const {

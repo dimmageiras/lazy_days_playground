@@ -3,12 +3,12 @@ import type { JSX } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
-import { FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
 import styles from "./FormActions.module.scss";
 
-const { CHECK_EMAIL, SIGNIN, SIGNUP } = FORM_MODES;
+const { CHECK_EMAIL, SIGNIN, SIGNUP } = AUTH_FORM_MODES;
 
 const FormActions = (): JSX.Element => {
   const formMethods = useFormContext<AuthFormData>();

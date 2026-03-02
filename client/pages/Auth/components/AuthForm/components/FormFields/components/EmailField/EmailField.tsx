@@ -5,15 +5,15 @@ import { TextInput } from "@client/components/TextInput";
 import { useAuthFieldFocus } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldFocus";
 import { useFieldRequired } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldRequired";
 import {
-  FORM_FIELDS,
-  FORM_MODES,
+  AUTH_FORM_FIELDS,
+  AUTH_FORM_MODES,
 } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
 const {
   EMAIL: { name: EMAIL_FIELD_NAME, label: EMAIL_FIELD_LABEL },
-} = FORM_FIELDS;
-const { CHECK_EMAIL } = FORM_MODES;
+} = AUTH_FORM_FIELDS;
+const { CHECK_EMAIL } = AUTH_FORM_MODES;
 
 const EmailField = (): JSX.Element => {
   const formMethods = useFormContext<AuthFormData>();

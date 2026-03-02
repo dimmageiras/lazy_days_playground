@@ -5,16 +5,16 @@ import { TextInput } from "@client/components/TextInput";
 import { useAuthFieldFocus } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldFocus";
 import { useFieldRequired } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldRequired";
 import {
-  FORM_FIELDS,
-  FORM_MODES,
+  AUTH_FORM_FIELDS,
+  AUTH_FORM_MODES,
 } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
 const {
   CONFIRM_PASSWORD: { name: CONFIRM_PASSWORD_FIELD_NAME },
   PASSWORD: { name: PASSWORD_FIELD_NAME, label: PASSWORD_FIELD_LABEL },
-} = FORM_FIELDS;
-const { SIGNUP } = FORM_MODES;
+} = AUTH_FORM_FIELDS;
+const { SIGNUP } = AUTH_FORM_MODES;
 
 const PasswordField = (): JSX.Element => {
   const formMethods = useFormContext<AuthFormData>();
