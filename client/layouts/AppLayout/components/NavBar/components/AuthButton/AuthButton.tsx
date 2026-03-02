@@ -3,11 +3,13 @@ import type { JSX, MouseEvent } from "react";
 import type { NavigateFunction } from "react-router";
 
 import { NavigationWrapper } from "@client/components/NavigationWrapper";
-import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constant";
+import { COOKIE_KEYS } from "@client/constants/auth-cookie.constant";
 import { useClientSessionStoreState } from "@client/providers/ClientSessionProvider";
 import { useLogout } from "@client/services/auth";
 
 import styles from "./AuthButton.module.scss";
+
+const { CLIENT_ID } = COOKIE_KEYS;
 
 const AuthButton = (): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] =
@@ -20,8 +22,6 @@ const AuthButton = (): JSX.Element => {
     navigate: NavigateFunction,
   ): Promise<void> => {
     try {
-      const { CLIENT_ID } = AUTH_COOKIE_NAMES;
-
       await mutateAsync({ cookieName: CLIENT_ID });
 
       setIsAuthenticated(false);

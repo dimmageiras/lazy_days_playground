@@ -33,7 +33,7 @@
     "@react-router/node": "7.13.1",
     "@react-router/serve": "7.13.1",
     "@tanstack/react-query": "5.90.21",
-    "axios": "1.13.5",
+    "axios": "1.13.6",
     "classnames": "2.5.1",
     "dayjs": "1.11.19",
     "fastify": "5.7.4",
@@ -88,7 +88,7 @@
     "eslint-plugin-security": "4.0.0",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-sonarjs": "4.0.0",
-    "globals": "17.3.0",
+    "globals": "17.4.0",
     "jiti": "2.6.1",
     "jsdom": "28.1.0",
     "knip": "5.85.0",
@@ -110,7 +110,7 @@
   "engines": {
     "node": ">=24.0.0"
   },
-  "packageManager": "pnpm@10.30.2",
+  "packageManager": "pnpm@10.30.3",
   "pnpm": {
     "ignoredBuiltDependencies": [
       "@parcel/watcher",

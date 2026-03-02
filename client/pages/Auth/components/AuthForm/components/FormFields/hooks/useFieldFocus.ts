@@ -1,11 +1,11 @@
 import { useLayoutEffect, useRef } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 import { TIMING } from "@shared/constants/timing.constant";
 
-const { CHECK_EMAIL, SIGNIN, SIGNUP } = FORM_MODES;
+const { CHECK_EMAIL, SIGNIN, SIGNUP } = AUTH_FORM_MODES;
 const { SECONDS_HALF_IN_MS } = TIMING;
 
 const useAuthFieldFocus = (): void => {

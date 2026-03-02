@@ -1,7 +1,7 @@
 import type { Route } from "@rr/types/client/+types/root";
 import { dehydrate } from "@tanstack/react-query";
 
-import { AUTH_COOKIE_NAMES } from "@client/constants/auth-cookie.constant";
+import { COOKIE_KEYS } from "@client/constants/auth-cookie.constant";
 import { authRouteContext } from "@client/contexts/auth-route.context";
 import { ClientIdRouteContext } from "@client/contexts/client-id-route.context";
 import { CookieHelper } from "@client/helpers/cookie.helper";
@@ -11,22 +11,22 @@ import { TIMING } from "@shared/constants/timing.constant";
 import { TypeHelper } from "@shared/helpers/type.helper";
 import type { VerifyAuthListData } from "@shared/types/generated/server/auth.type";
 
+const { CLIENT_ID } = COOKIE_KEYS;
+const { MINUTES_FIVE_IN_S } = TIMING;
+
+const { createStandardCookie, hasCookie, setCookie } = CookieHelper;
+const { fetchServerData } = QueriesHelper;
+const { castAsType } = TypeHelper;
+
 const appLayoutMiddleware: Route.MiddlewareFunction = async (
   { request, context },
   next,
 ) => {
-  const { CLIENT_ID } = AUTH_COOKIE_NAMES;
-  const { MINUTES_FIVE_IN_S } = TIMING;
-
-  const { run, getOrCreateClientId, hasAccessToken } = ClientIdRouteContext;
-  const { createStandardCookie, hasCookie, setCookie } = CookieHelper;
-  const { castAsType } = TypeHelper;
+  const { getOrCreateClientId, hasAccessToken, run } = ClientIdRouteContext;
 
   const clientIdCookie = createStandardCookie(CLIENT_ID);
 
   return run(request, async () => {
-    const { fetchServerData } = QueriesHelper;
-
     const hasToken = hasAccessToken();
 
     if (!hasToken) {

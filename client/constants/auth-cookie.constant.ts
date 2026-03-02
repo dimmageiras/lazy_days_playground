@@ -1,8 +1,8 @@
 /**
- * Cookie names for authentication
+ * Cookie names authentication
  */
-const AUTH_COOKIE_NAMES = Object.freeze({
+const COOKIE_KEYS = Object.freeze({
   CLIENT_ID: "client-id",
 } as const);
 
-export { AUTH_COOKIE_NAMES };
+export { COOKIE_KEYS };

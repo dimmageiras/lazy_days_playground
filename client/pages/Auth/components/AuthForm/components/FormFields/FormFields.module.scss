@@ -6,7 +6,8 @@
 .form-fields {
   display: grid;
   gap: $form-fields-gap;
-  overflow: hidden;
+  overflow-x: visible;
+  overflow-y: clip;
   transition: 0.5s ease-out;
 
   &:has(> *:first-child:nth-last-child(1)) {

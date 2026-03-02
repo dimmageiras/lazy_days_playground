@@ -1,12 +1,12 @@
 import type { UseFormReturn } from "react-hook-form";
 import { useNavigate, useSearchParams } from "react-router";
 
-import { FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 import { useSignin, useSignup } from "@client/services/auth";
 import { useCheckEmailExists } from "@client/services/user";
 
-const { CHECK_EMAIL, SIGNIN, SIGNUP } = FORM_MODES;
+const { CHECK_EMAIL, SIGNIN, SIGNUP } = AUTH_FORM_MODES;
 
 const useAuthSubmit = (
   formMethods: UseFormReturn<AuthFormData>,
@@ -27,9 +27,15 @@ const useAuthSubmit = (
       const { exists } = await checkEmailExistsMutation.mutateAsync(email);
 
       if (exists) {
-        formMethods.setValue("mode", SIGNIN);
+        formMethods.reset({
+          ...formMethods.getValues(),
+          mode: SIGNIN,
+        });
       } else {
-        formMethods.setValue("mode", SIGNUP);
+        formMethods.reset({
+          ...formMethods.getValues(),
+          mode: SIGNUP,
+        });
       }
     } else {
       if (data.mode === SIGNIN) {
