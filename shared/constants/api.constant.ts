@@ -7,6 +7,13 @@ const API_HEALTH_ENDPOINTS = Object.freeze({
   SERVER: "server",
 } as const);
 
+const API_MUTATING_METHODS = new Set([
+  "DELETE",
+  "PATCH",
+  "POST",
+  "PUT",
+] as const);
+
 const API_REPORTS_ENDPOINTS = Object.freeze({
   CLEAR_CSP_REPORTS: "clear",
   CREATE_CSP_REPORT: "report",
@@ -14,4 +21,14 @@ const API_REPORTS_ENDPOINTS = Object.freeze({
   GET_CSP_REPORTS: "list",
 } as const);
 
-export { API_DOCS_ENDPOINTS, API_HEALTH_ENDPOINTS, API_REPORTS_ENDPOINTS };
+const API_SECURITY_ENDPOINTS = Object.freeze({
+  CSRF_TOKEN: "csrf-token",
+} as const);
+
+export {
+  API_DOCS_ENDPOINTS,
+  API_HEALTH_ENDPOINTS,
+  API_MUTATING_METHODS,
+  API_REPORTS_ENDPOINTS,
+  API_SECURITY_ENDPOINTS,
+};

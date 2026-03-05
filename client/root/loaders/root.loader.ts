@@ -1,16 +1,15 @@
 import type { Route } from "@rr/types/client/+types/root";
 
-import { cspNonceContext } from "@client/contexts/csp-nonce.context";
-import type { CSPNonceContextValue } from "@shared/types/csp.type";
+import { apiSecurityContext } from "@client/contexts/api-security.context";
+import type { ApiSecurityContextValue } from "@shared/types/api-security.type";
 
 const rootLoader = async ({
   context,
-}: Route.LoaderArgs): Promise<CSPNonceContextValue> => {
-  const { cspNonce }: CSPNonceContextValue = context.get(cspNonceContext);
+}: Route.LoaderArgs): Promise<ApiSecurityContextValue> => {
+  const { cspNonce, csrfToken }: ApiSecurityContextValue =
+    context.get(apiSecurityContext);
 
-  return {
-    cspNonce,
-  };
+  return { cspNonce, csrfToken };
 };
 
 export { rootLoader };

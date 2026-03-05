@@ -2,8 +2,10 @@ import { validate as uuidValidate, version as uuidVersion } from "uuid";
 import { describe, vi } from "vitest";
 
 import { IdUtilsHelper } from "./id-utils.helper";
+import { StringUtilsHelper } from "./string-utils.helper";
 
 const { fastIdGen, isSecureId, secureIdGen } = IdUtilsHelper;
+const { isString } = StringUtilsHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -20,11 +22,11 @@ vi.mock("uuid", () => ({
     const uuidRegex =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-57][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-    return typeof id === "string" && uuidRegex.test(id);
+    return isString(id) && uuidRegex.test(id);
   }),
   version: vi.fn((id: string) => {
     // Custom UUID version detection logic inline to avoid circular dependency
-    if (typeof id !== "string" || !id.includes("-")) {
+    if (!isString(id) || !id.includes("-")) {
       return null;
     }
 

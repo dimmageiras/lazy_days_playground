@@ -9,15 +9,19 @@ import type {
 import { MODES } from "../../../shared/constants/root-env.constant.ts";
 import { RequestHelpers } from "./helpers/request-helpers.helper.ts";
 
+const { DEVELOPMENT } = MODES;
+
 /**
  * Returns a Fastify plugin that serves the response using React Router.
+ * Uses reply.send(response) so Fastify's onSend hooks run and cookies (e.g. _csrf)
+ * set in getLoadContext are serialized onto the response.
  */
 const createRequestHandler: CreateRequestHandlerFactory = ({
   build,
   getLoadContext,
-  mode = MODES.DEVELOPMENT,
+  mode = DEVELOPMENT,
 }: CreateRequestHandlerOptions): FastifyPluginCallback => {
-  const { createRemixRequest, sendRemixResponse } = RequestHelpers;
+  const { createRemixRequest } = RequestHelpers;
 
   const handleRequest = createRemixRequestHandler(build, mode);
 
@@ -35,7 +39,7 @@ const createRequestHandler: CreateRequestHandlerFactory = ({
 
         const response = await handleRequest(remixRequest, loadContext);
 
-        await sendRemixResponse(reply, response);
+        reply.send(response);
       },
     );
 

@@ -3,12 +3,14 @@ import type { ServerInstance } from "@server/types/instance.type";
 import {
   API_HEALTH_BASE_URL,
   API_REPORTS_BASE_URL,
+  API_SECURITY_BASE_URL,
   AUTH_BASE_URL,
   USER_BASE_URL,
 } from "../../../shared/constants/base-urls.constant.ts";
 import { PinoLogHelper } from "../../helpers/pino-log.helper.ts";
 import { apiHealthRoutes } from "../../routes/api/health/index.ts";
 import { reportsRoute } from "../../routes/api/reports/index.ts";
+import { securityRoutes } from "../../routes/api/security/index.ts";
 import { authRoutes } from "../../routes/auth/index.ts";
 import { userRoutes } from "../../routes/user/index.ts";
 
@@ -59,6 +61,21 @@ const registerAuthRoutes = async (app: ServerInstance): Promise<void> => {
   }
 };
 
+const registerSecurityRoutes = async (app: ServerInstance): Promise<void> => {
+  try {
+    await app.register(securityRoutes, { prefix: API_SECURITY_BASE_URL });
+  } catch (error) {
+    log.error(
+      {
+        error: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+      "💥 Failed to register security routes"
+    );
+    process.exit(1);
+  }
+};
+
 const registerUserRoutes = async (app: ServerInstance): Promise<void> => {
   try {
     await app.register(userRoutes, { prefix: USER_BASE_URL });
@@ -77,6 +94,7 @@ const registerUserRoutes = async (app: ServerInstance): Promise<void> => {
 const initRoutesPlugins = async (app: ServerInstance): Promise<void> => {
   await registerApiHealthRoutes(app);
   await registerReportsRoutes(app);
+  await registerSecurityRoutes(app);
   await registerAuthRoutes(app);
   await registerUserRoutes(app);
 };

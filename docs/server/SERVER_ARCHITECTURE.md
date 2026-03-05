@@ -8,7 +8,7 @@ The server uses **Fastify** for HTTP handling, **React Router** for SSR, and **E
 
 | Component       | Technology    | Purpose                      |
 | --------------- | ------------- | ---------------------------- |
-| **HTTP Server** | Fastify 5.6.2 | High-performance HTTP server |
+| **HTTP Server** | Fastify 5.8.1 | High-performance HTTP server |
 | **SSR**         | React Router  | Server-side rendering        |
 | **Database**    | EdgeDB (GEL)  | Graph-relational database    |
 | **Auth**        | GEL Auth Core | Authentication provider      |
@@ -40,9 +40,9 @@ Client → Fastify
 **`server/start.ts`**: Main initialization
 
 1. Create Fastify instance
-2. Initialize GEL database client
-3. Register plugins (security, validation, routes, SSR)
-4. Set global error handler
+2. Set global error handler
+3. Initialize GEL database client
+4. Register plugins (security, validation, routes, SSR)
 5. Start HTTP server
 
 ## Core Components
@@ -69,16 +69,16 @@ app.decorate("gelClient", gelClient); // Available in all routes
 
 ### 3. Plugin System
 
+**Location**: `server/inits/inits.ts` (and each init module)
+
 Plugins registered in order:
 
-1. `fastifyZodOpenApiPlugin` - Zod validation
-2. `helmet` - Security headers
-3. `cookieFastify` - Cookie management
-4. `expressFastify` - Express compatibility (development only)
-5. `rateLimitFastify` - Rate limiting (registered last for performance)
-6. `swaggerFastify` / `swaggerUIFastify` (dev/type-gen only)
-7. Route plugins (API Health, Auth, User)
-8. `reactRouterFastify` - SSR (last, catches all)
+1. **Database** – GEL client (connection pool), decorated on `app`
+2. **Zod / OpenAPI** – `setValidatorCompiler`, `setSerializerCompiler`, `fastifyZodOpenApiPlugin`
+3. **Security** (when not type-generator) – rate limit, cookie, CSRF, Helmet (see [SECURITY.md](./SECURITY.md))
+4. **Swagger** – encapsulated child app: `swaggerFastify` + `swaggerUIFastify` (dev/type-gen only), then **route plugins** (API health, auth, user, reports, security) registered on that child
+5. **Type generation** (type-generator mode only) – spec extraction
+6. **React Router** – (dev) Express compatibility + Vite middleware; (prod) static files; then catch-all request handler (SSR). Last in the pipeline.
 
 ### Additional Plugins & Configurations
 
@@ -147,20 +147,35 @@ process.on("SIGTERM", async () => {
 
 ### 4. Global Error Handler
 
+**Location**: `server/start.ts`
+
 ```typescript
 app.setErrorHandler((error, request, response) => {
-  // Log with full context
-  log.error({ error, requestId, statusCode, url, stack });
+  const { errorMessage, errorStack } =
+    error instanceof Error
+      ? { errorMessage: error.message, errorStack: error.stack }
+      : { errorMessage: String(error), errorStack: undefined };
 
-  // Sanitize 5xx errors (hide internal details)
-  if (response.statusCode >= 500) {
-    return response.status(500).send({
+  log.error(
+    {
+      error: errorMessage,
+      method: request.method,
+      requestId: request.id,
+      stack: errorStack,
+      statusCode: response.statusCode || INTERNAL_SERVER_ERROR,
+      url: request.url,
+    },
+    "💥 Unhandled error in request",
+  );
+
+  if (response.statusCode >= INTERNAL_SERVER_ERROR || !response.statusCode) {
+    return response.status(INTERNAL_SERVER_ERROR).send({
       error: "Internal Server Error",
-      message: "An unexpected error occurred.",
+      message: "An unexpected error occurred. Please try again later.",
+      statusCode: INTERNAL_SERVER_ERROR,
     });
   }
 
-  // Pass through 4xx errors (safe client errors)
   return response.send(error);
 });
 ```
@@ -171,11 +186,11 @@ app.setErrorHandler((error, request, response) => {
 server/
 ├── index.ts                 # Entry point (env validation)
 ├── start.ts                 # Server initialization
-├── constants/               # Server constants (rate limits, CSP, etc.)
+├── constants/               # Server constants (rate limits, CSP, CSRF, etc.)
 ├── helpers/                 # Utilities (auth, encryption, logging, etc.)
 ├── inits/                   # Modular initialization
 │   ├── index.ts            # Main initialization orchestrator
-│   ├── security/           # Security plugins (helmet, rate-limit, cookies)
+│   ├── security/           # Security plugins (rate-limit, cookie, CSRF, helmet)
 │   ├── swagger/            # API documentation (dev only)
 │   └── react-router/       # SSR setup
 ├── middleware/              # Request middleware (auth)
@@ -211,7 +226,7 @@ server/
 | ----------------- | ------------------------------ | --------------------------- |
 | **Rate Limits**   | 10-200x higher                 | Strict (5-100 req/window)   |
 | **HTTPS**         | Not required                   | Required (`secure` flag)    |
-| **CSP**           | Disabled (DevTools compatible) | Fully enforced              |
+| **CSP**           | Disabled                       | Fully enforced (nonces)      |
 | **Swagger UI**    | Enabled at `/api/docs/swagger` | Disabled (security)         |
 | **Logging**       | Pretty-printed (pino-pretty)   | JSON (for aggregation)      |
 | **Error Details** | Verbose                        | Sanitized (no stack traces) |

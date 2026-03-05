@@ -2,7 +2,7 @@ import { describe } from "vitest";
 
 import { StringUtilsHelper } from "./string-utils.helper";
 
-const { safeCamelCase, toUpperCase } = StringUtilsHelper;
+const { isString, safeCamelCase, toUpperCase } = StringUtilsHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -11,6 +11,13 @@ const TEST_DATA = {
 } as const;
 
 describe("StringUtilsHelper", () => {
+  describe("isString", (it) => {
+    it("should return true if the value is a string", ({ expect }) => {
+      const result = isString(TEST_DATA.BASIC);
+
+      expect(result).toBe(true);
+    });
+  });
   describe("safeCamelCase", (it) => {
     it("should convert a string to camelCase", ({ expect }) => {
       const result = safeCamelCase(TEST_DATA.BASIC);

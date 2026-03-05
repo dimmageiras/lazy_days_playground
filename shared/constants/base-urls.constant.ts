@@ -30,6 +30,12 @@ const CSP_URL = "csp";
 /** Base URL for API CSP reports endpoints */
 const API_CSP_REPORTS_BASE_URL = `${API_REPORTS_BASE_URL}/${CSP_URL}`;
 
+/** Security URL */
+const SECURITY_URL = "security";
+
+/** Base URL for API security endpoints */
+const API_SECURITY_BASE_URL = `${API_BASE_URL}/${SECURITY_URL}`;
+
 /** Base URL for user-related endpoints */
 const USER_BASE_URL = "user";
 
@@ -39,6 +45,7 @@ export {
   API_DOCS_BASE_URL,
   API_HEALTH_BASE_URL,
   API_REPORTS_BASE_URL,
+  API_SECURITY_BASE_URL,
   AUTH_BASE_URL,
   CSP_URL,
   HEALTH_URL,

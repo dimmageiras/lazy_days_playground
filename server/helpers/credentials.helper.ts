@@ -1,5 +1,9 @@
 import maskdata from "maskdata";
 
+import { StringUtilsHelper } from "../../shared/helpers/string-utils.helper.ts";
+
+const { isString } = StringUtilsHelper;
+
 /**
  * Masks credentials in a DSN (Data Source Name) string by replacing
  * the username:password portion with asterisks.
@@ -14,7 +18,7 @@ import maskdata from "maskdata";
  * ```
  */
 const maskDsnCredentials = (dsn: string): string => {
-  if (typeof dsn !== "string") {
+  if (!isString(dsn)) {
     return dsn ?? "undefined";
   }
 

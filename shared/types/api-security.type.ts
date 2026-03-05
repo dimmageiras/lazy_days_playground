@@ -2,8 +2,9 @@ import type { FastifyReply } from "fastify";
 
 type CSPNonceType = FastifyReply["cspNonce"];
 
-interface CSPNonceContextValue {
+interface ApiSecurityContextValue {
   cspNonce: CSPNonceType;
+  csrfToken: string;
 }
 
-export type { CSPNonceContextValue, CSPNonceType };
+export type { ApiSecurityContextValue, CSPNonceType };
