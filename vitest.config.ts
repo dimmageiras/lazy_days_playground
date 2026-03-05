@@ -25,6 +25,8 @@ const vitestConfig = defineConfig({
     },
     environment: "jsdom",
     globals: true,
+    isolate: false,
+    pool: "threads",
     retry: 1,
     setupFiles: ["./vitest.setup.ts"],
   },

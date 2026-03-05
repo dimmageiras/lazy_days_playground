@@ -2,12 +2,14 @@ import type { ExpectStatic } from "vitest";
 import { describe, vi } from "vitest";
 
 import { devToolsStore } from "@client/layouts/RootLayout/components/DevTools/stores/dev-tools.store";
-import { TypeHelper } from "@shared/helpers/type.helper";
 
+import {
+  triggerObserver,
+  withMutationObserverMock,
+} from "./dev-tools.helper.test";
 import { RRDTHelper } from "./rrdt.helper";
 
 const { observeDevToolsPanel } = RRDTHelper;
-const { castAsType } = TypeHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -16,44 +18,6 @@ const TEST_DATA = {
   PANEL_COLLAPSED: '<div id="rrdt-panel" tabindex="-1"></div>',
   EMPTY_DOM: "",
 } as const;
-
-const triggerObserver = (callbackRef: { current: MutationCallback | null }) => {
-  castAsType<MutationCallback>(callbackRef.current)?.(
-    [],
-    castAsType<MutationObserver>({}),
-  );
-};
-
-const withMutationObserverMock = (
-  run: (ctx: {
-    observe: ReturnType<typeof vi.fn>;
-    disconnect: ReturnType<typeof vi.fn>;
-    callbackRef: { current: MutationCallback | null };
-  }) => void,
-) => {
-  const originalMutationObserver = globalThis.MutationObserver;
-  const observe = vi.fn();
-  const disconnect = vi.fn();
-  const callbackRef = { current: null as MutationCallback | null };
-
-  class MutationObserverMock {
-    constructor(callback: MutationCallback) {
-      callbackRef.current = callback;
-    }
-
-    observe = observe;
-    disconnect = disconnect;
-  }
-
-  try {
-    globalThis.MutationObserver =
-      castAsType<typeof MutationObserver>(MutationObserverMock);
-    run({ observe, disconnect, callbackRef });
-  } finally {
-    globalThis.MutationObserver = originalMutationObserver;
-    document.body.innerHTML = "";
-  }
-};
 
 const runPanelCase = (
   expect: ExpectStatic,

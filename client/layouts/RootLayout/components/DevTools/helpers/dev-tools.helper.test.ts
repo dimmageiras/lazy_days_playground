@@ -19,20 +19,22 @@ const setupDom = (html: string) => {
   document.body.innerHTML = html;
 };
 
-const triggerObserver = (callbackRef: { current: MutationCallback | null }) => {
+export const triggerObserver = (callbackRef: {
+  current: MutationCallback | null;
+}): void => {
   castAsType<MutationCallback>(callbackRef.current)?.(
     [],
     castAsType<MutationObserver>({}),
   );
 };
 
-const withMutationObserverMock = (
+export const withMutationObserverMock = (
   run: (ctx: {
     observe: ReturnType<typeof vi.fn>;
     disconnect: ReturnType<typeof vi.fn>;
     callbackRef: { current: MutationCallback | null };
   }) => void,
-) => {
+): void => {
   const originalMutationObserver = globalThis.MutationObserver;
   const observe = vi.fn();
   const disconnect = vi.fn();
