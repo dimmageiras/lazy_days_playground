@@ -11,6 +11,7 @@ import type {
 
 import { API_REPORTS_ENDPOINTS } from "../../../../../../shared/constants/api.constant.ts";
 import { CSP_URL } from "../../../../../../shared/constants/base-urls.constant.ts";
+import { StringUtilsHelper } from "../../../../../../shared/helpers/string-utils.helper.ts";
 import {
   cspReportErrorSchema,
   cspReportRateLimitErrorSchema,
@@ -31,6 +32,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
 
   const { getClient } = AuthClientHelper;
   const { fastIdGen, getCurrentISOTimestamp, log } = RoutesHelper;
+  const { isString } = StringUtilsHelper;
 
   // Add content type parser for CSP reports
   // Browsers send CSP reports with 'application/csp-report' content type
@@ -39,8 +41,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
     { parseAs: "string" },
     (request, body, done) => {
       try {
-        const json: typeof body =
-          typeof body === "string" ? JSON.parse(body) : body;
+        const json: typeof body = (isString(body) && JSON.parse(body)) || body;
 
         done(null, json);
       } catch (rawError) {
@@ -50,18 +51,18 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
         log.error(
           {
             bodyPreview:
-              typeof body === "string" ? body.substring(0, 200) : undefined,
+              (isString(body) && body.substring(0, 200)) || undefined,
             contentType: request.headers["content-type"],
             error: error.message,
             requestId: request.id,
             stack: error.stack,
           },
-          "💥 CSP report body parse failed with error"
+          "💥 CSP report body parse failed with error",
         );
 
         done(error, undefined);
       }
-    }
+    },
   );
 
   fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
@@ -147,7 +148,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
             requestId,
             stack: error.stack,
           },
-          "💥 CSP report processing failed with error"
+          "💥 CSP report processing failed with error",
         );
 
         // Error response
@@ -159,7 +160,7 @@ const createRoute = async (fastify: FastifyInstance): Promise<void> => {
 
         return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
-    }
+    },
   );
 };
 

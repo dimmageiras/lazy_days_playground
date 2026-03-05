@@ -9,7 +9,7 @@ import { createServer } from "vite";
 
 import type { GetLoadContextFunction } from "@server/plugins/react-router-fastify/index";
 import type { ServerInstance } from "@server/types/instance.type";
-import type { CSPNonceType } from "@shared/types/csp.type";
+import type { CSPNonceType } from "@shared/types/api-security.type";
 
 import {
   IS_DEVELOPMENT,
@@ -168,8 +168,12 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
             style: "",
           };
 
-          // Store nonces as a property on context for middleware to access
+          // Generate CSRF token (stores secret in _csrf cookie, returns token)
+          const csrfToken: string = response.generateCsrf();
+
+          // Store values as properties on context for middleware to access
           Reflect.set(context, "_cspNonce", cspNonce);
+          Reflect.set(context, "_csrfToken", csrfToken);
 
           return castAsType<ReturnType<GetLoadContextFunction>>(context);
         },

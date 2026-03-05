@@ -1,6 +1,9 @@
 import type { FastifyRequest } from "fastify";
 
+import { StringUtilsHelper } from "../../shared/helpers/string-utils.helper.ts";
 import { EncryptionHelper } from "./encryption.helper.ts";
+
+const { isString } = StringUtilsHelper;
 
 /**
  * Safely retrieves, validates, and decrypts an encrypted+signed cookie
@@ -24,7 +27,7 @@ const getEncryptedCookie = async (
   const { decryptData } = EncryptionHelper;
   const cookieValue = Reflect.get(request.cookies, cookieName);
 
-  if (!cookieValue || typeof cookieValue !== "string") {
+  if (!cookieValue || !isString(cookieValue)) {
     return null;
   }
 

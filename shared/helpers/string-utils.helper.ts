@@ -1,9 +1,17 @@
-import camelCase from "lodash/camelCase";
+import camelCase from "lodash/camelCase.js";
 import type { CamelCase } from "type-fest";
 
-import { TypeHelper } from "@shared/helpers/type.helper";
+import { TypeHelper } from "./type.helper.ts";
 
 const { castAsType } = TypeHelper;
+
+/**
+ * Checks if a value is a string.
+ *
+ * @param value - The value to check
+ * @returns True if the value is a string, false otherwise
+ */
+const isString = (value: unknown): value is string => typeof value === "string";
 
 /**
  * Safely converts a string to camelCase while preserving type-level information
@@ -28,6 +36,7 @@ const toUpperCase = <TString extends string>(
 };
 
 export const StringUtilsHelper = {
+  isString,
   safeCamelCase,
   toUpperCase,
 };

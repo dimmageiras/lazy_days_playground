@@ -9,6 +9,7 @@ The application implements defense-in-depth security with multiple layers protec
 ```
 HTTP Security Headers (Helmet)
   → Rate Limiting
+  → CSRF Protection (mutating requests)
   → Authentication Middleware
   → Input Validation (Zod)
   → Encrypted Cookies
@@ -19,37 +20,21 @@ HTTP Security Headers (Helmet)
 
 **Location**: `server/inits/security/security.init.ts`
 
-Helmet is configured with conditional application based on request type:
+Helmet is registered globally so that all responses receive security headers. In **development**, CSP is disabled (`contentSecurityPolicy: false`) so the app and DevTools work without nonce coordination. In **production**, CSP is enabled with `CSP_DIRECTIVES` and per-request nonces.
 
 ```typescript
-// Register helmet with global: false for conditional application
 await app.register(helmet, {
-  global: false, // Disable automatic application to all routes
-  contentSecurityPolicy: { directives: CSP_DIRECTIVES, useDefaults: false },
+  contentSecurityPolicy: IS_DEVELOPMENT
+    ? false
+    : { directives: CSP_DIRECTIVES, useDefaults: false },
   crossOriginEmbedderPolicy: !IS_DEVELOPMENT,
-  enableCSPNonces: true,
+  enableCSPNonces: !IS_DEVELOPMENT,
+  global: true,
   hsts: {
     includeSubDomains: true,
     maxAge: YEARS_ONE_IN_S, // 1 year
     preload: true,
   },
-});
-
-// Apply helmet conditionally based on route type
-app.addHook("onRequest", async (request, reply) => {
-  const isAsset =
-    request.url.startsWith("/assets/") || request.url === "/favicon.ico";
-
-  // For asset routes, apply full helmet with CSP
-  if (isAsset) {
-    reply.helmet();
-    return;
-  }
-
-  // For non-asset routes (React Router, API), disable CSP to allow dynamic content
-  reply.helmet({
-    contentSecurityPolicy: false,
-  });
 });
 ```
 
@@ -59,7 +44,7 @@ app.addHook("onRequest", async (request, reply) => {
 | ------------------------------ | ------------------------------------------------- |
 | `Strict-Transport-Security`    | Forces HTTPS (1 year, includeSubDomains, preload) |
 | `X-Content-Type-Options`       | `nosniff` - Prevents MIME sniffing                |
-| `Content-Security-Policy`      | Controls resource loading (see CSP section)       |
+| `Content-Security-Policy`      | Production only (see CSP section); disabled in dev |
 | `X-DNS-Prefetch-Control`       | `off` - Prevents DNS prefetch leaks               |
 | `X-Download-Options`           | `noopen` - Prevents IE drive-by downloads         |
 | `Cross-Origin-Embedder-Policy` | `require-corp` - Restricts cross-origin resources |
@@ -80,12 +65,14 @@ app.addHook("onRequest", async (request, reply) => {
 | `frameAncestors`   | `'none'`                                 | Prevents clickjacking               |
 | `imgSrc`           | `'self'`, `data:`                        | Allows self and data URIs           |
 | `objectSrc`        | `'none'`                                 | Blocks plugins (Flash, etc.)        |
-| `reportUri`        | `/api/reports/csp/report`                | CSP violation reporting endpoint    |
-| `scriptSrc`        | `'self'`                                 | Only same-origin scripts            |
-| `styleSrc`         | `'self'`, `https://fonts.googleapis.com` | Same-origin styles and Google Fonts |
+| `reportUri`        | `api/reports/csp/report` (relative)     | CSP violation reporting endpoint    |
+| `scriptSrc`        | `'self'`, nonce per request              | Same-origin scripts + allowed inline |
+| `styleSrc`         | `'self'`, `https://fonts.googleapis.com`, nonce per request | Same-origin + Google Fonts + allowed inline |
 | `upgradeInsecure…` | `[]`                                     | Upgrades HTTP to HTTPS              |
 
-**Note**: CSP nonces are always enabled in all environments. CSP is disabled for non-asset routes (e.g., React Router pages, API routes) to allow proper CSP nonce handling in the response pipeline, while asset routes (`/assets/*`, `/favicon.ico`) receive full helmet protection including CSP headers.
+**Development**: CSP is disabled. No `Content-Security-Policy` header is sent.
+
+**Production**: CSP is enabled. Helmet generates a fresh script and style nonce per request (`reply.cspNonce`). The server exposes these via the response (e.g. in the React Router load context) so the rendered page can apply them to scripts and styles.
 
 ### CSP Violation Reporting
 
@@ -93,13 +80,27 @@ app.addHook("onRequest", async (request, reply) => {
 
 Browsers automatically send violation reports when CSP policies are violated. Reports are stored in `default::CspReport` with IP tracking for monitoring security issues, policy misconfigurations, and potential XSS attacks.
 
-**Configuration**: Add `reportUri` directive in `server/constants/csp.constant.ts`
+**Configuration**: The `reportUri` directive is set in `server/constants/csp.constant.ts` using `API_CSP_REPORTS_BASE_URL` and `CREATE_CSP_REPORT`, which resolves to the relative path `api/reports/csp/report`.
 
-```typescript
-const CSP_DIRECTIVES = {
-  reportUri: ["/api/reports/csp/report"],
-};
-```
+## CSRF Protection
+
+**Location**: `server/inits/security/security.init.ts`, `server/constants/csrf.constant.ts`
+
+Mutating requests (DELETE, PATCH, POST, PUT) require a valid CSRF token in the `x-csrf-token` header. The server uses **@fastify/csrf-protection** with a double-submit cookie: a secret is stored in a cookie; callers send a token (derived from that secret) in the header.
+
+### Obtaining a token
+
+- The server can generate a token per request and expose it via the response (e.g. in load context).
+- **`GET /api/security/csrf-token`** returns a new token and sets the secret cookie. Callers use this endpoint to obtain or refresh a token (e.g. after receiving a **419** response; see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for the 419 schema).
+
+### Configuration
+
+| Constant / config      | Purpose |
+| -----------------------|--------|
+| `CSRF_HEADER`           | `x-csrf-token` — header name callers must send |
+| `CSRF_EXCLUDED_PATHS`   | Paths that skip CSRF validation (e.g. `POST /api/reports/csp/report` for browser CSP reports) |
+
+**419 response**: When the token is missing, invalid, or expired, the server responds with status **419** and a body matching `csrfTokenMismatchErrorSchema` (see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) — Global error responses).
 
 ## Cookie Security
 
@@ -286,17 +287,31 @@ fastify.post(
 
 ```typescript
 app.setErrorHandler((error, request, response) => {
-  log.error({ error, requestId, statusCode, url, stack });
+  const { errorMessage, errorStack } =
+    error instanceof Error
+      ? { errorMessage: error.message, errorStack: error.stack }
+      : { errorMessage: String(error), errorStack: undefined };
 
-  // Sanitize 5xx errors (hide internal details)
-  if (response.statusCode >= 500) {
-    return response.status(500).send({
+  log.error(
+    {
+      error: errorMessage,
+      method: request.method,
+      requestId: request.id,
+      stack: errorStack,
+      statusCode: response.statusCode || INTERNAL_SERVER_ERROR,
+      url: request.url,
+    },
+    "💥 Unhandled error in request",
+  );
+
+  if (response.statusCode >= INTERNAL_SERVER_ERROR || !response.statusCode) {
+    return response.status(INTERNAL_SERVER_ERROR).send({
       error: "Internal Server Error",
       message: "An unexpected error occurred. Please try again later.",
+      statusCode: INTERNAL_SERVER_ERROR,
     });
   }
 
-  // Pass through 4xx errors (safe client errors)
   return response.send(error);
 });
 ```
@@ -419,7 +434,7 @@ openssl rand -base64 32
 | Feature           | Development                    | Production                  |
 | ----------------- | ------------------------------ | --------------------------- |
 | **HTTPS**         | Not required                   | Required (`secure` flag)    |
-| **CSP**           | Enabled (nonces always active) | Fully enforced              |
+| **CSP**           | Disabled                       | Fully enforced (nonces)      |
 | **Rate Limits**   | 10-200x higher                 | Strict                      |
 | **Error Details** | Verbose                        | Sanitized (no stack traces) |
 
@@ -465,8 +480,10 @@ Before deploying to production:
 
 ### CSRF (Cross-Site Request Forgery)
 
-- SameSite='strict' cookies
-- Custom headers for API requests
+- **Double-submit cookie**: @fastify/csrf-protection; token in `x-csrf-token` header for all mutating requests (POST, PUT, PATCH, DELETE)
+- **Token source**: Token is available per request and via `GET /api/security/csrf-token`; callers send it in `x-csrf-token` for mutating requests (419 if missing or invalid).
+- **419** on missing/invalid token; response shape in `csrfTokenMismatchErrorSchema`
+- SameSite='strict' cookies for the CSRF secret
 
 ### SQL Injection
 
@@ -481,8 +498,8 @@ Before deploying to production:
 
 ### Clickjacking
 
-- CSP `frameAncestors: 'none'`
-- X-Frame-Options header
+- CSP `frameAncestors: 'none'` (modern standard, supersedes X-Frame-Options)
+- Helmet sets `X-Frame-Options: DENY` by default as a fallback for older browsers
 
 ## Incident Response
 

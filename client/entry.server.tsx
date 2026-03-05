@@ -9,10 +9,12 @@ import type { KeyAsString } from "type-fest";
 
 import { TIMING } from "@shared/constants/timing.constant";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
+import { StringUtilsHelper } from "@shared/helpers/string-utils.helper";
 
 const { SECONDS_FIVE_IN_MS, SECONDS_ONE_IN_MS } = TIMING;
 
-const { isPlainObject } = ObjectUtilsHelper;
+const { hasObjectKey, isPlainObject } = ObjectUtilsHelper;
+const { isString } = StringUtilsHelper;
 
 const handleRequest = (
   request: Request,
@@ -22,22 +24,17 @@ const handleRequest = (
   loadContext: AppLoadContext,
 ): Promise<Response> => {
   return new Promise((resolve, reject) => {
+    const scriptNonce =
+      (hasObjectKey(loadContext, "_cspNonce") &&
+        isPlainObject(loadContext._cspNonce) &&
+        hasObjectKey(loadContext._cspNonce, "script") &&
+        isString(loadContext._cspNonce.script) &&
+        loadContext._cspNonce.script) ||
+      "";
     const userAgent = request.headers.get("user-agent");
 
     let responseStatusCodeNew = responseStatusCode;
-    let scriptNonce: string;
     let shellRendered = false;
-
-    if (
-      "_cspNonce" in loadContext &&
-      isPlainObject(loadContext._cspNonce) &&
-      "script" in loadContext._cspNonce &&
-      typeof loadContext._cspNonce.script === "string"
-    ) {
-      scriptNonce = loadContext._cspNonce.script;
-    } else {
-      scriptNonce = "";
-    }
 
     // Ensure requests from bots and SPA Mode renders wait for all content to load before responding
     // https://react.dev/reference/react-dom/server/renderToPipeableStream#waiting-for-all-content-to-load-for-crawlers-and-static-generation

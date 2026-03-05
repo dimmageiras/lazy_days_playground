@@ -700,9 +700,10 @@ The access token is:
 
 ### 4. CSRF Protection
 
-- `SameSite=Strict` prevents cross-site requests
-- All mutations should verify origin
-- Consider CSRF tokens for sensitive operations
+The app implements CSRF protection via **@fastify/csrf-protection**. Mutating requests (POST, PUT, PATCH, DELETE) must include a valid token in the **`x-csrf-token`** header. Callers obtain a token via **`GET /api/security/csrf-token`** (e.g. after a **419** response). See [SECURITY.md](server/SECURITY.md) for full details.
+
+- `SameSite=Strict` cookies protect the CSRF secret
+- All mutations require the token in the header; 419 is returned when it is missing or invalid
 
 ---
 

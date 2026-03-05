@@ -44,7 +44,7 @@ server/routes/<domain>/
 
 ### Authentication Levels
 
-- **Public**: No middleware (health checks, CSP reports)
+- **Public**: No middleware (health checks, CSP reports, API Security e.g. `GET /api/security/csrf-token`)
 - **Optional**: `optionalAuthMiddleware` (enhanced features for authenticated users)
 - **Required**: `authMiddleware` (user-specific operations)
 
@@ -142,7 +142,7 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
             stack: error.stack,
             field: request.body?.field,
           },
-          "💥 My endpoint request failed with error"
+          "💥 My endpoint request failed with error",
         );
 
         // Error response
@@ -154,7 +154,7 @@ const myEndpointRoute = async (fastify: FastifyInstance): Promise<void> => {
 
         return response.status(SERVICE_UNAVAILABLE).send(errorResponse);
       }
-    }
+    },
   );
 };
 
@@ -248,7 +248,7 @@ fastify.get(
       data: result,
       timestamp: getCurrentISOTimestamp(),
     });
-  }
+  },
 );
 ```
 
@@ -273,7 +273,7 @@ fastify.post(
       data: result,
       timestamp: getCurrentISOTimestamp(),
     });
-  }
+  },
 );
 ```
 
@@ -317,7 +317,7 @@ fastify.get(
       /* ... */
     },
   },
-  handler
+  handler,
 );
 ```
 
@@ -341,7 +341,7 @@ try {
       stack: error.stack,
       // Context fields
     },
-    "💥 Operation failed with error"
+    "💥 Operation failed with error",
   );
 
   return response.status(SERVICE_UNAVAILABLE).send({
@@ -408,11 +408,11 @@ fastify.addContentTypeParser(
         rawError instanceof Error ? rawError : new Error(String(rawError));
       log.error(
         { error: error.message, requestId: request.id },
-        "💥 Parse failed"
+        "💥 Parse failed",
       );
       done(error, undefined);
     }
-  }
+  },
 );
 ```
 
@@ -489,4 +489,5 @@ fastify.addContentTypeParser(
 
 - [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) - Schema patterns and OpenAPI
 - [RATE_LIMITING.md](./RATE_LIMITING.md) - Rate limiting configuration
+- [SECURITY.md](./SECURITY.md) - Authentication and security (auth middleware, CSRF)
 - [ERROR_LOGGING.md](./ERROR_LOGGING.md) - Logging best practices

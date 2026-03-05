@@ -176,7 +176,7 @@ fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
       },
     } satisfies FastifyZodOpenApiSchema,
   },
-  handler
+  handler,
 );
 ```
 
@@ -187,6 +187,14 @@ fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
 - `tags`: Grouping in Swagger UI
 - `body`/`querystring`/`params`: Request schemas
 - `response`: All possible response schemas by status code
+
+### Global and security-related responses
+
+Some responses are returned by global hooks rather than a single route:
+
+- **419 (CSRF token mismatch)**: Returned when a mutating request (POST, PUT, PATCH, DELETE) is sent without a valid `x-csrf-token` header. Body schema: `csrfTokenMismatchErrorSchema` (see `shared/schemas/api-security/csrf-token-route.schema.ts`). Callers can obtain a token via **`GET /api/security/csrf-token`** (tag: **API Security** in Swagger).
+
+See [SECURITY.md](./SECURITY.md) for CSRF configuration.
 
 ## Type Generation
 
@@ -213,7 +221,7 @@ fastify.withTypeProvider<FastifyZodOpenApiTypeProvider>().post(
 import type {
   SigninCreateData,
   SigninCreateError,
-} from "@shared/types/generated/auth.type";
+} from "@shared/types/generated/server/auth.type";
 
 async (request, response) => {
   const dbResponse: SigninCreateData = {
@@ -226,6 +234,10 @@ async (request, response) => {
 ```
 
 ## Adding New Routes
+
+**See:** [ROUTE_IMPLEMENTATION.md](./ROUTE_IMPLEMENTATION.md) for the full step-by-step guide, route template, and checklist.
+
+Summary:
 
 1. **Define constants**: `shared/constants/<domain>.constant.ts`
 2. **Create schemas**: `shared/schemas/<domain>/<endpoint>-route.schema.ts`
@@ -290,7 +302,7 @@ bio: zString().max(500).optional().meta({ description: "...", example: "..." });
 ## Related Documentation
 
 - [ROUTE_IMPLEMENTATION.md](./ROUTE_IMPLEMENTATION.md) - Route implementation guide
-- [SECURITY.md](./SECURITY.md) - Security considerations (includes CSP reporting)
+- [SECURITY.md](./SECURITY.md) - Security considerations (CSP reporting, CSRF, authentication)
 - [RATE_LIMITING.md](./RATE_LIMITING.md) - Rate limiting documentation
 - [ERROR_LOGGING.md](./ERROR_LOGGING.md) - Error logging patterns
 

@@ -14,6 +14,8 @@ const HTTP_STATUS = Object.freeze({
   FORBIDDEN: 403,
   /** 404 - Not Found */
   NOT_FOUND: 404,
+  /** 419 - CSRF Token Mismatch */
+  CSRF_TOKEN_MISMATCH: 419,
   /** 429 - Many Requests Error (rate limit exceeded) */
   MANY_REQUESTS_ERROR: 429,
   /** 500 - Internal Server Error */

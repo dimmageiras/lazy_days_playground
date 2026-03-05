@@ -113,30 +113,31 @@ log.info({ address, mode }, "🚀 Server started");
 
 ```typescript
 app.setErrorHandler((error, request, response) => {
-  const requestId = request.id || "unknown";
+  const { errorMessage, errorStack } =
+    error instanceof Error
+      ? { errorMessage: error.message, errorStack: error.stack }
+      : { errorMessage: String(error), errorStack: undefined };
 
   log.error(
     {
-      error: error.message,
+      error: errorMessage,
       method: request.method,
-      requestId,
-      stack: error.stack,
-      statusCode: response.statusCode || 500,
+      requestId: request.id,
+      stack: errorStack,
+      statusCode: response.statusCode || INTERNAL_SERVER_ERROR,
       url: request.url,
     },
-    "💥 Unhandled error in request"
+    "💥 Unhandled error in request",
   );
 
-  // Sanitize 5xx errors
-  if (response.statusCode >= 500 || !response.statusCode) {
-    return response.status(500).send({
+  if (response.statusCode >= INTERNAL_SERVER_ERROR || !response.statusCode) {
+    return response.status(INTERNAL_SERVER_ERROR).send({
       error: "Internal Server Error",
       message: "An unexpected error occurred. Please try again later.",
-      statusCode: 500,
+      statusCode: INTERNAL_SERVER_ERROR,
     });
   }
 
-  // Pass through 4xx errors
   return response.send(error);
 });
 ```
@@ -154,7 +155,6 @@ app.setErrorHandler((error, request, response) => {
 {
   details?: string;   // Optional additional context
   error: string;      // Human-readable error message
-  statusCode?: number;  // HTTP status code (optional)
   timestamp: string;  // ISO 8601 timestamp
 }
 ```

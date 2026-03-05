@@ -13,7 +13,7 @@ Rate limiting protects against abuse, brute force attacks, and ensures fair reso
 | **Global**         | 1,000 req   | 100 req    | 15 min      | All routes (default)                                           |
 | **Authentication** | 100 req     | 5 req      | 15 min      | `/auth/signin`, `/auth/signup`, `/auth/logout`, `/auth/verify` |
 | **User Ops**       | 100 req     | 10 req     | 5 min       | `/user/check-email`                                            |
-| **Health Check**   | 1,000 req   | 60 req     | 1 min       | `/api-health/*`, `/api/reports/csp/*`                          |
+| **Health Check**   | 1,000 req   | 60 req     | 1 min       | `/api-health/*`, `/api/reports/csp/*`, `/api/security/*`       |
 
 ### Timing Constants
 
@@ -29,7 +29,7 @@ All time windows use constants from `shared/constants/timing.constant.ts`:
 
 **Location**: `server/inits/security/security.init.ts`
 
-Rate limiting is registered **after** static file serving and React Router to avoid limiting essential routes like static assets and client-side navigation.
+Rate limiting is the first security plugin registered, **before** React Router and static file serving. Static assets are excluded from rate limiting via an explicit allow-list in the global rate limit configuration (bypassing `/assets/*` paths), not by registration order.
 
 ```typescript
 import { GLOBAL_RATE_LIMIT } from "./constants/rate-limit.constant.ts";
@@ -38,13 +38,13 @@ await app.register(rateLimitFastify, GLOBAL_RATE_LIMIT);
 
 ### Plugin Loading Order
 
-Rate limiting loads in this sequence:
+Plugins load in this sequence:
 
-1. **Static Files** (`@fastify/static`) - Serves built client assets in production
-2. **React Router** (`react-router-fastify`) - Handles client-side routing and SSR
-3. **Rate Limiting** (`@fastify/rate-limit`) - Applied globally after essential routes are set up
+1. **Security** (rate limit, cookie, CSRF, Helmet) - Rate limiting is the first security plugin
+2. **Swagger** - API documentation and route registration
+3. **React Router** (`react-router-fastify`) - Handles client-side routing, SSR, and static file serving
 
-This ensures that static assets (CSS, JS, images) and React Router navigation are not rate-limited, preventing broken user experiences during legitimate traffic spikes.
+Static assets (CSS, JS, images) are not rate-limited because the global rate limit's `allowList` bypasses requests to `/assets/*` paths, preventing broken user experiences during legitimate traffic spikes.
 
 ### Route-Specific Overrides
 

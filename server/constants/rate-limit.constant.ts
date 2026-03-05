@@ -9,6 +9,7 @@ import {
 } from "../../shared/constants/root-env.constant.ts";
 import { TIMING } from "../../shared/constants/timing.constant.ts";
 import { ObjectUtilsHelper } from "../../shared/helpers/object-utils.helper.ts";
+import { StringUtilsHelper } from "../../shared/helpers/string-utils.helper.ts";
 import { PinoLogHelper } from "../helpers/pino-log.helper.ts";
 import { HTTP_STATUS } from "./http-status.constant.ts";
 
@@ -23,7 +24,9 @@ const {
   SECONDS_ONE_IN_MS,
 } = TIMING;
 
+const { hasObjectKey, isPlainObject } = ObjectUtilsHelper;
 const { log } = PinoLogHelper;
+const { isString } = StringUtilsHelper;
 
 /**
  * Shared header configurations for rate limiting
@@ -92,7 +95,7 @@ const createOnExceededHandler = (bucket: string) => {
         ip: request.ip,
         route: request.url,
       },
-      `Rate limit exceeded for "${bucket}" bucket`
+      `Rate limit exceeded for "${bucket}" bucket`,
     );
   };
 };
@@ -113,13 +116,11 @@ const createIpKeyGenerator = () => {
  */
 const createEmailKeyGenerator = () => {
   return (request: FastifyRequest) => {
-    const { isPlainObject } = ObjectUtilsHelper;
-
     const body = request.body;
     const email =
       (isPlainObject(body) &&
-        "email" in body &&
-        typeof body.email === "string" &&
+        hasObjectKey(body, "email") &&
+        isString(body.email) &&
         body.email.toLowerCase()) ||
       "anonymous";
 
@@ -159,7 +160,9 @@ const GLOBAL_RATE_LIMIT: RateLimitPluginOptions = {
 const AUTH_RATE_LIMIT: RateLimitPluginOptions = {
   ...RATE_LIMIT_HEADERS,
   ...SHARED_RATE_LIMIT_PROPS,
-  errorResponseBuilder: createErrorResponseBuilder("Too many authentication attempts."),
+  errorResponseBuilder: createErrorResponseBuilder(
+    "Too many authentication attempts.",
+  ),
   keyGenerator: createEmailKeyGenerator(),
   max: IS_DEVELOPMENT ? 100 : 5,
   onExceeded: createOnExceededHandler("auth"),
@@ -187,7 +190,9 @@ const USER_RATE_LIMIT: RateLimitPluginOptions = {
 const HEALTH_RATE_LIMIT: RateLimitPluginOptions = {
   ...RATE_LIMIT_HEADERS,
   ...SHARED_RATE_LIMIT_PROPS,
-  errorResponseBuilder: createErrorResponseBuilder("Too many health check requests."),
+  errorResponseBuilder: createErrorResponseBuilder(
+    "Too many health check requests.",
+  ),
   keyGenerator: createIpKeyGenerator(),
   max: IS_DEVELOPMENT ? 1000 : 60,
   onExceeded: createOnExceededHandler("health"),
