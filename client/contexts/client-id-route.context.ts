@@ -2,7 +2,10 @@ import type { AsyncLocalStorage } from "node:async_hooks";
 import type { Cookie } from "react-router";
 
 import { CookieHelper } from "@client/helpers/cookie.helper";
+import { AUTH_COOKIE_NAMES } from "@server/constants/auth-cookie.constant";
 import { IdUtilsHelper } from "@shared/helpers/id-utils.helper";
+
+const { ACCESS_TOKEN } = AUTH_COOKIE_NAMES;
 
 interface ClientIdRouteContextValue {
   clientId?: string;
@@ -41,7 +44,7 @@ const getRequest = (): Request | undefined => {
  * Checks if the current request has an access token cookie.
  * Used to determine if authentication-related operations should be performed.
  *
- * @returns True if an access-token cookie exists, false otherwise
+ * @returns True if an _access-token cookie exists, false otherwise
  *
  * @example
  * ```typescript
@@ -69,7 +72,7 @@ const hasAccessToken = (): boolean => {
 
   return cookieHeader
     .split(";")
-    .some((cookie) => cookie.trim().startsWith("access-token="));
+    .some((cookie) => cookie.trim().startsWith(`${ACCESS_TOKEN}=`));
 };
 
 /**
@@ -81,7 +84,7 @@ const hasAccessToken = (): boolean => {
  *
  * @example
  * ```typescript
- * const clientIdCookie = createStandardCookie("client-id");
+ * const clientIdCookie = createStandardCookie("_client-id");
  * const existingId = await getExistingClientId(clientIdCookie);
  * if (existingId) {
  *   console.log("Found existing client ID:", existingId);
@@ -123,7 +126,7 @@ const getExistingClientId = async (
  *
  * @example
  * ```typescript
- * const clientIdCookie = createStandardCookie("client-id");
+ * const clientIdCookie = createStandardCookie("_client-id");
  * const clientId = await getOrCreateClientId(clientIdCookie);
  * // Use clientId as part of query keys for cache coordination
  * const queryKey = ["auth", "verify", clientId];
@@ -157,7 +160,7 @@ const getOrCreateClientId = async (clientIdCookie: Cookie): Promise<string> => {
  *
  * @example
  * ```typescript
- * const clientIdCookie = createStandardCookie("client-id");
+ * const clientIdCookie = createStandardCookie("_client-id");
  * const clientId = await getClientId(clientIdCookie);
  * if (clientId) {
  *   // User is authenticated, proceed with auth queries

@@ -14,7 +14,7 @@ const { isString } = StringUtilsHelper;
  *
  * @example
  * ```typescript
- * const token = await getEncryptedCookie(request, "access-token");
+ * const token = await getEncryptedCookie(request, "_access-token");
  * if (!token) {
  *   return response.status(401).send({ error: "Invalid authentication" });
  * }
@@ -55,7 +55,7 @@ const getEncryptedCookie = async (
  *
  * @example
  * ```typescript
- * const isValid = await hasEncryptedSignedCookie(request, "access-token");
+ * const isValid = await hasEncryptedSignedCookie(request, "_access-token");
  * if (!isValid) {
  *   return response.status(401).send({ error: "Not authenticated" });
  * }

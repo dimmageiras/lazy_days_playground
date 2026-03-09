@@ -16,36 +16,28 @@ const useAuthSubmit = (
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const checkEmailExistsMutation = useCheckEmailExists();
-  const signinMutation = useSignin();
-  const signupMutation = useSignup();
+  const { mutateAsync: checkEmailExists } = useCheckEmailExists();
+  const { mutateAsync: signin } = useSignin();
+  const { mutateAsync: signup } = useSignup();
 
   const onValid = async (data: AuthFormData): Promise<void> => {
     if (data.mode === CHECK_EMAIL) {
-      const { email } = data;
-
-      const { exists } = await checkEmailExistsMutation.mutateAsync(email);
+      const { exists } = await checkEmailExists(data.email);
 
       if (exists) {
-        formMethods.reset({
-          ...formMethods.getValues(),
-          mode: SIGNIN,
-        });
+        formMethods.setValue("mode", SIGNIN);
       } else {
-        formMethods.reset({
-          ...formMethods.getValues(),
-          mode: SIGNUP,
-        });
+        formMethods.setValue("mode", SIGNUP);
       }
     } else {
       if (data.mode === SIGNIN) {
         const { email, password } = data;
 
-        await signinMutation.mutateAsync({ email, password });
+        await signin({ email, password });
       } else if (data.mode === SIGNUP) {
         const { confirmPassword, email, password } = data;
 
-        await signupMutation.mutateAsync({ confirmPassword, email, password });
+        await signup({ confirmPassword, email, password });
       }
 
       formMethods.reset();

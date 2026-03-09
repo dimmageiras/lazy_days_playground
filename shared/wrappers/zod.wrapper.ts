@@ -18,6 +18,7 @@ type ZodObject<
   TConfig extends z.core.$ZodObjectConfig = z.core.$strip,
 > = z.ZodObject<TShape, TConfig>;
 
+const zArray = z.array;
 const zBoolean = z.boolean;
 const zCoerce = z.coerce;
 const zConfig = z.config;
@@ -42,6 +43,7 @@ export type {
   ZodObject,
 };
 export {
+  zArray,
   zBoolean,
   zCoerce,
   zConfig,

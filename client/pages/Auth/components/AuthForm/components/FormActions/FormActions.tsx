@@ -31,7 +31,12 @@ const FormActions = (): JSX.Element => {
   };
 
   const handleGoToCheckEmailMode = (): void => {
-    formMethods.setValue("mode", CHECK_EMAIL);
+    const email = formMethods.getValues("email");
+
+    formMethods.reset({
+      email,
+      mode: CHECK_EMAIL,
+    });
   };
 
   return (
@@ -40,7 +45,7 @@ const FormActions = (): JSX.Element => {
         <button
           aria-label="Try a different email address"
           className={classNames(styles["button"], styles["back"])}
-          onClick={handleGoToCheckEmailMode}
+          onMouseDown={handleGoToCheckEmailMode}
           title="Try a different email address"
           type="button"
         >

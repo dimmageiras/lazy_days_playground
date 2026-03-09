@@ -2,4 +2,11 @@ const USER_ENDPOINTS = Object.freeze({
   CHECK_EMAIL: "check-email",
 } as const);
 
-export { USER_ENDPOINTS };
+const USER_ROLES = Object.freeze({
+  ADMIN: "admin",
+  STAFF: "staff",
+  UNASSIGNED: "unassigned",
+  USER: "user",
+} as const);
+
+export { USER_ENDPOINTS, USER_ROLES };

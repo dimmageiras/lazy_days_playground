@@ -24,7 +24,7 @@ This document describes the authentication and session management system built o
 
 The authentication system is built on several key architectural decisions:
 
-1. **Client ID Coordination**: A unique `client-id` cookie ties together SSR queries and client-side hydration
+1. **Client ID Coordination**: A unique `_client-id` cookie ties together SSR queries and client-side hydration
 2. **AsyncLocalStorage**: Server-side request context management without prop drilling
 3. **React Router Middleware**: Authentication checks happen at the routing layer
 4. **Zustand State Management**: Client-side session state with React Context
@@ -41,11 +41,11 @@ The authentication system is built on several key architectural decisions:
 ┌─────────────────────────────────────────────────────────────┐
 │               appLayoutMiddleware                           │
 │  ┌──────────────────────────────────────────────────────┐   │
-│  │ 1. Check access-token cookie                        │   │
-│  │ 2. Get/Create client-id                             │   │
+│  │ 1. Check _access-token cookie                        │   │
+│  │ 2. Get/Create _client-id                             │   │
 │  │ 3. Fetch auth data (if authenticated)               │   │
 │  │ 4. Store auth data in route context                 │   │
-│  │ 5. Set client-id cookie (if new)                    │   │
+│  │ 5. Set _client-id cookie (if new)                    │   │
 │  └──────────────────────────────────────────────────────┘   │
 └────────────────────┬────────────────────────────────────────┘
                      │
@@ -54,7 +54,7 @@ The authentication system is built on several key architectural decisions:
 │                appLayoutLoader                              │
 │  ┌──────────────────────────────────────────────────────┐   │
 │  │ 1. Retrieve auth data from context                  │   │
-│  │ 2. Get client-id                                     │   │
+│  │ 2. Get _client-id                                     │   │
 │  │ 3. Return { clientId, isAuthenticated }             │   │
 │  └──────────────────────────────────────────────────────┘   │
 └────────────────────┬────────────────────────────────────────┘
@@ -176,7 +176,7 @@ ClientSessionProvider/
 
 - Runs before loader
 - Handles authentication verification
-- Sets client-id cookie
+- Sets _client-id cookie
 - Stores auth data in route context
 
 **Loader** (`client/layouts/AppLayout/loaders/app-layout.loader.ts`):
@@ -194,9 +194,9 @@ ClientSessionProvider/
 ```
 1. Request arrives → appLayoutMiddleware
    │
-   ├─→ Check for access-token cookie ✓
+   ├─→ Check for _access-token_ cookie ✓
    │
-   ├─→ Check for client-id cookie
+   ├─→ Check for _client-id cookie
    │   ├─→ Exists: Parse and use
    │   └─→ Missing: Generate new ID
    │
@@ -205,13 +205,13 @@ ClientSessionProvider/
    │
    ├─→ Store auth data in route context
    │
-   └─→ Set client-id cookie (if new)
+   └─→ Set _client-id cookie (if new)
 
 2. appLayoutLoader
    │
    ├─→ Retrieve auth data from context
    │
-   ├─→ Get client-id
+   ├─→ Get _client-id
    │
    └─→ Return { clientId, isAuthenticated: true }
 
@@ -233,7 +233,7 @@ ClientSessionProvider/
 ```
 1. Request arrives → appLayoutMiddleware
    │
-   ├─→ Check for access-token cookie ✗
+   ├─→ Check for _access-token cookie ✗
    │
    └─→ Skip auth verification, continue
 
@@ -308,10 +308,10 @@ useQuery({
 
 ### Cookies Used
 
-| Cookie Name    | Purpose             | Duration  | Security                                            |
-| -------------- | ------------------- | --------- | --------------------------------------------------- |
-| `access-token` | User authentication | Varies    | HttpOnly, Secure, SameSite=Strict, Encrypted+Signed |
-| `client-id`    | Cache coordination  | 5 minutes | HttpOnly, Secure, SameSite=Strict                   |
+| Cookie Name      | Purpose             | Duration  | Security                                            |
+| ---------------- | ------------------- | --------- | --------------------------------------------------- |
+| `_access-token_` | User authentication | Varies    | HttpOnly, Secure, SameSite=Strict, Encrypted+Signed |
+| `_client-id`     | Cache coordination  | 5 minutes | HttpOnly, Secure, SameSite=Strict                   |
 
 ### Cookie Flow
 
@@ -324,7 +324,7 @@ const clientId = await CookieHelper.parseCookie(clientIdCookie, cookieHeader);
 await CookieHelper.setCookie(response, clientIdCookie, clientId, 300);
 
 // Result in Set-Cookie header:
-// client-id=abc123; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=300; Expires=<date>
+// _client-id=abc123; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=300; Expires=<date>
 ```
 
 ### Cookie Security
@@ -385,7 +385,7 @@ interface ClientSessionState {
 // In components
 const { clientId, isAuthenticated } = useClientSessionTrackedValue(
   "clientId",
-  "isAuthenticated"
+  "isAuthenticated",
 );
 
 // Reactive to changes
@@ -491,7 +491,7 @@ queryKey: ["resource", "list"]; // Missing clientId
 ```typescript
 const { isAuthenticated, clientId } = useClientSessionTrackedValue(
   "isAuthenticated",
-  "clientId"
+  "clientId",
 );
 
 useQuery({
@@ -536,8 +536,8 @@ const clientId = await getOrCreateClientId(clientIdCookie);
 
 **Guidelines**:
 
-- Short-lived data: 5 minutes (like client-id)
-- Long-term data: Use encrypted, signed cookies only (like access-token)
+- Short-lived data: 5 minutes (like _client-id)
+- Long-term data: Use encrypted, signed cookies only (like \_access-token)
 
 ### 5. Error Handling
 

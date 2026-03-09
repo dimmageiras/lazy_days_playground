@@ -18,9 +18,9 @@ This document provides comprehensive guidance for working with the Gel database 
 
 ## Database Overview
 
-Our project uses **Gel** (EdgeDB) as the primary database, running in a Docker container with the following configuration:
+Our project uses **Gel** as the primary database, running in a Docker container with the following configuration:
 
-- **Database**: Gel (EdgeDB) v6+
+- **Database**: Gel v7.1
 - **Host**: `host.docker.internal:5656` (from dev container)
 - **Security**: `insecure_dev_mode` for development
 - **Authentication**: Username/password based

@@ -9,6 +9,112 @@ delete to change setting: CONFIGURE CURRENT DATABASE RESET ext::auth::EmailPassw
 
 step 6. CONFIGURE CURRENT DATABASE SET ext::auth::AuthConfig::allowed_redirect_urls := {'http://localhost:5173/auth/verify', 'http://0.0.0.0:5173/auth/verify', 'http://127.0.0.1:5173/auth/verify'};
 
+webhook (Gel calls POST /auth/webhook; use RESET then INSERT to change)
+remove all webhook configs (use this instead of DELETE; WebhookConfig is a view):
+CONFIGURE CURRENT BRANCH RESET ext::auth::WebhookConfig;
+
+insert single webhook with signing secret (set GEL_WEBHOOK_SIGNING_SECRET in .env to same value):
+CONFIGURE CURRENT BRANCH INSERT ext::auth::WebhookConfig {
+url := 'http://localhost:5173/auth/webhook',
+events := {
+ext::auth::WebhookEvent.PasswordResetRequested,
+ext::auth::WebhookEvent.EmailVerificationRequested,
+},
+signing_secret_key := 'YOUR_SIGNING_SECRET_HERE',
+};
+
+--- Webhook URL by environment ---
+
+- Gel and app on same machine (no Docker): use url := 'http://localhost:5173/auth/webhook'
+- Gel in Docker, app on host (e.g. dev): Gel cannot reach localhost; use the host from the container:
+  url := 'http://host.docker.internal:5173/auth/webhook'
+  (On Linux you may need the host IP, e.g. 172.17.0.1, if host.docker.internal is not available.)
+- Gel in cloud / app behind NAT: use a public URL (e.g. ngrok: https://YOUR_SUBDOMAIN.ngrok.io/auth/webhook)
+
+Check from inside the Gel container that the app is reachable:
+curl -s -o /dev/null -w "%{http_code}" http://host.docker.internal:5173/
+(200 = OK; 000 = no connection.)
+
+For Code (OTP) verification flow, use Code method and OneTimeCodeRequested (see WEBHOOK_EMAIL_VERIFICATION_PLAN.md):
+CONFIGURE CURRENT DATABASE RESET ext::auth::EmailPasswordProviderConfig;
+CONFIGURE CURRENT DATABASE INSERT ext::auth::EmailPasswordProviderConfig {
+require_verification := true,
+verification_method := ext::auth::VerificationMethod.Code
+};
+CONFIGURE CURRENT BRANCH RESET ext::auth::WebhookConfig;
+CONFIGURE CURRENT BRANCH INSERT ext::auth::WebhookConfig {
+url := 'http://host.docker.internal:5173/auth/webhook',
+events := { ext::auth::WebhookEvent.OneTimeCodeRequested },
+signing_secret_key := 'YOUR_SIGNING_SECRET_HERE',
+};
+(Use localhost or a public URL instead of host.docker.internal if that matches your setup.)
+
+--- Debug: verification email not received ---
+Run these in order to check all DB-side areas.
+
+1. Unverified users (recent first) — confirm signup created a factor and identity:
+   SELECT ext::auth::EmailPasswordFactor {
+   email,
+   identity_id := .identity.id,
+   created_at,
+   verified_at,
+   is_verified := EXISTS .verified_at
+   } ORDER BY .created_at DESC;
+
+2. Resolve email by identity_id (same logic as the webhook; replace ID with a real identity id from (1)):
+   SELECT ext::auth::EmailPasswordFactor { email }
+   FILTER .identity.id = <uuid>'PASTE_IDENTITY_ID_HERE'
+   LIMIT 1;
+
+3. Identity list (should match factor identities):
+   SELECT ext::auth::Identity {
+   id,
+   subject,
+   created_at
+   } ORDER BY .created_at DESC;
+
+4. Read current EmailPassword provider config (require_verification, verification_method):
+   SELECT cfg::Config.extensions[is ext::auth::AuthConfig].providers[is ext::auth::EmailPasswordProviderConfig] {
+   name,
+   require_verification,
+   verification_method
+   };
+
+If your auth config is on the branch only, try:
+SELECT cfg::BranchConfig.extensions[is ext::auth::AuthConfig].providers[is ext::auth::EmailPasswordProviderConfig] {
+name,
+require_verification,
+verification_method
+};
+
+5. Read current webhook config (url, events). Note: signing_secret_key is secret and cannot be selected.
+   SELECT cfg::BranchConfig.extensions[is ext::auth::AuthConfig].webhooks {
+   url,
+   events
+   };
+
+If that returns {}, try database-level config:
+SELECT cfg::Config.extensions[is ext::auth::AuthConfig].webhooks {
+url,
+events
+};
+
+--- Re-apply config (use if 4 or 5 show wrong values or empty) ---
+Provider (Code + require verification):
+CONFIGURE CURRENT DATABASE RESET ext::auth::EmailPasswordProviderConfig;
+CONFIGURE CURRENT DATABASE INSERT ext::auth::EmailPasswordProviderConfig {
+require_verification := true,
+verification_method := ext::auth::VerificationMethod.Code
+};
+
+Webhook (OneTimeCodeRequested + URL). Use host.docker.internal if Gel runs in Docker and app on host; otherwise localhost or your public URL:
+CONFIGURE CURRENT BRANCH RESET ext::auth::WebhookConfig;
+CONFIGURE CURRENT BRANCH INSERT ext::auth::WebhookConfig {
+url := 'http://host.docker.internal:5173/auth/webhook',
+events := { ext::auth::WebhookEvent.OneTimeCodeRequested },
+signing_secret_key := 'SAME_AS_GEL_WEBHOOK_SIGNING_SECRET_IN_ENV',
+};
+
 list of users:
 option 1
 SELECT ext::auth::EmailPasswordFactor {
@@ -45,6 +151,28 @@ subject,
 issuer,
 created_at
 } ORDER BY .created_at DESC;
+
+--- One-time codes (Code verification method) ---
+Codes are stored as hashes (code_hash); the plaintext code cannot be retrieved from the DB.
+List recent one-time code records (factor, identity, expires_at):
+SELECT ext::auth::OneTimeCode {
+id,
+created_at,
+expires_at,
+factor: {
+id,
+[is ext::auth::EmailPasswordFactor].email,
+identity: { id }
+}
+} ORDER BY .created_at DESC;
+
+By identity_id (replace UUID):
+SELECT ext::auth::OneTimeCode {
+created_at,
+expires_at,
+factor: { [is ext::auth::EmailPasswordFactor].email }
+} FILTER .factor.identity.id = <uuid>'PASTE_IDENTITY_ID_HERE'
+ORDER BY .created_at DESC;
 
 verified vs unverified users
 SELECT ext::auth::EmailPasswordFactor {

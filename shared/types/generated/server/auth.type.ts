@@ -82,7 +82,7 @@ export interface LogoutCreatePayload {
   /**
    * Name of the custom cookie to be deleted (ACCESS_TOKEN is always deleted, plus this specified cookie)
    * @minLength 1
-   * @example "client-id"
+   * @example "_client-id"
    */
   cookieName: string;
 }

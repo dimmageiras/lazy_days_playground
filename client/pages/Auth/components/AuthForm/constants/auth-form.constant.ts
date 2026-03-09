@@ -24,6 +24,7 @@ const AUTH_FORM_INITIAL_VALUES: UseFormProps<AuthFormData> = {
   mode: "onTouched",
   progressive: true,
   resolver: zResolver(authFormSchema),
+  reValidateMode: "onBlur",
   shouldUseNativeValidation: false,
 };
 

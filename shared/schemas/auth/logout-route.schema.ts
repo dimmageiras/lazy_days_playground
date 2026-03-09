@@ -29,7 +29,7 @@ const logoutRequestSchema = zObject({
   cookieName: zString().min(1).meta({
     description:
       "Name of the custom cookie to be deleted (ACCESS_TOKEN is always deleted, plus this specified cookie)",
-    example: "client-id",
+    example: "_client-id",
   }),
 }).meta({
   description:

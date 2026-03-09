@@ -4,6 +4,7 @@ import { fastifyZodOpenApiTransformers } from "fastify-zod-openapi";
 
 import type { ServerInstance } from "@server/types/instance.type";
 
+import { CSRF_HEADER } from "../../../server/constants/csrf.constant.ts";
 import { PinoLogHelper } from "../../../server/helpers/pino-log.helper.ts";
 import { API_DOCS_ENDPOINTS } from "../../../shared/constants/api.constant.ts";
 import { API_DOCS_BASE_URL } from "../../../shared/constants/base-urls.constant.ts";
@@ -22,7 +23,7 @@ const { log } = PinoLogHelper;
 const registerSwagger = async (
   app: ServerInstance,
   swaggerInstanceRef: { current: ServerInstance | null },
-  initRoutesPlugins: (app: ServerInstance) => Promise<void>
+  initRoutesPlugins: (app: ServerInstance) => Promise<void>,
 ): Promise<void> => {
   try {
     await app.register(async (fastify: ServerInstance) => {
@@ -33,12 +34,24 @@ const registerSwagger = async (
       if (MODE !== PRODUCTION) {
         await fastify.register(swaggerFastify, {
           openapi: {
+            components: {
+              securitySchemes: {
+                csrfToken: {
+                  description:
+                    "CSRF token from GET /api/security/csrf-token. Required for mutating requests (POST, PUT, PATCH, DELETE) except webhook and CSP report.",
+                  in: "header",
+                  name: CSRF_HEADER,
+                  type: "apiKey",
+                },
+              },
+            },
             info: {
               contact: {
                 name: "API Support",
               },
-              description:
-                "API documentation for Lazy Days Playground application",
+              description: `API documentation for Lazy Days Playground application.
+
+**Using Swagger with CSRF:** Mutating requests (POST, PUT, PATCH, DELETE) require a valid CSRF token. In Swagger UI: (1) Call **GET /api/security/csrf-token** (Try it out → Execute). (2) Copy the \`csrfToken\` value from the response. (3) Click **Authorize** at the top, paste the token, then Authorize and Close. Subsequent requests will send the token in the \`x-csrf-token\` header. Use the token from the same browser session.`,
               license: {
                 name: "MIT",
               },
@@ -46,6 +59,7 @@ const registerSwagger = async (
               version: "1.0.0",
             },
             openapi: "3.1.2",
+            security: [{ csrfToken: [] }],
           },
           ...fastifyZodOpenApiTransformers,
         });
@@ -90,7 +104,7 @@ const registerSwagger = async (
           transformStaticCSP: (header) => {
             return header.replace(
               "style-src 'self' https:",
-              "style-src 'self' https: 'unsafe-inline'"
+              "style-src 'self' https: 'unsafe-inline'",
             );
           },
           transformSpecification: (swaggerObject, request, _response) => {
@@ -129,7 +143,7 @@ const registerSwagger = async (
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      "💥 Failed to register Swagger plugins"
+      "💥 Failed to register Swagger plugins",
     );
     process.exit(1);
   }
@@ -138,7 +152,7 @@ const registerSwagger = async (
 const initSwaggerPlugins = async (
   app: ServerInstance,
   swaggerInstanceRef: { current: ServerInstance | null },
-  initRoutesPlugins: (app: ServerInstance) => Promise<void>
+  initRoutesPlugins: (app: ServerInstance) => Promise<void>,
 ): Promise<void> => {
   await registerSwagger(app, swaggerInstanceRef, initRoutesPlugins);
 };

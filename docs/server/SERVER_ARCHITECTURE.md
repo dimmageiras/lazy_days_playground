@@ -2,7 +2,7 @@
 
 ## Overview
 
-The server uses **Fastify** for HTTP handling, **React Router** for SSR, and **EdgeDB (GEL)** for data persistence. This document provides a high-level architectural overview.
+The server uses **Fastify** for HTTP handling, **React Router** for SSR, and **Gel** for data persistence. This document provides a high-level architectural overview.
 
 ## Technology Stack
 
@@ -10,7 +10,7 @@ The server uses **Fastify** for HTTP handling, **React Router** for SSR, and **E
 | --------------- | ------------- | ---------------------------- |
 | **HTTP Server** | Fastify 5.8.1 | High-performance HTTP server |
 | **SSR**         | React Router  | Server-side rendering        |
-| **Database**    | EdgeDB (GEL)  | Graph-relational database    |
+| **Database**    | Gel           | Graph-relational database    |
 | **Auth**        | GEL Auth Core | Authentication provider      |
 | **Validation**  | Zod           | Runtime schema validation    |
 | **Logging**     | Pino          | Structured logging           |
