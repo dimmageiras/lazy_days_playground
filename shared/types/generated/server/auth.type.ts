@@ -177,11 +177,6 @@ export interface SigninCreatePayload {
 /** Successful signup response */
 export interface SignupCreateData {
   /**
-   * Unique identifier for the user identity
-   * @example "12345678-1234-1234-1234-123456789abc"
-   */
-  identity_id?: string | null;
-  /**
    * Signup status - complete if no verification needed, verificationRequired if email verification is needed
    * @example "complete"
    */
@@ -193,8 +188,6 @@ export interface SignupCreateData {
    * @example "2024-01-01T00:00:00Z"
    */
   timestamp: string;
-  /** PKCE verifier for email verification (only present when status is verificationRequired) */
-  verifier?: string;
 }
 
 /**

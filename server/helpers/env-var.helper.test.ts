@@ -15,7 +15,8 @@ const { castAsType } = TypeHelper;
 const TEST_DATA = {
   ENV_VALID: {
     AUTH_TAG_LENGTH: "16",
-    COOKIE_SECRET: "12345678901234567890123456789012",
+    COOKIE_SECRET:
+      "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
     GEL_AUTH_BASE_URL: "https://auth.example.com",
     GEL_DSN: "postgres://user:password@localhost:5432/database",
     IV_LENGTH: "16",

@@ -7,9 +7,9 @@ import { PinoLogHelper } from "./pino-log.helper.ts";
 
 const { createAuth, getBaseUrl, getClient, handleAuthError } = AuthClientHelper;
 const { maskDsnCredentials } = CredentialsHelper;
-const { getCurrentISOTimestamp, toISOTimestamp } = DateHelper;
+const { getCurrentISOTimestamp, getFutureUTCDate, toISOTimestamp } = DateHelper;
 const { encryptData, decryptData } = EncryptionHelper;
-const { fastIdGen } = IdUtilsHelper;
+const { fastIdGen, sixDigitCodeGenOnServer } = IdUtilsHelper;
 const { log } = PinoLogHelper;
 
 export const RoutesHelper = {
@@ -20,8 +20,10 @@ export const RoutesHelper = {
   getBaseUrl,
   getClient,
   getCurrentISOTimestamp,
+  getFutureUTCDate,
   handleAuthError,
   log,
   maskDsnCredentials,
+  sixDigitCodeGenOnServer,
   toISOTimestamp,
 };

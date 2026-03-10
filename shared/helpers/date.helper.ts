@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc.js";
 
+import type { TIMING } from "@shared/constants/timing.constant";
 import type { DateType } from "@shared/types/date.type";
 
 // Enable UTC plugin
@@ -83,10 +84,12 @@ const getCurrentUTCDate = (): Date => {
  * Gets a future UTC date/time as a Date object in UTC.
  * Use this for accurate time comparisons regardless of server timezone.
  *
- * @param maxAge - Maximum age in seconds (e.g., 300 for 5 minutes)
+ * @param maxAge - Maximum age in seconds (e.g., TIMING.MINUTES_FIVE_IN_S)
  * @returns Future date/time as Date object (UTC)
  */
-const getFutureUTCDate = (maxAge: number): Date => {
+const getFutureUTCDate = (
+  maxAge: (typeof TIMING)[keyof typeof TIMING],
+): Date => {
   return dayjs().utc().add(maxAge, "seconds").toDate();
 };
 

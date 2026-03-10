@@ -56,10 +56,6 @@ const signupRequestSchema = zObject({
   });
 
 const signupSuccessSchema = zObject({
-  identity_id: zString().nullable().optional().meta({
-    description: "Unique identifier for the user identity",
-    example: "12345678-1234-1234-1234-123456789abc",
-  }),
   status: zEnum(["complete", "verificationRequired"]).meta({
     description:
       "Signup status - complete if no verification needed, verificationRequired if email verification is needed",
@@ -68,10 +64,6 @@ const signupSuccessSchema = zObject({
   timestamp: zIsoDateTime().meta({
     description: "ISO timestamp when the signup was completed",
     example: "2024-01-01T00:00:00Z",
-  }),
-  verifier: zString().optional().meta({
-    description:
-      "PKCE verifier for email verification (only present when status is verificationRequired)",
   }),
 }).meta({
   description: "Successful signup response",

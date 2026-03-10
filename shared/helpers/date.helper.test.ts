@@ -1,7 +1,10 @@
 import dayjs from "dayjs";
 import { describe } from "vitest";
 
+import { TIMING } from "../constants/timing.constant";
 import { DateHelper } from "./date.helper";
+
+const { MINUTES_FIVE_IN_S } = TIMING;
 
 const {
   formatHourForDisplay,
@@ -15,7 +18,7 @@ const {
 
 const TEST_DATA = {
   DATE: new Date("2025-01-03T15:00:00.000Z"),
-  MAX_AGE: 300,
+  MAX_AGE: MINUTES_FIVE_IN_S,
 } as const;
 
 // Factory function to create consistent test date

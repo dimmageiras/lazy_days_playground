@@ -2,7 +2,10 @@ import type { Cookie } from "react-router";
 import { createCookie } from "react-router";
 
 import { BASE_COOKIE_CONFIG } from "@shared/constants/cookie.constant";
+import type { TIMING } from "@shared/constants/timing.constant";
 import { DateHelper } from "@shared/helpers/date.helper";
+
+const { getFutureUTCDate } = DateHelper;
 
 /**
  * Creates a cookie instance with standard configuration.
@@ -58,24 +61,22 @@ const parseCookie = async <TReturnValue = string>(
  *
  * @param cookieInstance - The Cookie instance to use for serialization
  * @param value - The value to serialize
- * @param maxAge - Maximum age in seconds (e.g., 300 for 5 minutes)
+ * @param maxAge - Maximum age in seconds (e.g., MINUTES_FIVE_IN_S)
  * @returns Promise resolving to the serialized cookie string
  *
  * @example
  * ```typescript
  * const sessionCookie = createStandardCookie("session-token");
- * const serialized = await serializeCookie(sessionCookie, "abc123", 300);
+ * const serialized = await serializeCookie(sessionCookie, "abc123", MINUTES_FIVE_IN_S);
  * response.headers.append("Set-Cookie", serialized);
  * ```
  */
 const serializeCookie = async <TValue = string>(
   cookieInstance: Cookie,
   value: TValue,
-  maxAge: number,
+  maxAge: (typeof TIMING)[keyof typeof TIMING],
 ): Promise<string> => {
-  const { getCurrentUTCDate } = DateHelper;
-
-  const expires = new Date(getCurrentUTCDate().getTime() + maxAge * 1000);
+  const expires = getFutureUTCDate(maxAge);
 
   return await cookieInstance.serialize(value, {
     expires,
@@ -112,20 +113,20 @@ const hasCookie = async (
  * @param response - The Response object to modify
  * @param cookieInstance - The Cookie instance to use
  * @param value - The value to set
- * @param maxAge - Maximum age in seconds (e.g., 300 for 5 minutes)
+ * @param maxAge - Maximum age in seconds (e.g., MINUTES_FIVE_IN_S)
  * @returns Promise that resolves when cookie is set
  *
  * @example
  * ```typescript
  * const sessionCookie = createStandardCookie("session-token");
- * await setCookie(response, sessionCookie, "abc123", 300);
+ * await setCookie(response, sessionCookie, "abc123", MINUTES_FIVE_IN_S);
  * ```
  */
 const setCookie = async <TValue = string>(
   response: Response,
   cookieInstance: Cookie,
   value: TValue,
-  maxAge: number,
+  maxAge: (typeof TIMING)[keyof typeof TIMING],
 ): Promise<void> => {
   const serialized = await serializeCookie(cookieInstance, value, maxAge);
 

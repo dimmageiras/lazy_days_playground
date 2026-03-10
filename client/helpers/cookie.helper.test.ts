@@ -2,10 +2,13 @@ import type { Cookie } from "react-router";
 import { isCookie } from "react-router";
 import { describe } from "vitest";
 
+import { TIMING } from "@shared/constants/timing.constant";
 import { DateHelper } from "@shared/helpers/date.helper";
 import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { CookieHelper } from "./cookie.helper";
+
+const { MINUTES_FIVE_IN_S } = TIMING;
 
 const { createStandardCookie, hasCookie, parseCookie, setCookie } =
   CookieHelper;
@@ -14,7 +17,7 @@ const { castAsType } = TypeHelper;
 
 // Test data constants
 const TEST_DATA = {
-  MAX_AGE: 300, // 5 minutes in seconds
+  MAX_AGE: MINUTES_FIVE_IN_S,
   VALUE: "test",
 } as const;
 

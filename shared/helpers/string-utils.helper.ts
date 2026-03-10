@@ -11,7 +11,9 @@ const { castAsType } = TypeHelper;
  * @param value - The value to check
  * @returns True if the value is a string, false otherwise
  */
-const isString = (value: unknown): value is string => typeof value === "string";
+const isString = (value: unknown): value is string => {
+  return typeof value === "string";
+};
 
 /**
  * Safely converts a string to camelCase while preserving type-level information

@@ -142,6 +142,7 @@ export default defineConfig([
           ],
         },
       ],
+      "sonarjs/no-unused-vars": "off",
       curly: ["error", "all"],
     },
     settings: {

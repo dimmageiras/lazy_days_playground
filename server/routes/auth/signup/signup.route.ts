@@ -1,3 +1,4 @@
+import type { SignupResponse } from "@gel/auth-core";
 import { UserError } from "@gel/auth-core";
 import type { FastifyInstance } from "fastify";
 import type {
@@ -13,6 +14,8 @@ import type {
 
 import { AUTH_ENDPOINTS } from "../../../../shared/constants/auth.constant.ts";
 import { AUTH_BASE_URL } from "../../../../shared/constants/base-urls.constant.ts";
+import { TIMING } from "../../../../shared/constants/timing.constant.ts";
+import { TypeHelper } from "../../../../shared/helpers/type.helper.ts";
 import {
   signupErrorSchema,
   signupRateLimitErrorSchema,
@@ -20,31 +23,34 @@ import {
   signupSuccessSchema,
 } from "../../../../shared/schemas/auth/signup-route.schema.ts";
 import {
-  ACCESS_TOKEN_COOKIE_CONFIG,
   AUTH_COOKIE_NAMES,
   GEL_PKCE_VERIFIER_COOKIE_CONFIG,
 } from "../../../constants/auth-cookie.constant.ts";
 import { HTTP_STATUS } from "../../../constants/http-status.constant.ts";
 import { AUTH_RATE_LIMIT } from "../../../constants/rate-limit.constant.ts";
 import { RoutesHelper } from "../../../helpers/routes.helper.ts";
+import { UPDATE_OTP_QUERY } from "./constants/update-otp-query.constant.ts";
+
+const { PKCE_VERIFIER } = AUTH_COOKIE_NAMES;
+const { SIGNUP, VERIFY } = AUTH_ENDPOINTS;
+const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
+  HTTP_STATUS;
+const { MINUTES_TEN_IN_S } = TIMING;
+
+const {
+  createAuth,
+  fastIdGen,
+  getBaseUrl,
+  getClient,
+  getCurrentISOTimestamp,
+  getFutureUTCDate,
+  handleAuthError,
+  log,
+  sixDigitCodeGenOnServer,
+} = RoutesHelper;
+const { castAsType } = TypeHelper;
 
 const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
-  const { ACCESS_TOKEN, PKCE_VERIFIER } = AUTH_COOKIE_NAMES;
-  const { SIGNUP, VERIFY } = AUTH_ENDPOINTS;
-  const { BAD_REQUEST, MANY_REQUESTS_ERROR, OK, SERVICE_UNAVAILABLE } =
-    HTTP_STATUS;
-
-  const {
-    createAuth,
-    encryptData,
-    fastIdGen,
-    getBaseUrl,
-    getClient,
-    getCurrentISOTimestamp,
-    handleAuthError,
-    log,
-  } = RoutesHelper;
-
   fastify
     .withTypeProvider<FastifyZodOpenApiTypeProvider>()
     .post<SignupRequestBody>(
@@ -79,6 +85,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
       },
       async (request, response) => {
         const requestId = fastIdGen();
+        const { code: _code, hash } = await sixDigitCodeGenOnServer();
 
         try {
           const { email, password } = request.body;
@@ -91,43 +98,31 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
 
           const { signup } = emailPasswordHandlers;
 
-          const result = await signup(email, password, verifyUrl);
+          const result = castAsType<
+            Extract<SignupResponse, { status: "verificationRequired" }>
+          >(await signup(email, password, verifyUrl));
 
-          if (result.status === "complete") {
-            // Encrypt the token before storing in cookie
-            const encryptedToken = await encryptData(
-              result.tokenData.auth_token,
-            );
+          const identity_id = result.identity_id;
+          const expiresAt = getFutureUTCDate(MINUTES_TEN_IN_S);
 
-            response.setCookie(
-              ACCESS_TOKEN,
-              encryptedToken,
-              ACCESS_TOKEN_COOKIE_CONFIG,
-            );
+          await client.execute(UPDATE_OTP_QUERY, {
+            expiresAt,
+            hash,
+            identity_id,
+          });
 
-            const dbResponse: SignupCreateData = {
-              identity_id: result.tokenData.identity_id,
-              status: result.status,
-              timestamp: getCurrentISOTimestamp(),
-            };
+          response.setCookie(
+            PKCE_VERIFIER,
+            result.verifier,
+            GEL_PKCE_VERIFIER_COOKIE_CONFIG,
+          );
 
-            return response.status(OK).send(dbResponse);
-          } else {
-            response.setCookie(
-              PKCE_VERIFIER,
-              result.verifier,
-              GEL_PKCE_VERIFIER_COOKIE_CONFIG,
-            );
+          const dbResponse: SignupCreateData = {
+            status: result.status,
+            timestamp: getCurrentISOTimestamp(),
+          };
 
-            const dbResponse: SignupCreateData = {
-              identity_id: null,
-              status: result.status,
-              timestamp: getCurrentISOTimestamp(),
-              verifier: result.verifier,
-            };
-
-            return response.status(OK).send(dbResponse);
-          }
+          return response.status(OK).send(dbResponse);
         } catch (rawError) {
           const error =
             rawError instanceof Error ? rawError : new Error(`${rawError}`);
@@ -153,6 +148,8 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
             {
               error,
               invalidDataError: signupValidationError,
+              invalidReferenceError: signupValidationError,
+              queryError: signupValidationError,
               userAlreadyRegisteredError: {
                 details: "Email already registered",
                 errorMessageResponse: "Signup failed",

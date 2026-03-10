@@ -11,9 +11,15 @@ const envSchema = zObject({
     .number()
     .int()
     .positive({ message: "AUTH_TAG_LENGTH must be a positive integer" }),
-  COOKIE_SECRET: zString().min(32, {
-    message: "VITE_APP_COOKIE_SECRET must be at least 32 characters long",
-  }),
+  COOKIE_SECRET: zString()
+    .min(88, {
+      message:
+        "COOKIE_SECRET must be at least 88 characters long (openssl rand -base64 64)",
+    })
+    .refine((val) => /^[A-Za-z0-9+/]+={0,2}$/.test(val), {
+      message:
+        "COOKIE_SECRET must be base64 (e.g. from openssl rand -base64 64)",
+    }),
   GEL_AUTH_BASE_URL: zString().min(1, {
     message: "VITE_APP_GEL_AUTH_BASE_URL is required for auth connection",
   }),
