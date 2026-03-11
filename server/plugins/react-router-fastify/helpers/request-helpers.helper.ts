@@ -3,6 +3,7 @@ import {
   writeReadableStreamToWritable,
 } from "@react-router/node";
 import type { FastifyReply, FastifyRequest } from "fastify";
+import { Readable } from "node:stream";
 
 import { ArrayUtilsHelper } from "../../../../shared/helpers/array-utils.helper.ts";
 
@@ -69,7 +70,11 @@ const createRemixRequest = (
   reply.raw.on("close", () => controller?.abort());
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    init.body = createReadableStreamFromReadable(request.raw);
+    const body = Buffer.isBuffer(request.body)
+      ? createReadableStreamFromReadable(Readable.from(request.body))
+      : createReadableStreamFromReadable(request.raw);
+
+    init.body = body;
     Reflect.set(init, "duplex", "half");
   }
 

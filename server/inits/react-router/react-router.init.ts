@@ -112,6 +112,32 @@ const registerReactRouterForProduction = async (
   await serveStaticFiles(app);
 };
 
+const bufferPayloadParser = (
+  _request: unknown,
+  payload: NodeJS.ReadableStream,
+  done: (err: Error | null, body?: Buffer) => void,
+): void => {
+  const chunks: Buffer[] = [];
+
+  payload.on("data", (chunk: Buffer) => {
+    chunks.push(chunk);
+  });
+  payload.on("end", () => {
+    done(null, Buffer.concat(chunks));
+  });
+  payload.on("error", (err: Error) => {
+    done(err, undefined);
+  });
+};
+
+/** So POST with FormData / form-urlencoded (and other body types) is parsed before the RR plugin; avoids Unsupported Media Type for all route actions. */
+const addReactRouterBodyParsers = (app: ServerInstance): void => {
+  app.addContentTypeParser(/^multipart\/form-data/i, bufferPayloadParser);
+  app.addContentTypeParser("application/x-www-form-urlencoded", bufferPayloadParser);
+  // Catch any other content-type (e.g. when browser sends a variant) so body is still available
+  app.addContentTypeParser("*", bufferPayloadParser);
+};
+
 const registerReactRouter = async (app: ServerInstance): Promise<void> => {
   if (MODE === TYPE_GENERATOR) {
     // React Router Fastify plugin not registered in generator mode
@@ -125,6 +151,9 @@ const registerReactRouter = async (app: ServerInstance): Promise<void> => {
   } else {
     await registerReactRouterForProduction(app);
   }
+
+  // Register on root so form and other request bodies are parsed before the RR plugin handles them
+  addReactRouterBodyParsers(app);
 
   try {
     await app.register(

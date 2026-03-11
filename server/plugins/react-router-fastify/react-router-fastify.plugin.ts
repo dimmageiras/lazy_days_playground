@@ -11,6 +11,8 @@ import { RequestHelpers } from "./helpers/request-helpers.helper.ts";
 
 const { DEVELOPMENT } = MODES;
 
+const { createRemixRequest } = RequestHelpers;
+
 /**
  * Returns a Fastify plugin that serves the response using React Router.
  * Uses reply.send(response) so Fastify's onSend hooks run and cookies (e.g. _csrf)
@@ -21,8 +23,6 @@ const createRequestHandler: CreateRequestHandlerFactory = ({
   getLoadContext,
   mode = DEVELOPMENT,
 }: CreateRequestHandlerOptions): FastifyPluginCallback => {
-  const { createRemixRequest } = RequestHelpers;
-
   const handleRequest = createRemixRequestHandler(build, mode);
 
   return (fastify, _opts, done) => {
