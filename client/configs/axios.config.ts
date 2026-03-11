@@ -87,7 +87,7 @@ const initAxios = (csrfToken: string): void => {
   axios.defaults.timeout = SECONDS_TEN_IN_MS;
   axios.defaults.withCredentials = true;
 
-  if (import.meta.env.SSR) {
+  if (import.meta.env.SSR || !globalThis.window) {
     axios.defaults.baseURL = `http://${HOST}:${PORT}`;
   }
 
@@ -99,7 +99,7 @@ const initAxios = (csrfToken: string): void => {
         config.headers.set(CSRF_HEADER, currentCsrfToken);
       }
 
-      if (import.meta.env.SSR) {
+      if (import.meta.env.SSR || !globalThis.window) {
         const { getRequest } = ClientIdRouteContext;
 
         const request = getRequest();
