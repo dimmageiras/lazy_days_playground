@@ -6,6 +6,8 @@ const HTTP_STATUS = Object.freeze({
   OK: 200,
   /** 204 - No Content */
   NO_CONTENT: 204,
+  /** 302 - Temporary Redirect */
+  TEMPORARY_REDIRECT: 302,
   /** 400 - Bad Request */
   BAD_REQUEST: 400,
   /** 401 - Authentication Required (no valid token) */

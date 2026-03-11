@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 
 import { AUTH_QUERY_KEYS } from "@client/services/auth/auth.constant";
-import { AuthService } from "@client/services/auth/auth.services";
+import { AuthService } from "@client/services/auth/auth.service";
 import type {
   LogoutCreateData,
   LogoutCreatePayload,
