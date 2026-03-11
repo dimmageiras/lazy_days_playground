@@ -1,19 +1,56 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
+import type { AxiosResponse } from "axios";
 
 import { AUTH_QUERY_KEYS } from "@client/services/auth/auth.constant";
 import { AuthService } from "@client/services/auth/auth.services";
 import type {
+  SigninCreateData,
+  SigninCreatePayload,
+  SignupCreateData,
+  SignupCreatePayload,
   VerifyAuthListData,
   VerifyAuthListError,
 } from "@shared/types/generated/server/auth.type";
 
-const { VERIFY_AUTH } = AUTH_QUERY_KEYS;
+const { SIGNIN, SIGNUP, VERIFY_AUTH } = AUTH_QUERY_KEYS;
+
+const getSigninQueryOptions = (
+  payload: SigninCreatePayload,
+): UseQueryOptions<
+  AxiosResponse<SigninCreateData>,
+  Error,
+  SigninCreateData,
+  readonly [...typeof SIGNIN, SigninCreatePayload]
+> => {
+  const { signin } = AuthService;
+
+  return queryOptions({
+    queryKey: [...SIGNIN, payload] as const,
+    queryFn: () => signin(payload),
+  });
+};
+
+const getSignupQueryOptions = (
+  payload: SignupCreatePayload,
+): UseQueryOptions<
+  AxiosResponse<SignupCreateData>,
+  Error,
+  SignupCreateData,
+  readonly [...typeof SIGNUP, SignupCreatePayload]
+> => {
+  const { signup } = AuthService;
+
+  return queryOptions({
+    queryKey: [...SIGNUP, payload] as const,
+    queryFn: () => signup(payload),
+  });
+};
 
 const getVerifyAuthQueryOptions = (
   clientId: string,
 ): UseQueryOptions<
-  VerifyAuthListData,
+  AxiosResponse<VerifyAuthListData>,
   VerifyAuthListError,
   VerifyAuthListData,
   readonly [...typeof VERIFY_AUTH, typeof clientId]
@@ -27,5 +64,7 @@ const getVerifyAuthQueryOptions = (
 };
 
 export const AuthQueriesHelper = {
+  getSigninQueryOptions,
+  getSignupQueryOptions,
   getVerifyAuthQueryOptions,
 };

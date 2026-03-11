@@ -1,5 +1,6 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
+import type { AxiosResponse } from "axios";
 
 import { API_HEALTH_QUERY_KEYS } from "@client/services/api-health/api-health.constant";
 import { ApiHealthService } from "@client/services/api-health/api-health.service";
@@ -12,7 +13,7 @@ import type {
 const { GET_DATABASE_HEALTH, GET_SERVER_HEALTH } = API_HEALTH_QUERY_KEYS;
 
 const getDatabaseHealthQueryOptions = (): UseQueryOptions<
-  HealthDatabaseListData | HealthDatabaseListError,
+  AxiosResponse<HealthDatabaseListData | HealthDatabaseListError>,
   Error,
   HealthDatabaseListData | HealthDatabaseListError,
   typeof GET_DATABASE_HEALTH
@@ -21,12 +22,12 @@ const getDatabaseHealthQueryOptions = (): UseQueryOptions<
 
   return queryOptions({
     queryKey: GET_DATABASE_HEALTH,
-    queryFn: () => getDatabaseHealth().then((response) => response.data),
+    queryFn: getDatabaseHealth,
   });
 };
 
 const getServerHealthQueryOptions = (): UseQueryOptions<
-  HealthServerListData,
+  AxiosResponse<HealthServerListData>,
   Error,
   HealthServerListData,
   typeof GET_SERVER_HEALTH
@@ -35,7 +36,7 @@ const getServerHealthQueryOptions = (): UseQueryOptions<
 
   return queryOptions({
     queryKey: GET_SERVER_HEALTH,
-    queryFn: () => getServerHealth().then((response) => response.data),
+    queryFn: getServerHealth,
   });
 };
 

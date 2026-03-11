@@ -11,8 +11,8 @@ const UserProfile = (): JSX.Element => {
       <meta name="description" content="Lazy Days Spa - User Profile Page" />
       <main aria-label="User profile">
         <h1>User Profile</h1>
-        <p>Identity ID: {authData?.identity_id}</p>
-        <p>Timestamp: {authData?.timestamp}</p>
+        <p>Identity ID: {authData?.data?.identity_id}</p>
+        <p>Timestamp: {authData?.data?.timestamp}</p>
       </main>
     </>
   );

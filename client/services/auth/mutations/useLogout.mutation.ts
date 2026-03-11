@@ -1,5 +1,6 @@
 import type { UseMutationResult } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
+import type { AxiosResponse } from "axios";
 
 import { AUTH_QUERY_KEYS } from "@client/services/auth/auth.constant";
 import { AuthService } from "@client/services/auth/auth.services";
@@ -9,7 +10,7 @@ import type {
 } from "@shared/types/generated/server/auth.type";
 
 const useLogout = (): UseMutationResult<
-  LogoutCreateData,
+  AxiosResponse<LogoutCreateData>,
   Error,
   LogoutCreatePayload
 > => {
@@ -19,8 +20,7 @@ const useLogout = (): UseMutationResult<
 
   return useMutation({
     mutationKey: LOGOUT,
-    mutationFn: (payload: LogoutCreatePayload) =>
-      logout(payload).then((response) => response.data),
+    mutationFn: logout,
     retry: false,
   });
 };
