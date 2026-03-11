@@ -6,15 +6,17 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { Readable } from "node:stream";
 
 import { ArrayUtilsHelper } from "../../../../shared/helpers/array-utils.helper.ts";
+import { ObjectUtilsHelper } from "../../../../shared/helpers/object-utils.helper.ts";
 
 const { isArray } = ArrayUtilsHelper;
+const { getObjectEntries } = ObjectUtilsHelper;
 
 const createRemixHeaders = (
   requestHeaders: FastifyRequest["headers"],
 ): Headers => {
   const headers = new Headers();
 
-  for (const [key, values] of Object.entries(requestHeaders)) {
+  for (const [key, values] of getObjectEntries(requestHeaders)) {
     if (values) {
       if (isArray(values)) {
         for (const value of values) {

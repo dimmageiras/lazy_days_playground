@@ -19,7 +19,8 @@ const useLogout = (): UseMutationResult<
 
   return useMutation({
     mutationKey: LOGOUT,
-    mutationFn: logout,
+    mutationFn: (payload: LogoutCreatePayload) =>
+      logout(payload).then((response) => response.data),
     retry: false,
   });
 };

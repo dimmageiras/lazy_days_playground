@@ -21,7 +21,7 @@ const getDatabaseHealthQueryOptions = (): UseQueryOptions<
 
   return queryOptions({
     queryKey: GET_DATABASE_HEALTH,
-    queryFn: getDatabaseHealth,
+    queryFn: () => getDatabaseHealth().then((response) => response.data),
   });
 };
 
@@ -35,7 +35,7 @@ const getServerHealthQueryOptions = (): UseQueryOptions<
 
   return queryOptions({
     queryKey: GET_SERVER_HEALTH,
-    queryFn: getServerHealth,
+    queryFn: () => getServerHealth().then((response) => response.data),
   });
 };
 

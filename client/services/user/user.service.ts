@@ -1,3 +1,4 @@
+import type { AxiosResponse } from "axios";
 import axios from "axios";
 
 import { USER_BASE_URL } from "@shared/constants/base-urls.constant";
@@ -14,14 +15,14 @@ const BASE_URL = `/${USER_BASE_URL}` as const;
  */
 const checkEmailExists = async (
   email: string,
-): Promise<CheckEmailCreateData> => {
+): Promise<AxiosResponse<CheckEmailCreateData>> => {
   const { CHECK_EMAIL } = USER_ENDPOINTS;
 
   const url = `${BASE_URL}/${CHECK_EMAIL}` as const;
   const requestBody: CheckEmailCreatePayload = { email };
   const response = await axios.post<CheckEmailCreateData>(url, requestBody);
 
-  return response.data;
+  return response;
 };
 
 export const UserService = {
