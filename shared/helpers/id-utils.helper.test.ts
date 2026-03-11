@@ -1,10 +1,12 @@
+import { createHash } from "node:crypto";
 import { validate as uuidValidate, version as uuidVersion } from "uuid";
 import { describe, vi } from "vitest";
 
 import { IdUtilsHelper } from "./id-utils.helper";
 import { StringUtilsHelper } from "./string-utils.helper";
 
-const { fastIdGen, isSecureId, secureIdGen } = IdUtilsHelper;
+const { fastIdGen, isSecureId, secureIdGen, sixDigitCodeGenOnServer } =
+  IdUtilsHelper;
 const { isString } = StringUtilsHelper;
 
 // Test data constants
@@ -53,6 +55,14 @@ describe("IdUtilsHelper", () => {
     });
   });
 
+  describe("isSecureId", (it) => {
+    it("should return true for valid UUID v7", ({ expect }) => {
+      const result = isSecureId(TEST_DATA.V7);
+
+      expect(result).toBe(true);
+    });
+  });
+
   describe("secureIdGen", (it) => {
     it("should generate a valid UUID v7", ({ expect }) => {
       const result = secureIdGen();
@@ -63,11 +73,33 @@ describe("IdUtilsHelper", () => {
     });
   });
 
-  describe("isSecureId", (it) => {
-    it("should return true for valid UUID v7", ({ expect }) => {
-      const result = isSecureId(TEST_DATA.V7);
+  describe("sixDigitCodeGenOnServer", (it) => {
+    it("should generate a valid 6 digit code and hash", async ({ expect }) => {
+      /**
+       * @vitest-environment node
+       */
+      const result = await sixDigitCodeGenOnServer();
+      const hash = createHash("sha256").update(result.code).digest();
 
-      expect(result).toBe(true);
+      expect(result.code).toMatch(/^\d{6}$/);
+
+      expect(result.hash).toBeInstanceOf(Buffer);
+      expect(result.hash.length).toBe(32);
+      expect(result.hash.toString("hex")).toBe(hash.toString("hex"));
+    });
+
+    it("should throw an error if called on the client", async ({ expect }) => {
+      const originalWindow = globalThis.window;
+
+      vi.stubGlobal("window", {});
+
+      try {
+        await expect(sixDigitCodeGenOnServer()).rejects.toThrow(
+          "sixDigitCodeGenOnServer can only be called on the server",
+        );
+      } finally {
+        vi.stubGlobal("window", originalWindow);
+      }
     });
   });
 });
