@@ -1,5 +1,6 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
+import type { AxiosResponse } from "axios";
 
 import { useClientSessionTrackedStore } from "@client/providers/ClientSessionProvider";
 import { AuthQueriesHelper } from "@client/services/auth/helpers/auth-queries.helper";
@@ -9,7 +10,7 @@ import type {
 } from "@shared/types/generated/server/auth.type";
 
 const useVerifyAuth = (): UseQueryResult<
-  VerifyAuthListData,
+  AxiosResponse<VerifyAuthListData>,
   VerifyAuthListError
 > => {
   const { clientId, isAuthenticated } = useClientSessionTrackedStore();

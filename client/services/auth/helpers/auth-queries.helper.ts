@@ -20,7 +20,7 @@ const getSigninQueryOptions = (
 ): UseQueryOptions<
   AxiosResponse<SigninCreateData>,
   Error,
-  SigninCreateData,
+  AxiosResponse<SigninCreateData>,
   readonly [...typeof SIGNIN, SigninCreatePayload]
 > => {
   const { signin } = AuthService;
@@ -36,7 +36,7 @@ const getSignupQueryOptions = (
 ): UseQueryOptions<
   AxiosResponse<SignupCreateData>,
   Error,
-  SignupCreateData,
+  AxiosResponse<SignupCreateData>,
   readonly [...typeof SIGNUP, SignupCreatePayload]
 > => {
   const { signup } = AuthService;
@@ -52,7 +52,7 @@ const getVerifyAuthQueryOptions = (
 ): UseQueryOptions<
   AxiosResponse<VerifyAuthListData>,
   VerifyAuthListError,
-  VerifyAuthListData,
+  AxiosResponse<VerifyAuthListData>,
   readonly [...typeof VERIFY_AUTH, typeof clientId]
 > => {
   const { verifyAuth } = AuthService;

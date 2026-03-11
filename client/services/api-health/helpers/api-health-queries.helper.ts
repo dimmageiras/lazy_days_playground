@@ -15,7 +15,7 @@ const { GET_DATABASE_HEALTH, GET_SERVER_HEALTH } = API_HEALTH_QUERY_KEYS;
 const getDatabaseHealthQueryOptions = (): UseQueryOptions<
   AxiosResponse<HealthDatabaseListData | HealthDatabaseListError>,
   Error,
-  HealthDatabaseListData | HealthDatabaseListError,
+  AxiosResponse<HealthDatabaseListData | HealthDatabaseListError>,
   typeof GET_DATABASE_HEALTH
 > => {
   const { getDatabaseHealth } = ApiHealthService;
@@ -29,7 +29,7 @@ const getDatabaseHealthQueryOptions = (): UseQueryOptions<
 const getServerHealthQueryOptions = (): UseQueryOptions<
   AxiosResponse<HealthServerListData>,
   Error,
-  HealthServerListData,
+  AxiosResponse<HealthServerListData>,
   typeof GET_SERVER_HEALTH
 > => {
   const { getServerHealth } = ApiHealthService;

@@ -41,7 +41,7 @@ const ApiHealth = (): JSX.Element => {
         <section aria-label="Health cards" className={styles["health-cards"]}>
           <Card
             apiHealthService={DATABASE}
-            data={databaseHealthData}
+            data={databaseHealthData?.data}
             error={databaseHealthError}
             isHealthy={isHealthyDatabaseHealth}
             isUnhealthy={isUnhealthyDatabaseHealth}
@@ -49,7 +49,7 @@ const ApiHealth = (): JSX.Element => {
           />
           <Card
             apiHealthService={SERVER}
-            data={serverHealthData}
+            data={serverHealthData?.data}
             error={serverHealthError}
             isHealthy={isHealthyServerHealth}
             isUnhealthy={isUnhealthyServerHealth}
