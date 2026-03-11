@@ -15,6 +15,7 @@ import { FormUtilsHelper } from "./form-utils.helper";
 const {
   checkFieldIsRequired,
   checkFieldIsRequiredInDiscriminatedUnion,
+  formDataFromObject,
   getNoAutofillProps,
   getSchemaFromDiscriminatedUnion,
   hasFormErrors,
@@ -22,6 +23,9 @@ const {
 const { castAsType } = TypeHelper;
 
 const TEST_DATA = {
+  FORM_DATA: {
+    email: "test@example.com",
+  },
   SIGNIN: "signin",
   SIGNUP: "signup",
 } as const;
@@ -102,6 +106,19 @@ describe("FormUtilsHelper", () => {
       );
 
       expect(result).toBe(false);
+    });
+  });
+
+  describe("formDataFromObject", (it) => {
+    it("should return a FormData object", ({ expect }) => {
+      const formData = formDataFromObject({
+        ...TEST_DATA.FORM_DATA,
+      });
+
+      expect(formData).toBeDefined();
+      expect(Array.from(formData.entries())).toEqual([
+        ["email", TEST_DATA.FORM_DATA.email],
+      ]);
     });
   });
 

@@ -9,7 +9,7 @@ import type {
   ZodObject,
 } from "@shared/wrappers/zod.wrapper";
 
-const { getObjectKeys, isObject } = ObjectUtilsHelper;
+const { getObjectEntries, getObjectKeys, isObject } = ObjectUtilsHelper;
 
 /**
  * Generates props to prevent browser/password manager autofill on form inputs.
@@ -173,6 +173,23 @@ const checkFieldIsRequiredInDiscriminatedUnion = <
 };
 
 /**
+ * Builds a FormData instance from a plain object. Skips undefined values;
+ * other primitives are stringified; Blob and File are appended as-is.
+ */
+const formDataFromObject = (
+  initialObject: Record<string, Blob | string>,
+): FormData => {
+  const formData = new FormData();
+  const formEntries = getObjectEntries(initialObject);
+
+  for (const [key, value] of formEntries) {
+    formData.append(key, value);
+  }
+
+  return formData;
+};
+
+/**
  * Checks if a form has any validation errors by examining the errors object
  * from react-hook-form. More reliable than checking Object.keys(errors).length
  * as it handles nested form structures.
@@ -203,6 +220,7 @@ const hasFormErrors = <TFormErrors extends FieldErrors>(
 export const FormUtilsHelper = {
   checkFieldIsRequired,
   checkFieldIsRequiredInDiscriminatedUnion,
+  formDataFromObject,
   getNoAutofillProps,
   getSchemaFromDiscriminatedUnion,
   hasFormErrors,

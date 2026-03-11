@@ -1,3 +1,5 @@
-import { useCheckEmailExists } from "./mutations/useEmailExistence.mutation";
+import { UserQueriesHelper } from "./helpers/user-queries.helper";
 
-export { useCheckEmailExists };
+const { getCheckEmailQueryOptions } = UserQueriesHelper;
+
+export { getCheckEmailQueryOptions };

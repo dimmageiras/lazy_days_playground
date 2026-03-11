@@ -4,7 +4,7 @@ import type { JWTPayload } from "@server/types/jwt-token.type";
 
 import { DateHelper } from "../../shared/helpers/date.helper.ts";
 
-interface TokenValidationResult {
+interface ValidateAuthTokenReturn {
   expiresAt: Date | null;
   identityId: string | null;
   isValid: boolean;
@@ -32,7 +32,7 @@ interface TokenValidationResult {
  */
 const validateAuthToken = async (
   token: string,
-): Promise<TokenValidationResult> => {
+): Promise<ValidateAuthTokenReturn> => {
   const { getTokenExpiration } = Auth;
   const { getCurrentUTCDate } = DateHelper;
 

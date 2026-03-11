@@ -46,7 +46,7 @@ const {
   getFutureUTCDate,
   handleAuthError,
   log,
-  sixDigitCodeGenOnServer,
+  sixDigitCodeGen,
 } = RoutesHelper;
 const { castAsType } = TypeHelper;
 
@@ -85,7 +85,7 @@ const signupRoute = async (fastify: FastifyInstance): Promise<void> => {
       },
       async (request, response) => {
         const requestId = fastIdGen();
-        const { code: _code, hash } = await sixDigitCodeGenOnServer();
+        const { code: _code, hash } = sixDigitCodeGen();
 
         try {
           const { email, password } = request.body;

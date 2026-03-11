@@ -1,5 +1,7 @@
 import type { KeyAsString, ValueOf } from "type-fest";
 
+import type { HasObjectKeyNarrow } from "@shared/types/app/utility-types";
+
 import { ArrayUtilsHelper } from "./array-utils.helper.ts";
 import { TypeHelper } from "./type.helper.ts";
 
@@ -86,7 +88,7 @@ const isObject = (item: unknown): item is Record<string, unknown> => {
 const hasObjectKey = <TObject extends object, TKey extends string>(
   initialObject: TObject,
   key: TKey,
-): initialObject is TObject & Record<TKey, unknown> => {
+): initialObject is HasObjectKeyNarrow<TObject, TKey> => {
   if (!isObject(initialObject)) {
     return false;
   }

@@ -13,6 +13,7 @@ const { CHECK_EMAIL, SIGNUP } = AUTH_FORM_MODES;
 
 const FormFields = (): JSX.Element => {
   const formMethods = useFormContext<AuthFormData>();
+  const email = useWatch({ control: formMethods.control, name: "email" });
   const mode = useWatch({ control: formMethods.control, name: "mode" });
 
   const isNotCheckEmailMode = mode !== CHECK_EMAIL;
@@ -21,7 +22,18 @@ const FormFields = (): JSX.Element => {
   return (
     <div className={styles["form-fields"]}>
       <EmailField />
-      {isNotCheckEmailMode ? <PasswordField /> : null}
+      {isNotCheckEmailMode ? (
+        <>
+          <input
+            aria-hidden="true"
+            autoComplete="username"
+            tabIndex={-1}
+            type="hidden"
+            value={email}
+          />
+          <PasswordField />
+        </>
+      ) : null}
       {isSignupMode ? <ConfirmPasswordField /> : null}
     </div>
   );

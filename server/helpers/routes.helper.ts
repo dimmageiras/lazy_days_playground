@@ -3,13 +3,15 @@ import { IdUtilsHelper } from "../../shared/helpers/id-utils.helper.ts";
 import { AuthClientHelper } from "./auth-client.helper.ts";
 import { CredentialsHelper } from "./credentials.helper.ts";
 import { EncryptionHelper } from "./encryption.helper.ts";
+import { IdUtilsServerHelper } from "./id-utils.helper.ts";
 import { PinoLogHelper } from "./pino-log.helper.ts";
 
 const { createAuth, getBaseUrl, getClient, handleAuthError } = AuthClientHelper;
 const { maskDsnCredentials } = CredentialsHelper;
 const { getCurrentISOTimestamp, getFutureUTCDate, toISOTimestamp } = DateHelper;
 const { encryptData, decryptData } = EncryptionHelper;
-const { fastIdGen, sixDigitCodeGenOnServer } = IdUtilsHelper;
+const { fastIdGen } = IdUtilsHelper;
+const { sixDigitCodeGen } = IdUtilsServerHelper;
 const { log } = PinoLogHelper;
 
 export const RoutesHelper = {
@@ -24,6 +26,6 @@ export const RoutesHelper = {
   handleAuthError,
   log,
   maskDsnCredentials,
-  sixDigitCodeGenOnServer,
+  sixDigitCodeGen,
   toISOTimestamp,
 };

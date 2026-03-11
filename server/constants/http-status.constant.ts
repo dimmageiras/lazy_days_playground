@@ -4,6 +4,8 @@
 const HTTP_STATUS = Object.freeze({
   /** 200 - OK */
   OK: 200,
+  /** 202 - Accepted */
+  ACCEPTED: 202,
   /** 204 - No Content */
   NO_CONTENT: 204,
   /** 302 - Temporary Redirect */
