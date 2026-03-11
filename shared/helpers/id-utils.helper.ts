@@ -21,7 +21,7 @@ const sixDigitCodeGenOnServer = async (): Promise<{
   code: string;
   hash: Buffer;
 }> => {
-  if (!import.meta.env.SSR || globalThis.window) {
+  if (globalThis.window) {
     throw new Error("sixDigitCodeGenOnServer can only be called on the server");
   }
 
