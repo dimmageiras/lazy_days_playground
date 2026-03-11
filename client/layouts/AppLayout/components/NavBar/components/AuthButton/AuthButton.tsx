@@ -5,11 +5,13 @@ import type { NavigateFunction } from "react-router";
 import { NavigationWrapper } from "@client/components/NavigationWrapper";
 import { COOKIE_KEYS } from "@client/constants/auth-cookie.constant";
 import { useClientSessionStoreState } from "@client/providers/ClientSessionProvider";
+import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 import { useLogout } from "@client/services/auth";
 
 import styles from "./AuthButton.module.scss";
-
 const { CLIENT_ID } = COOKIE_KEYS;
+const { ROUTE_PATHS } = ROUTES_CONSTANTS;
+const { AUTH, HOME } = ROUTE_PATHS;
 
 const AuthButton = (): JSX.Element => {
   const [isAuthenticated, setIsAuthenticated] =
@@ -28,7 +30,7 @@ const AuthButton = (): JSX.Element => {
 
       queryClient.clear();
 
-      navigate("/", { replace: true });
+      navigate(HOME, { replace: true });
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -50,7 +52,7 @@ const AuthButton = (): JSX.Element => {
           <button
             aria-label="Sign in to your account or sign up for a new one"
             className={styles["auth-button"]}
-            onClick={() => navigate("/auth", { replace: true })}
+            onClick={() => navigate(`/${AUTH}`, { replace: true })}
             type="button"
           >
             Sign in / Sign up

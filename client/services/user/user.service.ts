@@ -9,8 +9,11 @@ import type {
 
 const BASE_URL = `/${USER_BASE_URL}` as const;
 
+/**
+ * Check if an email is already registered.
+ */
 const checkEmailExists = async (
-  email: string
+  email: string,
 ): Promise<CheckEmailCreateData> => {
   const { CHECK_EMAIL } = USER_ENDPOINTS;
 

@@ -9,7 +9,6 @@ const UPDATE_OTP_QUERY = `
     code_hash := <bytes>$hash,
     expires_at := <datetime>$expiresAt,
   }
-  FILTER .factor.identity.id = <uuid>$identity_id
 ` as const;
 
 export { UPDATE_OTP_QUERY };

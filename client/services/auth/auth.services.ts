@@ -15,7 +15,7 @@ import type {
 const BASE_URL = `/${AUTH_BASE_URL}` as const;
 
 const signin = async (
-  payload: SigninCreatePayload
+  payload: SigninCreatePayload,
 ): Promise<SigninCreateData> => {
   const { SIGNIN } = AUTH_ENDPOINTS;
 
@@ -26,7 +26,7 @@ const signin = async (
 };
 
 const signup = async (
-  payload: SignupCreatePayload
+  payload: SignupCreatePayload,
 ): Promise<SignupCreateData> => {
   const { SIGNUP } = AUTH_ENDPOINTS;
 
@@ -46,7 +46,7 @@ const verifyAuth = async (): Promise<VerifyAuthListData> => {
 };
 
 const logout = async (
-  payload: LogoutCreatePayload
+  payload: LogoutCreatePayload,
 ): Promise<LogoutCreateData> => {
   const { LOGOUT } = AUTH_ENDPOINTS;
 

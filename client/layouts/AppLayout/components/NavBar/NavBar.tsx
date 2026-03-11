@@ -3,10 +3,14 @@ import type { JSX } from "react";
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { RouterLink } from "@client/components/RouterLink";
 import { useClientSessionTrackedValue } from "@client/providers/ClientSessionProvider";
+import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 
 import { AuthButton } from "./components/AuthButton";
 import { NavItems } from "./components/NavItems";
 import styles from "./NavBar.module.scss";
+
+const { ROUTE_PATHS } = ROUTES_CONSTANTS;
+const { HOME, USER_PROFILE } = ROUTE_PATHS;
 
 const NavBar = (): JSX.Element => {
   const isAuthenticated = useClientSessionTrackedValue("isAuthenticated");
@@ -23,7 +27,7 @@ const NavBar = (): JSX.Element => {
             className={String(styles["home-link"])}
             prioritizeOnClick
             shouldReplace
-            to="/"
+            to={HOME}
           >
             <IconifyIcon
               aria-hidden="true"
@@ -44,7 +48,7 @@ const NavBar = (): JSX.Element => {
               className={styles["user-profile"]}
               prioritizeOnClick
               shouldReplace
-              to="/user-profile"
+              to={`/${USER_PROFILE}`}
             >
               User Profile
             </RouterLink>

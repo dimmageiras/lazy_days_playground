@@ -2,24 +2,28 @@ import type { JSX } from "react";
 
 import { ListRenderer } from "@client/components/ListRenderer";
 import { RouterLink } from "@client/components/RouterLink";
+import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 
 import styles from "./NavItems.module.scss";
+
+const { ROUTE_PATHS } = ROUTES_CONSTANTS;
+const { TREATMENTS, STAFF, CALENDAR } = ROUTE_PATHS;
 
 const NAV_ITEMS = [
   {
     "aria-label": "Treatments",
     label: "Treatments",
-    to: "/treatments",
+    to: `/${TREATMENTS}`,
   },
   {
     "aria-label": "Staff",
     label: "Staff",
-    to: "/staff",
+    to: `/${STAFF}`,
   },
   {
     "aria-label": "Calendar",
     label: "Calendar",
-    to: "/calendar",
+    to: `/${CALENDAR}`,
   },
 ];
 
