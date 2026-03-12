@@ -3,13 +3,13 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Form as ReactRouterForm } from "react-router";
 
 import { BaseCard } from "@client/components/BaseCard";
+import type { AuthFormData } from "@client/types/auth.type";
 
 import styles from "./AuthForm.module.scss";
 import { FormActions } from "./components/FormActions/FormActions.tsx";
 import { FormFields } from "./components/FormFields/FormFields.tsx";
 import { AUTH_FORM_INITIAL_VALUES } from "./constants/auth-form.constant.ts";
 import { useAuthFormSubmit } from "./hooks/useAuthFormSubmit.ts";
-import type { AuthFormData } from "./types/auth-form.type.ts";
 
 const AuthForm = (): JSX.Element => {
   const formMethods = useForm<AuthFormData>(AUTH_FORM_INITIAL_VALUES);

@@ -1,5 +1,6 @@
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import axios from "axios";
+import type { FlightLikePayload } from "react-router";
 
 import { HTTP_STATUS } from "@server/constants/http-status.constant";
 import { AUTH_ENDPOINTS } from "@shared/constants/auth.constant";
@@ -59,8 +60,8 @@ const submitAuthForm = async ({
   formData,
 }: {
   formData: FormData;
-}): Promise<AxiosResponse<(Record<string, unknown> | string)[]>> => {
-  const response = await axios.post<(Record<string, unknown> | string)[]>(
+}): Promise<AxiosResponse<FlightLikePayload>> => {
+  const response = await axios.post<FlightLikePayload>(
     AUTH_ACTION_URL,
     formData,
     {

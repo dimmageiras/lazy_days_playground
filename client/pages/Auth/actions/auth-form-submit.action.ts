@@ -3,7 +3,7 @@ import type { data } from "react-router";
 
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import { authFormSchema } from "@client/pages/Auth/components/AuthForm/schemas/auth-form.schema";
-import type { CheckEmailSuccess } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
+import type { CheckEmailResult } from "@client/types/auth.type";
 
 import { AuthFormSubmitActionHelper } from "./helpers/auth-form-submit-action.helper";
 
@@ -18,12 +18,7 @@ const { runCheckEmail, runSignin, runSignup } = AuthFormSubmitActionHelper;
 const authFormSubmitAction = async ({
   request,
 }: Route.ActionArgs): Promise<
-  | ReturnType<
-      typeof data<{
-        defaultValues: CheckEmailSuccess;
-      }>
-    >
-  | Response
+  ReturnType<typeof data<CheckEmailResult>> | Response
 > => {
   const formData = await request.formData();
   const formValues = Object.fromEntries(formData);

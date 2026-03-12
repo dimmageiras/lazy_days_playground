@@ -4,7 +4,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
-import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
+import type { AuthFormData } from "@client/types/auth.type";
 
 import styles from "./FormActions.module.scss";
 

@@ -5,7 +5,7 @@ import { TextInput } from "@client/components/TextInput";
 import { useAuthFieldFocus } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldFocus";
 import { useFieldRequired } from "@client/pages/Auth/components/AuthForm/components/FormFields/hooks/useFieldRequired";
 import { AUTH_FORM_FIELDS } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
-import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
+import type { AuthFormData } from "@client/types/auth.type";
 
 const {
   CONFIRM_PASSWORD: {

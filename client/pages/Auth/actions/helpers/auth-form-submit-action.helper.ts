@@ -4,18 +4,18 @@ import { data, redirect } from "react-router";
 import { QueriesHelper } from "@client/helpers/queries.helper";
 import { ServicesHelper } from "@client/helpers/services.helper";
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
-import type {
-  CheckEmailPayload,
-  CheckEmailSuccess,
-  SigninPayload,
-  SignupPayload,
-} from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 import {
   getSigninQueryOptions,
   getSignupQueryOptions,
 } from "@client/services/auth";
 import { getCheckEmailQueryOptions } from "@client/services/user";
+import type {
+  CheckEmailPayload,
+  CheckEmailResult,
+  SigninPayload,
+  SignupPayload,
+} from "@client/types/auth.type";
 import { AUTH_COOKIE_NAMES } from "@server/constants/auth-cookie.constant";
 import type {
   SigninCreateData,
@@ -33,13 +33,7 @@ const { findSetCookieHeader, setSetCookieHeader } = ServicesHelper;
 
 const runCheckEmail = async ({
   email,
-}: CheckEmailPayload): Promise<
-  ReturnType<
-    typeof data<{
-      defaultValues: CheckEmailSuccess;
-    }>
-  >
-> => {
+}: CheckEmailPayload): Promise<ReturnType<typeof data<CheckEmailResult>>> => {
   const options = getCheckEmailQueryOptions(email);
   const queryClient = await fetchServerData([options]);
   const result = queryClient.getQueryData<AxiosResponse<CheckEmailCreateData>>(

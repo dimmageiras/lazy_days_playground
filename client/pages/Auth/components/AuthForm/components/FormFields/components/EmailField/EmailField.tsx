@@ -8,7 +8,7 @@ import {
   AUTH_FORM_FIELDS,
   AUTH_FORM_MODES,
 } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
-import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
+import type { AuthFormData } from "@client/types/auth.type";
 
 const {
   EMAIL: { name: EMAIL_FIELD_NAME, label: EMAIL_FIELD_LABEL },

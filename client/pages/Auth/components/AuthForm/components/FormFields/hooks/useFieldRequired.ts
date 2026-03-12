@@ -3,10 +3,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { authFormSchema } from "@client/pages/Auth/components/AuthForm/schemas/auth-form.schema";
-import type {
-  AuthFormData,
-  AuthFormField,
-} from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
+import type { AuthFormData, AuthFormField } from "@client/types/auth.type";
 
 const { checkFieldIsRequiredInDiscriminatedUnion } = FormUtilsHelper;
 

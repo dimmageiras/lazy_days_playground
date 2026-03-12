@@ -2,7 +2,7 @@ import type { JSX } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
-import type { AuthFormData } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
+import type { AuthFormData } from "@client/types/auth.type";
 
 import { ConfirmPasswordField } from "./components/ConfirmPasswordField/index.ts";
 import { EmailField } from "./components/EmailField/index.ts";
