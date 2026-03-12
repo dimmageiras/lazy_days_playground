@@ -1,8 +1,9 @@
-import tsConfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 
 const vitestConfig = defineConfig({
-  plugins: [tsConfigPaths()],
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
     coverage: {
       exclude: [

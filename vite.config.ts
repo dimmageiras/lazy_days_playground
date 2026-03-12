@@ -5,7 +5,6 @@ import type { UserConfigFnObject } from "vite";
 import { defineConfig } from "vite";
 import pluginBabel from "vite-plugin-babel";
 import pluginChecker from "vite-plugin-checker";
-import tsConfigPaths from "vite-tsconfig-paths";
 
 import {
   HAS_DEV_TOOLS,
@@ -37,7 +36,6 @@ const viteConfig = defineConfig(() => {
         loader: "tsx",
         include: ["./client/**/*"],
       }),
-      tsConfigPaths(),
       pluginChecker({
         enableBuild: false,
         eslint: {
@@ -61,6 +59,7 @@ const viteConfig = defineConfig(() => {
       alias: {
         "@client": path.resolve(__dirname, "client"),
       },
+      tsconfigPaths: true,
     },
     server: {
       hmr: {

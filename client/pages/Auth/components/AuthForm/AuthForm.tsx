@@ -8,13 +8,13 @@ import styles from "./AuthForm.module.scss";
 import { FormActions } from "./components/FormActions/FormActions.tsx";
 import { FormFields } from "./components/FormFields/FormFields.tsx";
 import { AUTH_FORM_INITIAL_VALUES } from "./constants/auth-form.constant.ts";
-import { useAuthSubmit } from "./hooks/useAuthSubmit.ts";
+import { useAuthFormSubmit } from "./hooks/useAuthFormSubmit.ts";
 import type { AuthFormData } from "./types/auth-form.type.ts";
 
 const AuthForm = (): JSX.Element => {
   const formMethods = useForm<AuthFormData>(AUTH_FORM_INITIAL_VALUES);
 
-  const { onValid } = useAuthSubmit(formMethods);
+  const { onValid } = useAuthFormSubmit(formMethods);
 
   return (
     <section aria-label="Auth form" className={styles["form-wrapper"]}>

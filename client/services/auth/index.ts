@@ -1,8 +1,17 @@
 import { AuthQueriesHelper } from "./helpers/auth-queries.helper";
 import { useLogout } from "./mutations/useLogout.mutation";
-import { useSignin } from "./mutations/useSignin.mutation";
-import { useSignup } from "./mutations/useSignup.mutation";
+import { useSubmitAuthFormMutation } from "./mutations/useSubmitAuthForm.mutation";
 
-const { getVerifyAuthQueryOptions } = AuthQueriesHelper;
+const {
+  getSigninQueryOptions,
+  getSignupQueryOptions,
+  getVerifyAuthQueryOptions,
+} = AuthQueriesHelper;
 
-export { getVerifyAuthQueryOptions, useLogout, useSignin, useSignup };
+export {
+  getSigninQueryOptions,
+  getSignupQueryOptions,
+  getVerifyAuthQueryOptions,
+  useLogout,
+  useSubmitAuthFormMutation,
+};

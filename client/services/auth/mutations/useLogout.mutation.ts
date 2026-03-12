@@ -9,15 +9,15 @@ import type {
   LogoutCreatePayload,
 } from "@shared/types/generated/server/auth.type";
 
+const { LOGOUT } = AUTH_QUERY_KEYS;
+
+const { logout } = AuthService;
+
 const useLogout = (): UseMutationResult<
   AxiosResponse<LogoutCreateData>,
   Error,
   LogoutCreatePayload
 > => {
-  const { LOGOUT } = AUTH_QUERY_KEYS;
-
-  const { logout } = AuthService;
-
   return useMutation({
     mutationKey: LOGOUT,
     mutationFn: logout,

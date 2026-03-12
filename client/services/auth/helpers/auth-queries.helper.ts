@@ -15,6 +15,8 @@ import type {
 
 const { SIGNIN, SIGNUP, VERIFY_AUTH } = AUTH_QUERY_KEYS;
 
+const { signin, signup, verifyAuth } = AuthService;
+
 const getSigninQueryOptions = (
   payload: SigninCreatePayload,
 ): UseQueryOptions<
@@ -23,8 +25,6 @@ const getSigninQueryOptions = (
   AxiosResponse<SigninCreateData>,
   readonly [...typeof SIGNIN, SigninCreatePayload]
 > => {
-  const { signin } = AuthService;
-
   return queryOptions({
     queryKey: [...SIGNIN, payload] as const,
     queryFn: () => signin(payload),
@@ -39,8 +39,6 @@ const getSignupQueryOptions = (
   AxiosResponse<SignupCreateData>,
   readonly [...typeof SIGNUP, SignupCreatePayload]
 > => {
-  const { signup } = AuthService;
-
   return queryOptions({
     queryKey: [...SIGNUP, payload] as const,
     queryFn: () => signup(payload),
@@ -55,8 +53,6 @@ const getVerifyAuthQueryOptions = (
   AxiosResponse<VerifyAuthListData>,
   readonly [...typeof VERIFY_AUTH, typeof clientId]
 > => {
-  const { verifyAuth } = AuthService;
-
   return queryOptions({
     queryKey: [...VERIFY_AUTH, clientId] as const,
     queryFn: () => verifyAuth(),
