@@ -1,53 +1,20 @@
 import { validate as uuidValidate, version as uuidVersion } from "uuid";
-import { describe, vi } from "vitest";
+import { describe } from "vitest";
 
 import { IdUtilsHelper } from "./id-utils.helper";
-import { StringUtilsHelper } from "./string-utils.helper";
 
 const { fastIdGen, isSecureId, secureIdGen } = IdUtilsHelper;
-const { isString } = StringUtilsHelper;
 
-// Test data constants
 const TEST_DATA = {
   V4: "550e8400-e29b-41d4-a716-446655440000",
   V7: "0192a8b2-c9e3-7f4a-8b5c-123456789abc",
 } as const;
-
-// Mock only the generation functions for predictable test results
-vi.mock("uuid", () => ({
-  v4: vi.fn(() => TEST_DATA.V4), // Mock v4 for consistency
-  v7: vi.fn(() => TEST_DATA.V7), // Mock v7 for consistency
-  validate: vi.fn((id: string) => {
-    // Custom UUID validation logic inline to avoid circular dependency
-    const uuidRegex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-57][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-    return isString(id) && uuidRegex.test(id);
-  }),
-  version: vi.fn((id: string) => {
-    // Custom UUID version detection logic inline to avoid circular dependency
-    if (!isString(id) || !id.includes("-")) {
-      return null;
-    }
-
-    const parts = id.split("-");
-
-    if (parts.length !== 5) {
-      return null;
-    }
-
-    const versionChar = parts[2]?.[0];
-
-    return versionChar ? Number.parseInt(versionChar, 16) : null;
-  }),
-}));
 
 describe("IdUtilsHelper", () => {
   describe("fastIdGen", (it) => {
     it("should generate a valid UUID v4", ({ expect }) => {
       const result = fastIdGen();
 
-      expect(result).toBe(TEST_DATA.V4);
       expect(uuidValidate(result)).toBe(true);
       expect(uuidVersion(result)).toBe(4);
     });
@@ -59,13 +26,18 @@ describe("IdUtilsHelper", () => {
 
       expect(result).toBe(true);
     });
+
+    it("should return false for invalid UUID v4", ({ expect }) => {
+      const result = isSecureId(TEST_DATA.V4);
+
+      expect(result).toBe(false);
+    });
   });
 
   describe("secureIdGen", (it) => {
     it("should generate a valid UUID v7", ({ expect }) => {
       const result = secureIdGen();
 
-      expect(result).toBe(TEST_DATA.V7);
       expect(uuidValidate(result)).toBe(true);
       expect(uuidVersion(result)).toBe(7);
     });

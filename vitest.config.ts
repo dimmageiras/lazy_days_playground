@@ -28,6 +28,15 @@ const vitestConfig = defineConfig({
     isolate: false,
     pool: "threads",
     retry: 1,
+    sequence: {
+      concurrent: true,
+      hooks: "parallel",
+      setupFiles: "parallel",
+      shuffle: {
+        files: true,
+        tests: true,
+      },
+    },
     setupFiles: ["./vitest.setup.ts"],
   },
 });

@@ -1,7 +1,7 @@
 import type { Auth } from "@gel/auth-core";
 import type { KeyAsString } from "type-fest";
 import type { TestAPI } from "vitest";
-import { beforeEach, describe, vi } from "vitest";
+import { describe, vi } from "vitest";
 
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 import { TypeHelper } from "@shared/helpers/type.helper";
@@ -90,10 +90,6 @@ const testHandlerCall = (
 };
 
 describe("EmailPasswordHandlersHelper", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe("handlers", (it) => {
     getObjectKeys(HANDLER_TEST_CASES).forEach((key) =>
       testHandlerCall(key, it),

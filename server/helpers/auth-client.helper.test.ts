@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { Client } from "gel";
-import { beforeEach, describe, vi } from "vitest";
+import { describe, vi } from "vitest";
 
 import * as RootEnvModule from "@shared/constants/root-env.constant";
 import { TypeHelper } from "@shared/helpers/type.helper";
@@ -71,10 +71,6 @@ const createMockFastify = () =>
   });
 
 describe("AuthClientHelper", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe("createAuth", (it) => {
     it("should create an auth client", ({ expect }) => {
       const mockClient = createMockClient();

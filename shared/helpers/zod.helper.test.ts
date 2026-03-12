@@ -1,6 +1,6 @@
 import type { KeyAsString } from "type-fest";
 import type { TestAPI } from "vitest";
-import { beforeAll, beforeEach, describe, vi } from "vitest";
+import { beforeAll, describe, vi } from "vitest";
 import type { $ZodIssue } from "zod/v4/core";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
@@ -144,10 +144,6 @@ describe("ZodUtilsHelper", () => {
       const zodWrapper = await import("../wrappers/zod.wrapper");
 
       zConfig = zodWrapper.zConfig;
-    });
-
-    beforeEach(() => {
-      vi.clearAllMocks();
     });
 
     it("should load all supported locales successfully", async ({ expect }) => {

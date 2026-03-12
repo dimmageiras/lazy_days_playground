@@ -1,11 +1,29 @@
+import type { Procedure } from "@vitest/spy";
 import type { KeyAsString } from "type-fest";
-import type { TestAPI } from "vitest";
+import type { Mock, TestAPI } from "vitest";
 import { describe, vi } from "vitest";
 
 import { MODES } from "@shared/constants/root-env.constant";
+import type * as ObjectUtilsHelperModule from "@shared/helpers/object-utils.helper";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 
 import { RootEnvHelper } from "./root-env.helper";
+
+const { mockIsObject } = vi.hoisted(() => ({
+  mockIsObject: vi.fn(),
+}));
+
+vi.mock("@shared/helpers/object-utils.helper", async (importOriginal) => {
+  const actual = await importOriginal<typeof ObjectUtilsHelperModule>();
+
+  return {
+    ObjectUtilsHelper: {
+      ...actual.ObjectUtilsHelper,
+      isObject: (value: unknown): ReturnType<Mock<Procedure>> =>
+        mockIsObject(value),
+    },
+  };
+});
 
 const {
   DEVELOPMENT: DEVELOPMENT_MODE,
@@ -55,6 +73,7 @@ describe("RootEnvHelper", () => {
       const originalProcess = globalThis.process;
 
       vi.stubGlobal("process", undefined);
+      mockIsObject.mockReturnValue(true);
 
       try {
         const result = getEnvVariables();
@@ -71,7 +90,7 @@ describe("RootEnvHelper", () => {
       const originalProcess = globalThis.process;
 
       vi.stubGlobal("process", undefined);
-      vi.spyOn(ObjectUtilsHelper, "isObject").mockReturnValue(false);
+      mockIsObject.mockReturnValue(false);
 
       try {
         expect(() => getEnvVariables()).toThrow(
@@ -79,7 +98,6 @@ describe("RootEnvHelper", () => {
         );
       } finally {
         vi.stubGlobal("process", originalProcess);
-        vi.restoreAllMocks();
       }
     });
   });

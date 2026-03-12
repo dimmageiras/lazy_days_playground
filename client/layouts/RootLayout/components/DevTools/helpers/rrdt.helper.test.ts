@@ -6,7 +6,7 @@ import { devToolsStore } from "@client/layouts/RootLayout/components/DevTools/st
 import {
   triggerObserver,
   withMutationObserverMock,
-} from "./dev-tools.helper.test";
+} from "./dev-tools-helper-test.utils";
 import { RRDTHelper } from "./rrdt.helper";
 
 const { observeDevToolsPanel } = RRDTHelper;

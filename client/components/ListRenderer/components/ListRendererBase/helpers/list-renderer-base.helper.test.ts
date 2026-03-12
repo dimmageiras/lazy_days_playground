@@ -260,11 +260,11 @@ describe("ListRendererBaseHelper", () => {
     it("should fall through to composite key when keyMap.get returns falsy", ({
       expect,
     }) => {
-      const keyMap = {
+      const keyMap = castAsType<WeakMap<WeakKey, string>>({
         has: vi.fn().mockReturnValue(true),
         get: vi.fn().mockReturnValue(undefined),
         set: vi.fn(),
-      } as unknown as WeakMap<WeakKey, string>;
+      });
 
       const object = { id: 1, name: "test" };
 

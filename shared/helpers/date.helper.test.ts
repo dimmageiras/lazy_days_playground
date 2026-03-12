@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { describe } from "vitest";
+import { describe, vi } from "vitest";
 
 import { TIMING } from "../constants/timing.constant";
 import { DateHelper } from "./date.helper";
@@ -18,6 +18,7 @@ const {
 
 const TEST_DATA = {
   DATE: new Date("2025-01-03T15:00:00.000Z"),
+  FIXED_NOW: "2025-01-03T15:00:00.000Z",
   MAX_AGE: MINUTES_FIVE_IN_S,
 } as const;
 
@@ -63,17 +64,17 @@ describe("DateHelper", () => {
     it("should get the current ISO timestamp", ({ expect }) => {
       const result = getCurrentISOTimestamp();
 
-      expect(result.slice(0, 19)).toStrictEqual(
-        new Date().toISOString().slice(0, 19),
-      );
+      expect(result).toStrictEqual(TEST_DATA.FIXED_NOW);
     });
   });
 
   describe("getCurrentUTCDate", (it) => {
     it("should get the current UTC date", ({ expect }) => {
-      const result = getCurrentUTCDate().toISOString().slice(0, 19);
+      vi.setSystemTime(new Date(TEST_DATA.FIXED_NOW));
 
-      expect(result).toStrictEqual(new Date().toISOString().slice(0, 19));
+      const result = getCurrentUTCDate();
+
+      expect(result.toISOString()).toStrictEqual(TEST_DATA.FIXED_NOW);
     });
   });
 
