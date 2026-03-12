@@ -5,7 +5,7 @@ import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constant
 import { authFormSchema } from "@client/pages/Auth/components/AuthForm/schemas/auth-form.schema";
 import type { CheckEmailSuccess } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
 
-import { AuthActionHelper } from "./helpers/auth-action.helper";
+import { AuthFormSubmitActionHelper } from "./helpers/auth-form-submit-action.helper";
 
 const {
   CHECK_EMAIL: CHECK_EMAIL_MODE,
@@ -13,7 +13,7 @@ const {
   SIGNUP: SIGNUP_MODE,
 } = AUTH_FORM_MODES;
 
-const { runCheckEmail, runSignin, runSignup } = AuthActionHelper;
+const { runCheckEmail, runSignin, runSignup } = AuthFormSubmitActionHelper;
 
 const authFormSubmitAction = async ({
   request,

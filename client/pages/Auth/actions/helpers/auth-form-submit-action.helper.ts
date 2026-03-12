@@ -107,7 +107,7 @@ const runSignup = async ({
   return redirectResponse;
 };
 
-export const AuthActionHelper = {
+export const AuthFormSubmitActionHelper = {
   runCheckEmail,
   runSignin,
   runSignup,

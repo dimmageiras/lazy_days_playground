@@ -1,11 +1,9 @@
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
-import { TypeHelper } from "@shared/helpers/type.helper";
 
 const { getObjectKeys, isObject } = ObjectUtilsHelper;
-const { castAsType } = TypeHelper;
 
 const decodeFlightLikePayload = (
-  table: readonly (Record<string, unknown> | string)[],
+  table: readonly unknown[],
   slot: number = 0,
 ): unknown => {
   const entry = Reflect.get(table, slot);
@@ -28,10 +26,6 @@ const decodeFlightLikePayload = (
   return decoded;
 };
 
-const decodeAuthActionResponse = <TOutput>(
-  data: (Record<string, unknown> | string)[],
-): TOutput => {
-  return castAsType<TOutput>(decodeFlightLikePayload(data));
+export const ReactRouterHelper = {
+  decodeFlightLikePayload,
 };
-
-export { decodeAuthActionResponse };

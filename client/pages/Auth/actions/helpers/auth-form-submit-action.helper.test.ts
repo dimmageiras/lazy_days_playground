@@ -5,7 +5,7 @@ import { describe, vi } from "vitest";
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 
-import { AuthActionHelper } from "./auth-action.helper";
+import { AuthFormSubmitActionHelper } from "./auth-form-submit-action.helper";
 
 const {
   CHECK_EMAIL: CHECK_EMAIL_MODE,
@@ -15,7 +15,7 @@ const {
 const { ROUTE_PATHS } = ROUTES_CONSTANTS;
 const { HOME } = ROUTE_PATHS;
 
-const { runCheckEmail, runSignin, runSignup } = AuthActionHelper;
+const { runCheckEmail, runSignin, runSignup } = AuthFormSubmitActionHelper;
 
 const QUERY_KEY_CHECK_EMAIL = ["check-email"] as const;
 const QUERY_KEY_SIGNIN = ["signin"] as const;

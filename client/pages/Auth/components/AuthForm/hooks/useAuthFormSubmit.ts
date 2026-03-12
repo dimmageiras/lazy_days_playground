@@ -1,28 +1,32 @@
 import { useCallback } from "react";
 import type { UseFormReturn } from "react-hook-form";
-import { type SingleFetchRedirect, useNavigate } from "react-router";
+import type { SingleFetchRedirect } from "react-router";
+import { useNavigate } from "react-router";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
+import { ReactRouterHelper } from "@client/helpers/react-router.helper";
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import type {
   AuthFormData,
   CheckEmailSuccess,
 } from "@client/pages/Auth/components/AuthForm/types/auth-form.type";
-import { decodeAuthActionResponse } from "@client/pages/Auth/helpers/auth-action-response.helper";
 import { useSubmitAuthFormMutation } from "@client/services/auth";
 import { HTTP_STATUS } from "@server/constants/http-status.constant";
 import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 import { StringUtilsHelper } from "@shared/helpers/string-utils.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 
 const { CHECK_EMAIL, SIGNIN, SIGNUP } = AUTH_FORM_MODES;
 const { TEMPORARY_REDIRECT } = HTTP_STATUS;
 
 const { formDataFromObject } = FormUtilsHelper;
 const { hasObjectKey } = ObjectUtilsHelper;
+const { decodeFlightLikePayload } = ReactRouterHelper;
 const { isString } = StringUtilsHelper;
+const { castAsType } = TypeHelper;
 
 interface UseAuthSubmitReturn {
-  onValid: (data: AuthFormData) => void;
+  onValid: (formData: AuthFormData) => void;
 }
 
 const useAuthFormSubmit = (
@@ -38,9 +42,9 @@ const useAuthFormSubmit = (
           formData: formDataFromObject(formData),
         });
 
-        const decodedData = decodeAuthActionResponse<
+        const decodedData = castAsType<
           SingleFetchRedirect | { data: { defaultValues: CheckEmailSuccess } }
-        >(data);
+        >(decodeFlightLikePayload(data));
 
         if (
           hasObjectKey(decodedData, "status") &&
