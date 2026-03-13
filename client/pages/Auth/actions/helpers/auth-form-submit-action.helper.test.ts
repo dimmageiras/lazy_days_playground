@@ -1,4 +1,6 @@
+import { type DehydratedState, QueryClient } from "@tanstack/react-query";
 import type { Procedure } from "@vitest/spy";
+import type { AxiosResponse } from "axios";
 import type { Mock } from "vitest";
 import { describe, vi } from "vitest";
 
@@ -30,20 +32,42 @@ const TEST_DATA = {
   PKCE_COOKIE_STRING: "_pkce-verifier=abc123",
 } as const;
 
+const createMutationQueryClient = async (
+  exists: boolean,
+): Promise<{
+  queryClient: QueryClient;
+  response: AxiosResponse<{ exists: boolean }>;
+}> => {
+  const queryClient = new QueryClient();
+  const response = {
+    data: { exists },
+  } as AxiosResponse<{ exists: boolean }>;
+  const mutation = queryClient.getMutationCache().build(queryClient, {
+    mutationKey: QUERY_KEY_CHECK_EMAIL,
+    mutationFn: async () => response,
+  });
+
+  await mutation.execute(TEST_DATA.EMAIL);
+
+  return { queryClient, response };
+};
+
 const {
   mockFetchServerData,
+  mockExecuteMutationOnServer,
   mockData,
   mockRedirect,
-  mockGetCheckEmailQueryOptions,
+  mockGetCheckEmailMutationOptions,
   mockGetSigninQueryOptions,
   mockGetSignupQueryOptions,
   mockFindSetCookieHeader,
   mockSetSetCookieHeader,
 } = vi.hoisted(() => ({
   mockFetchServerData: vi.fn(),
+  mockExecuteMutationOnServer: vi.fn(),
   mockData: vi.fn(),
   mockRedirect: vi.fn(),
-  mockGetCheckEmailQueryOptions: vi.fn(),
+  mockGetCheckEmailMutationOptions: vi.fn(),
   mockGetSigninQueryOptions: vi.fn(),
   mockGetSignupQueryOptions: vi.fn(),
   mockFindSetCookieHeader: vi.fn(),
@@ -54,6 +78,9 @@ vi.mock("@client/helpers/queries.helper", () => ({
   QueriesHelper: {
     fetchServerData: (...args: unknown[]): ReturnType<Mock<Procedure>> =>
       mockFetchServerData(...args),
+    executeMutationOnServer: (
+      ...args: unknown[]
+    ): ReturnType<Mock<Procedure>> => mockExecuteMutationOnServer(...args),
   },
 }));
 
@@ -71,9 +98,9 @@ vi.mock("@client/services/auth", () => ({
 }));
 
 vi.mock("@client/services/user", () => ({
-  getCheckEmailQueryOptions: (
+  getCheckEmailMutationOptions: (
     ...args: unknown[]
-  ): ReturnType<Mock<Procedure>> => mockGetCheckEmailQueryOptions(...args),
+  ): ReturnType<Mock<Procedure>> => mockGetCheckEmailMutationOptions(...args),
 }));
 
 vi.mock("@client/helpers/services.helper", () => ({
@@ -90,43 +117,51 @@ describe("AuthActionHelper", () => {
     it("should return data with defaultValues and mode SIGNIN when email exists", async ({
       expect,
     }) => {
-      mockGetCheckEmailQueryOptions.mockReturnValue({
-        queryKey: QUERY_KEY_CHECK_EMAIL,
-      });
+      const { queryClient, response } = await createMutationQueryClient(true);
 
-      const getQueryData = vi.fn().mockReturnValue({
-        data: { exists: true },
+      mockGetCheckEmailMutationOptions.mockReturnValue({
+        mutationKey: QUERY_KEY_CHECK_EMAIL,
       });
-
-      mockFetchServerData.mockResolvedValue({ getQueryData });
+      mockData.mockReturnValue(TEST_DATA.MOCK_DATA_RESPONSE);
+      mockExecuteMutationOnServer.mockResolvedValue({
+        data: response,
+        queryClient,
+      });
 
       const result = await runCheckEmail({
         email: TEST_DATA.EMAIL,
         mode: CHECK_EMAIL_MODE,
       });
 
-      expect(mockGetCheckEmailQueryOptions).toHaveBeenCalledWith(
-        TEST_DATA.EMAIL,
+      expect(mockGetCheckEmailMutationOptions).toHaveBeenCalledWith();
+      expect(mockData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          defaultValues: {
+            email: TEST_DATA.EMAIL,
+            mode: SIGNIN_MODE,
+          },
+          dehydratedState: expect.objectContaining({
+            mutations: expect.any(Array),
+            queries: expect.any(Array),
+          }),
+        }),
       );
-      expect(mockData).toHaveBeenCalledWith({
-        defaultValues: {
-          email: TEST_DATA.EMAIL,
-          mode: SIGNIN_MODE,
-        },
-      });
       expect(result).toBe(TEST_DATA.MOCK_DATA_RESPONSE);
     });
 
     it("should return data with defaultValues and mode SIGNUP when email does not exist", async ({
       expect,
     }) => {
+      const { queryClient, response } = await createMutationQueryClient(false);
+
       mockData.mockReturnValue(TEST_DATA.MOCK_DATA_RESPONSE);
-
-      const getQueryData = vi.fn().mockReturnValue({
-        data: { exists: false },
+      mockGetCheckEmailMutationOptions.mockReturnValue({
+        mutationKey: QUERY_KEY_CHECK_EMAIL,
       });
-
-      mockFetchServerData.mockResolvedValue({ getQueryData });
+      mockExecuteMutationOnServer.mockResolvedValue({
+        data: response,
+        queryClient,
+      });
 
       const result = await runCheckEmail({
         email: TEST_DATA.EMAIL,
@@ -138,21 +173,35 @@ describe("AuthActionHelper", () => {
           email: TEST_DATA.EMAIL,
           mode: SIGNUP_MODE,
         },
+        dehydratedState: expect.objectContaining({
+          mutations: expect.any(Array),
+          queries: expect.any(Array),
+        }),
       });
       expect(result).toBe(TEST_DATA.MOCK_DATA_RESPONSE);
+
+      if (mockData?.mock?.calls?.[0]?.[0] == null) {
+        throw new Error("Mock data calls[0][0] is null");
+      }
+
+      const { dehydratedState }: { dehydratedState: DehydratedState } =
+        mockData.mock.calls[0][0];
+
+      expect(dehydratedState.mutations).toHaveLength(1);
     });
 
     it("should throw when query returns no data", async ({ expect }) => {
-      const getQueryData = vi.fn().mockReturnValue(undefined);
-
-      mockFetchServerData.mockResolvedValue({ getQueryData });
+      mockExecuteMutationOnServer.mockResolvedValue({
+        data: undefined,
+        queryClient: new QueryClient(),
+      });
 
       await expect(
         runCheckEmail({
           email: TEST_DATA.EMAIL,
           mode: CHECK_EMAIL_MODE,
         }),
-      ).rejects.toThrow("Check email query returned no data");
+      ).rejects.toThrow("Check email mutation returned no data");
     });
   });
 

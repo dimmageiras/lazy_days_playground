@@ -1,17 +1,22 @@
 import classNames from "classnames";
 import type { JSX } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 import { IconifyIcon, iconifyIcons } from "@client/components/IconifyIcon";
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 import type { AuthFormData } from "@client/types/auth.type";
 
 import styles from "./FormActions.module.scss";
 
 const { CHECK_EMAIL, SIGNIN, SIGNUP } = AUTH_FORM_MODES;
+const { ROUTE_PATHS } = ROUTES_CONSTANTS;
+const { AUTH } = ROUTE_PATHS;
 
 const FormActions = (): JSX.Element => {
   const formMethods = useFormContext<AuthFormData>();
+  const navigate = useNavigate();
   const mode = useWatch({ control: formMethods.control, name: "mode" });
 
   const { arrowLeft } = iconifyIcons;
@@ -37,6 +42,7 @@ const FormActions = (): JSX.Element => {
       email,
       mode: CHECK_EMAIL,
     });
+    navigate(`/${AUTH}`, { replace: true });
   };
 
   return (

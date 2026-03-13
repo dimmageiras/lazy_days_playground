@@ -1,10 +1,11 @@
+import { hydrate, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 import type { SingleFetchRedirect } from "react-router";
 import { useNavigate } from "react-router";
 
 import { FormUtilsHelper } from "@client/helpers/form-utils.helper";
 import { ReactRouterHelper } from "@client/helpers/react-router.helper";
-import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
+import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 import { useSubmitAuthFormMutation } from "@client/services/auth";
 import type {
   AuthFormData,
@@ -16,7 +17,9 @@ import { ObjectUtilsHelper } from "@shared/helpers/object-utils.helper";
 import { StringUtilsHelper } from "@shared/helpers/string-utils.helper";
 import { TypeHelper } from "@shared/helpers/type.helper";
 
-const { CHECK_EMAIL, SIGNIN, SIGNUP } = AUTH_FORM_MODES;
+const { AUTH_PATHS, ROUTE_PATHS } = ROUTES_CONSTANTS;
+const { SIGNIN, SIGNUP } = AUTH_PATHS;
+const { AUTH } = ROUTE_PATHS;
 const { TEMPORARY_REDIRECT } = HTTP_STATUS;
 
 const { formDataFromObject } = FormUtilsHelper;
@@ -32,6 +35,7 @@ type UseAuthFormSubmitHook = (formMethods: AuthFormMethods) => {
 const useAuthFormSubmit: UseAuthFormSubmitHook = (formMethods) => {
   const navigate = useNavigate();
   const { mutateAsync: submitAuthForm } = useSubmitAuthFormMutation();
+  const queryClient = useQueryClient();
 
   const onValid = useCallback(
     (formData: AuthFormData): void => {
@@ -61,20 +65,23 @@ const useAuthFormSubmit: UseAuthFormSubmitHook = (formMethods) => {
           hasObjectKey(decodedData, "data") &&
           decodedData.data.defaultValues
         ) {
-          const { defaultValues } = decodedData.data;
+          const { data } = decodedData;
+
+          if (data.dehydratedState) {
+            hydrate(queryClient, data.dehydratedState);
+          }
+
+          const { defaultValues } = data;
 
           switch (defaultValues.mode) {
-            case CHECK_EMAIL:
-              formMethods.reset({
-                email: defaultValues.email,
-                mode: CHECK_EMAIL,
-              });
-
-              break;
             case SIGNIN:
               formMethods.reset({
                 email: defaultValues.email,
                 mode: SIGNIN,
+              });
+              navigate(`/${AUTH}/${SIGNIN}`, {
+                replace: true,
+                state: { isAuthCheckEmailComplete: true },
               });
 
               break;
@@ -85,13 +92,17 @@ const useAuthFormSubmit: UseAuthFormSubmitHook = (formMethods) => {
                 mode: SIGNUP,
                 password: "",
               });
+              navigate(`/${AUTH}/${SIGNUP}`, {
+                replace: true,
+                state: { isAuthCheckEmailComplete: true },
+              });
 
               break;
           }
         }
       })();
     },
-    [formMethods, navigate, submitAuthForm],
+    [formMethods, navigate, queryClient, submitAuthForm],
   );
 
   return {

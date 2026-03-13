@@ -1,3 +1,8 @@
+const AUTH_PATHS = Object.freeze({
+  SIGNIN: "signin",
+  SIGNUP: "signup",
+} as const);
+
 const INDEX_FILE = "index.ts" as const;
 
 const ROUTE_PATHS = Object.freeze({
@@ -12,6 +17,7 @@ const ROUTE_PATHS = Object.freeze({
 } as const);
 
 const ROUTES_CONSTANTS = Object.freeze({
+  AUTH_PATHS,
   INDEX_FILE,
   ROUTE_PATHS,
 } as const);

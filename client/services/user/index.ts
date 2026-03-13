@@ -1,5 +1,5 @@
-import { UserQueriesHelper } from "./helpers/user-queries.helper";
+import { UserMutationsHelper } from "./helpers/user-mutations.helper";
 
-const { getCheckEmailQueryOptions } = UserQueriesHelper;
+const { getCheckEmailMutationOptions } = UserMutationsHelper;
 
-export { getCheckEmailQueryOptions };
+export { getCheckEmailMutationOptions };

@@ -3,7 +3,8 @@ import { describe } from "vitest";
 
 import { QueriesHelper } from "./queries.helper";
 
-const { fetchServerData, isDehydratedState } = QueriesHelper;
+const { fetchServerData, executeMutationOnServer, isDehydratedState } =
+  QueriesHelper;
 
 // Test data constants
 const TEST_DATA = {
@@ -27,6 +28,23 @@ describe("QueriesHelper", () => {
       const result = queryClient.getQueryData(TEST_DATA.QUERY_KEY);
 
       expect(result).toStrictEqual(TEST_DATA.QUERY_VALUE);
+    });
+  });
+
+  describe("executeMutationOnServer", (it) => {
+    it("should execute a mutation on the server and return the data and query client", async ({
+      expect,
+    }) => {
+      const result = await executeMutationOnServer(
+        {
+          mutationKey: TEST_DATA.QUERY_KEY,
+          mutationFn: async () => TEST_DATA.QUERY_VALUE,
+        },
+        TEST_DATA.QUERY_VALUE,
+      );
+
+      expect(result.data).toBe(TEST_DATA.QUERY_VALUE);
+      expect(result.queryClient.getMutationCache().getAll()).toHaveLength(1);
     });
   });
 

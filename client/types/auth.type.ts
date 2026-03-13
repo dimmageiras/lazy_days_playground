@@ -1,3 +1,4 @@
+import type { DehydratedState } from "@tanstack/react-query";
 import type { UseFormReturn } from "react-hook-form";
 
 import type { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
@@ -24,6 +25,7 @@ type CheckEmailPayload = Extract<
 
 interface CheckEmailResult {
   defaultValues: Pick<AuthFormData, "email" | "mode">;
+  dehydratedState: DehydratedState;
 }
 
 type SigninPayload = Extract<

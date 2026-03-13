@@ -1,3 +1,4 @@
+import { dehydrate } from "@tanstack/react-query";
 import type { AxiosResponse } from "axios";
 import { data, redirect } from "react-router";
 
@@ -9,7 +10,7 @@ import {
   getSigninQueryOptions,
   getSignupQueryOptions,
 } from "@client/services/auth";
-import { getCheckEmailQueryOptions } from "@client/services/user";
+import { getCheckEmailMutationOptions } from "@client/services/user";
 import type {
   CheckEmailPayload,
   CheckEmailResult,
@@ -28,27 +29,30 @@ const { SIGNIN: SIGNIN_MODE, SIGNUP: SIGNUP_MODE } = AUTH_FORM_MODES;
 const { ROUTE_PATHS } = ROUTES_CONSTANTS;
 const { HOME } = ROUTE_PATHS;
 
-const { fetchServerData } = QueriesHelper;
+const { executeMutationOnServer, fetchServerData } = QueriesHelper;
 const { findSetCookieHeader, setSetCookieHeader } = ServicesHelper;
 
 const runCheckEmail = async ({
   email,
 }: CheckEmailPayload): Promise<ReturnType<typeof data<CheckEmailResult>>> => {
-  const options = getCheckEmailQueryOptions(email);
-  const queryClient = await fetchServerData([options]);
-  const result = queryClient.getQueryData<AxiosResponse<CheckEmailCreateData>>(
-    options.queryKey,
-  );
+  const options = getCheckEmailMutationOptions();
+  const { data: response, queryClient } = await executeMutationOnServer<
+    AxiosResponse<CheckEmailCreateData>,
+    string
+  >(options, email);
 
-  if (result == null) {
-    throw new Error("Check email query returned no data");
+  if (response == null) {
+    throw new Error("Check email mutation returned no data");
   }
 
   return data({
     defaultValues: {
       email,
-      mode: result.data.exists ? SIGNIN_MODE : SIGNUP_MODE,
+      mode: response.data.exists ? SIGNIN_MODE : SIGNUP_MODE,
     },
+    dehydratedState: dehydrate(queryClient, {
+      shouldDehydrateMutation: () => true,
+    }),
   });
 };
 
