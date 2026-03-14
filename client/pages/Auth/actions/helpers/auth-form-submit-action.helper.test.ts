@@ -1,4 +1,5 @@
-import { type DehydratedState, QueryClient } from "@tanstack/react-query";
+import type { DehydratedState } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import type { Procedure } from "@vitest/spy";
 import type { AxiosResponse } from "axios";
 import type { Mock } from "vitest";
@@ -6,6 +7,7 @@ import { describe, vi } from "vitest";
 
 import { AUTH_FORM_MODES } from "@client/pages/Auth/components/AuthForm/constants/auth-form.constant";
 import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
+import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { AuthFormSubmitActionHelper } from "./auth-form-submit-action.helper";
 
@@ -18,6 +20,7 @@ const { ROUTE_PATHS } = ROUTES_CONSTANTS;
 const { HOME } = ROUTE_PATHS;
 
 const { runCheckEmail, runSignin, runSignup } = AuthFormSubmitActionHelper;
+const { castAsType } = TypeHelper;
 
 const QUERY_KEY_CHECK_EMAIL = ["check-email"] as const;
 const QUERY_KEY_SIGNIN = ["signin"] as const;
@@ -39,9 +42,9 @@ const createMutationQueryClient = async (
   response: AxiosResponse<{ exists: boolean }>;
 }> => {
   const queryClient = new QueryClient();
-  const response = {
+  const response = castAsType<AxiosResponse<{ exists: boolean }>>({
     data: { exists },
-  } as AxiosResponse<{ exists: boolean }>;
+  });
   const mutation = queryClient.getMutationCache().build(queryClient, {
     mutationKey: QUERY_KEY_CHECK_EMAIL,
     mutationFn: async () => response,

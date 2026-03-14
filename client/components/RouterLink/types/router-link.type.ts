@@ -8,6 +8,8 @@ import type { LINK_AS } from "@client/components/RouterLink/constants/router-lin
 import type { DomEventsHelper } from "@client/helpers/dom-events.helper";
 
 interface CommonRouterLinkProps {
+  /** Whether the link is disabled */
+  disabled?: boolean;
   /** Whether to show text decoration on hover */
   hasTextDecorationOnHover?: boolean;
   /** Whether to prioritize onClick event over other events */

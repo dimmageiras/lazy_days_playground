@@ -16,7 +16,7 @@ const hydrate = async (): Promise<void> => {
             // Example: Sentry.captureException(error, { contexts: { errorInfo } });
           }}
         />
-      </StrictMode>
+      </StrictMode>,
     );
   });
 };

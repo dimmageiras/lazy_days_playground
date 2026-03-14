@@ -1,11 +1,17 @@
 .link {
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   color: inherit;
   outline: 0.125rem solid transparent;
   outline-offset: 0.125rem;
   text-decoration: none;
   transition-duration: 150ms;
-  transition-property: background-color, border-color, color, fill, stroke,
-    opacity, box-shadow, transform;
+  transition-property:
+    background-color, border-color, color, fill, stroke, opacity, box-shadow,
+    transform;
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 
   &:hover {

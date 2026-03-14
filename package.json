@@ -60,7 +60,7 @@
   "devDependencies": {
     "@babel/plugin-transform-explicit-resource-management": "7.28.6",
     "@babel/preset-typescript": "7.28.5",
-    "@eslint/js": "9.39.2",
+    "@eslint/js": "9.39.4",
     "@fastify/express": "4.0.4",
     "@fastify/swagger": "9.7.0",
     "@fastify/swagger-ui": "5.2.5",
@@ -83,7 +83,7 @@
     "@vitest/coverage-v8": "4.1.0",
     "@vitest/spy": "4.1.0",
     "babel-plugin-react-compiler": "1.0.0",
-    "eslint": "9.39.2",
+    "eslint": "9.39.4",
     "eslint-plugin-css-modules": "2.12.0",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",

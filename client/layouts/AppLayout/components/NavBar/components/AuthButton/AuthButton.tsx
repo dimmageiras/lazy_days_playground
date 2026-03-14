@@ -1,14 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
-import type { JSX, MouseEvent } from "react";
+import classNames from "classnames";
+import type { JSX } from "react";
 import type { NavigateFunction } from "react-router";
+import { useLocation } from "react-router";
 
 import { NavigationWrapper } from "@client/components/NavigationWrapper";
+import { RouterLink } from "@client/components/RouterLink";
 import { COOKIE_KEYS } from "@client/constants/auth-cookie.constant";
 import { useClientSessionStoreState } from "@client/providers/ClientSessionProvider";
 import { ROUTES_CONSTANTS } from "@client/routes/constants/routes.constant";
 import { useLogout } from "@client/services/auth";
 
 import styles from "./AuthButton.module.scss";
+
 const { CLIENT_ID } = COOKIE_KEYS;
 const { ROUTE_PATHS } = ROUTES_CONSTANTS;
 const { AUTH, HOME } = ROUTE_PATHS;
@@ -18,11 +22,12 @@ const AuthButton = (): JSX.Element => {
     useClientSessionStoreState("isAuthenticated");
   const { mutateAsync } = useLogout();
   const queryClient = useQueryClient();
+  const { pathname } = useLocation();
 
-  const handleLogout = async (
-    _event: MouseEvent<HTMLButtonElement>,
-    navigate: NavigateFunction,
-  ): Promise<void> => {
+  const authPath = `/${AUTH}`;
+  const isAuthPage = pathname.includes(authPath);
+
+  const handleLogout = async (navigate: NavigateFunction): Promise<void> => {
     try {
       await mutateAsync({ cookieName: CLIENT_ID });
 
@@ -36,30 +41,35 @@ const AuthButton = (): JSX.Element => {
     }
   };
 
-  return (
+  return isAuthenticated ? (
     <NavigationWrapper>
       {(navigate) => {
-        return isAuthenticated ? (
+        return (
           <button
             aria-label="Sign out of your account"
             className={styles["auth-button"]}
-            onClick={(event) => handleLogout(event, navigate)}
+            onClick={() => handleLogout(navigate)}
             type="button"
           >
             Logout
           </button>
-        ) : (
-          <button
-            aria-label="Sign in to your account or sign up for a new one"
-            className={styles["auth-button"]}
-            onClick={() => navigate(`/${AUTH}`, { replace: true })}
-            type="button"
-          >
-            Sign in / Sign up
-          </button>
         );
       }}
     </NavigationWrapper>
+  ) : (
+    <RouterLink
+      aria-label="Sign in to your account or sign up for a new one"
+      as="internal"
+      className={classNames(styles["auth-button"], {
+        [String(styles["disabled"])]: isAuthPage,
+      })}
+      disabled={isAuthPage}
+      prioritizeOnClick
+      shouldReplace
+      to={authPath}
+    >
+      Sign in / Sign up
+    </RouterLink>
   );
 };
 

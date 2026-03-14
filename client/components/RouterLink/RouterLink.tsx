@@ -60,6 +60,7 @@ type RouterLinkProps =
  * @param props.as - Link type that determines the rendered component ("external" | "internal" | "navLink")
  * @param props.children - Content to be rendered inside the link
  * @param props.className - Additional CSS classes for styling
+ * @param props.disabled - Whether the link is visually and functionally disabled (default: false)
  * @param props.hasTextDecorationOnHover - Whether to show text decoration on hover (default: false)
  * @param props.onClick - onClick event handler
  * @param props.prioritizeOnClick - Whether to prioritize onClick event over other events (default: false)
@@ -77,6 +78,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
   const {
     as = "external",
     className,
+    disabled = false,
     hasTextDecorationOnHover = false,
     ...restProps
   } = props;
@@ -86,6 +88,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
   const linkClassName = classNames(
     styles["link"],
     {
+      [String(styles["disabled"])]: disabled,
       [String(styles["hover-text-decoration"])]: hasTextDecorationOnHover,
     },
     className,

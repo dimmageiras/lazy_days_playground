@@ -14,6 +14,10 @@
   padding: 0 1rem;
   user-select: none;
 
+  &.disabled:hover {
+    background-color: #edf2f7;
+  }
+
   &:hover {
     background-color: #e2e8f0;
   }

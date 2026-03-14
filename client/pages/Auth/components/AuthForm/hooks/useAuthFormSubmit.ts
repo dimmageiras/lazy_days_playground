@@ -81,7 +81,6 @@ const useAuthFormSubmit: UseAuthFormSubmitHook = (formMethods) => {
               });
               navigate(`/${AUTH}/${SIGNIN}`, {
                 replace: true,
-                state: { isAuthCheckEmailComplete: true },
               });
 
               break;
@@ -94,7 +93,6 @@ const useAuthFormSubmit: UseAuthFormSubmitHook = (formMethods) => {
               });
               navigate(`/${AUTH}/${SIGNUP}`, {
                 replace: true,
-                state: { isAuthCheckEmailComplete: true },
               });
 
               break;

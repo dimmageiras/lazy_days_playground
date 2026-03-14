@@ -91,6 +91,7 @@ A type-safe link component with three variants for handling both internal routin
 
 - `children?: JSX.Element | string | null` - Content to be rendered inside the link
 - `className?: string` - Additional CSS classes for styling
+- `disabled?: boolean` - Whether the link is visually and functionally disabled (default: false)
 - `hasTextDecorationOnHover?: boolean` - Whether to show text decoration on hover (default: false)
 - `onClick?: (event: MouseEvent<HTMLAnchorElement>) => void` - onClick event handler
 - `prioritizeOnClick?: boolean` - Whether to prioritize onClick event over other events (default: false)

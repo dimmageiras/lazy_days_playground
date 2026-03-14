@@ -3,7 +3,7 @@ import type { HTTP_STATUS } from "@server/constants/http-status.constant";
 import "react-router";
 
 declare module "react-router" {
-  type FlightLikePayload = (Record<string, unknown> | string)[];
+  type FlightLikePayload = readonly unknown[];
 
   interface SingleFetchRedirect {
     readonly redirect: string;
