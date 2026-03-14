@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import type { ComponentProps, JSX } from "react";
+import type { ComponentProps, JSX, MouseEvent } from "react";
 import { NavLink as ReactRouterNavLink } from "react-router";
 
 import type {
@@ -20,23 +20,31 @@ interface NavLinkProps
   shouldReplace?: boolean;
 }
 
+const preventNavigation = (event: MouseEvent): void => {
+  event.preventDefault();
+};
+
 const NavLink = ({
   activeClassName,
   children,
   className,
+  disabled,
   handleMouseDown,
+  onClick,
   prioritizeOnClick = false,
   shouldReplace = false,
   ...restProps
 }: NavLinkProps): JSX.Element => {
   return (
     <ReactRouterNavLink
+      aria-disabled={disabled}
       className={({ isActive }): string =>
         classNames(className, {
           [String(activeClassName)]: isActive,
         })
       }
-      {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
+      {...(!disabled && prioritizeOnClick && { onMouseDown: handleMouseDown })}
+      {...(disabled ? { onClick: preventNavigation } : { onClick })}
       {...(shouldReplace && { replace: true })}
       {...restProps}
     >

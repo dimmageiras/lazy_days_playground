@@ -1,4 +1,4 @@
-import type { ComponentProps, JSX } from "react";
+import type { ComponentProps, JSX, MouseEvent } from "react";
 
 import type {
   CommonLinkProps,
@@ -16,9 +16,15 @@ interface ExternalLinkProps
   to?: string | undefined;
 }
 
+const preventNavigation = (event: MouseEvent): void => {
+  event.preventDefault();
+};
+
 const ExternalLink = ({
   children,
+  disabled,
   handleMouseDown,
+  onClick,
   prioritizeOnClick = false,
   shouldOpenInNewTab = false,
   to,
@@ -26,9 +32,11 @@ const ExternalLink = ({
 }: ExternalLinkProps): JSX.Element => {
   return (
     <a
+      aria-disabled={disabled}
       href={to ?? ""}
       rel="noopener noreferrer"
-      {...(prioritizeOnClick && { onMouseDown: handleMouseDown })}
+      {...(!disabled && prioritizeOnClick && { onMouseDown: handleMouseDown })}
+      {...(disabled ? { onClick: preventNavigation } : { onClick })}
       {...(shouldOpenInNewTab && { target: "_blank" })}
       {...restProps}
     >

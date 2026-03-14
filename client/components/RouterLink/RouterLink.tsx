@@ -99,6 +99,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
       return (
         <InternalLink
           className={linkClassName}
+          disabled={disabled}
           handleMouseDown={handleMouseDown}
           {...castAsType<Omit<InternalRouterLinkProps, CommonPropsToRemove>>(
             restProps,
@@ -109,6 +110,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
       return (
         <NavLink
           className={linkClassName}
+          disabled={disabled}
           handleMouseDown={handleMouseDown}
           {...castAsType<Omit<NavRouterLinkProps, CommonPropsToRemove>>(
             restProps,
@@ -120,6 +122,7 @@ const RouterLink = (props: RouterLinkProps): JSX.Element => {
       return (
         <ExternalLink
           className={linkClassName}
+          disabled={disabled}
           handleMouseDown={handleMouseDown}
           {...castAsType<Omit<ExternalRouterLinkProps, CommonPropsToRemove>>(
             restProps,
