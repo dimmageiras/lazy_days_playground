@@ -1,0 +1,11 @@
+# Claude Code settings (machine-specific)
+/.claude/settings.local.json
+
+# Environment files (may contain secrets)
+.env.local*
+
+# Node dependencies (installed from lockfile)
+/node_modules/
+
+# VS Code settings (developer-specific)
+/.vscode/settings.json
