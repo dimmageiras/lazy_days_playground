@@ -15,21 +15,25 @@ tags: performance, extend, spread, typescript
 
 ```typescript
 // BAD: each .extend() creates a new TS type — slow compile
-const Base = z.object({ id: z.string(), created: z.date() })
-const WithName = Base.extend({ name: z.string() })
-const WithEmail = WithName.extend({ email: z.email() })
-const WithRole = WithEmail.extend({ role: z.enum(["admin", "user"]) })
+const Base = z.object({ id: z.string(), created: z.date() });
+const WithName = Base.extend({ name: z.string() });
+const WithEmail = WithName.extend({ email: z.email() });
+const WithRole = WithEmail.extend({ role: z.enum(["admin", "user"]) });
 // 4 intermediate types for TypeScript to resolve
 ```
 
 ## Correct
 
 ```typescript
-const Base = z.object({ id: z.string(), created: z.date() })
-const Extra = { name: z.string(), email: z.email(), role: z.enum(["admin", "user"]) }
+const Base = z.object({ id: z.string(), created: z.date() });
+const Extra = {
+  name: z.string(),
+  email: z.email(),
+  role: z.enum(["admin", "user"]),
+};
 
 // GOOD: single z.object with spread — one type instantiation
-const Full = z.object({ ...Base.shape, ...Extra })
+const Full = z.object({ ...Base.shape, ...Extra });
 ```
 
 ## Why

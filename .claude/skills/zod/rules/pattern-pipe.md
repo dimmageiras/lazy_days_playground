@@ -16,11 +16,11 @@ Complex validation chains that coerce and validate in multiple stages become mes
 ```typescript
 // BAD: everything in one transform — no intermediate validation
 const PortNumber = z.string().transform((val) => {
-  const n = parseInt(val, 10)
-  if (isNaN(n)) throw new Error("Not a number") // wrong: shouldn't throw
-  if (n < 1 || n > 65535) throw new Error("Invalid port") // wrong: shouldn't throw
-  return n
-})
+  const n = parseInt(val, 10);
+  if (isNaN(n)) throw new Error("Not a number"); // wrong: shouldn't throw
+  if (n < 1 || n > 65535) throw new Error("Invalid port"); // wrong: shouldn't throw
+  return n;
+});
 ```
 
 ## Correct
@@ -30,11 +30,11 @@ const PortNumber = z.string().transform((val) => {
 const PortNumber = z
   .string()
   .pipe(z.coerce.number()) // stage 1: string → number
-  .pipe(z.int().min(1).max(65535)) // stage 2: validate range
+  .pipe(z.int().min(1).max(65535)); // stage 2: validate range
 
-PortNumber.parse("8080") // 8080
-PortNumber.parse("abc") // ZodError: stage 1 fails
-PortNumber.parse("99999") // ZodError: stage 2 fails
+PortNumber.parse("8080"); // 8080
+PortNumber.parse("abc"); // ZodError: stage 1 fails
+PortNumber.parse("99999"); // ZodError: stage 2 fails
 ```
 
 ## Why

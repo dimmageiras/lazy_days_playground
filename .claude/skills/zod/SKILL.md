@@ -26,28 +26,28 @@ metadata:
 
 Zod is for **runtime type validation** — parsing untrusted data at system boundaries (API input, form data, env vars, external services). For compile-time-only types, plain TypeScript is sufficient.
 
-| Need | Recommended Tool |
-|------|-----------------|
-| API input/output validation | **Zod** |
+| Need                         | Recommended Tool                             |
+| ---------------------------- | -------------------------------------------- |
+| API input/output validation  | **Zod**                                      |
 | Form validation (React, Vue) | **Zod** (with react-hook-form, formik, etc.) |
-| Env var parsing | **Zod** (with t3-env or manual) |
-| Compile-time types only | Plain TypeScript |
-| Smaller bundle (~1kb) | Valibot |
-| Maximum type inference | ArkType |
+| Env var parsing              | **Zod** (with t3-env or manual)              |
+| Compile-time types only      | Plain TypeScript                             |
+| Smaller bundle (~1kb)        | Valibot                                      |
+| Maximum type inference       | ArkType                                      |
 
 ## Rule Categories by Priority
 
-| Priority | Category | Impact | Prefix |
-|----------|----------|--------|--------|
-| 1 | Parsing & Type Safety | CRITICAL | `parse-` |
-| 2 | Schema Design | CRITICAL | `schema-` |
-| 3 | Refinements & Transforms | HIGH | `refine-` |
-| 4 | Error Handling | HIGH | `error-` |
-| 5 | Performance & Composition | MEDIUM | `perf-` |
-| 6 | v4 Migration | MEDIUM | `migrate-` |
-| 7 | Advanced Patterns | MEDIUM | `pattern-` |
-| 8 | Architecture & Boundaries | CRITICAL/HIGH | `arch-` |
-| 9 | Observability | HIGH/MEDIUM | `observe-` |
+| Priority | Category                  | Impact        | Prefix     |
+| -------- | ------------------------- | ------------- | ---------- |
+| 1        | Parsing & Type Safety     | CRITICAL      | `parse-`   |
+| 2        | Schema Design             | CRITICAL      | `schema-`  |
+| 3        | Refinements & Transforms  | HIGH          | `refine-`  |
+| 4        | Error Handling            | HIGH          | `error-`   |
+| 5        | Performance & Composition | MEDIUM        | `perf-`    |
+| 6        | v4 Migration              | MEDIUM        | `migrate-` |
+| 7        | Advanced Patterns         | MEDIUM        | `pattern-` |
+| 8        | Architecture & Boundaries | CRITICAL/HIGH | `arch-`    |
+| 9        | Observability             | HIGH/MEDIUM   | `observe-` |
 
 ## Quick Reference
 
@@ -107,39 +107,39 @@ Zod is for **runtime type validation** — parsing untrusted data at system boun
 
 ## Schema Types Quick Reference
 
-| Type | Syntax |
-|------|--------|
-| String | `z.string()` |
-| Number | `z.number()`, `z.int()`, `z.float()` |
-| Boolean | `z.boolean()` |
-| BigInt | `z.bigint()` |
-| Date | `z.date()` |
-| Undefined | `z.undefined()` |
-| Null | `z.null()` |
-| Void | `z.void()` |
-| Any | `z.any()` |
-| Unknown | `z.unknown()` |
-| Never | `z.never()` |
-| Literal | `z.literal("foo")`, `z.literal(42)` |
-| Enum | `z.enum(["a", "b"])`, `z.enum(TSEnum)` |
-| Email | `z.email()` |
-| URL | `z.url()` |
-| UUID | `z.uuid()` |
-| String→Bool | `z.stringbool()` |
-| ISO DateTime | `z.iso.datetime()` |
-| File | `z.file()` |
-| JSON | `z.json()` |
-| Array | `z.array(schema)` |
-| Tuple | `z.tuple([a, b])` |
-| Object | `z.object({})` |
-| Strict Object | `z.strictObject({})` |
-| Loose Object | `z.looseObject({})` |
-| Record | `z.record(keySchema, valueSchema)` |
-| Map | `z.map(keySchema, valueSchema)` |
-| Set | `z.set(schema)` |
-| Union | `z.union([a, b])` |
-| Disc. Union | `z.discriminatedUnion("key", [...])` |
-| Intersection | `z.intersection(a, b)` |
+| Type          | Syntax                                 |
+| ------------- | -------------------------------------- |
+| String        | `z.string()`                           |
+| Number        | `z.number()`, `z.int()`, `z.float()`   |
+| Boolean       | `z.boolean()`                          |
+| BigInt        | `z.bigint()`                           |
+| Date          | `z.date()`                             |
+| Undefined     | `z.undefined()`                        |
+| Null          | `z.null()`                             |
+| Void          | `z.void()`                             |
+| Any           | `z.any()`                              |
+| Unknown       | `z.unknown()`                          |
+| Never         | `z.never()`                            |
+| Literal       | `z.literal("foo")`, `z.literal(42)`    |
+| Enum          | `z.enum(["a", "b"])`, `z.enum(TSEnum)` |
+| Email         | `z.email()`                            |
+| URL           | `z.url()`                              |
+| UUID          | `z.uuid()`                             |
+| String→Bool   | `z.stringbool()`                       |
+| ISO DateTime  | `z.iso.datetime()`                     |
+| File          | `z.file()`                             |
+| JSON          | `z.json()`                             |
+| Array         | `z.array(schema)`                      |
+| Tuple         | `z.tuple([a, b])`                      |
+| Object        | `z.object({})`                         |
+| Strict Object | `z.strictObject({})`                   |
+| Loose Object  | `z.looseObject({})`                    |
+| Record        | `z.record(keySchema, valueSchema)`     |
+| Map           | `z.map(keySchema, valueSchema)`        |
+| Set           | `z.set(schema)`                        |
+| Union         | `z.union([a, b])`                      |
+| Disc. Union   | `z.discriminatedUnion("key", [...])`   |
+| Intersection  | `z.intersection(a, b)`                 |
 
 ## How to Use
 
@@ -159,17 +159,17 @@ Each rule file contains:
 
 ## References
 
-| Priority | Reference | When to read |
-|----------|-----------|-------------|
-| 1 | `references/schema-types.md` | All primitives, string formats, numbers, enums, dates |
-| 2 | `references/parsing-and-inference.md` | parse, safeParse, z.infer, coercion |
-| 3 | `references/objects-and-composition.md` | Objects, arrays, unions, pick/omit/partial, recursive |
-| 4 | `references/refinements-and-transforms.md` | refine, superRefine, transform, pipe, defaults |
-| 5 | `references/error-handling.md` | ZodError, flattenError, treeifyError, error customization |
-| 6 | `references/advanced-features.md` | Codecs, branded types, JSON Schema, registries |
-| 7 | `references/anti-patterns.md` | Common mistakes with BAD/GOOD examples |
-| 8 | `references/boundary-architecture.md` | Where Zod fits: Express, tRPC, Next.js, React Hook Form, env, external APIs |
-| 9 | `references/linter-and-ci.md` | ESLint rules, CI schema snapshots, unused schema detection, circular deps |
+| Priority | Reference                                  | When to read                                                                |
+| -------- | ------------------------------------------ | --------------------------------------------------------------------------- |
+| 1        | `references/schema-types.md`               | All primitives, string formats, numbers, enums, dates                       |
+| 2        | `references/parsing-and-inference.md`      | parse, safeParse, z.infer, coercion                                         |
+| 3        | `references/objects-and-composition.md`    | Objects, arrays, unions, pick/omit/partial, recursive                       |
+| 4        | `references/refinements-and-transforms.md` | refine, superRefine, transform, pipe, defaults                              |
+| 5        | `references/error-handling.md`             | ZodError, flattenError, treeifyError, error customization                   |
+| 6        | `references/advanced-features.md`          | Codecs, branded types, JSON Schema, registries                              |
+| 7        | `references/anti-patterns.md`              | Common mistakes with BAD/GOOD examples                                      |
+| 8        | `references/boundary-architecture.md`      | Where Zod fits: Express, tRPC, Next.js, React Hook Form, env, external APIs |
+| 9        | `references/linter-and-ci.md`              | ESLint rules, CI schema snapshots, unused schema detection, circular deps   |
 
 ## Full Compiled Document
 

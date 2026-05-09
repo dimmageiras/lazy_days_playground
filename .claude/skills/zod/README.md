@@ -33,19 +33,20 @@ npx skills add https://github.com/anivar/zod-skill
 
 ### 27 Rules Across 9 Categories
 
-| Priority | Category | Rules | Impact |
-|----------|----------|-------|--------|
-| 1 | Parsing & Type Safety | 3 | CRITICAL |
-| 2 | Schema Design | 4 | CRITICAL |
-| 3 | Refinements & Transforms | 3 | HIGH |
-| 4 | Error Handling | 3 | HIGH |
-| 5 | Performance & Composition | 3 | MEDIUM |
-| 6 | v4 Migration | 3 | MEDIUM |
-| 7 | Advanced Patterns | 3 | MEDIUM |
-| 8 | Architecture & Boundaries | 3 | CRITICAL/HIGH |
-| 9 | Observability | 2 | HIGH/MEDIUM |
+| Priority | Category                  | Rules | Impact        |
+| -------- | ------------------------- | ----- | ------------- |
+| 1        | Parsing & Type Safety     | 3     | CRITICAL      |
+| 2        | Schema Design             | 4     | CRITICAL      |
+| 3        | Refinements & Transforms  | 3     | HIGH          |
+| 4        | Error Handling            | 3     | HIGH          |
+| 5        | Performance & Composition | 3     | MEDIUM        |
+| 6        | v4 Migration              | 3     | MEDIUM        |
+| 7        | Advanced Patterns         | 3     | MEDIUM        |
+| 8        | Architecture & Boundaries | 3     | CRITICAL/HIGH |
+| 9        | Observability             | 2     | HIGH/MEDIUM   |
 
 Each rule file contains:
+
 - Why it matters
 - Incorrect code with explanation
 - Correct code with explanation
@@ -53,17 +54,17 @@ Each rule file contains:
 
 ### 9 Deep-Dive References
 
-| Reference | Covers |
-|-----------|--------|
-| `schema-types.md` | All primitives, string formats, numbers, enums, dates, files, JSON |
-| `parsing-and-inference.md` | parse, safeParse, parseAsync, z.infer, z.input, coercion |
-| `objects-and-composition.md` | object/strict/loose, pick, omit, partial, recursive, unions, tuples |
-| `refinements-and-transforms.md` | refine, superRefine, transform, pipe, defaults, catch |
-| `error-handling.md` | ZodError, flattenError, treeifyError, error customization, i18n |
-| `advanced-features.md` | Codecs, branded types, JSON Schema, registries, Standard Schema |
-| `anti-patterns.md` | 14 common mistakes with BAD/GOOD examples |
-| `boundary-architecture.md` | Where Zod fits: Express, tRPC, Next.js, React Hook Form, env, external APIs |
-| `linter-and-ci.md` | ESLint rules, CI schema snapshots, unused schema detection, circular deps |
+| Reference                       | Covers                                                                      |
+| ------------------------------- | --------------------------------------------------------------------------- |
+| `schema-types.md`               | All primitives, string formats, numbers, enums, dates, files, JSON          |
+| `parsing-and-inference.md`      | parse, safeParse, parseAsync, z.infer, z.input, coercion                    |
+| `objects-and-composition.md`    | object/strict/loose, pick, omit, partial, recursive, unions, tuples         |
+| `refinements-and-transforms.md` | refine, superRefine, transform, pipe, defaults, catch                       |
+| `error-handling.md`             | ZodError, flattenError, treeifyError, error customization, i18n             |
+| `advanced-features.md`          | Codecs, branded types, JSON Schema, registries, Standard Schema             |
+| `anti-patterns.md`              | 14 common mistakes with BAD/GOOD examples                                   |
+| `boundary-architecture.md`      | Where Zod fits: Express, tRPC, Next.js, React Hook Form, env, external APIs |
+| `linter-and-ci.md`              | ESLint rules, CI schema snapshots, unused schema detection, circular deps   |
 
 ## Structure
 
@@ -95,22 +96,25 @@ Each rule file contains:
 ## Ecosystem — Skills by [Anivar Aravind](https://anivar.net)
 
 ### Testing Skills
-| Skill | What it covers | Install |
-|-------|---------------|---------|
-| [jest-skill](https://github.com/anivar/jest-skill) | Jest best practices — mock design, async testing, matchers, timers, snapshots | `npx skills add anivar/jest-skill -g` |
-| [zod-testing](https://github.com/anivar/zod-testing) | Zod schema testing — safeParse, mock data, property-based | `npx skills add anivar/zod-testing -g` |
-| [msw-skill](https://github.com/anivar/msw-skill) | MSW 2.0 API mocking — handlers, responses, GraphQL | `npx skills add anivar/msw-skill -g` |
-| [redux-saga-testing](https://github.com/anivar/redux-saga-testing) | Redux-Saga testing — expectSaga, testSaga, providers | `npx skills add anivar/redux-saga-testing -g` |
+
+| Skill                                                              | What it covers                                                                | Install                                       |
+| ------------------------------------------------------------------ | ----------------------------------------------------------------------------- | --------------------------------------------- |
+| [jest-skill](https://github.com/anivar/jest-skill)                 | Jest best practices — mock design, async testing, matchers, timers, snapshots | `npx skills add anivar/jest-skill -g`         |
+| [zod-testing](https://github.com/anivar/zod-testing)               | Zod schema testing — safeParse, mock data, property-based                     | `npx skills add anivar/zod-testing -g`        |
+| [msw-skill](https://github.com/anivar/msw-skill)                   | MSW 2.0 API mocking — handlers, responses, GraphQL                            | `npx skills add anivar/msw-skill -g`          |
+| [redux-saga-testing](https://github.com/anivar/redux-saga-testing) | Redux-Saga testing — expectSaga, testSaga, providers                          | `npx skills add anivar/redux-saga-testing -g` |
 
 ### Library & Framework Skills
-| Skill | What it covers | Install |
-|-------|---------------|---------|
+
+| Skill                                                          | What it covers                                | Install                                     |
+| -------------------------------------------------------------- | --------------------------------------------- | ------------------------------------------- |
 | [redux-saga-skill](https://github.com/anivar/redux-saga-skill) | Redux-Saga effects, fork model, channels, RTK | `npx skills add anivar/redux-saga-skill -g` |
-| [msw-skill](https://github.com/anivar/msw-skill) | MSW 2.0 handlers, responses, migration | `npx skills add anivar/msw-skill -g` |
+| [msw-skill](https://github.com/anivar/msw-skill)               | MSW 2.0 handlers, responses, migration        | `npx skills add anivar/msw-skill -g`        |
 
 ### Engineering Analysis
-| Skill | What it covers | Install |
-|-------|---------------|---------|
+
+| Skill                                                                                    | What it covers                                     | Install                                                  |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------- | -------------------------------------------------------- |
 | [contributor-codebase-analyzer](https://github.com/anivar/contributor-codebase-analyzer) | Code analysis, annual reviews, promotion readiness | `npx skills add anivar/contributor-codebase-analyzer -g` |
 
 ## Author

@@ -10,15 +10,15 @@ Zod belongs at **system boundaries** — the points where your application recei
 
 ```typescript
 app.post("/api/users", (req, res) => {
-  const result = CreateUserSchema.safeParse(req.body)
+  const result = CreateUserSchema.safeParse(req.body);
   if (!result.success) {
     return res.status(400).json({
       errors: z.flattenError(result.error).fieldErrors,
-    })
+    });
   }
-  const user = await createUser(result.data)
-  res.status(201).json(user)
-})
+  const user = await createUser(result.data);
+  res.status(201).json(user);
+});
 ```
 
 ### As Middleware (For Shared Validation Logic)
@@ -26,30 +26,30 @@ app.post("/api/users", (req, res) => {
 ```typescript
 function validate<T extends z.ZodType>(schema: T) {
   return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body)
+    const result = schema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({
         errors: z.flattenError(result.error).fieldErrors,
-      })
+      });
     }
-    req.body = result.data // typed from here on
-    next()
-  }
+    req.body = result.data; // typed from here on
+    next();
+  };
 }
 
 app.post("/api/users", validate(CreateUserSchema), (req, res) => {
   // req.body is already validated and typed
-  const user = await createUser(req.body)
-  res.status(201).json(user)
-})
+  const user = await createUser(req.body);
+  res.status(201).json(user);
+});
 ```
 
 ### When to Use Each
 
-| Approach | Use When |
-|----------|----------|
+| Approach      | Use When                                                       |
+| ------------- | -------------------------------------------------------------- |
 | Route handler | Schema is specific to one route, custom error responses needed |
-| Middleware | Same schema/error format across many routes |
+| Middleware    | Same schema/error format across many routes                    |
 
 ## tRPC — `.input()` Parsing
 
@@ -61,15 +61,15 @@ export const userRouter = router({
     .input(CreateUserSchema) // tRPC calls safeParse internally
     .mutation(async ({ input }) => {
       // input is fully typed — z.infer<typeof CreateUserSchema>
-      return createUser(input)
+      return createUser(input);
     }),
 
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input }) => {
-      return getUser(input.id)
+      return getUser(input.id);
     }),
-})
+});
 ```
 
 You don't call `safeParse()` yourself — tRPC does it and returns a typed error response automatically.
@@ -77,27 +77,27 @@ You don't call `safeParse()` yourself — tRPC does it and returns a typed error
 ## Next.js Server Actions
 
 ```typescript
-"use server"
+"use server";
 
 const CreatePostSchema = z.object({
   title: z.string().min(1),
   body: z.string().min(10),
-})
+});
 
 export async function createPost(formData: FormData) {
   // Parse at the top of the action
   const result = CreatePostSchema.safeParse({
     title: formData.get("title"),
     body: formData.get("body"),
-  })
+  });
 
   if (!result.success) {
-    return { errors: z.flattenError(result.error).fieldErrors }
+    return { errors: z.flattenError(result.error).fieldErrors };
   }
 
   // Typed from here on
-  await db.posts.create({ data: result.data })
-  revalidatePath("/posts")
+  await db.posts.create({ data: result.data });
+  revalidatePath("/posts");
 }
 ```
 
@@ -105,18 +105,18 @@ export async function createPost(formData: FormData) {
 
 ```typescript
 export async function POST(request: Request) {
-  const body = await request.json()
-  const result = CreateUserSchema.safeParse(body)
+  const body = await request.json();
+  const result = CreateUserSchema.safeParse(body);
 
   if (!result.success) {
     return Response.json(
       { errors: z.flattenError(result.error).fieldErrors },
-      { status: 400 }
-    )
+      { status: 400 },
+    );
   }
 
-  const user = await createUser(result.data)
-  return Response.json(user, { status: 201 })
+  const user = await createUser(result.data);
+  return Response.json(user, { status: 201 });
 }
 ```
 
@@ -166,17 +166,19 @@ const EnvSchema = z.object({
   DATABASE_URL: z.url(),
   API_KEY: z.string().min(1),
   PORT: z.coerce.number().int().min(1).max(65535).default(3000),
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-})
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
+});
 
-export const env = EnvSchema.parse(process.env)
+export const env = EnvSchema.parse(process.env);
 // App crashes at startup if env is invalid — this is intentional
 ```
 
 ### With t3-env
 
 ```typescript
-import { createEnv } from "@t3-oss/env-nextjs"
+import { createEnv } from "@t3-oss/env-nextjs";
 
 export const env = createEnv({
   server: {
@@ -191,7 +193,7 @@ export const env = createEnv({
     API_KEY: process.env.API_KEY,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
-})
+});
 ```
 
 ## External API Responses
@@ -203,23 +205,23 @@ const WeatherResponse = z.object({
   temperature: z.number(),
   humidity: z.number().min(0).max(100),
   conditions: z.string(),
-})
+});
 
 async function getWeather(city: string) {
-  const res = await fetch(`https://api.weather.example/v1/${city}`)
-  const json = await res.json()
+  const res = await fetch(`https://api.weather.example/v1/${city}`);
+  const json = await res.json();
 
   // Parse at the boundary — don't trust external data
-  const result = WeatherResponse.safeParse(json)
+  const result = WeatherResponse.safeParse(json);
   if (!result.success) {
     logger.warn("weather_api_schema_mismatch", {
       schema: "WeatherResponse",
       fieldErrors: z.flattenError(result.error).fieldErrors,
-    })
-    throw new ExternalServiceError("Weather API returned unexpected shape")
+    });
+    throw new ExternalServiceError("Weather API returned unexpected shape");
   }
 
-  return result.data // typed Weather
+  return result.data; // typed Weather
 }
 ```
 
@@ -233,12 +235,12 @@ const UserRow = z.object({
   name: z.string(),
   email: z.string(),
   created_at: z.coerce.date(),
-})
+});
 
 async function getUserById(id: string) {
-  const row = await db.query("SELECT * FROM users WHERE id = $1", [id])
+  const row = await db.query("SELECT * FROM users WHERE id = $1", [id]);
   // Validate if using raw SQL or untyped ORM
-  return UserRow.parse(row)
+  return UserRow.parse(row);
 }
 ```
 
@@ -246,13 +248,13 @@ If you use a fully typed ORM like Prisma or Drizzle that generates types from yo
 
 ## Summary: Boundary Layer Checklist
 
-| Boundary | Who Parses | Schema Location |
-|----------|------------|-----------------|
-| Express/Fastify route | Your middleware or handler | `api/[resource]/schemas.ts` |
-| tRPC procedure | tRPC via `.input()` | Inline or co-located |
-| Next.js Server Action | Top of action function | Co-located with action |
-| React Hook Form | zodResolver | `features/[name]/form-schema.ts` |
-| Env vars | Startup (parse, not safeParse) | `config/env.ts` |
-| External API response | After fetch, before use | Co-located with API client |
-| Database results | After query (if untyped) | Co-located with data access |
-| Message queue | Top of consumer handler | Co-located with consumer |
+| Boundary              | Who Parses                     | Schema Location                  |
+| --------------------- | ------------------------------ | -------------------------------- |
+| Express/Fastify route | Your middleware or handler     | `api/[resource]/schemas.ts`      |
+| tRPC procedure        | tRPC via `.input()`            | Inline or co-located             |
+| Next.js Server Action | Top of action function         | Co-located with action           |
+| React Hook Form       | zodResolver                    | `features/[name]/form-schema.ts` |
+| Env vars              | Startup (parse, not safeParse) | `config/env.ts`                  |
+| External API response | After fetch, before use        | Co-located with API client       |
+| Database results      | After query (if untyped)       | Co-located with data access      |
+| Message queue         | Top of consumer handler        | Co-located with consumer         |

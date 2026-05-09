@@ -21,7 +21,7 @@ enum Role {
   Guest = "guest",
 }
 
-const RoleSchema = z.nativeEnum(Role) // Error: z.nativeEnum is not a function
+const RoleSchema = z.nativeEnum(Role); // Error: z.nativeEnum is not a function
 ```
 
 ## Correct
@@ -34,10 +34,10 @@ enum Role {
 }
 
 // GOOD: z.enum() now accepts TypeScript enums directly
-const RoleSchema = z.enum(Role)
+const RoleSchema = z.enum(Role);
 
 // Also still works with string arrays
-const StatusSchema = z.enum(["active", "inactive", "pending"])
+const StatusSchema = z.enum(["active", "inactive", "pending"]);
 ```
 
 ## Why

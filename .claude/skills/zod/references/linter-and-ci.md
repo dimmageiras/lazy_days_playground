@@ -18,10 +18,10 @@ Force `safeParse()` usage. `parse()` throws, which leads to unhandled exceptions
       "error",
       {
         "selector": "CallExpression[callee.property.name='parse'][callee.object.type!='ThisExpression']",
-        "message": "Use safeParse() instead of parse(). parse() throws on invalid input. See: rules/parse-use-safeParse.md"
-      }
-    ]
-  }
+        "message": "Use safeParse() instead of parse(). parse() throws on invalid input. See: rules/parse-use-safeParse.md",
+      },
+    ],
+  },
 }
 ```
 
@@ -33,10 +33,10 @@ To allow `parse()` in specific files (e.g., env config where crashing on invalid
     {
       "files": ["**/config/env.ts", "**/env.ts"],
       "rules": {
-        "no-restricted-syntax": "off"
-      }
-    }
-  ]
+        "no-restricted-syntax": "off",
+      },
+    },
+  ],
 }
 ```
 
@@ -51,10 +51,10 @@ To allow `parse()` in specific files (e.g., env config where crashing on invalid
       "error",
       {
         "selector": "Property[key.name='reportInput'][value.value=true]",
-        "message": "reportInput: true leaks sensitive data in production. Use: reportInput: process.env.NODE_ENV === 'development'. See: rules/error-input-security.md"
-      }
-    ]
-  }
+        "message": "reportInput: true leaks sensitive data in production. Use: reportInput: process.env.NODE_ENV === 'development'. See: rules/error-input-security.md",
+      },
+    ],
+  },
 }
 ```
 
@@ -63,7 +63,7 @@ To allow `parse()` in specific files (e.g., env config where crashing on invalid
 ```jsonc
 {
   "selector": "CallExpression[callee.property.name='nativeEnum']",
-  "message": "z.nativeEnum() is removed in Zod v4. Use z.enum(YourTSEnum) instead. See: rules/migrate-native-enum.md"
+  "message": "z.nativeEnum() is removed in Zod v4. Use z.enum(YourTSEnum) instead. See: rules/migrate-native-enum.md",
 }
 ```
 
@@ -72,7 +72,7 @@ To allow `parse()` in specific files (e.g., env config where crashing on invalid
 ```jsonc
 {
   "selector": "CallExpression[callee.property.name='email'][callee.object.callee.property.name='string']",
-  "message": "Use z.email() instead of z.string().email() in Zod v4. See: rules/migrate-string-formats.md"
+  "message": "Use z.email() instead of z.string().email() in Zod v4. See: rules/migrate-string-formats.md",
 }
 ```
 
@@ -85,26 +85,26 @@ To allow `parse()` in specific files (e.g., env config where crashing on invalid
       "error",
       {
         "selector": "CallExpression[callee.property.name='parse'][callee.object.type!='ThisExpression']",
-        "message": "Use safeParse() instead of parse(). See: rules/parse-use-safeParse.md"
+        "message": "Use safeParse() instead of parse(). See: rules/parse-use-safeParse.md",
       },
       {
         "selector": "Property[key.name='reportInput'][value.value=true]",
-        "message": "reportInput: true leaks sensitive data. See: rules/error-input-security.md"
+        "message": "reportInput: true leaks sensitive data. See: rules/error-input-security.md",
       },
       {
         "selector": "CallExpression[callee.property.name='nativeEnum']",
-        "message": "z.nativeEnum() removed in v4. Use z.enum(). See: rules/migrate-native-enum.md"
-      }
-    ]
+        "message": "z.nativeEnum() removed in v4. Use z.enum(). See: rules/migrate-native-enum.md",
+      },
+    ],
   },
   "overrides": [
     {
       "files": ["**/config/env.ts", "**/env.ts"],
       "rules": {
-        "no-restricted-syntax": "off"
-      }
-    }
-  ]
+        "no-restricted-syntax": "off",
+      },
+    },
+  ],
 }
 ```
 
@@ -116,23 +116,23 @@ Detect unintended schema changes by committing JSON Schema snapshots and failing
 
 ```typescript
 // scripts/export-schemas.ts
-import { z } from "zod"
-import { writeFileSync, mkdirSync } from "fs"
-import { UserSchema, OrderSchema } from "../src/api/schemas"
+import { z } from "zod";
+import { writeFileSync, mkdirSync } from "fs";
+import { UserSchema, OrderSchema } from "../src/api/schemas";
 
 const schemas = {
   User: UserSchema,
   Order: OrderSchema,
-}
+};
 
-mkdirSync("snapshots", { recursive: true })
+mkdirSync("snapshots", { recursive: true });
 
 for (const [name, schema] of Object.entries(schemas)) {
-  const jsonSchema = z.toJSONSchema(schema)
+  const jsonSchema = z.toJSONSchema(schema);
   writeFileSync(
     `snapshots/${name}.json`,
-    JSON.stringify(jsonSchema, null, 2) + "\n"
-  )
+    JSON.stringify(jsonSchema, null, 2) + "\n",
+  );
 }
 ```
 
@@ -185,7 +185,7 @@ knip detects unused exports including schemas. Configure in `knip.json`:
 {
   "entry": ["src/index.ts"],
   "project": ["src/**/*.ts"],
-  "ignore": ["**/*.test.ts", "**/*.spec.ts"]
+  "ignore": ["**/*.test.ts", "**/*.spec.ts"],
 }
 ```
 
@@ -230,15 +230,15 @@ Include remediation instructions in ESLint messages so developers know exactly w
 ```jsonc
 {
   "selector": "CallExpression[callee.property.name='parse']",
-  "message": "Use safeParse() instead of parse().\n\nparse() throws ZodError on invalid input.\nsafeParse() returns { success, data | error }.\n\nReplace:\n  schema.parse(data)\nWith:\n  const result = schema.safeParse(data)\n  if (!result.success) { /* handle error */ }\n\nSee: rules/parse-use-safeParse.md"
+  "message": "Use safeParse() instead of parse().\n\nparse() throws ZodError on invalid input.\nsafeParse() returns { success, data | error }.\n\nReplace:\n  schema.parse(data)\nWith:\n  const result = schema.safeParse(data)\n  if (!result.success) { /* handle error */ }\n\nSee: rules/parse-use-safeParse.md",
 }
 ```
 
 ## Summary
 
-| Tool | What It Catches | When |
-|------|----------------|------|
-| ESLint `no-restricted-syntax` | Banned API usage (parse, reportInput, nativeEnum) | On save / pre-commit |
-| Schema snapshot CI | Unintended schema changes | On pull request |
-| knip / ts-prune | Unused schemas | On pull request / periodic |
-| madge | Circular schema dependencies | On pull request |
+| Tool                          | What It Catches                                   | When                       |
+| ----------------------------- | ------------------------------------------------- | -------------------------- |
+| ESLint `no-restricted-syntax` | Banned API usage (parse, reportInput, nativeEnum) | On save / pre-commit       |
+| Schema snapshot CI            | Unintended schema changes                         | On pull request            |
+| knip / ts-prune               | Unused schemas                                    | On pull request / periodic |
+| madge                         | Circular schema dependencies                      | On pull request            |

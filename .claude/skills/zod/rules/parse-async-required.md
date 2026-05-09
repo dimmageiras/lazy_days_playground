@@ -14,27 +14,29 @@ When a schema contains async refinements (`.refine(async ...)`) or async transfo
 ## Incorrect
 
 ```typescript
-const UniqueEmail = z.email().refine(
-  async (email) => !(await db.users.exists({ email })),
-  { error: "Email already registered" }
-)
+const UniqueEmail = z
+  .email()
+  .refine(async (email) => !(await db.users.exists({ email })), {
+    error: "Email already registered",
+  });
 
 // BUG: sync parse with async refinement — throws error
-const result = UniqueEmail.safeParse(input)
+const result = UniqueEmail.safeParse(input);
 ```
 
 ## Correct
 
 ```typescript
-const UniqueEmail = z.email().refine(
-  async (email) => !(await db.users.exists({ email })),
-  { error: "Email already registered" }
-)
+const UniqueEmail = z
+  .email()
+  .refine(async (email) => !(await db.users.exists({ email })), {
+    error: "Email already registered",
+  });
 
 // CORRECT: use safeParseAsync for schemas with async refinements
-const result = await UniqueEmail.safeParseAsync(input)
+const result = await UniqueEmail.safeParseAsync(input);
 if (!result.success) {
-  console.log(result.error.issues)
+  console.log(result.error.issues);
 }
 ```
 

@@ -19,7 +19,7 @@ const Shape = z.union([
   z.object({ type: z.literal("circle"), radius: z.number() }),
   z.object({ type: z.literal("square"), side: z.number() }),
   z.object({ type: z.literal("rect"), width: z.number(), height: z.number() }),
-])
+]);
 // Error on invalid input: "Invalid input" (unhelpful — which branch failed?)
 ```
 
@@ -31,7 +31,7 @@ const Shape = z.discriminatedUnion("type", [
   z.object({ type: z.literal("circle"), radius: z.number() }),
   z.object({ type: z.literal("square"), side: z.number() }),
   z.object({ type: z.literal("rect"), width: z.number(), height: z.number() }),
-])
+]);
 // Error: "Invalid discriminator. Expected 'circle' | 'square' | 'rect'"
 ```
 

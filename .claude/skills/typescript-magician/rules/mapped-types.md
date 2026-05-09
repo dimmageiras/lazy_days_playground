@@ -216,9 +216,7 @@ Apply transformations recursively:
 
 ```typescript
 type DeepReadonly<T> = {
-  readonly [K in keyof T]: T[K] extends object
-    ? DeepReadonly<T[K]>
-    : T[K];
+  readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K];
 };
 
 interface Nested {
@@ -272,7 +270,7 @@ type PersonSetters = Setters<Person>;
 type EventHandlers<T> = {
   [K in keyof T as `on${Capitalize<string & K>}Change`]: (
     newValue: T[K],
-    oldValue: T[K]
+    oldValue: T[K],
   ) => void;
 };
 
@@ -322,8 +320,8 @@ type Merge<A, B> = {
   [K in keyof A | keyof B]: K extends keyof B
     ? B[K]
     : K extends keyof A
-    ? A[K]
-    : never;
+      ? A[K]
+      : never;
 };
 ```
 

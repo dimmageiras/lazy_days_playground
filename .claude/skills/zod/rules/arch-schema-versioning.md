@@ -20,7 +20,7 @@ const UserV1 = z.object({
   email: z.email(),
   role: z.enum(["admin", "user"]),
   nickname: z.string(),
-})
+});
 
 // v2 — BREAKING: removed `role`, consumers silently get undefined
 const UserV2 = z.object({
@@ -28,7 +28,7 @@ const UserV2 = z.object({
   email: z.email(),
   nickname: z.string(),
   // role is gone — consumers calling user.role get undefined
-})
+});
 ```
 
 ## Correct
@@ -38,27 +38,27 @@ const UserV2 = z.object({
 const UserV2 = z.object({
   name: z.string(),
   email: z.email(),
-  role: z.enum(["admin", "user"]),         // kept — not removed
-  nickname: z.string(),                     // kept — deprecate in docs, remove in v3
-  displayName: z.string().optional(),       // new — optional so old payloads still parse
-})
+  role: z.enum(["admin", "user"]), // kept — not removed
+  nickname: z.string(), // kept — deprecate in docs, remove in v3
+  displayName: z.string().optional(), // new — optional so old payloads still parse
+});
 
-type UserV2 = z.infer<typeof UserV2>
+type UserV2 = z.infer<typeof UserV2>;
 ```
 
 ## Decision Table: Schema Changes
 
-| Change | Breaking? | Safe Approach |
-|--------|-----------|---------------|
-| Add optional field | No | `.optional()` — old data still parses |
-| Add required field | **Yes** | Make optional first, require in next major |
-| Remove field | **Yes** | Deprecate first, remove in next major |
-| Tighten constraint (e.g., min 1 → min 5) | **Yes** | Previously valid data now fails |
-| Loosen constraint (e.g., min 5 → min 1) | No | All existing data still valid |
-| Rename field | **Yes** | Add new name as optional, keep old, migrate |
-| Change type (e.g., string → number) | **Yes** | New field with new name, deprecate old |
-| Add union member | No | Existing data still matches |
-| Remove union member | **Yes** | Existing data with that value fails |
+| Change                                   | Breaking? | Safe Approach                               |
+| ---------------------------------------- | --------- | ------------------------------------------- |
+| Add optional field                       | No        | `.optional()` — old data still parses       |
+| Add required field                       | **Yes**   | Make optional first, require in next major  |
+| Remove field                             | **Yes**   | Deprecate first, remove in next major       |
+| Tighten constraint (e.g., min 1 → min 5) | **Yes**   | Previously valid data now fails             |
+| Loosen constraint (e.g., min 5 → min 1)  | No        | All existing data still valid               |
+| Rename field                             | **Yes**   | Add new name as optional, keep old, migrate |
+| Change type (e.g., string → number)      | **Yes**   | New field with new name, deprecate old      |
+| Add union member                         | No        | Existing data still matches                 |
+| Remove union member                      | **Yes**   | Existing data with that value fails         |
 
 ## Why
 

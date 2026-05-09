@@ -19,20 +19,20 @@ const UserCreate = z.object({
   name: z.string(),
   email: z.email(),
   password: z.string().min(8),
-})
+});
 
 const UserUpdate = z.object({
   name: z.string().optional(),
   email: z.email().optional(),
   // forgot password field — drift
-})
+});
 
 const UserResponse = z.object({
   id: z.string(),
   name: z.string(),
   email: z.email(),
   createdAt: z.date(),
-})
+});
 ```
 
 ## Correct
@@ -45,11 +45,11 @@ const User = z.object({
   email: z.email(),
   password: z.string().min(8),
   createdAt: z.date(),
-})
+});
 
-const UserCreate = User.omit({ id: true, createdAt: true })
-const UserUpdate = User.pick({ name: true, email: true }).partial()
-const UserResponse = User.omit({ password: true })
+const UserCreate = User.omit({ id: true, createdAt: true });
+const UserUpdate = User.pick({ name: true, email: true }).partial();
+const UserResponse = User.omit({ password: true });
 ```
 
 ## Why

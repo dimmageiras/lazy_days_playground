@@ -58,6 +58,7 @@ const router = makeRouter({
 ```
 
 ### Drawbacks
+
 - Users must remember to add `as const`
 - Types become readonly (may require type adjustments)
 - Easy to forget, leading to subtle bugs
@@ -70,7 +71,7 @@ The `ts-toolbelt` library provides `F.Narrow` for automatic deep narrowing:
 import { F } from "ts-toolbelt";
 
 const makeRouter = <TConfig extends BaseRouterConfig>(
-  config: F.Narrow<TConfig>
+  config: F.Narrow<TConfig>,
 ) => {
   return { config };
 };
@@ -94,6 +95,7 @@ const router = makeRouter({
 ### How F.Narrow Works
 
 `F.Narrow` recursively narrows types to their literal forms:
+
 - Strings become literal string types
 - Numbers become literal number types
 - Arrays become tuples
@@ -107,12 +109,12 @@ If you can't use ts-toolbelt, implement a simpler version:
 type Narrow<T> = T extends Function
   ? T
   : T extends []
-  ? []
-  : T extends readonly [infer First, ...infer Rest]
-  ? [Narrow<First>, ...Narrow<Rest>]
-  : T extends object
-  ? { [K in keyof T]: Narrow<T[K]> }
-  : T;
+    ? []
+    : T extends readonly [infer First, ...infer Rest]
+      ? [Narrow<First>, ...Narrow<Rest>]
+      : T extends object
+        ? { [K in keyof T]: Narrow<T[K]> }
+        : T;
 
 // Note: This is simplified and may not cover all edge cases
 ```
@@ -129,7 +131,7 @@ type TupleToSearchParams<T extends string[]> = {
 };
 
 const makeRouter = <TConfig extends BaseRouterConfig>(
-  config: F.Narrow<TConfig>
+  config: F.Narrow<TConfig>,
 ) => {
   return {
     config,
@@ -137,7 +139,7 @@ const makeRouter = <TConfig extends BaseRouterConfig>(
       route: TRoute,
       search?: TConfig[TRoute]["search"] extends string[]
         ? TupleToSearchParams<TConfig[TRoute]["search"]>
-        : never
+        : never,
     ) => {
       // Implementation
     },
@@ -168,7 +170,7 @@ TypeScript 5.0 introduced `const` type parameters:
 
 ```typescript
 const makeRouter = <const TConfig extends BaseRouterConfig>(
-  config: TConfig
+  config: TConfig,
 ) => {
   return { config };
 };
@@ -183,6 +185,7 @@ const router = makeRouter({
 ```
 
 ### Benefits of `const` Type Parameters
+
 - No external library needed
 - Built into TypeScript
 - Clean syntax
@@ -194,7 +197,7 @@ const router = makeRouter({
 
 ```typescript
 const createTheme = <const TTheme extends Record<string, string>>(
-  theme: TTheme
+  theme: TTheme,
 ): TTheme => theme;
 
 const theme = createTheme({
@@ -230,12 +233,12 @@ const events = createEventMap({
 
 ## Comparison of Techniques
 
-| Technique | Pros | Cons |
-|-----------|------|------|
-| `as const` | No dependencies | Manual, readonly types |
-| `F.Narrow` | Automatic, flexible | External dependency |
-| Custom Narrow | No dependencies, customizable | Complex, may miss edge cases |
-| `const` type param | Built-in, clean | TypeScript 5.0+ only |
+| Technique          | Pros                          | Cons                         |
+| ------------------ | ----------------------------- | ---------------------------- |
+| `as const`         | No dependencies               | Manual, readonly types       |
+| `F.Narrow`         | Automatic, flexible           | External dependency          |
+| Custom Narrow      | No dependencies, customizable | Complex, may miss edge cases |
+| `const` type param | Built-in, clean               | TypeScript 5.0+ only         |
 
 ## Combining with Conditional Types
 
@@ -245,11 +248,11 @@ Deep inference enables powerful conditional type logic:
 import { F } from "ts-toolbelt";
 
 const makeApi = <const TConfig extends Record<string, { returns: string }>>(
-  config: TConfig
+  config: TConfig,
 ) => {
   return {
     call: <TMethod extends keyof TConfig>(
-      method: TMethod
+      method: TMethod,
     ): TConfig[TMethod]["returns"] => {
       // Implementation
       return "" as any;
@@ -276,7 +279,7 @@ const bad = <TConfig>(config: F.Narrow<TConfig>) => config;
 
 // With constraint, inference works properly
 const good = <TConfig extends Record<string, unknown>>(
-  config: F.Narrow<TConfig>
+  config: F.Narrow<TConfig>,
 ) => config;
 ```
 

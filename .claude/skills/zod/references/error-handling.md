@@ -3,12 +3,12 @@
 ## ZodError
 
 ```typescript
-const result = schema.safeParse(data)
+const result = schema.safeParse(data);
 if (!result.success) {
-  result.error           // ZodError instance
-  result.error.issues    // array of ZodIssue
-  result.error.message   // JSON string of issues
-  result.error.toString() // same as .message
+  result.error; // ZodError instance
+  result.error.issues; // array of ZodIssue
+  result.error.message; // JSON string of issues
+  result.error.toString(); // same as .message
 }
 ```
 
@@ -16,28 +16,28 @@ if (!result.success) {
 
 ```typescript
 interface ZodIssue {
-  code: string        // issue type code
-  message: string     // human-readable message
-  path: (string | number)[]  // path to the field
-  input?: unknown     // raw input (only if reportInput: true)
+  code: string; // issue type code
+  message: string; // human-readable message
+  path: (string | number)[]; // path to the field
+  input?: unknown; // raw input (only if reportInput: true)
   // ... additional fields depending on code
 }
 ```
 
 ## Issue Codes
 
-| Code | When | Extra Fields |
-|------|------|-------------|
-| `invalid_type` | Wrong type | `expected`, `received` |
-| `too_small` | Below minimum | `minimum`, `inclusive`, `type` |
-| `too_big` | Above maximum | `maximum`, `inclusive`, `type` |
-| `invalid_string` | String format failure | `validation` |
-| `custom` | Custom refinement | — |
-| `invalid_enum_value` | Not in enum | `options`, `received` |
-| `unrecognized_keys` | Unknown keys (strict) | `keys` |
-| `invalid_union` | No branch matched | `unionErrors` |
-| `invalid_arguments` | Function args invalid | `argumentsError` |
-| `invalid_return_type` | Function return invalid | `returnTypeError` |
+| Code                  | When                    | Extra Fields                   |
+| --------------------- | ----------------------- | ------------------------------ |
+| `invalid_type`        | Wrong type              | `expected`, `received`         |
+| `too_small`           | Below minimum           | `minimum`, `inclusive`, `type` |
+| `too_big`             | Above maximum           | `maximum`, `inclusive`, `type` |
+| `invalid_string`      | String format failure   | `validation`                   |
+| `custom`              | Custom refinement       | —                              |
+| `invalid_enum_value`  | Not in enum             | `options`, `received`          |
+| `unrecognized_keys`   | Unknown keys (strict)   | `keys`                         |
+| `invalid_union`       | No branch matched       | `unionErrors`                  |
+| `invalid_arguments`   | Function args invalid   | `argumentsError`               |
+| `invalid_return_type` | Function return invalid | `returnTypeError`              |
 
 ## Error Formatting Functions
 
@@ -46,7 +46,7 @@ interface ZodIssue {
 Flat structure for simple forms.
 
 ```typescript
-const flat = z.flattenError(result.error)
+const flat = z.flattenError(result.error);
 // {
 //   formErrors: ["Root-level error"],
 //   fieldErrors: {
@@ -61,7 +61,7 @@ const flat = z.flattenError(result.error)
 Nested tree matching schema shape. For deeply nested forms.
 
 ```typescript
-const tree = z.treeifyError(result.error)
+const tree = z.treeifyError(result.error);
 // {
 //   errors: [],
 //   properties: {
@@ -80,7 +80,7 @@ const tree = z.treeifyError(result.error)
 Human-readable string for logging/debugging.
 
 ```typescript
-const pretty = z.prettifyError(result.error)
+const pretty = z.prettifyError(result.error);
 // "✖ Invalid email at «email»
 //  ✖ Required at «address.zip»"
 ```
@@ -95,17 +95,17 @@ Do not use. Removed in v4. Use `flattenError` or `treeifyError` instead.
 
 ```typescript
 // String shorthand
-z.string({ error: "Must be a string" })
-z.number().min(18, { error: "Must be 18+" })
-z.number().min(18, "Must be 18+") // shorthand
+z.string({ error: "Must be a string" });
+z.number().min(18, { error: "Must be 18+" });
+z.number().min(18, "Must be 18+"); // shorthand
 
 // Function form — dynamic messages
 z.string({
   error: (issue) => {
-    if (issue.input === undefined) return "Required"
-    return "Must be a string"
+    if (issue.input === undefined) return "Required";
+    return "Must be a string";
   },
-})
+});
 ```
 
 ### Parse Level
@@ -114,9 +114,9 @@ z.string({
 schema.safeParse(data, {
   error: (issue) => {
     // Override error for this parse call only
-    return `Validation failed: ${issue.code}`
+    return `Validation failed: ${issue.code}`;
   },
-})
+});
 ```
 
 ### Global Level
@@ -126,10 +126,10 @@ z.config({
   customError: (issue) => {
     // Global default error messages
     if (issue.code === "invalid_type") {
-      return `Expected ${issue.expected}, got ${issue.received}`
+      return `Expected ${issue.expected}, got ${issue.received}`;
     }
   },
-})
+});
 ```
 
 ## Error Precedence
@@ -146,9 +146,9 @@ Includes raw input values in error issues. **Never use in production.**
 
 ```typescript
 // Development only
-const result = schema.safeParse(data, { reportInput: true })
+const result = schema.safeParse(data, { reportInput: true });
 if (!result.success) {
-  result.error.issues[0].input // contains the raw value
+  result.error.issues[0].input; // contains the raw value
 }
 ```
 
@@ -159,14 +159,16 @@ Leaks passwords, tokens, PII into logs and error monitoring.
 Use the error function form for localized messages.
 
 ```typescript
-const t = getTranslation(locale)
+const t = getTranslation(locale);
 
-const NameSchema = z.string({
-  error: (issue) => {
-    if (issue.input === undefined) return t("field.required")
-    return t("field.invalid_string")
-  },
-}).min(1, { error: t("field.too_short") })
+const NameSchema = z
+  .string({
+    error: (issue) => {
+      if (issue.input === undefined) return t("field.required");
+      return t("field.invalid_string");
+    },
+  })
+  .min(1, { error: t("field.too_short") });
 ```
 
 Or use global config for app-wide localization:
@@ -174,12 +176,15 @@ Or use global config for app-wide localization:
 ```typescript
 z.config({
   customError: (issue) => {
-    const t = getTranslation(currentLocale)
+    const t = getTranslation(currentLocale);
     switch (issue.code) {
-      case "invalid_type": return t("validation.invalid_type")
-      case "too_small": return t("validation.too_small", { min: issue.minimum })
-      default: return t("validation.invalid")
+      case "invalid_type":
+        return t("validation.invalid_type");
+      case "too_small":
+        return t("validation.too_small", { min: issue.minimum });
+      default:
+        return t("validation.invalid");
     }
   },
-})
+});
 ```

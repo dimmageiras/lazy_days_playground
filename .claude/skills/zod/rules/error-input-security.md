@@ -16,13 +16,13 @@ Zod v4's `reportInput` option includes the raw input value in error issues. If e
 ```typescript
 // BUG: leaks passwords, tokens, PII into error messages
 app.post("/register", (req, res) => {
-  const result = UserSchema.safeParse(req.body, { reportInput: true })
+  const result = UserSchema.safeParse(req.body, { reportInput: true });
   if (!result.success) {
     // error.issues[0].input could contain: "myP@ssw0rd123"
-    logger.error(result.error.issues)
-    res.status(400).json({ errors: result.error.issues })
+    logger.error(result.error.issues);
+    res.status(400).json({ errors: result.error.issues });
   }
-})
+});
 ```
 
 ## Correct
@@ -31,16 +31,16 @@ app.post("/register", (req, res) => {
 // GOOD: only use reportInput in development/debugging
 const parseOptions = {
   reportInput: process.env.NODE_ENV === "development",
-}
+};
 
 app.post("/register", (req, res) => {
-  const result = UserSchema.safeParse(req.body, parseOptions)
+  const result = UserSchema.safeParse(req.body, parseOptions);
   if (!result.success) {
     // In production, issues won't contain raw input values
-    const flat = z.flattenError(result.error)
-    res.status(400).json({ errors: flat.fieldErrors })
+    const flat = z.flattenError(result.error);
+    res.status(400).json({ errors: flat.fieldErrors });
   }
-})
+});
 ```
 
 ## Why

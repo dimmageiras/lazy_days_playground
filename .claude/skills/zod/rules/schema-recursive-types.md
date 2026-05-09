@@ -18,13 +18,13 @@ Recursive schemas (trees, nested comments, categories) require special handling.
 const Category = z.object({
   name: z.string(),
   children: z.lazy(() => z.array(Category)),
-})
+});
 
 // BUG: direct reference — Category not yet defined
 const Category = z.object({
   name: z.string(),
   children: z.array(Category), // ReferenceError
-})
+});
 ```
 
 ## Correct
@@ -34,11 +34,11 @@ const Category = z.object({
 const Category = z.object({
   name: z.string(),
   get children() {
-    return z.array(Category).optional()
+    return z.array(Category).optional();
   },
-})
+});
 
-type Category = z.infer<typeof Category>
+type Category = z.infer<typeof Category>;
 // { name: string; children?: Category[] | undefined }
 ```
 

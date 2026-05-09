@@ -16,26 +16,25 @@ Using `.transform()` for validation (throwing on invalid input) or `.refine()` f
 ```typescript
 // BUG: validation inside transform — throws instead of returning ZodError
 const SafeInt = z.string().transform((val) => {
-  const n = parseInt(val, 10)
-  if (isNaN(n)) throw new Error("Not a number") // bypasses Zod errors
-  return n
-})
+  const n = parseInt(val, 10);
+  if (isNaN(n)) throw new Error("Not a number"); // bypasses Zod errors
+  return n;
+});
 ```
 
 ## Correct
 
 ```typescript
 // GOOD: validate first, then transform
-const SafeInt = z.string()
+const SafeInt = z
+  .string()
   .refine((val) => !isNaN(parseInt(val, 10)), {
     error: "Must be a numeric string",
   })
-  .transform((val) => parseInt(val, 10))
+  .transform((val) => parseInt(val, 10));
 
 // BETTER: use pipe for staged parsing
-const SafeInt = z.string()
-  .pipe(z.coerce.number())
-  .pipe(z.int())
+const SafeInt = z.string().pipe(z.coerce.number()).pipe(z.int());
 ```
 
 ## Why

@@ -18,28 +18,26 @@ Zod v3's `required_error`, `invalid_type_error`, and `message` parameters are re
 const Name = z.string({
   required_error: "Name is required",
   invalid_type_error: "Name must be a string",
-})
+});
 
-const Age = z.number().min(18, { message: "Must be 18+" })
+const Age = z.number().min(18, { message: "Must be 18+" });
 ```
 
 ## Correct
 
 ```typescript
 // GOOD: v4 error parameter — string shorthand
-const Name = z.string({ error: "Name is required" })
-const Age = z.number().min(18, { error: "Must be 18+" })
+const Name = z.string({ error: "Name is required" });
+const Age = z.number().min(18, { error: "Must be 18+" });
 
 // GOOD: v4 error parameter — function for dynamic messages
 const Name = z.string({
   error: (issue) =>
-    issue.input === undefined
-      ? "Name is required"
-      : "Name must be a string",
-})
+    issue.input === undefined ? "Name is required" : "Name must be a string",
+});
 
 // GOOD: string shorthand for constraints
-const Age = z.number().min(18, "Must be 18+")
+const Age = z.number().min(18, "Must be 18+");
 ```
 
 ## Why

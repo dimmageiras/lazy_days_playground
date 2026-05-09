@@ -8,9 +8,9 @@
 const User = z.object({
   name: z.string(),
   email: z.email(),
-})
+});
 
-User.parse({ name: "Alice", email: "a@b.com", extra: true })
+User.parse({ name: "Alice", email: "a@b.com", extra: true });
 // { name: "Alice", email: "a@b.com" } — extra is stripped
 ```
 
@@ -20,9 +20,9 @@ User.parse({ name: "Alice", email: "a@b.com", extra: true })
 const Config = z.strictObject({
   host: z.string(),
   port: z.number(),
-})
+});
 
-Config.parse({ host: "localhost", port: 3000, debug: true })
+Config.parse({ host: "localhost", port: 3000, debug: true });
 // ZodError: Unrecognized key "debug"
 ```
 
@@ -31,9 +31,9 @@ Config.parse({ host: "localhost", port: 3000, debug: true })
 ```typescript
 const Proxy = z.looseObject({
   id: z.string(),
-})
+});
 
-Proxy.parse({ id: "123", extra: true, nested: { a: 1 } })
+Proxy.parse({ id: "123", extra: true, nested: { a: 1 } });
 // { id: "123", extra: true, nested: { a: 1 } }
 ```
 
@@ -44,11 +44,11 @@ Proxy.parse({ id: "123", extra: true, nested: { a: 1 } })
 Access the raw shape object for spreading.
 
 ```typescript
-const User = z.object({ name: z.string(), email: z.email() })
-User.shape // { name: ZodString, email: ZodEmail }
+const User = z.object({ name: z.string(), email: z.email() });
+User.shape; // { name: ZodString, email: ZodEmail }
 
 // Use for spreading
-const Extended = z.object({ ...User.shape, age: z.number() })
+const Extended = z.object({ ...User.shape, age: z.number() });
 ```
 
 ### .keyof()
@@ -56,11 +56,11 @@ const Extended = z.object({ ...User.shape, age: z.number() })
 Returns a `z.enum()` of the object's keys.
 
 ```typescript
-const UserKey = User.keyof()
+const UserKey = User.keyof();
 // z.enum(["name", "email"])
 
-UserKey.parse("name")  // "name"
-UserKey.parse("age")   // ZodError
+UserKey.parse("name"); // "name"
+UserKey.parse("age"); // ZodError
 ```
 
 ### .extend()
@@ -68,7 +68,7 @@ UserKey.parse("age")   // ZodError
 Add new fields to an object schema.
 
 ```typescript
-const WithAge = User.extend({ age: z.number() })
+const WithAge = User.extend({ age: z.number() });
 ```
 
 ### .safeExtend()
@@ -76,7 +76,7 @@ const WithAge = User.extend({ age: z.number() })
 Extend with compile-time error on conflicting keys.
 
 ```typescript
-const WithAge = User.safeExtend({ age: z.number() })
+const WithAge = User.safeExtend({ age: z.number() });
 // TypeScript error if "age" already exists in User
 ```
 
@@ -85,7 +85,7 @@ const WithAge = User.safeExtend({ age: z.number() })
 Select specific fields.
 
 ```typescript
-const NameOnly = User.pick({ name: true })
+const NameOnly = User.pick({ name: true });
 // z.object({ name: z.string() })
 ```
 
@@ -94,7 +94,7 @@ const NameOnly = User.pick({ name: true })
 Remove specific fields.
 
 ```typescript
-const NoPassword = User.omit({ password: true })
+const NoPassword = User.omit({ password: true });
 ```
 
 ### .partial()
@@ -102,11 +102,11 @@ const NoPassword = User.omit({ password: true })
 Make all fields optional.
 
 ```typescript
-const PartialUser = User.partial()
+const PartialUser = User.partial();
 // { name?: string; email?: string }
 
 // Partial specific fields
-const PartialName = User.partial({ name: true })
+const PartialName = User.partial({ name: true });
 // { name?: string; email: string }
 ```
 
@@ -115,7 +115,7 @@ const PartialName = User.partial({ name: true })
 Make all fields required.
 
 ```typescript
-const RequiredUser = PartialUser.required()
+const RequiredUser = PartialUser.required();
 ```
 
 ### .catchall(schema)
@@ -123,7 +123,7 @@ const RequiredUser = PartialUser.required()
 Validate unknown keys against a schema.
 
 ```typescript
-const Config = z.object({ host: z.string() }).catchall(z.string())
+const Config = z.object({ host: z.string() }).catchall(z.string());
 // Known keys validated by their schemas, unknown keys must be strings
 ```
 
@@ -135,33 +135,33 @@ Use the getter pattern (v4 — `z.lazy()` is removed).
 const Category = z.object({
   name: z.string(),
   get children() {
-    return z.array(Category).optional()
+    return z.array(Category).optional();
   },
-})
+});
 
-type Category = z.infer<typeof Category>
+type Category = z.infer<typeof Category>;
 // { name: string; children?: Category[] | undefined }
 ```
 
 ## Arrays
 
 ```typescript
-z.array(z.string())           // string[]
-z.array(z.string()).min(1)    // at least 1 element
-z.array(z.string()).max(10)   // at most 10 elements
-z.array(z.string()).length(5) // exactly 5 elements
-z.array(z.string()).nonempty() // at least 1, narrows type to [string, ...string[]]
+z.array(z.string()); // string[]
+z.array(z.string()).min(1); // at least 1 element
+z.array(z.string()).max(10); // at most 10 elements
+z.array(z.string()).length(5); // exactly 5 elements
+z.array(z.string()).nonempty(); // at least 1, narrows type to [string, ...string[]]
 ```
 
 ## Tuples
 
 ```typescript
 // Fixed-length typed array
-z.tuple([z.string(), z.number(), z.boolean()])
+z.tuple([z.string(), z.number(), z.boolean()]);
 // [string, number, boolean]
 
 // With rest element
-z.tuple([z.string(), z.number()]).rest(z.boolean())
+z.tuple([z.string(), z.number()]).rest(z.boolean());
 // [string, number, ...boolean[]]
 ```
 
@@ -169,11 +169,11 @@ z.tuple([z.string(), z.number()]).rest(z.boolean())
 
 ```typescript
 // Dictionary with string keys
-z.record(z.string(), z.number())
+z.record(z.string(), z.number());
 // Record<string, number>
 
 // Enum keys
-z.record(z.enum(["a", "b"]), z.number())
+z.record(z.enum(["a", "b"]), z.number());
 // { a: number; b: number }
 ```
 
@@ -182,7 +182,7 @@ z.record(z.enum(["a", "b"]), z.number())
 Values can be undefined.
 
 ```typescript
-z.partialRecord(z.string(), z.number())
+z.partialRecord(z.string(), z.number());
 // Record<string, number | undefined>
 ```
 
@@ -191,17 +191,17 @@ z.partialRecord(z.string(), z.number())
 Preserves extra keys.
 
 ```typescript
-z.looseRecord(z.string(), z.number())
+z.looseRecord(z.string(), z.number());
 ```
 
 ## Maps and Sets
 
 ```typescript
-z.map(z.string(), z.number())       // Map<string, number>
-z.set(z.string())                    // Set<string>
-z.set(z.string()).min(1)             // at least 1 element
-z.set(z.string()).max(10)            // at most 10 elements
-z.set(z.string()).nonempty()         // non-empty set
+z.map(z.string(), z.number()); // Map<string, number>
+z.set(z.string()); // Set<string>
+z.set(z.string()).min(1); // at least 1 element
+z.set(z.string()).max(10); // at most 10 elements
+z.set(z.string()).nonempty(); // non-empty set
 ```
 
 ## Unions
@@ -211,7 +211,7 @@ z.set(z.string()).nonempty()         // non-empty set
 Sequential matching — tries each branch in order.
 
 ```typescript
-z.union([z.string(), z.number()])
+z.union([z.string(), z.number()]);
 // string | number
 ```
 
@@ -223,7 +223,7 @@ O(1) dispatch on a shared discriminator field.
 z.discriminatedUnion("type", [
   z.object({ type: z.literal("a"), value: z.string() }),
   z.object({ type: z.literal("b"), count: z.number() }),
-])
+]);
 ```
 
 ### z.xor()
@@ -231,20 +231,14 @@ z.discriminatedUnion("type", [
 Exactly one must match.
 
 ```typescript
-z.xor(
-  z.object({ email: z.email() }),
-  z.object({ phone: z.string() }),
-)
+z.xor(z.object({ email: z.email() }), z.object({ phone: z.string() }));
 // Must have email OR phone, not both
 ```
 
 ## Intersection
 
 ```typescript
-z.intersection(
-  z.object({ name: z.string() }),
-  z.object({ age: z.number() }),
-)
+z.intersection(z.object({ name: z.string() }), z.object({ age: z.number() }));
 // { name: string; age: number }
 ```
 

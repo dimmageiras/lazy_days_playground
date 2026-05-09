@@ -6,66 +6,71 @@ Bidirectional transforms — decode (parse) and encode (serialize).
 
 ```typescript
 const DateCodec = z.codec(z.iso.datetime(), z.date(), {
-  decode: (s) => new Date(s),           // string → Date
-  encode: (d) => d.toISOString(),       // Date → string
-})
+  decode: (s) => new Date(s), // string → Date
+  encode: (d) => d.toISOString(), // Date → string
+});
 
-const parsed = DateCodec.parse("2024-01-01T00:00:00Z") // Date
-const serialized = DateCodec.encode(parsed)              // "2024-01-01T00:00:00.000Z"
+const parsed = DateCodec.parse("2024-01-01T00:00:00Z"); // Date
+const serialized = DateCodec.encode(parsed); // "2024-01-01T00:00:00.000Z"
 ```
 
 ### Built-in Codecs
 
 ```typescript
 // ISO datetime codec (string ↔ Date)
-z.iso.datetime()
+z.iso.datetime();
 
 // Use with codec for custom decode/encode
 z.codec(z.iso.datetime(), z.date(), {
   decode: (s) => new Date(s),
   encode: (d) => d.toISOString(),
-})
+});
 ```
 
 ### When to Use Codecs vs Transforms
 
-| | `.transform()` | `z.codec()` |
-|---|---|---|
-| Direction | One-way (input → output) | Bidirectional |
-| Use when | Only parsing | Round-trip (parse + serialize) |
-| Encoding | Not supported | `schema.encode(value)` |
+|           | `.transform()`           | `z.codec()`                    |
+| --------- | ------------------------ | ------------------------------ |
+| Direction | One-way (input → output) | Bidirectional                  |
+| Use when  | Only parsing             | Round-trip (parse + serialize) |
+| Encoding  | Not supported            | `schema.encode(value)`         |
 
 ## Branded Types
 
 Nominal typing — prevents mixing structurally identical types.
 
 ```typescript
-const USD = z.number().brand<"USD">()
-const EUR = z.number().brand<"EUR">()
+const USD = z.number().brand<"USD">();
+const EUR = z.number().brand<"EUR">();
 
-type USD = z.infer<typeof USD> // number & { __brand: "USD" }
-type EUR = z.infer<typeof EUR> // number & { __brand: "EUR" }
+type USD = z.infer<typeof USD>; // number & { __brand: "USD" }
+type EUR = z.infer<typeof EUR>; // number & { __brand: "EUR" }
 
 // TypeScript prevents mixing
-function pay(amount: USD) { /* ... */ }
-const euros = EUR.parse(100)
-pay(euros) // TypeScript error!
+function pay(amount: USD) {
+  /* ... */
+}
+const euros = EUR.parse(100);
+pay(euros); // TypeScript error!
 ```
 
 ### Common Use Cases
 
 ```typescript
 // Prevent ID mixing
-const UserId = z.string().brand<"UserId">()
-const PostId = z.string().brand<"PostId">()
+const UserId = z.string().brand<"UserId">();
+const PostId = z.string().brand<"PostId">();
 
 // Type-safe units
-const Meters = z.number().brand<"Meters">()
-const Feet = z.number().brand<"Feet">()
+const Meters = z.number().brand<"Meters">();
+const Feet = z.number().brand<"Feet">();
 
 // Validated strings
-const Email = z.email().brand<"Email">()
-const Slug = z.string().regex(/^[a-z0-9-]+$/).brand<"Slug">()
+const Email = z.email().brand<"Email">();
+const Slug = z
+  .string()
+  .regex(/^[a-z0-9-]+$/)
+  .brand<"Slug">();
 ```
 
 ## .readonly()
@@ -73,12 +78,14 @@ const Slug = z.string().regex(/^[a-z0-9-]+$/).brand<"Slug">()
 Output type becomes `Readonly<T>`.
 
 ```typescript
-const Config = z.object({
-  host: z.string(),
-  port: z.number(),
-}).readonly()
+const Config = z
+  .object({
+    host: z.string(),
+    port: z.number(),
+  })
+  .readonly();
 
-type Config = z.infer<typeof Config>
+type Config = z.infer<typeof Config>;
 // Readonly<{ host: string; port: number }>
 ```
 
@@ -92,7 +99,7 @@ Attach arbitrary metadata to schemas.
 const UserSchema = z.object({
   name: z.string().meta({ label: "Full Name", placeholder: "Enter name" }),
   email: z.email().meta({ label: "Email Address" }),
-})
+});
 ```
 
 ### Registries
@@ -102,14 +109,14 @@ const UserSchema = z.object({
 z.globalRegistry.register(UserSchema, {
   id: "User",
   description: "User account schema",
-})
+});
 
 // Custom typed registry
-const uiRegistry = z.registry<{ label: string; widget: string }>()
+const uiRegistry = z.registry<{ label: string; widget: string }>();
 uiRegistry.register(UserSchema.shape.name, {
   label: "Name",
   widget: "text-input",
-})
+});
 ```
 
 ## JSON Schema
@@ -119,7 +126,7 @@ uiRegistry.register(UserSchema.shape.name, {
 Convert Zod schema to JSON Schema.
 
 ```typescript
-const jsonSchema = z.toJSONSchema(UserSchema)
+const jsonSchema = z.toJSONSchema(UserSchema);
 // {
 //   type: "object",
 //   properties: {
@@ -142,7 +149,7 @@ const zodSchema = z.fromJSONSchema({
     age: { type: "integer", minimum: 0 },
   },
   required: ["name"],
-})
+});
 ```
 
 ## z.function()
@@ -152,10 +159,10 @@ Validate function arguments and return type.
 ```typescript
 const MyFunc = z.function(
   z.tuple([z.string(), z.number()]), // args
-  z.boolean()                         // return type
-)
+  z.boolean(), // return type
+);
 
-type MyFunc = z.infer<typeof MyFunc>
+type MyFunc = z.infer<typeof MyFunc>;
 // (arg0: string, arg1: number) => boolean
 ```
 
@@ -164,15 +171,15 @@ type MyFunc = z.infer<typeof MyFunc>
 Check if value is an instance of a class.
 
 ```typescript
-const ErrorSchema = z.instanceof(Error)
-ErrorSchema.parse(new Error("test")) // passes
-ErrorSchema.parse("not an error")    // fails
+const ErrorSchema = z.instanceof(Error);
+ErrorSchema.parse(new Error("test")); // passes
+ErrorSchema.parse("not an error"); // fails
 ```
 
 ## Template Literals
 
 ```typescript
-const UserId = z.templateLiteral([z.literal("user_"), z.string()])
+const UserId = z.templateLiteral([z.literal("user_"), z.string()]);
 // Matches: "user_abc", "user_123"
 // Rejects: "abc", "admin_123"
 
@@ -181,7 +188,7 @@ const Route = z.templateLiteral([
   z.enum(["users", "posts"]),
   z.literal("/"),
   z.string(),
-])
+]);
 // Matches: "/api/users/123", "/api/posts/abc"
 ```
 
@@ -190,12 +197,12 @@ const Route = z.templateLiteral([
 Zod schemas implement the Standard Schema interface, making them compatible with any library that supports it.
 
 ```typescript
-import type { StandardSchema } from "@standard-schema/spec"
+import type { StandardSchema } from "@standard-schema/spec";
 
 function validate(schema: StandardSchema, data: unknown) {
-  return schema["~standard"].validate(data)
+  return schema["~standard"].validate(data);
 }
 
 // Works with Zod schemas
-validate(UserSchema, data)
+validate(UserSchema, data);
 ```

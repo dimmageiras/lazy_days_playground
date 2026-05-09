@@ -7,13 +7,12 @@ Custom validation that returns a boolean.
 ```typescript
 const EvenNumber = z.number().refine((n) => n % 2 === 0, {
   error: "Must be even",
-})
+});
 
 // Async refinement — must use parseAsync/safeParseAsync
-const UniqueEmail = z.email().refine(
-  async (email) => !(await db.exists(email)),
-  { error: "Email taken" }
-)
+const UniqueEmail = z
+  .email()
+  .refine(async (email) => !(await db.exists(email)), { error: "Email taken" });
 ```
 
 ## .superRefine((val, ctx) => void)
@@ -26,21 +25,21 @@ const Password = z.string().superRefine((val, ctx) => {
     ctx.addIssue({
       code: "custom",
       message: "Must be at least 8 characters",
-    })
+    });
   }
   if (!/[A-Z]/.test(val)) {
     ctx.addIssue({
       code: "custom",
       message: "Must contain uppercase letter",
-    })
+    });
   }
   if (!/[0-9]/.test(val)) {
     ctx.addIssue({
       code: "custom",
       message: "Must contain a number",
-    })
+    });
   }
-})
+});
 ```
 
 ### Cross-Field Validation
@@ -57,9 +56,9 @@ const Form = z
         code: "custom",
         path: ["confirm"], // targets the confirm field
         message: "Passwords don't match",
-      })
+      });
     }
-  })
+  });
 ```
 
 ## .check(...checks)
@@ -68,14 +67,11 @@ Functional-style checks (also available in full Zod, required in Zod Mini).
 
 ```typescript
 // Full Zod
-z.string().check(
-  z.minLength(8, "Too short"),
-  z.maxLength(100, "Too long"),
-)
+z.string().check(z.minLength(8, "Too short"), z.maxLength(100, "Too long"));
 
 // Zod Mini
-import { z } from "zod/v4/mini"
-z.string().check(z.minLength(8), z.maxLength(100))
+import { z } from "zod/v4/mini";
+z.string().check(z.minLength(8), z.maxLength(100));
 ```
 
 ## .transform(fn)
@@ -83,10 +79,10 @@ z.string().check(z.minLength(8), z.maxLength(100))
 Converts the value to a new type (one-way).
 
 ```typescript
-const StringToNumber = z.string().transform((s) => parseInt(s, 10))
+const StringToNumber = z.string().transform((s) => parseInt(s, 10));
 // Input: string, Output: number
 
-const Trimmed = z.string().transform((s) => s.trim())
+const Trimmed = z.string().transform((s) => s.trim());
 // Input: string, Output: string (trimmed)
 ```
 
@@ -100,7 +96,7 @@ Staged parsing — output of current schema becomes input of next.
 const PortNumber = z
   .string()
   .pipe(z.coerce.number())
-  .pipe(z.int().min(1).max(65535))
+  .pipe(z.int().min(1).max(65535));
 
 // Stage 1: validate string
 // Stage 2: coerce to number
@@ -114,8 +110,8 @@ Transform input before parsing. Legacy — prefer `.pipe()`.
 ```typescript
 const TrimmedString = z.preprocess(
   (val) => (typeof val === "string" ? val.trim() : val),
-  z.string().min(1)
-)
+  z.string().min(1),
+);
 ```
 
 ## .overwrite(fn)
@@ -123,7 +119,7 @@ const TrimmedString = z.preprocess(
 Modify value in place without changing type.
 
 ```typescript
-const NormalizedEmail = z.email().overwrite((email) => email.toLowerCase())
+const NormalizedEmail = z.email().overwrite((email) => email.toLowerCase());
 // Input: string, Output: string (lowercased)
 ```
 
@@ -132,15 +128,16 @@ const NormalizedEmail = z.email().overwrite((email) => email.toLowerCase())
 Provides default for undefined input. Applied after validation.
 
 ```typescript
-const Port = z.number().default(3000)
-Port.parse(undefined) // 3000
-Port.parse(8080)      // 8080
+const Port = z.number().default(3000);
+Port.parse(undefined); // 3000
+Port.parse(8080); // 8080
 ```
 
 Input type becomes optional:
+
 ```typescript
-type Input = z.input<typeof Port>   // number | undefined
-type Output = z.infer<typeof Port>  // number
+type Input = z.input<typeof Port>; // number | undefined
+type Output = z.infer<typeof Port>; // number
 ```
 
 ## .prefault(value)
@@ -148,8 +145,8 @@ type Output = z.infer<typeof Port>  // number
 Provides default before validation.
 
 ```typescript
-const Name = z.string().min(1).prefault("Anonymous")
-Name.parse(undefined) // "Anonymous" (validated against min(1) first)
+const Name = z.string().min(1).prefault("Anonymous");
+Name.parse(undefined); // "Anonymous" (validated against min(1) first)
 ```
 
 ## .catch(value)
@@ -157,9 +154,9 @@ Name.parse(undefined) // "Anonymous" (validated against min(1) first)
 Fallback on any error — never fails.
 
 ```typescript
-const SafeNumber = z.number().catch(0)
-SafeNumber.parse("not a number") // 0
-SafeNumber.parse(42)             // 42
+const SafeNumber = z.number().catch(0);
+SafeNumber.parse("not a number"); // 0
+SafeNumber.parse(42); // 42
 ```
 
 ## .apply(fn)
@@ -167,9 +164,7 @@ SafeNumber.parse(42)             // 42
 Apply a function that returns a schema.
 
 ```typescript
-const Clamped = z.number().apply((schema) =>
-  schema.min(0).max(100)
-)
+const Clamped = z.number().apply((schema) => schema.min(0).max(100));
 ```
 
 ## Async Refinements and Transforms
@@ -178,28 +173,25 @@ When any refinement or transform is async, you must use `parseAsync()` or `safeP
 
 ```typescript
 const Schema = z.object({
-  email: z.email().refine(
-    async (email) => !(await db.exists(email)),
-    { error: "Taken" }
-  ),
-  avatar: z.url().transform(
-    async (url) => await downloadImage(url)
-  ),
-})
+  email: z
+    .email()
+    .refine(async (email) => !(await db.exists(email)), { error: "Taken" }),
+  avatar: z.url().transform(async (url) => await downloadImage(url)),
+});
 
 // REQUIRED: async parse
-const result = await Schema.safeParseAsync(data)
+const result = await Schema.safeParseAsync(data);
 ```
 
 ## Issue Codes for ctx.addIssue()
 
-| Code | Use When |
-|------|----------|
-| `"custom"` | Custom validation logic |
-| `"invalid_type"` | Wrong input type |
-| `"too_small"` | Below minimum (length, value, size) |
-| `"too_big"` | Above maximum |
-| `"invalid_string"` | String format validation |
-| `"invalid_enum_value"` | Value not in enum |
-| `"unrecognized_keys"` | Unknown keys in strict object |
-| `"invalid_union"` | No union branch matched |
+| Code                   | Use When                            |
+| ---------------------- | ----------------------------------- |
+| `"custom"`             | Custom validation logic             |
+| `"invalid_type"`       | Wrong input type                    |
+| `"too_small"`          | Below minimum (length, value, size) |
+| `"too_big"`            | Above maximum                       |
+| `"invalid_string"`     | String format validation            |
+| `"invalid_enum_value"` | Value not in enum                   |
+| `"unrecognized_keys"`  | Unknown keys in strict object       |
+| `"invalid_union"`      | No union branch matched             |

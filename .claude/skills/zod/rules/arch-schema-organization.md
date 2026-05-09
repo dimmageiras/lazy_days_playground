@@ -28,8 +28,8 @@ src/
 ```typescript
 // BUG: domain module imports and re-exports raw schemas
 // src/domain/user.ts
-import { UserSchema } from "../schemas/user"
-export { UserSchema } // leaking parsing into domain
+import { UserSchema } from "../schemas/user";
+export { UserSchema }; // leaking parsing into domain
 ```
 
 ## Correct
@@ -55,25 +55,25 @@ src/
 
 ```typescript
 // api/users/schemas.ts — co-located with the route
-import { z } from "zod"
+import { z } from "zod";
 
 export const CreateUserBody = z.object({
   name: z.string().min(1),
   email: z.email(),
-})
+});
 
 export const UserResponse = z.object({
   id: z.string(),
   name: z.string(),
   email: z.email(),
-})
+});
 
 // domain/types.ts — inferred types only, no raw schemas
-import type { CreateUserBody, UserResponse } from "../api/users/schemas"
-import type { z } from "zod"
+import type { CreateUserBody, UserResponse } from "../api/users/schemas";
+import type { z } from "zod";
 
-export type CreateUser = z.infer<typeof CreateUserBody>
-export type User = z.infer<typeof UserResponse>
+export type CreateUser = z.infer<typeof CreateUserBody>;
+export type User = z.infer<typeof UserResponse>;
 ```
 
 ## Why

@@ -38,9 +38,9 @@ const Form = z
         code: "custom",
         path: ["confirm"], // error targets the confirm field
         message: "Passwords don't match",
-      })
+      });
     }
-  })
+  });
 
 // Error appears on the "confirm" field, not the root object
 ```

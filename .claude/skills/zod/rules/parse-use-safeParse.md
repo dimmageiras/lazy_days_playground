@@ -17,13 +17,13 @@ tags: parsing, safeParse, error-handling, validation
 // BUG: try/catch is verbose and catches unrelated errors
 function validateInput(data: unknown) {
   try {
-    const result = UserSchema.parse(data)
-    return { success: true, data: result }
+    const result = UserSchema.parse(data);
+    return { success: true, data: result };
   } catch (e) {
     if (e instanceof z.ZodError) {
-      return { success: false, errors: e.errors }
+      return { success: false, errors: e.errors };
     }
-    throw e // rethrow non-Zod errors
+    throw e; // rethrow non-Zod errors
   }
 }
 ```
@@ -32,11 +32,11 @@ function validateInput(data: unknown) {
 
 ```typescript
 function validateInput(data: unknown) {
-  const result = UserSchema.safeParse(data)
+  const result = UserSchema.safeParse(data);
   if (!result.success) {
-    return { success: false, errors: result.error.issues }
+    return { success: false, errors: result.error.issues };
   }
-  return { success: true, data: result.data }
+  return { success: true, data: result.data };
 }
 ```
 

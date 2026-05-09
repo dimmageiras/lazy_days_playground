@@ -15,33 +15,33 @@ TypeScript uses structural typing — two types with the same shape are intercha
 
 ```typescript
 // BAD: nothing prevents mixing these up
-type USD = number
-type EUR = number
+type USD = number;
+type EUR = number;
 
 function convert(amount: USD, rate: number): EUR {
-  return amount * rate
+  return amount * rate;
 }
 
-const priceInEur: EUR = 100
-convert(priceInEur, 1.1) // No error! EUR passed as USD
+const priceInEur: EUR = 100;
+convert(priceInEur, 1.1); // No error! EUR passed as USD
 ```
 
 ## Correct
 
 ```typescript
 // GOOD: branded types prevent mixing
-const USD = z.number().brand<"USD">()
-const EUR = z.number().brand<"EUR">()
+const USD = z.number().brand<"USD">();
+const EUR = z.number().brand<"EUR">();
 
-type USD = z.infer<typeof USD> // number & { __brand: "USD" }
-type EUR = z.infer<typeof EUR> // number & { __brand: "EUR" }
+type USD = z.infer<typeof USD>; // number & { __brand: "USD" }
+type EUR = z.infer<typeof EUR>; // number & { __brand: "EUR" }
 
 function convert(amount: USD, rate: number): EUR {
-  return EUR.parse(amount * rate)
+  return EUR.parse(amount * rate);
 }
 
-const priceInEur = EUR.parse(100)
-convert(priceInEur, 1.1) // TypeScript error! EUR is not USD
+const priceInEur = EUR.parse(100);
+convert(priceInEur, 1.1); // TypeScript error! EUR is not USD
 ```
 
 ## Why

@@ -16,16 +16,16 @@ Manually defining TypeScript interfaces alongside Zod schemas creates duplicate 
 ```typescript
 // BUG: manual type will drift from schema
 interface User {
-  name: string
-  email: string
-  age: number
+  name: string;
+  email: string;
+  age: number;
 }
 
 const UserSchema = z.object({
   name: z.string(),
   email: z.email(),
   age: z.number().min(0),
-})
+});
 
 // These can silently diverge when schema is updated
 ```
@@ -37,13 +37,13 @@ const UserSchema = z.object({
   name: z.string(),
   email: z.email(),
   age: z.number().min(0),
-})
+});
 
 // Output type (after parsing/transforms)
-type User = z.infer<typeof UserSchema>
+type User = z.infer<typeof UserSchema>;
 
 // Input type (before transforms — useful for forms)
-type UserInput = z.input<typeof UserSchema>
+type UserInput = z.input<typeof UserSchema>;
 ```
 
 ## Why

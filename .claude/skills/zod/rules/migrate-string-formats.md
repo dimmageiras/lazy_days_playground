@@ -15,30 +15,30 @@ Zod v4 promotes string format validators to top-level functions. The old `z.stri
 
 ```typescript
 // BAD: deprecated v3 style — chained string methods
-const Email = z.string().email()
-const Url = z.string().url()
-const Uuid = z.string().uuid()
-const Cuid = z.string().cuid()
+const Email = z.string().email();
+const Url = z.string().url();
+const Uuid = z.string().uuid();
+const Cuid = z.string().cuid();
 ```
 
 ## Correct
 
 ```typescript
 // GOOD: v4 top-level format functions
-const Email = z.email()
-const Url = z.url()
-const Uuid = z.uuid()
-const Cuid = z.cuid()
-const Cuid2 = z.cuid2()
-const Ulid = z.ulid()
-const Emoji = z.emoji()
-const Ipv4 = z.ipv4()
-const Ipv6 = z.ipv6()
-const Cidrv4 = z.cidrv4()
-const Cidrv6 = z.cidrv6()
-const Jwt = z.jwt()
-const Base64 = z.base64()
-const Base64url = z.base64url()
+const Email = z.email();
+const Url = z.url();
+const Uuid = z.uuid();
+const Cuid = z.cuid();
+const Cuid2 = z.cuid2();
+const Ulid = z.ulid();
+const Emoji = z.emoji();
+const Ipv4 = z.ipv4();
+const Ipv6 = z.ipv6();
+const Cidrv4 = z.cidrv4();
+const Cidrv6 = z.cidrv6();
+const Jwt = z.jwt();
+const Base64 = z.base64();
+const Base64url = z.base64url();
 ```
 
 ## Why

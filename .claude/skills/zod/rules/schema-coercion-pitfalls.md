@@ -18,9 +18,9 @@ tags: coercion, boolean, forms, env-vars
 const Settings = z.object({
   debug: z.coerce.boolean(),
   verbose: z.coerce.boolean(),
-})
+});
 
-Settings.parse({ debug: "false", verbose: "0" })
+Settings.parse({ debug: "false", verbose: "0" });
 // { debug: true, verbose: true } — both are wrong!
 ```
 
@@ -31,9 +31,9 @@ Settings.parse({ debug: "false", verbose: "0" })
 const Settings = z.object({
   debug: z.stringbool(),
   verbose: z.stringbool(),
-})
+});
 
-Settings.parse({ debug: "false", verbose: "0" })
+Settings.parse({ debug: "false", verbose: "0" });
 // { debug: false, verbose: false }
 
 // z.stringbool() accepts: "true"/"false", "1"/"0", "yes"/"no", "on"/"off"

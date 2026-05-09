@@ -3,18 +3,18 @@
 ## Primitives
 
 ```typescript
-z.string()     // string
-z.number()     // number (int or float)
-z.boolean()    // boolean
-z.bigint()     // bigint
-z.date()       // Date instance
-z.symbol()     // symbol
-z.undefined()  // undefined
-z.null()       // null
-z.void()       // void (undefined)
-z.any()        // any — bypasses type checking
-z.unknown()    // unknown — safer than any
-z.never()      // never — always fails
+z.string(); // string
+z.number(); // number (int or float)
+z.boolean(); // boolean
+z.bigint(); // bigint
+z.date(); // Date instance
+z.symbol(); // symbol
+z.undefined(); // undefined
+z.null(); // null
+z.void(); // void (undefined)
+z.any(); // any — bypasses type checking
+z.unknown(); // unknown — safer than any
+z.never(); // never — always fails
 ```
 
 ## Strings
@@ -22,52 +22,52 @@ z.never()      // never — always fails
 ### Constraints
 
 ```typescript
-z.string().min(5)           // minimum length
-z.string().max(100)         // maximum length
-z.string().length(10)       // exact length
-z.string().regex(/^[a-z]+$/) // regex pattern
-z.string().trim()           // trims whitespace (transform)
-z.string().toLowerCase()    // lowercases (transform)
-z.string().toUpperCase()    // uppercases (transform)
-z.string().startsWith("https://")
-z.string().endsWith(".com")
-z.string().includes("@")
+z.string().min(5); // minimum length
+z.string().max(100); // maximum length
+z.string().length(10); // exact length
+z.string().regex(/^[a-z]+$/); // regex pattern
+z.string().trim(); // trims whitespace (transform)
+z.string().toLowerCase(); // lowercases (transform)
+z.string().toUpperCase(); // uppercases (transform)
+z.string().startsWith("https://");
+z.string().endsWith(".com");
+z.string().includes("@");
 ```
 
 ### Top-Level String Formats (v4)
 
 ```typescript
-z.email()       // email address
-z.url()         // URL
-z.uuid()        // UUID (v4)
-z.cuid()        // CUID
-z.cuid2()       // CUID2
-z.ulid()        // ULID
-z.emoji()       // emoji character
-z.nanoid()      // Nano ID
-z.ipv4()        // IPv4 address
-z.ipv6()        // IPv6 address
-z.cidrv4()      // CIDR v4 notation
-z.cidrv6()      // CIDR v6 notation
-z.jwt()         // JSON Web Token
-z.base64()      // Base64 string
-z.base64url()   // Base64url string
+z.email(); // email address
+z.url(); // URL
+z.uuid(); // UUID (v4)
+z.cuid(); // CUID
+z.cuid2(); // CUID2
+z.ulid(); // ULID
+z.emoji(); // emoji character
+z.nanoid(); // Nano ID
+z.ipv4(); // IPv4 address
+z.ipv6(); // IPv6 address
+z.cidrv4(); // CIDR v4 notation
+z.cidrv6(); // CIDR v6 notation
+z.jwt(); // JSON Web Token
+z.base64(); // Base64 string
+z.base64url(); // Base64url string
 ```
 
 ### ISO Date/Time Strings
 
 ```typescript
-z.iso.date()      // "2024-01-15"
-z.iso.time()      // "13:45:30"
-z.iso.datetime()  // "2024-01-15T13:45:30Z"
-z.iso.duration()  // "P3Y6M4DT12H30M5S"
+z.iso.date(); // "2024-01-15"
+z.iso.time(); // "13:45:30"
+z.iso.datetime(); // "2024-01-15T13:45:30Z"
+z.iso.duration(); // "P3Y6M4DT12H30M5S"
 ```
 
 ### Template Literals
 
 ```typescript
 // Validates strings matching a template pattern
-const UserID = z.templateLiteral([z.literal("user_"), z.string()])
+const UserID = z.templateLiteral([z.literal("user_"), z.string()]);
 // Matches: "user_abc123", "user_xyz"
 // Rejects: "abc123", "admin_xyz"
 ```
@@ -75,63 +75,63 @@ const UserID = z.templateLiteral([z.literal("user_"), z.string()])
 ## Numbers
 
 ```typescript
-z.number()                // any number
-z.int()                   // integer only
-z.float()                 // float (alias for number)
+z.number(); // any number
+z.int(); // integer only
+z.float(); // float (alias for number)
 
 // Constraints
-z.number().min(0)         // >= 0
-z.number().max(100)       // <= 100
-z.number().positive()     // > 0
-z.number().negative()     // < 0
-z.number().nonnegative()  // >= 0
-z.number().nonpositive()  // <= 0
-z.number().multipleOf(5)  // divisible by 5
-z.number().finite()       // not Infinity
-z.number().safe()         // within Number.MAX_SAFE_INTEGER
+z.number().min(0); // >= 0
+z.number().max(100); // <= 100
+z.number().positive(); // > 0
+z.number().negative(); // < 0
+z.number().nonnegative(); // >= 0
+z.number().nonpositive(); // <= 0
+z.number().multipleOf(5); // divisible by 5
+z.number().finite(); // not Infinity
+z.number().safe(); // within Number.MAX_SAFE_INTEGER
 ```
 
 ## BigInt
 
 ```typescript
-z.bigint()
-z.bigint().min(0n)
-z.bigint().max(100n)
-z.bigint().positive()
-z.bigint().negative()
-z.bigint().nonnegative()
-z.bigint().nonpositive()
-z.bigint().multipleOf(5n)
+z.bigint();
+z.bigint().min(0n);
+z.bigint().max(100n);
+z.bigint().positive();
+z.bigint().negative();
+z.bigint().nonnegative();
+z.bigint().nonpositive();
+z.bigint().multipleOf(5n);
 ```
 
 ## Boolean
 
 ```typescript
-z.boolean()        // true or false
-z.literal(true)    // only true
-z.literal(false)   // only false
+z.boolean(); // true or false
+z.literal(true); // only true
+z.literal(false); // only false
 ```
 
 ## Date
 
 ```typescript
-z.date()                           // Date instance
-z.date().min(new Date("2020-01-01")) // after date
-z.date().max(new Date("2030-01-01")) // before date
+z.date(); // Date instance
+z.date().min(new Date("2020-01-01")); // after date
+z.date().max(new Date("2030-01-01")); // before date
 ```
 
 ## Enums
 
 ```typescript
 // String literal array
-z.enum(["active", "inactive", "pending"])
+z.enum(["active", "inactive", "pending"]);
 
 // TypeScript enum (v4 — unified, no more nativeEnum)
 enum Status {
   Active = "active",
   Inactive = "inactive",
 }
-z.enum(Status)
+z.enum(Status);
 
 // Numeric enum
 enum Priority {
@@ -139,7 +139,7 @@ enum Priority {
   Medium = 1,
   High = 2,
 }
-z.enum(Priority)
+z.enum(Priority);
 ```
 
 ## Stringbool
@@ -147,47 +147,47 @@ z.enum(Priority)
 Converts string boolean representations to actual booleans.
 
 ```typescript
-z.stringbool()
+z.stringbool();
 // Accepts: "true"/"false", "1"/"0", "yes"/"no", "on"/"off"
 // Returns: boolean
 
-z.stringbool().parse("true")   // true
-z.stringbool().parse("false")  // false
-z.stringbool().parse("1")      // true
-z.stringbool().parse("0")      // false
-z.stringbool().parse("yes")    // true
-z.stringbool().parse("no")     // false
+z.stringbool().parse("true"); // true
+z.stringbool().parse("false"); // false
+z.stringbool().parse("1"); // true
+z.stringbool().parse("0"); // false
+z.stringbool().parse("yes"); // true
+z.stringbool().parse("no"); // false
 ```
 
 ## Literals
 
 ```typescript
-z.literal("hello")   // exactly "hello"
-z.literal(42)        // exactly 42
-z.literal(true)      // exactly true
-z.literal(null)      // exactly null
-z.literal(undefined) // exactly undefined
-z.literal(100n)      // exactly 100n (bigint)
+z.literal("hello"); // exactly "hello"
+z.literal(42); // exactly 42
+z.literal(true); // exactly true
+z.literal(null); // exactly null
+z.literal(undefined); // exactly undefined
+z.literal(100n); // exactly 100n (bigint)
 ```
 
 ## Files
 
 ```typescript
-z.file()                         // File instance
-z.file().min(1024)               // minimum size in bytes
-z.file().max(5 * 1024 * 1024)    // maximum size (5MB)
-z.file().type("image/png")       // MIME type
-z.file().type("image/*")         // MIME type wildcard
+z.file(); // File instance
+z.file().min(1024); // minimum size in bytes
+z.file().max(5 * 1024 * 1024); // maximum size (5MB)
+z.file().type("image/png"); // MIME type
+z.file().type("image/*"); // MIME type wildcard
 ```
 
 ## JSON
 
 ```typescript
 // Validates that the input is a valid JSON string, then parses it
-z.json()
+z.json();
 
-z.json().parse('{"name":"Alice"}')  // { name: "Alice" }
-z.json().parse("invalid json")     // ZodError
+z.json().parse('{"name":"Alice"}'); // { name: "Alice" }
+z.json().parse("invalid json"); // ZodError
 ```
 
 ## Custom Types
@@ -196,24 +196,24 @@ z.json().parse("invalid json")     // ZodError
 // Custom type with validation function
 const NonEmptyString = z.custom<string>(
   (val) => typeof val === "string" && val.length > 0,
-  { error: "Must be a non-empty string" }
-)
+  { error: "Must be a non-empty string" },
+);
 ```
 
 ## Optional, Nullable, Nullish
 
 ```typescript
-z.string().optional()   // string | undefined
-z.string().nullable()   // string | null
-z.string().nullish()    // string | null | undefined
+z.string().optional(); // string | undefined
+z.string().nullable(); // string | null
+z.string().nullish(); // string | null | undefined
 ```
 
 ## Coercion
 
 ```typescript
-z.coerce.string()   // String(input)
-z.coerce.number()   // Number(input)
-z.coerce.boolean()  // Boolean(input) — careful: Boolean("false") === true
-z.coerce.bigint()   // BigInt(input)
-z.coerce.date()     // new Date(input)
+z.coerce.string(); // String(input)
+z.coerce.number(); // Number(input)
+z.coerce.boolean(); // Boolean(input) — careful: Boolean("false") === true
+z.coerce.bigint(); // BigInt(input)
+z.coerce.date(); // new Date(input)
 ```

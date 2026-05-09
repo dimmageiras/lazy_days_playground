@@ -16,19 +16,18 @@ Throwing inside a `.refine()` or `.transform()` callback bypasses Zod's error ha
 ```typescript
 // BUG: throwing inside refine bypasses Zod error handling
 const PositiveNumber = z.number().refine((n) => {
-  if (n <= 0) throw new Error("Must be positive") // crashes parse
-  return true
-})
+  if (n <= 0) throw new Error("Must be positive"); // crashes parse
+  return true;
+});
 ```
 
 ## Correct
 
 ```typescript
 // GOOD: return boolean from refine
-const PositiveNumber = z.number().refine(
-  (n) => n > 0,
-  { error: "Must be positive" }
-)
+const PositiveNumber = z
+  .number()
+  .refine((n) => n > 0, { error: "Must be positive" });
 
 // GOOD: use superRefine with ctx.addIssue for complex logic
 const Password = z.string().superRefine((val, ctx) => {
@@ -36,15 +35,15 @@ const Password = z.string().superRefine((val, ctx) => {
     ctx.addIssue({
       code: "custom",
       message: "Password must be at least 8 characters",
-    })
+    });
   }
   if (!/[A-Z]/.test(val)) {
     ctx.addIssue({
       code: "custom",
       message: "Password must contain an uppercase letter",
-    })
+    });
   }
-})
+});
 ```
 
 ## Why
