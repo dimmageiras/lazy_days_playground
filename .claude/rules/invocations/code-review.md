@@ -18,6 +18,7 @@ The skill performs multi-axis review (correctness, security, performance, readab
 | `import … from 'react-router'` or changes to `react-router.config.ts` | `react-router-framework-mode`                                                      |
 | `import … from '@tanstack/react-query'`                               | `tanstack-query-best-practices`                                                    |
 | `import … from 'zod'`                                                 | `zod`                                                                              |
+| `import … from 'zustand'` or `import … from 'zustand-x'`              | `zustand`; also apply [`../state-management.md`](../state-management.md)           |
 | `import … from 'vitest'` or `*.test.ts(x)` / `*.spec.ts(x)` files     | `vitest`                                                                           |
 | `import … from 'fastify'`                                             | `fastify-best-practices`                                                           |
 | JSX in `.tsx` files (React component or hook changes)                 | `react-best-practices`, `composition-patterns`                                     |
