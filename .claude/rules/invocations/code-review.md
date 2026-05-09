@@ -12,23 +12,24 @@ The skill performs multi-axis review (correctness, security, performance, readab
 
 `code-review-and-quality` covers cross-cutting concerns. For domain-specific depth, **also** invoke the skill matching the area being reviewed. Inspect the diff and stack each relevant skill on top:
 
-| Area in the diff                                                 | Also invoke                                                                        |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| React components, hooks, JSX                                     | `react-best-practices`, `composition-patterns`                                     |
-| React Router routes, loaders, actions, `react-router.config.ts`  | `react-router-framework-mode`                                                      |
-| TanStack Query (`useQuery`, `useMutation`, query keys)           | `tanstack-query`                                                                   |
-| Zod schemas, `safeParse`, `z.infer`, validation boundaries       | `zod`                                                                              |
-| TypeScript generics, conditional/mapped types, `any` removal     | `typescript-magician`                                                              |
-| Vitest tests, mocks, coverage config                             | `vitest`                                                                           |
-| `vite.config.ts`, Vite plugins, SSR, build settings              | `vite`                                                                             |
-| `pnpm-workspace.yaml`, overrides, patches, catalogs              | `pnpm`                                                                             |
-| Node.js / TypeScript server code (Node 24+)                      | `node`                                                                             |
-| Fastify routes, plugins, hooks, schemas                          | `fastify`                                                                          |
-| Test-first or red-green-refactor changes                         | `tdd`                                                                              |
-| Architectural shifts, module boundaries, deepening opportunities | `improve-codebase-architecture`                                                    |
-| Bug-fix changes claiming to resolve a regression                 | `diagnose`                                                                         |
-| `*.md`, `docs/**`, `CONTEXT.md`, `docs/adr/**`                   | `doc-coauthoring`, `documentation-and-adrs`                                        |
-| Inline code comments, JSDoc blocks                               | (no skill) — apply [`../code-comments.md`](../code-comments.md) as review criteria |
+| Trigger in the diff                                                   | Also invoke                                                                        |
+| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `import … from 'react-hook-form'`                                     | `react-hook-form-writer`                                                           |
+| `import … from 'react-router'` or changes to `react-router.config.ts` | `react-router-framework-mode`                                                      |
+| `import … from '@tanstack/react-query'`                               | `tanstack-query`                                                                   |
+| `import … from 'zod'`                                                 | `zod`                                                                              |
+| `import … from 'vitest'` or `*.test.ts(x)` / `*.spec.ts(x)` files     | `vitest`                                                                           |
+| `import … from 'fastify'`                                             | `fastify`                                                                          |
+| JSX in `.tsx` files (React component or hook changes)                 | `react-best-practices`, `composition-patterns`                                     |
+| `vite.config.ts` or any Vite plugin                                   | `vite`                                                                             |
+| `pnpm-workspace.yaml` or `pnpm` field in `package.json`               | `pnpm`                                                                             |
+| Node.js server code in `.ts` files (Node 24+, no Vite/RR runtime)     | `node`                                                                             |
+| TypeScript generics, conditional/mapped types, `any` removal          | `typescript-magician`                                                              |
+| Test-first / red-green-refactor commits                               | `tdd`                                                                              |
+| Module-boundary or deepening opportunity changes                      | `improve-codebase-architecture`                                                    |
+| Bug-fix changes claiming to resolve a regression                      | `diagnose`                                                                         |
+| `*.md`, `docs/**`, `CONTEXT.md`, `docs/adr/**`                        | `doc-coauthoring`, `documentation-and-adrs`                                        |
+| Inline code comments, JSDoc blocks                                    | (no skill) — apply [`../code-comments.md`](../code-comments.md) as review criteria |
 
 Multiple areas in one diff → invoke each matching skill. The general skill sets the structure; the area skills sharpen the criteria for that part of the diff.
 
