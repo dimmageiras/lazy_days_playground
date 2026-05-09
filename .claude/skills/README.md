@@ -10,9 +10,9 @@ The table is sorted alphabetically by skill folder name (the same name Claude Co
 | [code-review-and-quality](https://github.com/addyosmani/agent-skills/tree/main/skills/code-review-and-quality)                   | —         | 07/04/2026 | Conducts multi-axis code review. Use before merging any change. Use when reviewing code written by yourself, another agent, or a human. Use when you need to assess code quality across multiple dimensions before it enters the main branch.                                                                                                                                                      |
 | [commit](https://github.com/tmcpa/claudedirectory/blob/main/src/data/skills/commit.ts)                                           | —         | 06/01/2026 | Create well-formatted git commits following the Conventional Commits standard. Use when the user asks to create a commit, when staged changes need a generated commit message, or when the user invokes `/commit`. Generates a conventional commit message (feat / fix / docs / style / refactor / test / chore) by analyzing the staged diff, then creates the commit.                            |
 | [composition-patterns](https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns)                        | 1.0.0     | 28/01/2026 | React composition patterns that scale. Use when refactoring components with boolean prop proliferation, building flexible component libraries, or designing reusable APIs. Triggers on tasks involving compound components, render props, context providers, or component architecture. Includes React 19 API changes.                                                                             |
+| [diagnose](https://github.com/mattpocock/skills/tree/main/skills/engineering/diagnose)                                           | —         | 28/04/2026 | Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says "diagnose this" / "debug this", reports a bug, says something is broken/throwing/failing, or describes a performance regression.                                                                                                 |
 | [doc-coauthoring](https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring)                                         | —         | 04/12/2025 | Guide users through a structured workflow for co-authoring documentation. Use when the user wants to write documentation, proposals, technical specs, decision docs, or similar structured content. The workflow helps efficiently transfer context, refine content through iteration, and verify the doc works for readers.                                                                       |
 | [documentation-and-adrs](https://github.com/addyosmani/agent-skills/tree/main/skills/documentation-and-adrs)                     | —         | 31/03/2026 | Records decisions and documentation. Use when making architectural decisions, changing public APIs, shipping features, or when you need to record context that future engineers and agents will need to understand the codebase.                                                                                                                                                                   |
-| [diagnose](https://github.com/mattpocock/skills/tree/main/skills/engineering/diagnose)                                           | —         | 28/04/2026 | Disciplined diagnosis loop for hard bugs and performance regressions. Reproduce → minimise → hypothesise → instrument → fix → regression-test. Use when user says "diagnose this" / "debug this", reports a bug, says something is broken/throwing/failing, or describes a performance regression.                                                                                                 |
 | [fastify](https://github.com/mcollina/skills/tree/main/skills/fastify)                                                           | 0.1.0     | 13/03/2026 | Guides development of Fastify Node.js backend servers and REST APIs. Covers route definitions, plugin authoring, JSON Schema validation, error handling, performance, authentication, CORS and security headers, database integration, WebSockets, and deployment. Includes the full Fastify request lifecycle (hooks, serialization, Pino logging) and TypeScript integration via type stripping. |
 | [grill-with-docs](https://github.com/mattpocock/skills/tree/main/skills/engineering/grill-with-docs)                             | —         | 30/04/2026 | Grilling session that challenges your plan against the existing domain model, sharpens terminology, and updates documentation (`CONTEXT.md`, ADRs) inline as decisions crystallise. Use when user wants to stress-test a plan against their project's language and documented decisions.                                                                                                           |
 | [improve-codebase-architecture](https://github.com/mattpocock/skills/tree/main/skills/engineering/improve-codebase-architecture) | —         | 28/04/2026 | Find deepening opportunities in a codebase, informed by the domain language in `CONTEXT.md` and the decisions in `docs/adr/`. Use when the user wants to improve architecture, find refactoring opportunities, consolidate tightly-coupled modules, or make a codebase more testable and AI-navigable.                                                                                             |
@@ -28,6 +28,31 @@ The table is sorted alphabetically by skill folder name (the same name Claude Co
 | [zod](https://github.com/anivar/zod-skill)                                                                                       | 1.0.0     | 24/02/2026 | Zod v4 best practices: schema design, parsing (`safeParse`), refinements, transforms, codecs, branded types, error handling (`flattenError`/`treeifyError`), boundary parsing, and v3→v4 migration. Use when working with `z.object`, `z.infer`, schema validation, or zod v4.                                                                                                                     |
 | [zoom-out](https://github.com/mattpocock/skills/tree/main/skills/engineering/zoom-out)                                           | —         | 28/04/2026 | Tell the agent to zoom out and give broader context or a higher-level perspective. Use when you're unfamiliar with a section of code or need to understand how it fits into the bigger picture.                                                                                                                                                                                                    |
 
+## Adding a new skill
+
+When installing a new skill:
+
+1. Copy the upstream contents into `.claude/skills/<skill-name>/`.
+2. Verify `SKILL.md` has valid frontmatter (`name`, `description` at minimum).
+3. **Add a row to the table above** in the correct alphabetical position. The row must include:
+   - **Skill** — folder name, linked to the upstream source URL.
+   - **Version** — value from `SKILL.md` frontmatter (`metadata.version`) or `tile.json` (`"version"`); use `—` if the upstream declares none.
+   - **Last edit** — latest upstream commit date on the skill path, in `dd/mm/yyyy`. Query with:
+
+     ```sh
+     gh api 'repos/<owner>/<repo>/commits?path=<source-path>&per_page=1' --jq '.[0].commit.author.date'
+     ```
+
+     Convert the returned ISO date to `dd/mm/yyyy`.
+
+   - **Description** — copy verbatim from the skill's `description` frontmatter (this is what Claude Code matches against for auto-invocation).
+
+4. **Check whether an invocation rule is needed.** If the new skill should auto-fire on a recognisable trigger (file pattern, action, user phrasing), add a file at `.claude/rules/invocations/<skill-name>.md` describing when to invoke it. If the skill pairs with the existing code-review flow, also add a row to the area-skill table in `.claude/rules/invocations/code-review.md`. If no specific trigger fits, no invocation file is needed — Claude Code will auto-invoke from the skill's own `description`.
+5. Stage the skill folder **and** the README change (and any new invocation rule) in the same commit, so the repo stays self-consistent.
+6. Reload the Claude Code session and verify the new skill appears in the available-skills list.
+
+The pre-commit check: if `git status` shows any file under `.claude/skills/<new-name>/` and the README table has no row for `<new-name>`, the commit is incomplete — add the row before committing.
+
 ## Updating a skill
 
 When you want to refresh a skill from its upstream source:
@@ -39,11 +64,25 @@ When you want to refresh a skill from its upstream source:
 
 After updating, **manually refresh the `Version` and `Last edit` columns**. The `Last edit` value is the date of the latest commit in the upstream repository that touched the skill's folder — query it with:
 
-```
+```sh
 gh api 'repos/<owner>/<repo>/commits?path=<source-path>&per_page=1' --jq '.[0].commit.author.date'
 ```
 
 Replace `<source-path>` with the path inside the repo (typically `skills/<skill-name>` for skills bundled in a `skills/` folder, or the file path for single-file sources like `commit`). Convert the returned ISO date to `dd/mm/yyyy` for the table.
+
+## Removing a skill
+
+When deleting a skill from `.claude/skills/<skill-name>/`, also remove every reference to it. Check and clean up:
+
+1. **The table above** in this README — delete the row for `<skill-name>`.
+2. `.claude/rules/invocations/<skill-name>.md` — delete the file if it exists.
+3. `.claude/rules/invocations/code-review.md` — remove any row in the area-skill table that names `<skill-name>`.
+4. **Any other invocation rule that groups multiple skills** — drop the mention; if removing it leaves the rule meaningless or empty, delete the file.
+5. `CLAUDE.md` — remove if explicitly named there.
+6. **Any other markdown** in the repo that mentions the skill by name — run `git grep '<skill-name>'` to find leftovers (CLAUDE.md, plans, docs, ADRs, READMEs). `git grep` respects `.gitignore` and only walks tracked files, so it won't drown in `node_modules`.
+7. Stage the skill deletion **and** all reference removals in the same commit, so the repo stays self-consistent.
+
+The pre-commit check: if `git status` shows the skill folder removed but `git grep '<skill-name>'` still finds matches outside the deletion itself, the cleanup is incomplete.
 
 ## Column meaning
 
