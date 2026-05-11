@@ -94,7 +94,7 @@ const bootstrapServer = ({
     { closeListeners },
   ] as const;
 
-  return { shutdownRouteWithListeners, claimPort };
+  return { claimPort, shutdownRouteWithListeners };
 };
 
 export const BootstrapModule = { bootstrapServer };

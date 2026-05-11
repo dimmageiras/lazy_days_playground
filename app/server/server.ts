@@ -10,7 +10,7 @@ const { bootstrapServer } = BootstrapModule;
 
 const app = Fastify({ logger: true });
 
-const { shutdownRouteWithListeners, claimPort } = bootstrapServer({
+const { claimPort, shutdownRouteWithListeners } = bootstrapServer({
   app,
   port: PORT,
   shutdownPath: SHUTDOWN_PATH,
