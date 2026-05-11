@@ -1,0 +1,19 @@
+diff --git a/dist/index.js b/dist/index.js
+index 29ad74d85933d89cf43564e60099afb2c858e66a..c04a216c1447e37547c03e8817050c71c6e8743c 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -528,7 +528,13 @@
+   }
+   const clientConfigObj = JSON.parse(clientConfig);
+   if (clientConfigObj.plugins) {
+-    clientConfigObj.plugins = clientConfigObj.plugins.replace("[", "").replace("]", "").split(",").map((plugin) => t.identifier(plugin.trim()));
++    clientConfigObj.plugins = clientConfigObj.plugins
++      .replace("[", "")
++      .replace("]", "")
++      .split(",")
++      .map((plugin) => plugin.trim())
++      .filter(Boolean)
++      .map((plugin) => t.identifier(plugin));
+   }
+   const clientConfigExpression = t.objectExpression(
+     Object.entries(clientConfigObj).map(

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./dist/fastify",
+    "types": []
+  },
+  "include": ["./server/**/*.ts", "./shared/types/**/*.ts"],
+  "exclude": [
+    "./node_modules",
+    "./client/**/*",
+    "./shared/types/generated/db/database.type.ts",
+    "**/*.test.ts"
+  ]
+}

@@ -1,0 +1,327 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 701139ba25a175ed353e1ce314d0ffd4bf777f6d..d5c823d53a909c04e13ddb1653930b54e6bc1070 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -2,7 +2,10 @@
+ 
+ Object.defineProperty(exports, '__esModule', { value: true });
+ 
+-var babel = require('@babel/core');
++var loadOptionsAsync = require('@babel/core').loadOptionsAsync;
++var loadOptionsSync = require('@babel/core').loadOptionsSync;
++var loadPartialConfigSync = require('@babel/core').loadPartialConfigSync;
++var transformAsync = require('@babel/core').transformAsync;
+ var vite = require('vite');
+ var fs = require('fs');
+ var path = require('path');
+@@ -22,7 +25,7 @@ const esbuildPluginBabel = (options) => ({
+       return loader;
+     };
+     const transformContents = async (args, contents) => {
+-      const babelOptions = babel.loadOptions({
++      const babelOptions = loadOptionsSync({
+         filename: args.path,
+         ...config,
+         caller: {
+@@ -36,7 +39,7 @@ const esbuildPluginBabel = (options) => ({
+       if (babelOptions.sourceMaps) {
+         babelOptions.sourceFileName = path.relative(process.cwd(), args.path);
+       }
+-      return babel.transformAsync(contents, babelOptions).then((result) => ({
++      return transformAsync(contents, babelOptions).then((result) => ({
+         contents: result?.code ?? "",
+         loader: resolveLoader(args)
+       }));
+@@ -50,6 +53,29 @@ const esbuildPluginBabel = (options) => ({
+   }
+ });
+ 
++const rolldownPluginBabel = ({
++  config = {},
++  filter = /.*/,
++  customFilter
++}) => ({
++  name: "babel",
++  async transform(code, id) {
++    const shouldTransform = customFilter(id) && testFilter(filter, id);
++    if (!shouldTransform) return null;
++    const babelOptions = await loadOptionsAsync({
++      filename: id,
++      ...config,
++      caller: {
++        name: "rolldown-plugin-babel",
++        supportsStaticESM: true
++      }
++    });
++    if (!babelOptions) return null;
++    const result = await transformAsync(code, babelOptions);
++    return result ? { code: result.code ?? "", map: result.map } : null;
++  }
++});
++
+ const DEFAULT_FILTER = /\.jsx?$/;
+ const babelPlugin = ({
+   babelConfig = {},
+@@ -62,23 +88,39 @@ const babelPlugin = ({
+   optimizeOnSSR = false
+ } = {}) => {
+   const customFilter = vite.createFilter(include, exclude);
+-  const getOptimizeDeps = () => ({
+-    esbuildOptions: {
+-      plugins: [
+-        esbuildPluginBabel({
+-          config: { ...babelConfig },
+-          customFilter,
+-          filter,
+-          loader
+-        })
+-      ]
++  const viteMajor = parseInt(vite.version.split(".")[0], 10);
++  const getOptimizeDeps = () => {
++    if (viteMajor >= 8) {
++      return {
++        rolldownOptions: {
++          plugins: [
++            rolldownPluginBabel({
++              config: { ...babelConfig },
++              customFilter,
++              filter
++            })
++          ]
++        }
++      };
+     }
+-  });
++    return {
++      esbuildOptions: {
++        plugins: [
++          esbuildPluginBabel({
++            config: { ...babelConfig },
++            customFilter,
++            filter,
++            loader
++          })
++        ]
++      }
++    };
++  };
+   let root;
+   let babelPartialConfig;
+   const getBabelOptions = () => {
+     if (babelPartialConfig) return babelPartialConfig.options;
+-    babelPartialConfig = babel.loadPartialConfig({ cwd: root, root, ...babelConfig });
++    babelPartialConfig = loadPartialConfigSync({ cwd: root, root, ...babelConfig });
+     return babelPartialConfig?.options ?? {};
+   };
+   return {
+@@ -98,10 +140,11 @@ const babelPlugin = ({
+       const shouldTransform = customFilter(id) && testFilter(filter, id);
+       if (!shouldTransform) return;
+       const babelOptions = getBabelOptions();
+-      return babel.transformAsync(code, { ...babelOptions, filename: id }).then((result) => ({ code: result?.code ?? "", map: result?.map }));
++      return transformAsync(code, { ...babelOptions, filename: id }).then((result) => ({ code: result?.code ?? "", map: result?.map }));
+     }
+   };
+ };
+ 
+ exports.default = babelPlugin;
+ exports.esbuildPluginBabel = esbuildPluginBabel;
++exports.rolldownPluginBabel = rolldownPluginBabel;
+diff --git a/dist/index.d.cts b/dist/index.d.cts
+index b496b7cb428a09509a8b0c487ee87b7de331b6f3..448e5a5b11056a669f80f1238b228c67fe4379ff 100644
+--- a/dist/index.d.cts
++++ b/dist/index.d.cts
+@@ -17,6 +17,19 @@
+ }
+ declare const esbuildPluginBabel: (options: ESBuildPluginBabelOptions) => Plugin;
+ 
++interface RolldownPluginBabelOptions {
++    config?: TransformOptions;
++    filter?: Filter;
++    customFilter: (id: unknown) => boolean;
++}
++declare const rolldownPluginBabel: (options: RolldownPluginBabelOptions) => {
++    name: string;
++    transform: (code: string, id: string) => Promise<{
++        code: string;
++        map: unknown;
++    } | null>;
++};
++
+ interface BabelPluginOptions {
+     apply?: Plugin$1['apply'];
+     enforce?: Plugin$1['enforce'];
+@@ -29,5 +42,5 @@
+ }
+ declare const babelPlugin: ({ babelConfig, filter, include, exclude, apply, enforce, loader, optimizeOnSSR, }?: BabelPluginOptions) => Plugin$1;
+ 
+-export { babelPlugin as default, esbuildPluginBabel };
+-export type { BabelPluginOptions, ESBuildPluginBabelOptions, Filter };
++export { babelPlugin as default, esbuildPluginBabel, rolldownPluginBabel };
++export type { BabelPluginOptions, ESBuildPluginBabelOptions, Filter, RolldownPluginBabelOptions };
+diff --git a/dist/index.d.mts b/dist/index.d.mts
+index b496b7cb428a09509a8b0c487ee87b7de331b6f3..448e5a5b11056a669f80f1238b228c67fe4379ff 100644
+--- a/dist/index.d.mts
++++ b/dist/index.d.mts
+@@ -17,6 +17,19 @@
+ }
+ declare const esbuildPluginBabel: (options: ESBuildPluginBabelOptions) => Plugin;
+ 
++interface RolldownPluginBabelOptions {
++    config?: TransformOptions;
++    filter?: Filter;
++    customFilter: (id: unknown) => boolean;
++}
++declare const rolldownPluginBabel: (options: RolldownPluginBabelOptions) => {
++    name: string;
++    transform: (code: string, id: string) => Promise<{
++        code: string;
++        map: unknown;
++    } | null>;
++};
++
+ interface BabelPluginOptions {
+     apply?: Plugin$1['apply'];
+     enforce?: Plugin$1['enforce'];
+@@ -29,5 +42,5 @@
+ }
+ declare const babelPlugin: ({ babelConfig, filter, include, exclude, apply, enforce, loader, optimizeOnSSR, }?: BabelPluginOptions) => Plugin$1;
+ 
+-export { babelPlugin as default, esbuildPluginBabel };
+-export type { BabelPluginOptions, ESBuildPluginBabelOptions, Filter };
++export { babelPlugin as default, esbuildPluginBabel, rolldownPluginBabel };
++export type { BabelPluginOptions, ESBuildPluginBabelOptions, Filter, RolldownPluginBabelOptions };
+diff --git a/dist/index.mjs b/dist/index.mjs
+index 90f10c8b7d61519a467038292ad87200fab709d6..feffaaa6070d25e3cb81e7b0b2bfe7b83ed610ee 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -1,7 +1,12 @@
+-import babel from '@babel/core';
+-import { createFilter } from 'vite';
+-import fs from 'fs';
+-import path from 'path';
++import {
++  loadOptionsAsync,
++  loadOptionsSync,
++  loadPartialConfigSync,
++  transformAsync,
++} from "@babel/core";
++import { createFilter, version as viteVersion } from "vite";
++import fs from "fs";
++import path from "path";
+ 
+ function testFilter(filter, id) {
+   return typeof filter === "function" ? filter(id) : filter.test(id);
+@@ -18,7 +23,7 @@ const esbuildPluginBabel = (options) => ({
+       return loader;
+     };
+     const transformContents = async (args, contents) => {
+-      const babelOptions = babel.loadOptions({
++      const babelOptions = loadOptionsSync({
+         filename: args.path,
+         ...config,
+         caller: {
+@@ -32,7 +37,7 @@ const esbuildPluginBabel = (options) => ({
+       if (babelOptions.sourceMaps) {
+         babelOptions.sourceFileName = path.relative(process.cwd(), args.path);
+       }
+-      return babel.transformAsync(contents, babelOptions).then((result) => ({
++      return transformAsync(contents, babelOptions).then((result) => ({
+         contents: result?.code ?? "",
+         loader: resolveLoader(args)
+       }));
+@@ -46,6 +51,30 @@ const esbuildPluginBabel = (options) => ({
+   }
+ });
+ 
++/** Rolldown plugin for Vite 8+ optimizeDeps (replaces esbuild pre-bundle path). */
++const rolldownPluginBabel = ({
++  config = {},
++  filter = /.*/,
++  customFilter
++}) => ({
++  name: "babel",
++  async transform(code, id) {
++    const shouldTransform = customFilter(id) && testFilter(filter, id);
++    if (!shouldTransform) return null;
++    const babelOptions = await loadOptionsAsync({
++      filename: id,
++      ...config,
++      caller: {
++        name: "rolldown-plugin-babel",
++        supportsStaticESM: true
++      }
++    });
++    if (!babelOptions) return null;
++    const result = await transformAsync(code, babelOptions);
++    return result ? { code: result.code ?? "", map: result.map } : null;
++  }
++});
++
+ const DEFAULT_FILTER = /\.jsx?$/;
+ const babelPlugin = ({
+   babelConfig = {},
+@@ -58,23 +87,39 @@ const babelPlugin = ({
+   optimizeOnSSR = false
+ } = {}) => {
+   const customFilter = createFilter(include, exclude);
+-  const getOptimizeDeps = () => ({
+-    esbuildOptions: {
+-      plugins: [
+-        esbuildPluginBabel({
+-          config: { ...babelConfig },
+-          customFilter,
+-          filter,
+-          loader
+-        })
+-      ]
++  const viteMajor = parseInt(viteVersion.split(".")[0], 10);
++  const getOptimizeDeps = () => {
++    if (viteMajor >= 8) {
++      return {
++        rolldownOptions: {
++          plugins: [
++            rolldownPluginBabel({
++              config: { ...babelConfig },
++              customFilter,
++              filter
++            })
++          ]
++        }
++      };
+     }
+-  });
++    return {
++      esbuildOptions: {
++        plugins: [
++          esbuildPluginBabel({
++            config: { ...babelConfig },
++            customFilter,
++            filter,
++            loader
++          })
++        ]
++      }
++    };
++  };
+   let root;
+   let babelPartialConfig;
+   const getBabelOptions = () => {
+     if (babelPartialConfig) return babelPartialConfig.options;
+-    babelPartialConfig = babel.loadPartialConfig({ cwd: root, root, ...babelConfig });
++    babelPartialConfig = loadPartialConfigSync({ cwd: root, root, ...babelConfig });
+     return babelPartialConfig?.options ?? {};
+   };
+   return {
+@@ -94,9 +139,9 @@ const babelPlugin = ({
+       const shouldTransform = customFilter(id) && testFilter(filter, id);
+       if (!shouldTransform) return;
+       const babelOptions = getBabelOptions();
+-      return babel.transformAsync(code, { ...babelOptions, filename: id }).then((result) => ({ code: result?.code ?? "", map: result?.map }));
++      return transformAsync(code, { ...babelOptions, filename: id }).then((result) => ({ code: result?.code ?? "", map: result?.map }));
+     }
+   };
+ };
+ 
+-export { babelPlugin as default, esbuildPluginBabel };
++export { babelPlugin as default, esbuildPluginBabel, rolldownPluginBabel };

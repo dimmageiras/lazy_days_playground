@@ -1,0 +1,125 @@
+import type { KeyAsString, ValueOf } from "type-fest";
+
+import type { HasObjectKeyNarrow } from "@shared/types/app/utility-types";
+
+import { ArrayUtilsHelper } from "./array-utils.helper.ts";
+import { TypeHelper } from "./type.helper.ts";
+
+const { isArray } = ArrayUtilsHelper;
+const { castAsType } = TypeHelper;
+
+/**
+ * Gets typed entries from an object, preserving key-value type relationships.
+ * This is a type-safe wrapper around Object.entries() that maintains proper typing.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param object - The object to get entries from
+ * @returns Array of [key, value] tuples with preserved typing
+ *
+ * @example
+ * ```typescript
+ * const obj = { name: "John", age: 30 };
+ * const entries = getObjectEntries(obj);
+ * // entries: [["name", "John"], ["age", 30]]
+ * ```
+ */
+const getObjectEntries = <TObject extends Record<string, unknown>>(
+  object: TObject,
+): {
+  [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
+}[KeyAsString<TObject>][] =>
+  castAsType<
+    {
+      [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
+    }[KeyAsString<TObject>][]
+  >(Object.entries(object));
+
+/**
+ * Gets typed keys from an object.
+ * This is a type-safe wrapper around Object.keys() that returns properly typed keys.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param object - The object to get keys from
+ * @returns Array of object keys with proper typing
+ *
+ * @example
+ * ```typescript
+ * const obj = { name: "John", age: 30 };
+ * const keys = getObjectKeys(obj);
+ * // keys: ("name" | "age")[]
+ * ```
+ */
+const getObjectKeys = <TObject extends Record<string, unknown>>(
+  object: TObject,
+): KeyAsString<TObject>[] =>
+  castAsType<KeyAsString<TObject>[]>(Object.keys(object));
+
+/**
+ * Gets typed values from an object.
+ * This is a type-safe wrapper around Object.values() that returns properly typed values.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param object - The object to get values from
+ * @returns Array of object values with proper typing
+ */
+const getObjectValues = <TObject extends Record<string, unknown>>(
+  initialObject: TObject,
+): ValueOf<TObject>[] =>
+  castAsType<ValueOf<TObject>[]>(Object.values(initialObject));
+
+/**
+ * Checks if the given value is an object and not an array.
+ *
+ * @param item - The value to check
+ * @returns True if the value is an object and not an array, false otherwise
+ */
+const isObject = (item: unknown): item is Record<string, unknown> => {
+  return typeof item === "object" && item != null && !isArray(item);
+};
+
+/**
+ * Checks if an object has a specific key.
+ *
+ * @template TObject - Object type extending Record<string, unknown>
+ * @param initialObject - The object to check
+ * @param key - The key to check for
+ * @returns True if the object has the key, false otherwise
+ */
+const hasObjectKey = <TObject extends object, TKey extends string>(
+  initialObject: TObject,
+  key: TKey,
+): initialObject is HasObjectKeyNarrow<TObject, TKey> => {
+  if (!isObject(initialObject)) {
+    return false;
+  }
+
+  return Reflect.has(initialObject, key);
+};
+
+/**
+ * Checks if the given value is a plain object.
+ *
+ * @param item - The value to check
+ * @returns True if the value is a plain object, false otherwise
+ */
+const isPlainObject = (item: unknown): item is Record<PropertyKey, unknown> => {
+  if (!isObject(item)) {
+    return false;
+  }
+
+  // Check if it's a plain object by examining its prototype
+  const proto = Reflect.getPrototypeOf(item);
+
+  // Plain objects have either null prototype (Object.create(null))
+  // or Object.prototype as their prototype
+  return proto === null || proto === Object.prototype;
+};
+
+export const ObjectUtilsHelper = {
+  getObjectEntries,
+  getObjectKeys,
+  getObjectValues,
+  hasObjectKey,
+  isObject,
+  isPlainObject,
+};

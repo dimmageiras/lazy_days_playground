@@ -1,0 +1,16 @@
+name: lazy_days_playground
+
+services:
+  gel_db:
+    image: geldata/gel:7.1
+    environment:
+      GEL_SERVER_ADMIN_UI: enabled
+      GEL_SERVER_PASSWORD: ${GEL_PASSWORD}
+      GEL_SERVER_SECURITY: ${GEL_SERVER_SECURITY}
+    ports:
+      - "${GEL_PORT}:5656"
+    volumes:
+      - gel_data:/var/lib/gel/data
+
+volumes:
+  gel_data: {}
