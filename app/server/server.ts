@@ -1,8 +1,8 @@
 import Fastify from "fastify";
 
-import { SERVER_SETTINGS } from "#shared/constants/server.constant.ts";
-
 import { BootstrapModule } from "./modules/bootstrap/bootstrap.module.ts";
+
+import { SERVER_SETTINGS } from "#shared/constants/server.constant.ts";
 
 const { PORT, SHUTDOWN_PATH, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
 

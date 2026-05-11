@@ -1,4 +1,4 @@
-import closeWithGrace from "close-with-grace";
+import type closeWithGrace from "close-with-grace";
 
 type CloseWithGraceReturn = ReturnType<typeof closeWithGrace>;
 
