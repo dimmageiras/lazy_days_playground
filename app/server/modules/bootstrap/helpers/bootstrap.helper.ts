@@ -1,6 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import { spawn } from "node:child_process";
 
+import { TimingHelper } from "#shared/helpers/timing.helper.ts";
+
+const { delay } = TimingHelper;
+
 const findPidOnPort = (port: number): Promise<number | null> =>
   new Promise((resolve) => {
     const ps = spawn("netstat", ["-ano"]);
@@ -43,9 +47,6 @@ const killPortOwner = async (
   }
 };
 
-const sleep = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
 const tryListen = async (
   app: FastifyInstance,
   port: number,
@@ -75,7 +76,7 @@ const tryListenUntil = async (
       return true;
     }
 
-    await sleep(100);
+    await delay(100);
   }
 
   return false;
