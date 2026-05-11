@@ -1,0 +1,23 @@
+{
+  "name": "lazy_days_playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --experimental-strip-types ./app/server/server.ts"
+  },
+  "imports": {
+    "#shared/*": "./app/shared/*"
+  },
+  "dependencies": {
+    "close-with-grace": "2.5.0",
+    "fastify": "5.8.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@11.0.9"
+}
