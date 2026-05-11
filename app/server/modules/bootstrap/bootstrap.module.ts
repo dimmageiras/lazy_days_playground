@@ -2,10 +2,12 @@ import closeWithGrace from "close-with-grace";
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
 import { SIGNALS_ERROR_MESSAGES } from "./constants/bootstrap.constant.ts";
-import { BootstrapModuleHelper } from "./helpers/bootstrap.helper.ts";
+import { KillHelper } from "./helpers/kill.helper.ts";
+import { ListenHelper } from "./helpers/listen.helper.ts";
 import type { CloseWithGraceReturn } from "./types/bootstrap.type.ts";
 
-const { killPortOwner, tryListen, tryListenUntil } = BootstrapModuleHelper;
+const { killPortOwner } = KillHelper;
+const { tryListen, tryListenUntil } = ListenHelper;
 
 interface BootstrapConfig {
   app: FastifyInstance;
