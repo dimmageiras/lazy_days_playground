@@ -8,14 +8,13 @@
       "ESNext.Iterator",
       "ESNext.Promise"
     ],
-    "module": "nodenext",
+    "module": "preserve",
     "target": "es2024",
 
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node16",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler",
     "noEmit": true,
 
     "paths": {

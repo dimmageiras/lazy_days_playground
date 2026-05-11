@@ -1,9 +1,9 @@
-import { BOOTSTRAP_TIMING, SIGNALS } from "./constants/bootstrap.constant.ts";
-import { BootstrapHelper } from "./helpers/bootstrap.helper.ts";
+import { BOOTSTRAP_TIMING, SIGNALS } from "./constants/bootstrap.constant";
+import { BootstrapHelper } from "./helpers/bootstrap.helper";
 import type {
   BootstrapConfig,
   BootstrapServerReturn,
-} from "./types/bootstrap.type.ts";
+} from "./types/bootstrap.type";
 
 const { COOPERATIVE_HANDOVER_TIMEOUT_MS, FORCE_SHUTDOWN_TIMEOUT_MS } =
   BOOTSTRAP_TIMING;

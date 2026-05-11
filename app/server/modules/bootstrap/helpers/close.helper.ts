@@ -4,8 +4,8 @@ import type { FastifyInstance } from "fastify";
 import {
   BOOTSTRAP_TIMING,
   SIGNALS_ERROR_MESSAGES,
-} from "../constants/bootstrap.constant.ts";
-import type { CloseWithGraceReturn } from "../types/bootstrap.type.ts";
+} from "../constants/bootstrap.constant";
+import type { CloseWithGraceReturn } from "../types/bootstrap.type";
 
 const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 

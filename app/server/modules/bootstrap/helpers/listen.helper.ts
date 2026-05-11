@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
-import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant.ts";
+import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant";
 
-import { TimingHelper } from "#shared/helpers/timing.helper.ts";
+import { TimingHelper } from "#shared/helpers/timing.helper";
 
 const { LISTEN_POLL_INTERVAL_MS } = BOOTSTRAP_TIMING;
 

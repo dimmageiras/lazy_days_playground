@@ -1,5 +1,5 @@
-import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant.ts";
-import type { ShutdownRequestConfig } from "../types/bootstrap.type.ts";
+import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant";
+import type { ShutdownRequestConfig } from "../types/bootstrap.type";
 
 const { SHUTDOWN_REQUEST_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 

@@ -3,7 +3,7 @@ import type { FastifyPluginAsync } from "fastify";
 import type {
   ShutdownRouteConfig,
   ShutdownRouteOptions,
-} from "../types/bootstrap.type.ts";
+} from "../types/bootstrap.type";
 
 const createShutdownRoute =
   ({
