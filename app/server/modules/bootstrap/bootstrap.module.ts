@@ -1,39 +1,25 @@
 import closeWithGrace from "close-with-grace";
-import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
 import { SIGNALS_ERROR_MESSAGES } from "./constants/bootstrap.constant.ts";
 import { KillHelper } from "./helpers/kill.helper.ts";
 import { ListenHelper } from "./helpers/listen.helper.ts";
-import type { CloseWithGraceReturn } from "./types/bootstrap.type.ts";
+import { ShutdownRoute } from "./routes/shutdown.route.ts";
+import type {
+  BootstrapConfig,
+  BootstrapServerReturn,
+  CloseWithGraceReturn,
+} from "./types/bootstrap.type.ts";
 
 const { killPortOwner } = KillHelper;
 const { tryListen, tryListenUntil } = ListenHelper;
-
-interface BootstrapConfig {
-  app: FastifyInstance;
-  port: number;
-  shutdownPath: string;
-  shutdownToken: string;
-}
-
-interface ShutdownRouteOptions {
-  closeListeners: CloseWithGraceReturn;
-}
-
-interface Bootstrap {
-  shutdownRouteWithListeners: readonly [
-    FastifyPluginAsync<ShutdownRouteOptions>,
-    ShutdownRouteOptions,
-  ];
-  claimPort: () => Promise<void>;
-}
+const { createShutdownRoute } = ShutdownRoute;
 
 const bootstrapServer = ({
   app,
   port,
   shutdownPath,
   shutdownToken,
-}: BootstrapConfig): Bootstrap => {
+}: BootstrapConfig): BootstrapServerReturn => {
   const setupCloseListeners = (): CloseWithGraceReturn =>
     closeWithGrace(
       { delay: 10_000 },
@@ -55,26 +41,10 @@ const bootstrapServer = ({
       },
     );
 
-  const shutdownRoute: FastifyPluginAsync<ShutdownRouteOptions> = async (
-    app,
-    { closeListeners },
-  ) => {
-    app.post(shutdownPath, async (request, reply) => {
-      if (request.ip !== "127.0.0.1" && request.ip !== "::1") {
-        return reply.code(403).send({ ok: false });
-      }
-
-      if (request.headers["x-shutdown-token"] !== shutdownToken) {
-        return reply.code(401).send({ ok: false });
-      }
-
-      reply.raw.on("finish", () => {
-        void closeListeners.close();
-      });
-
-      return reply.code(202).send({ ok: true });
-    });
-  };
+  const shutdownRoute = createShutdownRoute({
+    path: shutdownPath,
+    token: shutdownToken,
+  });
 
   const requestCooperativeShutdown = async (): Promise<boolean> => {
     try {

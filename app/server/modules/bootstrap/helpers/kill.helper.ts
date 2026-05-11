@@ -1,3 +1,5 @@
+import type { Signals } from "close-with-grace";
+import type { Buffer } from "node:buffer";
 import { spawn } from "node:child_process";
 
 const findPidOnPort = (port: number): Promise<number | null> =>
@@ -25,7 +27,7 @@ const findPidOnPort = (port: number): Promise<number | null> =>
 
 const killPortOwner = async (
   port: number,
-  signal: NodeJS.Signals,
+  signal: Signals,
 ): Promise<boolean> => {
   const pid = await findPidOnPort(port);
 
