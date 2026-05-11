@@ -1,12 +1,12 @@
 import closeWithGrace from "close-with-grace";
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
-import { SIGNALS_ERROR_MESSAGES } from "./constants/noname.constant.ts";
-import { NoNameModuleHelper } from "./helpers/noname.helper.ts";
+import type { CloseWithGraceReturn } from "./types/bootstrap.type.ts";
 
-const { killPortOwner, tryListen, tryListenUntil } = NoNameModuleHelper;
+import { SIGNALS_ERROR_MESSAGES } from "./constants/bootstrap.constant.ts";
+import { BootstrapModuleHelper } from "./helpers/bootstrap.helper.ts";
 
-type CloseListeners = ReturnType<typeof closeWithGrace>;
+const { killPortOwner, tryListen, tryListenUntil } = BootstrapModuleHelper;
 
 interface ServerLifecycleConfig {
   app: FastifyInstance;
@@ -16,7 +16,7 @@ interface ServerLifecycleConfig {
 }
 
 interface ShutdownRouteOptions {
-  closeListeners: CloseListeners;
+  closeListeners: CloseWithGraceReturn;
 }
 
 interface ServerLifecycle {
@@ -35,7 +35,7 @@ const createServerLifecycle = ({
   shutdownPath,
   shutdownToken,
 }: ServerLifecycleConfig): ServerLifecycle => {
-  const setupCloseListeners = (app: FastifyInstance): CloseListeners =>
+  const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn =>
     closeWithGrace(
       { delay: 10_000 },
       async ({ signal, manual, err: error }) => {
@@ -128,4 +128,4 @@ const createServerLifecycle = ({
   return { shutdownRouteWithListeners, claimPort };
 };
 
-export const NoNameModule = { createServerLifecycle };
+export const BootstrapModule = { createServerLifecycle };

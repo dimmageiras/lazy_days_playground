@@ -2,11 +2,11 @@ import Fastify from "fastify";
 
 import { SERVER_SETTINGS } from "#shared/constants/server.constant.ts";
 
-import { NoNameModule } from "./noname/noname.module.ts";
+import { BootstrapModule } from "./modules/bootstrap/bootstrap.module.ts";
 
 const { PORT, SHUTDOWN_PATH, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
 
-const { createServerLifecycle } = NoNameModule;
+const { createServerLifecycle } = BootstrapModule;
 
 const app = Fastify({ logger: true });
 

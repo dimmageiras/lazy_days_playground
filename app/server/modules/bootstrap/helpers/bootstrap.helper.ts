@@ -81,7 +81,7 @@ const tryListenUntil = async (
   return false;
 };
 
-export const NoNameModuleHelper = {
+export const BootstrapModuleHelper = {
   killPortOwner,
   tryListen,
   tryListenUntil,
