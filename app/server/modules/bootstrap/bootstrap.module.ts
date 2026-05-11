@@ -29,7 +29,7 @@ interface ServerLifecycle {
   claimPort: () => Promise<void>;
 }
 
-const createServerLifecycle = ({
+const bootstrapServer = ({
   app,
   port,
   shutdownPath,
@@ -128,4 +128,4 @@ const createServerLifecycle = ({
   return { shutdownRouteWithListeners, claimPort };
 };
 
-export const BootstrapModule = { createServerLifecycle };
+export const BootstrapModule = { bootstrapServer };

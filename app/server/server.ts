@@ -6,11 +6,11 @@ import { BootstrapModule } from "./modules/bootstrap/bootstrap.module.ts";
 
 const { PORT, SHUTDOWN_PATH, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
 
-const { createServerLifecycle } = BootstrapModule;
+const { bootstrapServer } = BootstrapModule;
 
 const app = Fastify({ logger: true });
 
-const { shutdownRouteWithListeners, claimPort } = createServerLifecycle({
+const { shutdownRouteWithListeners, claimPort } = bootstrapServer({
   app,
   port: PORT,
   shutdownPath: SHUTDOWN_PATH,
