@@ -23,6 +23,10 @@ interface ShutdownRouteConfig {
   token: string;
 }
 
+interface ShutdownRequestConfig extends ShutdownRouteConfig {
+  port: number;
+}
+
 interface ShutdownRouteOptions {
   closeListeners: CloseWithGraceReturn;
 }
@@ -31,6 +35,7 @@ export type {
   BootstrapConfig,
   BootstrapServerReturn,
   CloseWithGraceReturn,
+  ShutdownRequestConfig,
   ShutdownRouteConfig,
   ShutdownRouteOptions,
 };

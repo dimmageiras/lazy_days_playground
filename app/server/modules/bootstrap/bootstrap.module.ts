@@ -1,17 +1,17 @@
-import closeWithGrace from "close-with-grace";
-
-import { SIGNALS_ERROR_MESSAGES } from "./constants/bootstrap.constant.ts";
+import { CloseHelper } from "./helpers/close.helper.ts";
 import { KillHelper } from "./helpers/kill.helper.ts";
 import { ListenHelper } from "./helpers/listen.helper.ts";
+import { ShutdownRequestHelper } from "./helpers/shutdown-request.helper.ts";
 import { ShutdownRoute } from "./routes/shutdown.route.ts";
 import type {
   BootstrapConfig,
   BootstrapServerReturn,
-  CloseWithGraceReturn,
 } from "./types/bootstrap.type.ts";
 
+const { setupCloseListeners } = CloseHelper;
 const { killPortOwner } = KillHelper;
 const { tryListen, tryListenUntil } = ListenHelper;
+const { requestCooperativeShutdown } = ShutdownRequestHelper;
 const { createShutdownRoute } = ShutdownRoute;
 
 const bootstrapServer = ({
@@ -20,45 +20,12 @@ const bootstrapServer = ({
   shutdownPath,
   shutdownToken,
 }: BootstrapConfig): BootstrapServerReturn => {
-  const setupCloseListeners = (): CloseWithGraceReturn =>
-    closeWithGrace(
-      { delay: 10_000 },
-      async ({ signal, manual, err: error }) => {
-        if (error) {
-          app.log.error({ error }, "server closing with error");
-        } else if (manual) {
-          app.log.info(
-            "Another instance started (manual). Shutting down gracefully.",
-          );
-        } else {
-          app.log.info(
-            (signal && SIGNALS_ERROR_MESSAGES.get(signal)) ||
-              `Received ${signal} signal. Shutting down gracefully.`,
-          );
-        }
-
-        await app.close();
-      },
-    );
+  const closeListeners = setupCloseListeners(app);
 
   const shutdownRoute = createShutdownRoute({
     path: shutdownPath,
     token: shutdownToken,
   });
-
-  const requestCooperativeShutdown = async (): Promise<boolean> => {
-    try {
-      const response = await fetch(`http://127.0.0.1:${port}${shutdownPath}`, {
-        method: "POST",
-        headers: { "x-shutdown-token": shutdownToken },
-        signal: AbortSignal.timeout(2_000),
-      });
-
-      return response.ok;
-    } catch {
-      return false;
-    }
-  };
 
   const claimPort = async (): Promise<void> => {
     if (await tryListen(app, port)) {
@@ -67,7 +34,13 @@ const bootstrapServer = ({
 
     app.log.warn(`Port ${port} in use — requesting cooperative shutdown.`);
 
-    if (await requestCooperativeShutdown()) {
+    if (
+      await requestCooperativeShutdown({
+        path: shutdownPath,
+        port,
+        token: shutdownToken,
+      })
+    ) {
       if (await tryListenUntil(app, port, 5_000)) {
         return;
       }
@@ -88,13 +61,10 @@ const bootstrapServer = ({
     process.exit(1);
   };
 
-  const closeListeners = setupCloseListeners();
-  const shutdownRouteWithListeners = [
-    shutdownRoute,
-    { closeListeners },
-  ] as const;
-
-  return { claimPort, shutdownRouteWithListeners };
+  return {
+    claimPort,
+    shutdownRouteWithListeners: [shutdownRoute, { closeListeners }] as const,
+  };
 };
 
 export const BootstrapModule = { bootstrapServer };
