@@ -1,12 +1,17 @@
 import closeWithGrace from "close-with-grace";
 import type { FastifyInstance } from "fastify";
 
-import { SIGNALS_ERROR_MESSAGES } from "../constants/bootstrap.constant.ts";
+import {
+  BOOTSTRAP_TIMING,
+  SIGNALS_ERROR_MESSAGES,
+} from "../constants/bootstrap.constant.ts";
 import type { CloseWithGraceReturn } from "../types/bootstrap.type.ts";
+
+const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 
 const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn =>
   closeWithGrace(
-    { delay: 10_000 },
+    { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS },
     async ({ signal, manual, err: error }) => {
       if (error) {
         app.log.error({ error }, "server closing with error");

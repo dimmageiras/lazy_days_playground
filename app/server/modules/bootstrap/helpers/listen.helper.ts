@@ -1,6 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
+import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant.ts";
+
 import { TimingHelper } from "#shared/helpers/timing.helper.ts";
+
+const { LISTEN_POLL_INTERVAL_MS } = BOOTSTRAP_TIMING;
 
 const { delay } = TimingHelper;
 
@@ -33,7 +37,7 @@ const tryListenUntil = async (
       return true;
     }
 
-    await delay(100);
+    await delay(LISTEN_POLL_INTERVAL_MS);
   }
 
   return false;

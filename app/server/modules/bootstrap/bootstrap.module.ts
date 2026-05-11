@@ -1,3 +1,4 @@
+import { BOOTSTRAP_TIMING, SIGNALS } from "./constants/bootstrap.constant.ts";
 import { CloseHelper } from "./helpers/close.helper.ts";
 import { KillHelper } from "./helpers/kill.helper.ts";
 import { ListenHelper } from "./helpers/listen.helper.ts";
@@ -7,6 +8,10 @@ import type {
   BootstrapConfig,
   BootstrapServerReturn,
 } from "./types/bootstrap.type.ts";
+
+const { COOPERATIVE_HANDOVER_TIMEOUT_MS, FORCE_SHUTDOWN_TIMEOUT_MS } =
+  BOOTSTRAP_TIMING;
+const { SIGTERM } = SIGNALS;
 
 const { setupCloseListeners } = CloseHelper;
 const { killPortOwner } = KillHelper;
@@ -41,19 +46,19 @@ const bootstrapServer = ({
         token: shutdownToken,
       })
     ) {
-      if (await tryListenUntil(app, port, 5_000)) {
+      if (await tryListenUntil(app, port, COOPERATIVE_HANDOVER_TIMEOUT_MS)) {
         return;
       }
     }
 
-    app.log.warn(`Cooperative shutdown failed — sending SIGTERM.`);
+    app.log.warn(`Cooperative shutdown failed — sending ${SIGTERM}.`);
 
-    if (!(await killPortOwner(port, "SIGTERM"))) {
+    if (!(await killPortOwner(port, SIGTERM))) {
       app.log.error(`Failed to free port ${port} — aborting.`);
       process.exit(1);
     }
 
-    if (await tryListenUntil(app, port, 3_000)) {
+    if (await tryListenUntil(app, port, FORCE_SHUTDOWN_TIMEOUT_MS)) {
       return;
     }
 

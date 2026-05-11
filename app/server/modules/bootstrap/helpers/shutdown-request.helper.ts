@@ -1,4 +1,7 @@
+import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant.ts";
 import type { ShutdownRequestConfig } from "../types/bootstrap.type.ts";
+
+const { SHUTDOWN_REQUEST_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 
 const requestCooperativeShutdown = async ({
   path,
@@ -9,7 +12,7 @@ const requestCooperativeShutdown = async ({
     const response = await fetch(`http://127.0.0.1:${port}${path}`, {
       method: "POST",
       headers: { "x-shutdown-token": token },
-      signal: AbortSignal.timeout(2_000),
+      signal: AbortSignal.timeout(SHUTDOWN_REQUEST_TIMEOUT_MS),
     });
 
     return response.ok;
