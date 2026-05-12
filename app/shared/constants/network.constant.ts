@@ -2,46 +2,36 @@ const LOOPBACK_HOSTS = new Set([
   "127.0.0.1",
   "::1",
   // Dual-stack hosts surface IPv4 loopback connections as v4-mapped IPv6
-  // when the server binds to "::". Covers the case where BIND_ALL ever changes
-  // from "0.0.0.0" to "::" without breaking the cooperative handoff.
+  // when the server binds to "::". Covers the case where the bind host ever
+  // changes from "0.0.0.0" to "::" without breaking the cooperative handoff.
   "::ffff:127.0.0.1",
 ] as const);
 
 const HOSTS: {
-  BIND_ALL: string;
+  BIND_ALL_IPV4: string;
   LOOPBACK_HOSTS: ReadonlySet<
-    typeof LOOPBACK_HOSTS extends Set<infer U> ? U | (string & {}) : never
+    typeof LOOPBACK_HOSTS extends Set<infer Value>
+      ? Value | (string & {})
+      : never
   >;
 } = Object.freeze({
-  BIND_ALL: "0.0.0.0",
+  BIND_ALL_IPV4: "0.0.0.0",
   LOOPBACK_HOSTS,
 } as const);
 
-/*
-  HTTP status codes used across the application
-*/
 const HTTP_STATUS = Object.freeze({
-  /** 200 - OK */
   OK: 200,
-  /** 202 - Accepted */
   ACCEPTED: 202,
-  /** 204 - No Content */
   NO_CONTENT: 204,
-  /** 400 - Bad Request */
   BAD_REQUEST: 400,
-  /** 401 - Authentication Required (no valid token) */
+  /** No valid credentials. */
   UNAUTHORIZED: 401,
-  /** 403 - Forbidden (valid token but insufficient permissions) */
+  /** Authenticated but not permitted. */
   FORBIDDEN: 403,
-  /** 404 - Not Found */
   NOT_FOUND: 404,
-  /** 419 - CSRF Token Mismatch */
   CSRF_TOKEN_MISMATCH: 419,
-  /** 429 - Many Requests Error (rate limit exceeded) */
-  MANY_REQUESTS_ERROR: 429,
-  /** 500 - Internal Server Error */
+  TOO_MANY_REQUESTS: 429,
   INTERNAL_SERVER_ERROR: 500,
-  /** 503 - Service Unavailable */
   SERVICE_UNAVAILABLE: 503,
 } as const);
 
