@@ -10,11 +10,13 @@ const { tryListen, tryListenUntil } = ListenHelper;
 const { requestCooperativeShutdown } = ShutdownRequestHelper;
 const { createShutdownRoute } = ShutdownRoute;
 
-export const BootstrapHelper = {
+const BootstrapHelper = Object.freeze({
   createShutdownRoute,
   killPortOwner,
   requestCooperativeShutdown,
   setupCloseListeners,
   tryListen,
   tryListenUntil,
-};
+} as const);
+
+export { BootstrapHelper };

@@ -30,6 +30,8 @@ const requestCooperativeShutdown = async ({
   }
 };
 
-export const ShutdownRequestHelper = {
+const ShutdownRequestHelper = Object.freeze({
   requestCooperativeShutdown,
-};
+} as const);
+
+export { ShutdownRequestHelper };

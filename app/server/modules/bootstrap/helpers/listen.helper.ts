@@ -45,7 +45,9 @@ const tryListenUntil = async (
   return false;
 };
 
-export const ListenHelper = {
+const ListenHelper = Object.freeze({
   tryListen,
   tryListenUntil,
-};
+} as const);
+
+export { ListenHelper };

@@ -44,6 +44,8 @@ const killPortOwner = async (
   }
 };
 
-export const KillHelper = {
+const KillHelper = Object.freeze({
   killPortOwner,
-};
+} as const);
+
+export { KillHelper };

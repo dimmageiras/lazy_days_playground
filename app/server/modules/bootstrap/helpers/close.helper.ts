@@ -30,6 +30,8 @@ const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn =>
     },
   );
 
-export const CloseHelper = {
+const CloseHelper = Object.freeze({
   setupCloseListeners,
-};
+} as const);
+
+export { CloseHelper };
