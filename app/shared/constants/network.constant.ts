@@ -1,3 +1,8 @@
+const HOSTS = Object.freeze({
+  BIND_ALL: "0.0.0.0",
+  LOOPBACK_IPV6: "::1",
+} as const);
+
 /*
   HTTP status codes used across the application
 */
@@ -24,11 +29,6 @@ const HTTP_STATUS = Object.freeze({
   INTERNAL_SERVER_ERROR: 500,
   /** 503 - Service Unavailable */
   SERVICE_UNAVAILABLE: 503,
-} as const);
-
-const HOSTS = Object.freeze({
-  BIND_ALL: "0.0.0.0",
-  LOOPBACK_IPV6: "::1",
 } as const);
 
 const METHODS = Object.freeze({

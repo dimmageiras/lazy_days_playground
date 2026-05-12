@@ -1,4 +1,8 @@
 import type { FastifyPluginAsync } from "fastify";
+import { Buffer } from "node:buffer";
+import { timingSafeEqual } from "node:crypto";
+
+import { HOSTS, HTTP_STATUS } from "@shared/constants/network.constant";
 
 import { INTERNAL_PATHS } from "../../../constants/paths.constant";
 import type {
@@ -6,11 +10,23 @@ import type {
   ShutdownRouteOptions,
 } from "../types/bootstrap.type";
 
-import { HOSTS, HTTP_STATUS } from "@shared/constants/network.constant";
-
-const { ACCEPTED, FORBIDDEN, UNAUTHORIZED } = HTTP_STATUS;
 const { LOOPBACK_IPV6 } = HOSTS;
+const { ACCEPTED, FORBIDDEN, UNAUTHORIZED } = HTTP_STATUS;
 const { SHUTDOWN } = INTERNAL_PATHS;
+
+const isTokenValid = (provided: unknown, expected: string): boolean => {
+  if (typeof provided !== "string") {
+    return false;
+  }
+
+  const providedBuffer = Buffer.from(provided);
+  const expectedBuffer = Buffer.from(expected);
+
+  return (
+    providedBuffer.length === expectedBuffer.length &&
+    timingSafeEqual(providedBuffer, expectedBuffer)
+  );
+};
 
 const createShutdownRoute =
   ({
@@ -23,7 +39,7 @@ const createShutdownRoute =
         return response.code(FORBIDDEN).send({ ok: false });
       }
 
-      if (request.headers["x-shutdown-token"] !== token) {
+      if (!isTokenValid(request.headers["x-shutdown-token"], token)) {
         return response.code(UNAUTHORIZED).send({ ok: false });
       }
 

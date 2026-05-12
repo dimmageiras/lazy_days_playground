@@ -5,9 +5,9 @@ import type { ShutdownRequestConfig } from "../types/bootstrap.type";
 import { METHODS, PROTOCOLS } from "@shared/constants/network.constant";
 
 const { SHUTDOWN_REQUEST_TIMEOUT_MS } = BOOTSTRAP_TIMING;
+const { SHUTDOWN } = INTERNAL_PATHS;
 const { POST } = METHODS;
 const { HTTP } = PROTOCOLS;
-const { SHUTDOWN } = INTERNAL_PATHS;
 
 const requestCooperativeShutdown = async ({
   hostLoopback,
