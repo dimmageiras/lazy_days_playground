@@ -5,9 +5,6 @@
   "scripts": {
     "dev": "vite-node ./app/server/server.ts"
   },
-  "imports": {
-    "#shared/*": "./app/shared/*"
-  },
   "dependencies": {
     "close-with-grace": "2.5.0",
     "fastify": "5.8.5"

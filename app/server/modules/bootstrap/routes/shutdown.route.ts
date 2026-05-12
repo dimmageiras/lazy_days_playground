@@ -6,7 +6,7 @@ import type {
   ShutdownRouteOptions,
 } from "../types/bootstrap.type";
 
-import { HOSTS, HTTP_STATUS } from "#shared/constants/network.constant.js";
+import { HOSTS, HTTP_STATUS } from "@shared/constants/network.constant";
 
 const { ACCEPTED, FORBIDDEN, UNAUTHORIZED } = HTTP_STATUS;
 const { LOOPBACK_IPV6 } = HOSTS;

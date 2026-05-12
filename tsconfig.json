@@ -18,7 +18,7 @@
     "noEmit": true,
 
     "paths": {
-      "#shared/*": ["./app/shared/*"]
+      "@shared/*": ["./app/shared/*"]
     },
 
     "types": ["node"]

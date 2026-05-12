@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 
 import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant";
 
-import { HOSTS } from "#shared/constants/network.constant.js";
-import { TimingHelper } from "#shared/helpers/timing.helper";
+import { HOSTS } from "@shared/constants/network.constant";
+import { TimingHelper } from "@shared/helpers/timing.helper";
 
 const { LISTEN_POLL_INTERVAL_MS } = BOOTSTRAP_TIMING;
 const { BIND_ALL } = HOSTS;

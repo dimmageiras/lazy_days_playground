@@ -1,6 +1,6 @@
 import type { Signals } from "close-with-grace";
 
-import { TIMING } from "#shared/constants/timing.constant";
+import { TIMING } from "@shared/constants/timing.constant";
 
 const BOOTSTRAP_TIMING = Object.freeze({
   COOPERATIVE_HANDOVER_TIMEOUT_MS: TIMING.SECONDS_FIVE_IN_MS,

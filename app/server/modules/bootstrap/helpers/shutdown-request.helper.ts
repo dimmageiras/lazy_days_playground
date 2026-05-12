@@ -2,7 +2,7 @@ import { INTERNAL_PATHS } from "../../../constants/paths.constant";
 import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant";
 import type { ShutdownRequestConfig } from "../types/bootstrap.type";
 
-import { METHODS, PROTOCOLS } from "#shared/constants/network.constant.js";
+import { METHODS, PROTOCOLS } from "@shared/constants/network.constant";
 
 const { SHUTDOWN_REQUEST_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 const { POST } = METHODS;
