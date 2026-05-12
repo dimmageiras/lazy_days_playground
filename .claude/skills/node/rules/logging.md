@@ -145,7 +145,7 @@ const logger = pino({
 });
 
 // Sensitive values are replaced with [Redacted]
-logger.info({ password: "secret123" }, "User login");
+logger.info({ password: "not_a_real_password123" }, "User login");
 // Output: {"password":"[Redacted]","msg":"User login"...}
 ```
 
