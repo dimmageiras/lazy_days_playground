@@ -1,4 +1,11 @@
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "::1"] as const);
+const LOOPBACK_HOSTS = new Set([
+  "127.0.0.1",
+  "::1",
+  // Dual-stack hosts surface IPv4 loopback connections as v4-mapped IPv6
+  // when the server binds to "::". Covers the case where BIND_ALL ever changes
+  // from "0.0.0.0" to "::" without breaking the cooperative handoff.
+  "::ffff:127.0.0.1",
+] as const);
 
 const HOSTS: {
   BIND_ALL: string;

@@ -22,7 +22,7 @@ const app = Fastify({
 
 const bootstrapConfigOptions = {
   port: PORT,
-  shutdownToken: SHUTDOWN_TOKEN,
+  token: SHUTDOWN_TOKEN,
 };
 
 const { claimPort, shutdownRouteWithListeners } = bootstrapServer({

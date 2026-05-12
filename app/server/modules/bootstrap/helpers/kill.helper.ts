@@ -2,20 +2,28 @@ import type { Signals } from "close-with-grace";
 import type { Buffer } from "node:buffer";
 import { spawn } from "node:child_process";
 
+// `netstat -ano` and the trailing-PID column layout parsed below are Windows-specific.
+// The cooperative HTTP shutdown route is the cross-platform graceful path; this
+// force-kill fallback only works on Windows. POSIX hosts get a fast null return.
 const findPidOnPort = (port: number): Promise<number | null> =>
   new Promise((resolve) => {
-    const process = spawn("netstat", ["-ano"]);
+    if (process.platform !== "win32") {
+      resolve(null);
+      return;
+    }
+
+    const netstat = spawn("netstat", ["-ano"]);
     let stdout = "";
 
-    process.stdout.on("data", (data: Buffer) => {
+    netstat.stdout.on("data", (data: Buffer) => {
       stdout += data.toString();
     });
 
-    process.on("error", () => {
+    netstat.on("error", () => {
       resolve(null);
     });
 
-    process.on("close", () => {
+    netstat.on("close", () => {
       const line = stdout
         .split("\n")
         .find((row) => row.includes(`:${port} `) && row.includes("LISTENING"));

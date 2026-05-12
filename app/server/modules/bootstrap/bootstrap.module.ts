@@ -20,45 +20,46 @@ const {
 
 const bootstrapServer = ({
   app,
-  options: { port, shutdownToken },
+  options: { port, token },
 }: BootstrapConfig): BootstrapServerReturn => {
   const closeListeners = setupCloseListeners(app);
 
-  const shutdownRoute = createShutdownRoute({
-    token: shutdownToken,
-  });
+  const shutdownRoute = createShutdownRoute({ token });
 
   const claimPort = async (): Promise<void> => {
-    if (await tryListen(app, port)) {
-      return;
-    }
-
-    app.log.warn(`Port ${port} in use — requesting cooperative shutdown.`);
-
-    if (
-      await requestCooperativeShutdown({
-        port,
-        token: shutdownToken,
-      })
-    ) {
-      if (await tryListenUntil(app, port, COOPERATIVE_HANDOVER_TIMEOUT_MS)) {
+    try {
+      if (await tryListen(app, port)) {
         return;
       }
-    }
 
-    app.log.warn(`Cooperative shutdown failed — sending ${SIGTERM}.`);
+      app.log.warn(`Port ${port} in use — requesting cooperative shutdown.`);
 
-    if (!(await killPortOwner(port, SIGTERM))) {
-      app.log.error(`Failed to free port ${port} — aborting.`);
+      if (await requestCooperativeShutdown({ port, token })) {
+        if (await tryListenUntil(app, port, COOPERATIVE_HANDOVER_TIMEOUT_MS)) {
+          return;
+        }
+      }
+
+      app.log.warn(`Cooperative shutdown failed — sending ${SIGTERM}.`);
+
+      if (!(await killPortOwner(port, SIGTERM))) {
+        app.log.error(`Failed to free port ${port} — aborting.`);
+        process.exit(1);
+      }
+
+      if (await tryListenUntil(app, port, FORCE_SHUTDOWN_TIMEOUT_MS)) {
+        return;
+      }
+
+      app.log.error(`Port ${port} still in use — aborting.`);
+      process.exit(1);
+    } catch (error) {
+      app.log.error(
+        { err: error },
+        `Listen failed on port ${port} — aborting.`,
+      );
       process.exit(1);
     }
-
-    if (await tryListenUntil(app, port, FORCE_SHUTDOWN_TIMEOUT_MS)) {
-      return;
-    }
-
-    app.log.error(`Port ${port} still in use — aborting.`);
-    process.exit(1);
   };
 
   return {

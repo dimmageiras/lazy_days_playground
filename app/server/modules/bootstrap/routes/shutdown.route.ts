@@ -40,6 +40,10 @@ const createShutdownRoute =
         return response.code(UNAUTHORIZED).send({ ok: false });
       }
 
+      // Per-reply hook on the underlying Node ServerResponse: fires only after
+      // THIS response's bytes have flushed, so the caller sees the 202 before
+      // app.close() takes the listener down. Fastify's onResponse hook is
+      // app-wide and not the right granularity here.
       response.raw.on("finish", () => {
         void closeListeners.close();
       });

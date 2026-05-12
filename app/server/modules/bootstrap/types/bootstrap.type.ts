@@ -3,7 +3,7 @@ import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
 interface BootstrapConfigOptions {
   port: number;
-  shutdownToken: string;
+  token: string;
 }
 
 interface BootstrapConfig {

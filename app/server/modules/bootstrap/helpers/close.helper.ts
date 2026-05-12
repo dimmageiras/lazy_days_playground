@@ -11,10 +11,10 @@ const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 
 const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn =>
   closeWithGrace(
-    { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS },
+    { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS, logger: app.log },
     async ({ signal, manual, err: error }) => {
       if (error) {
-        app.log.error({ error }, "server closing with error");
+        app.log.error({ err: error }, "server closing with error");
       } else if (manual) {
         app.log.info(
           "Another instance started (manual). Shutting down gracefully.",
