@@ -11,9 +11,10 @@ import type {
 } from "../types/bootstrap.type";
 
 const { LOOPBACK_HOSTS } = HOSTS;
-const { ACCEPTED, FORBIDDEN, UNAUTHORIZED } = HTTP_STATUS;
+const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 const { SHUTDOWN } = INTERNAL_PATHS;
 
+/** Timing-safe equality check between a request header value and the expected secret; rejects non-string input. */
 const isTokenValid = (provided: unknown, expected: string): boolean => {
   if (typeof provided !== "string") {
     return false;
@@ -28,15 +29,18 @@ const isTokenValid = (provided: unknown, expected: string): boolean => {
   );
 };
 
+/** Builds the cooperative-shutdown Fastify plugin; legitimate callers trigger `closeListeners.close()` after the 202 has flushed. */
 const createShutdownRoute =
   ({ token }: ShutdownRouteConfig): FastifyPluginAsync<ShutdownRouteOptions> =>
   async (app, { closeListeners }) => {
     app.post(SHUTDOWN, async (request, response) => {
-      if (!LOOPBACK_HOSTS.has(request.ip)) {
-        return response.code(FORBIDDEN).send({ ok: false });
-      }
-
-      if (!isTokenValid(request.headers["x-shutdown-token"], token)) {
+      // Single rejection path: a loopback-peer can't tell IP-fail from token-fail
+      // through the response. The IP check fires first and short-circuits;
+      // legitimate callers (correct IP + correct token) flow through to 202.
+      if (
+        !LOOPBACK_HOSTS.has(request.ip) ||
+        !isTokenValid(request.headers["x-shutdown-token"], token)
+      ) {
         return response.code(UNAUTHORIZED).send({ ok: false });
       }
 
@@ -52,4 +56,8 @@ const createShutdownRoute =
     });
   };
 
-export const ShutdownRoute = { createShutdownRoute };
+const ShutdownRoute = Object.freeze({
+  createShutdownRoute,
+} as const);
+
+export { ShutdownRoute };

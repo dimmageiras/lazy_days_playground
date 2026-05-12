@@ -1,5 +1,6 @@
 import { BOOTSTRAP_TIMING, SIGNALS } from "./constants/bootstrap.constant";
 import { BootstrapHelper } from "./helpers/bootstrap.helper";
+import { ShutdownRoute } from "./routes/shutdown.route";
 import type {
   BootstrapConfig,
   BootstrapServerReturn,
@@ -10,13 +11,13 @@ const { COOPERATIVE_HANDOVER_TIMEOUT_MS, FORCE_SHUTDOWN_TIMEOUT_MS } =
 const { SIGTERM } = SIGNALS;
 
 const {
-  createShutdownRoute,
   killPortOwner,
   requestCooperativeShutdown,
   setupCloseListeners,
   tryListen,
   tryListenUntil,
 } = BootstrapHelper;
+const { createShutdownRoute } = ShutdownRoute;
 
 const bootstrapServer = ({
   app,

@@ -28,7 +28,7 @@ interface ShutdownRequestConfig extends ShutdownRouteConfig {
 }
 
 interface ShutdownRouteOptions {
-  closeListeners: CloseWithGraceReturn;
+  readonly closeListeners: CloseWithGraceReturn;
 }
 
 export type {

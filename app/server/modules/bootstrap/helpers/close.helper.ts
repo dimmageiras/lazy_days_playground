@@ -22,8 +22,9 @@ const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn =>
         );
       } else {
         app.log.info(
-          (signal && SIGNALS_ERROR_MESSAGES.get(signal)) ||
-            `Received ${signal} signal. Shutting down gracefully.`,
+          signal
+            ? Reflect.get(SIGNALS_ERROR_MESSAGES, signal)
+            : "Shutdown signal received. Shutting down gracefully.",
         );
       }
 

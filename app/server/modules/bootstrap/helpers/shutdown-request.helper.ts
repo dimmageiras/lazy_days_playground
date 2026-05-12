@@ -17,12 +17,10 @@ const requestCooperativeShutdown = async ({
   token,
 }: ShutdownRequestConfig): Promise<boolean> => {
   try {
-    const path =
-      `${HTTP}://${LOOPBACK_HOST_V4}:${Number(port)}${SHUTDOWN}` as const;
-    const url = new URL(path);
+    const url = `${HTTP}://${LOOPBACK_HOST_V4}:${port}${SHUTDOWN}` as const;
 
     await axios.post(
-      url.href,
+      url,
       // Empty JSON body keeps axios on Content-Type: application/json, which
       // Fastify parses by default. axios's default x-www-form-urlencoded for
       // bodyless POSTs gets rejected by Fastify with 415.
