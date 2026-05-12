@@ -19,6 +19,17 @@ interface BootstrapServerReturn {
 
 type CloseWithGraceReturn = ReturnType<typeof closeWithGrace>;
 
+type PidLookupResult =
+  | { found: true; pid: number }
+  | { found: false; reason: "unsupported-platform" | "no-pid" };
+
+type KillPortOwnerResult =
+  | { ok: true }
+  | {
+      ok: false;
+      reason: "unsupported-platform" | "no-pid" | "kill-threw";
+    };
+
 interface ShutdownRouteConfig {
   token: string;
 }
@@ -35,6 +46,8 @@ export type {
   BootstrapConfig,
   BootstrapServerReturn,
   CloseWithGraceReturn,
+  KillPortOwnerResult,
+  PidLookupResult,
   ShutdownRequestConfig,
   ShutdownRouteConfig,
   ShutdownRouteOptions,

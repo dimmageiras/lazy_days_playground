@@ -21,12 +21,12 @@ const requestCooperativeShutdown = async ({
 
     await axios.post(
       url,
-      // Empty JSON body keeps axios on Content-Type: application/json, which
-      // Fastify parses by default. axios's default x-www-form-urlencoded for
-      // bodyless POSTs gets rejected by Fastify with 415.
       {},
       {
-        headers: { "x-shutdown-token": token },
+        headers: {
+          "content-type": "application/json",
+          "x-shutdown-token": token,
+        },
         signal: AbortSignal.timeout(SHUTDOWN_REQUEST_TIMEOUT_MS),
       },
     );

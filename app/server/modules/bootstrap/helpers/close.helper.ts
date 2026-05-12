@@ -9,11 +9,11 @@ import type { CloseWithGraceReturn } from "../types/bootstrap.type";
 
 const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 
-/** Installs close-with-grace signal handlers that drain Fastify requests before exit. */
+/** Uninstalls the prior close-with-grace handler before installing a new one; the guard exists for HMR / module re-execution that would otherwise leave the previous handler armed and racing the new one. */
 const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn => {
   globalThis.__closeListeners?.uninstall();
 
-  const handle = closeWithGrace(
+  const closeListeners = closeWithGrace(
     { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS, logger: app.log },
     async ({ signal, manual, err: error }) => {
       if (error) {
@@ -33,9 +33,9 @@ const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn => {
     },
   );
 
-  globalThis.__closeListeners = handle;
+  globalThis.__closeListeners = closeListeners;
 
-  return handle;
+  return closeListeners;
 };
 
 const CloseHelper = Object.freeze({

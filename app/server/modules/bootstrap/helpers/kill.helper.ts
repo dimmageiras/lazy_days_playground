@@ -2,17 +2,22 @@ import type { Signals } from "close-with-grace";
 import type { Buffer } from "node:buffer";
 import { spawn } from "node:child_process";
 
+import type {
+  KillPortOwnerResult,
+  PidLookupResult,
+} from "../types/bootstrap.type";
+
 /**
- * Resolves the PID of whichever process is listening on the given TCP port; `null` if none found.
+ * Resolves the PID of whichever process is listening on the given TCP port.
  *
- * `netstat -ano` and the trailing-PID column parsed below are Windows-specific.
- * POSIX hosts short-circuit to `null` — the cooperative HTTP shutdown route is
- * the cross-platform graceful path; this force-kill fallback works only on Windows.
+ * `netstat -ano` and the column layout parsed below are Windows-specific.
+ * POSIX hosts short-circuit — the cooperative HTTP shutdown route is the
+ * cross-platform graceful path; this force-kill fallback works only on Windows.
  */
-const findPidOnPort = (port: number): Promise<number | null> =>
+const findPidOnPort = (port: number): Promise<PidLookupResult> =>
   new Promise((resolve) => {
     if (process.platform !== "win32") {
-      resolve(null);
+      resolve({ found: false, reason: "unsupported-platform" });
       return;
     }
 
@@ -24,36 +29,48 @@ const findPidOnPort = (port: number): Promise<number | null> =>
     });
 
     netstat.on("error", () => {
-      resolve(null);
+      resolve({ found: false, reason: "no-pid" });
     });
 
     netstat.on("close", () => {
-      const line = stdout
-        .split("\n")
-        .find((row) => row.includes(`:${port} `) && row.includes("LISTENING"));
-      const pid = line ? Number(line.trim().split(/\s+/).pop()) : NaN;
+      const match = stdout.split("\n").find((row) => {
+        const cols = row.trim().split(/\s+/);
+        // Windows netstat -ano LISTENING row: [proto, localAddr, foreignAddr, "LISTENING", pid]
+        if (cols.length < 5 || cols[3] !== "LISTENING") {
+          return false;
+        }
 
-      resolve(Number.isFinite(pid) && pid > 0 ? pid : null);
+        return cols[1]?.endsWith(`:${port}`) ?? false;
+      });
+
+      const pid = match ? Number(match.trim().split(/\s+/).pop()) : NaN;
+
+      if (Number.isFinite(pid) && pid > 0) {
+        resolve({ found: true, pid });
+        return;
+      }
+
+      resolve({ found: false, reason: "no-pid" });
     });
   });
 
-/** Sends the given signal to whichever process owns the port; returns whether a target was found and signalled. */
+/** Sends the given signal to whichever process owns the port; result discriminates between unsupported platform, no listener found, and kill error. */
 const killPortOwner = async (
   port: number,
   signal: Signals,
-): Promise<boolean> => {
-  const pid = await findPidOnPort(port);
+): Promise<KillPortOwnerResult> => {
+  const lookup = await findPidOnPort(port);
 
-  if (pid === null) {
-    return false;
+  if (!lookup.found) {
+    return { ok: false, reason: lookup.reason };
   }
 
   try {
-    process.kill(pid, signal);
+    process.kill(lookup.pid, signal);
 
-    return true;
+    return { ok: true };
   } catch {
-    return false;
+    return { ok: false, reason: "kill-threw" };
   }
 };
 
