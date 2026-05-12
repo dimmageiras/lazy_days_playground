@@ -9,6 +9,7 @@ import type { CloseWithGraceReturn } from "../types/bootstrap.type";
 
 const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 
+/** Installs close-with-grace signal handlers that drain Fastify requests before exit. */
 const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn =>
   closeWithGrace(
     { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS, logger: app.log },

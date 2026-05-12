@@ -10,6 +10,7 @@ const { BIND_ALL_IPV4 } = HOSTS;
 
 const { delay } = TimingHelper;
 
+/** Single Fastify listen attempt on the IPv4 bind-all host; returns false for EADDRINUSE, rethrows other errors. */
 const tryListen = async (
   app: FastifyInstance,
   port: number,
@@ -27,6 +28,7 @@ const tryListen = async (
   }
 };
 
+/** Polls `tryListen` on a fixed interval until success or `timeoutMs` elapses; returns false on timeout. */
 const tryListenUntil = async (
   app: FastifyInstance,
   port: number,

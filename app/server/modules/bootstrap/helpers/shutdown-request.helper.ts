@@ -11,6 +11,7 @@ const { LOOPBACK_HOSTS } = HOSTS;
 const { SHUTDOWN } = INTERNAL_PATHS;
 const { HTTP } = PROTOCOLS;
 
+/** POSTs to a sibling instance's cooperative-shutdown route; resolves true on 2xx, false on any failure or timeout. */
 const requestCooperativeShutdown = async ({
   port,
   token,

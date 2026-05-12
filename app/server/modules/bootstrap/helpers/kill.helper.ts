@@ -2,9 +2,13 @@ import type { Signals } from "close-with-grace";
 import type { Buffer } from "node:buffer";
 import { spawn } from "node:child_process";
 
-// `netstat -ano` and the trailing-PID column layout parsed below are Windows-specific.
-// The cooperative HTTP shutdown route is the cross-platform graceful path; this
-// force-kill fallback only works on Windows. POSIX hosts get a fast null return.
+/**
+ * Resolves the PID of whichever process is listening on the given TCP port; `null` if none found.
+ *
+ * `netstat -ano` and the trailing-PID column parsed below are Windows-specific.
+ * POSIX hosts short-circuit to `null` — the cooperative HTTP shutdown route is
+ * the cross-platform graceful path; this force-kill fallback works only on Windows.
+ */
 const findPidOnPort = (port: number): Promise<number | null> =>
   new Promise((resolve) => {
     if (process.platform !== "win32") {
@@ -33,6 +37,7 @@ const findPidOnPort = (port: number): Promise<number | null> =>
     });
   });
 
+/** Sends the given signal to whichever process owns the port; returns whether a target was found and signalled. */
 const killPortOwner = async (
   port: number,
   signal: Signals,
