@@ -8,9 +8,10 @@ The pair is intentional: **plans define what to check; this folder records what 
 
 ## Files in this folder
 
-For every plan named `<area>.review.md` under `../plans/`, this folder may contain a matching `<area>.findings.md`. The shared `<area>` prefix keeps plans and findings aligned alphabetically, and makes it easy to spot when an area is plan-but-no-findings (review pending) or findings-but-no-plan (orphaned output).
+For every plan named `<area>.review.md` under `../plans/`, this folder may contain a matching `<area>.finding.md`. The shared `<area>` prefix keeps plans and findings aligned alphabetically, and makes it easy to spot when an area is plan-but-no-findings (review pending) or findings-but-no-plan (orphaned output).
 
 Additional files that may live here:
+
 - This `README.md` — folder purpose and conventions
 - Findings files from earlier review batches (when retained as baselines — see [Lifecycle](#lifecycle))
 
@@ -20,7 +21,7 @@ Additional files that may live here:
 2. The plan names the skills to invoke (always `code-review-and-quality` plus area-specific skills) and lists the review focus checklist.
 3. The reviewer reads the files in scope, applies the criteria, and writes findings to this folder using the file-structure convention below.
 
-When a review is parallelised (e.g. one agent per area running concurrently), each agent writes its own findings file independently. There is no aggregator — this folder *is* the aggregation point.
+When a review is parallelised (e.g. one agent per area running concurrently), each agent writes its own findings file independently. There is no aggregator — this folder _is_ the aggregation point.
 
 ## File structure
 
@@ -32,6 +33,7 @@ Each findings file follows the same shape:
 - **Out of scope** — issues that belong to another review area, surfaced so the reviewer of that area sees the lead
 
 Each finding inside the file carries:
+
 - A **severity label**
 - A **file path** and approximate **line or range**
 - The **skill or checklist criterion** that flagged it
@@ -40,12 +42,12 @@ Each finding inside the file carries:
 
 ## Severity labels
 
-| Label | Meaning |
-| --- | --- |
-| **blocker** | Must be fixed before merge — bug, security issue, broken behaviour, factually wrong claim |
-| **warning** | Should be fixed before merge — likely problem, fragility, footgun, missing edge case |
-| **nit** | Could be improved — style, naming, minor refactor opportunity |
-| **info** | Worth knowing, not a fix request — observation, future consideration, version-specific quirk |
+| Label       | Meaning                                                                                      |
+| ----------- | -------------------------------------------------------------------------------------------- |
+| **blocker** | Must be fixed before merge — bug, security issue, broken behaviour, factually wrong claim    |
+| **warning** | Should be fixed before merge — likely problem, fragility, footgun, missing edge case         |
+| **nit**     | Could be improved — style, naming, minor refactor opportunity                                |
+| **info**    | Worth knowing, not a fix request — observation, future consideration, version-specific quirk |
 
 ## Lifecycle
 
