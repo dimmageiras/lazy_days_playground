@@ -48,7 +48,7 @@ Two sub-areas:
 - Helpers are pure (no I/O, no shared mutable state)
 - Each helper is small enough to fit on one screen; if it grows, it probably belongs in a module-specific helper instead of `shared`
 - Helpers compose well with other helpers — they don't pull in module-specific dependencies (no Fastify imports, no bootstrap imports)
-- Helpers exported via a namespace object (`TimingHelper = { delay }`) match the project's convention; the namespace name mirrors the file name (`timing.helper.ts` → `TimingHelper`)
+- Helpers exported via a namespace object (`<Concept>Helper = { fn1, fn2 }`) match the project's convention; the namespace name is the PascalCase form of the kebab-case file name (`<concept>.helper.ts` → `<Concept>Helper`)
 
 ### TypeScript discipline
 - `as const` narrows values to literals so consumers get autocomplete on the exact strings/numbers

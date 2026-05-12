@@ -12,11 +12,11 @@ pnpm run "/<regex>/"
 
 Common shapes:
 
-| Pattern | Selects |
-| --- | --- |
-| `"/^dev:/"` | every script whose name starts with `dev:` |
+| Pattern             | Selects                                      |
+| ------------------- | -------------------------------------------- |
+| `"/^dev:/"`         | every script whose name starts with `dev:`   |
 | `"/^(dev\|test):/"` | every script starting with `dev:` or `test:` |
-| `"/:watch$/"` | every script ending in `:watch` |
+| `"/:watch$/"`       | every script ending in `:watch`              |
 
 The regex syntax is standard JavaScript regex inside the leading/trailing `/` delimiters.
 
@@ -61,10 +61,10 @@ Alternative output modes (e.g. `append-only`, `default`). Useful when the defaul
 
 These apply when the project is a pnpm workspace (multiple packages) and don't affect single-package projects.
 
-| Flag | Effect |
-| --- | --- |
-| `-r` / `--recursive` | Run the script in every workspace package; respect the dependency graph (topological order); default concurrency is 4 |
-| `--parallel` | Override the topological order and run with unbounded concurrency |
+| Flag                        | Effect                                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-r` / `--recursive`        | Run the script in every workspace package; respect the dependency graph (topological order); default concurrency is 4                        |
+| `--parallel`                | Override the topological order and run with unbounded concurrency                                                                            |
 | `--workspace-concurrency=N` | Cap concurrent processes. Positive `N` = exact limit. Non-positive `N` = `cores - abs(N)` (e.g. `-1` reserves one core). `Infinity` = no cap |
 
 ### The monorepo gotcha
@@ -107,13 +107,11 @@ If a setting silently stops working after upgrading, this migration is the most 
 
 ### `minimumReleaseAge: 1440` default
 
-By default, pnpm refuses to install packages published less than 24 hours ago. This is a supply-chain defence: a freshly-published malicious version doesn't propagate to installs immediately. To override:
+By default, pnpm refuses to install packages published less than 24 hours ago. This is a supply-chain defence: a freshly-published malicious version doesn't propagate to installs immediately.
 
-```sh
-pnpm add some-package --allow-new
-```
+To override on a one-off install, use the flag pnpm currently exposes for it — the name has shifted across release cycles, so check `pnpm add --help` for the current spelling. To override globally, lower the threshold in the config file (`pnpm-workspace.yaml` for project, `~/.config/pnpm/config.yaml` for user).
 
-Or lower the threshold globally in the new config file. In CI, watch for confusing "package not found" errors that are actually "package too young" rejections.
+In CI, watch for confusing "package not found" errors that are actually "package too young" rejections.
 
 ### `blockExoticSubdeps: true` default
 
@@ -131,14 +129,14 @@ The package index is now a SQLite database instead of millions of JSON files. Tr
 
 A practical guide for picking the right orchestration shape:
 
-| Situation | Recommended setup |
-| --- | --- |
-| Two or three independent dev processes in a single package | `pnpm --parallel run "/^dev:/"` |
-| Same as above, in CI with one-shot scripts | `pnpm --parallel --aggregate-output run "/^lint:/"` |
-| Multiple packages in a monorepo, ordering matters | `pnpm -r run build` (no `--parallel`) |
-| Multiple packages, ordering doesn't matter | `pnpm -r --parallel run lint` |
-| Need to kill all on first failure | `concurrently --kill-others-on-fail` |
-| Need coloured per-stream labels | `concurrently -n a,b -c blue,green` |
+| Situation                                                  | Recommended setup                                   |
+| ---------------------------------------------------------- | --------------------------------------------------- |
+| Two or three independent dev processes in a single package | `pnpm --parallel run "/^dev:/"`                     |
+| Same as above, in CI with one-shot scripts                 | `pnpm --parallel --aggregate-output run "/^lint:/"` |
+| Multiple packages in a monorepo, ordering matters          | `pnpm -r run build` (no `--parallel`)               |
+| Multiple packages, ordering doesn't matter                 | `pnpm -r --parallel run lint`                       |
+| Need to kill all on first failure                          | `concurrently --kill-others-on-fail`                |
+| Need coloured per-stream labels                            | `concurrently -n a,b -c blue,green`                 |
 
 ## References
 

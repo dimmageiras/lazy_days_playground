@@ -17,11 +17,11 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 
 | Area | Plan | Triggers (high-level) |
 | --- | --- | --- |
-| Server composition | [server-composition.review.md](./server-composition.review.md) | The server entry, top-level wiring, route registration into the Fastify instance |
-| Bootstrap module | [bootstrap.review.md](./bootstrap.review.md) | The single-instance handoff logic: lifecycle setup, port claim, cooperative-then-force shutdown, the shutdown HTTP route |
-| Shared utilities | [shared.review.md](./shared.review.md) | Cross-cutting constants and helpers consumed by multiple modules |
-| Project configuration | [configuration.review.md](./configuration.review.md) | Build, runtime, and package-manager configuration files |
-| Documentation | [documentation.review.md](./documentation.review.md) | Markdown content under `docs/**`, ADRs, CONTEXT files |
+| Server composition | [server-composition.plan.md](./server-composition.plan.md) | The server entry, top-level wiring, route registration into the Fastify instance |
+| Bootstrap module | [bootstrap.plan.md](./bootstrap.plan.md) | The single-instance handoff logic: lifecycle setup, port claim, cooperative-then-force shutdown, the shutdown HTTP route |
+| Shared utilities | [shared.plan.md](./shared.plan.md) | Cross-cutting constants and helpers consumed by multiple modules |
+| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files |
+| Documentation | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files |
 
 ## Conventions
 
@@ -31,6 +31,6 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 
 ## Related project rules
 
-- [`.claude/rules/invocations/code-review.md`](../../.claude/rules/invocations/code-review.md) — when to invoke `code-review-and-quality` and the trigger-to-skill mapping that informs each plan.
-- [`.claude/rules/code-comments.md`](../../.claude/rules/code-comments.md) — applies to inline comments and JSDoc during every review.
-- [`.claude/rules/invocations/doc-editing.md`](../../.claude/rules/invocations/doc-editing.md) — applies when the PR touches documentation.
+- [`.claude/rules/invocations/code-review.md`](../../../.claude/rules/invocations/code-review.md) — when to invoke `code-review-and-quality` and the trigger-to-skill mapping that informs each plan.
+- [`.claude/rules/code-comments.md`](../../../.claude/rules/code-comments.md) — applies to inline comments and JSDoc during every review.
+- [`.claude/rules/invocations/doc-editing.md`](../../../.claude/rules/invocations/doc-editing.md) — applies when the PR touches documentation.
