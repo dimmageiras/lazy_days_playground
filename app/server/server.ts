@@ -21,7 +21,7 @@ const app = Fastify({
   },
 });
 
-const { claimPort, shutdownRoute, shutdownRouteOptions } = bootstrapServer({
+const { claimPort } = bootstrapServer({
   app,
   options: { port: PORT, token: SHUTDOWN_TOKEN },
 });
