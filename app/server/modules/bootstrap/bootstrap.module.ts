@@ -69,4 +69,6 @@ const bootstrapServer = ({
   };
 };
 
-export const BootstrapModule = { bootstrapServer };
+const BootstrapModule = Object.freeze({ bootstrapServer } as const);
+
+export { BootstrapModule };
