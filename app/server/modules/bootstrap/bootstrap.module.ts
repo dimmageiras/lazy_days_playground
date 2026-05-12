@@ -20,12 +20,11 @@ const {
 
 const bootstrapServer = ({
   app,
-  options: { hostLoopback, port, shutdownToken },
+  options: { port, shutdownToken },
 }: BootstrapConfig): BootstrapServerReturn => {
   const closeListeners = setupCloseListeners(app);
 
   const shutdownRoute = createShutdownRoute({
-    hostLoopback,
     token: shutdownToken,
   });
 
@@ -38,7 +37,6 @@ const bootstrapServer = ({
 
     if (
       await requestCooperativeShutdown({
-        hostLoopback,
         port,
         token: shutdownToken,
       })
@@ -69,6 +67,4 @@ const bootstrapServer = ({
   };
 };
 
-const BootstrapModule = Object.freeze({ bootstrapServer } as const);
-
-export { BootstrapModule };
+export { bootstrapServer };

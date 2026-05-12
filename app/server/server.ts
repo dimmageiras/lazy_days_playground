@@ -1,26 +1,36 @@
 import Fastify from "fastify";
 
 import { SERVER_SETTINGS } from "./constants/server.constant";
-import { BootstrapModule } from "./modules/bootstrap/bootstrap.module";
+import { bootstrapServer } from "./modules/bootstrap/bootstrap.module";
+import { rootRoute } from "./routes/root.route";
 
-const { HOST_LOOPBACK, PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
+const { PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
 
-const { bootstrapServer } = BootstrapModule;
-
-const app = Fastify({ logger: true });
+const app = Fastify({
+  logger: {
+    level: "info",
+    redact: {
+      censor: "[REDACTED]",
+      paths: ['req.headers["x-shutdown-token"]'],
+    },
+    transport: {
+      options: { translateTime: "HH:MM:ss.l" },
+      target: "pino-pretty",
+    },
+  },
+});
 
 const bootstrapConfigOptions = {
-  hostLoopback: HOST_LOOPBACK,
   port: PORT,
   shutdownToken: SHUTDOWN_TOKEN,
 };
+
 const { claimPort, shutdownRouteWithListeners } = bootstrapServer({
   app,
   options: bootstrapConfigOptions,
 });
 
-app.get("/", async () => ({ hello: "world" }));
-
+await app.register(rootRoute);
 await app.register(...shutdownRouteWithListeners);
 
 await claimPort();

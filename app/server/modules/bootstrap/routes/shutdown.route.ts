@@ -10,7 +10,7 @@ import type {
   ShutdownRouteOptions,
 } from "../types/bootstrap.type";
 
-const { LOOPBACK_IPV6 } = HOSTS;
+const { APP_HOST, LOOPBACK_IPV6 } = HOSTS;
 const { ACCEPTED, FORBIDDEN, UNAUTHORIZED } = HTTP_STATUS;
 const { SHUTDOWN } = INTERNAL_PATHS;
 
@@ -29,13 +29,10 @@ const isTokenValid = (provided: unknown, expected: string): boolean => {
 };
 
 const createShutdownRoute =
-  ({
-    hostLoopback,
-    token,
-  }: ShutdownRouteConfig): FastifyPluginAsync<ShutdownRouteOptions> =>
+  ({ token }: ShutdownRouteConfig): FastifyPluginAsync<ShutdownRouteOptions> =>
   async (app, { closeListeners }) => {
     app.post(SHUTDOWN, async (request, response) => {
-      if (request.ip !== hostLoopback && request.ip !== LOOPBACK_IPV6) {
+      if (request.ip !== APP_HOST && request.ip !== LOOPBACK_IPV6) {
         return response.code(FORBIDDEN).send({ ok: false });
       }
 

@@ -1,5 +1,5 @@
 const HOSTS = Object.freeze({
-  BIND_ALL: "0.0.0.0",
+  APP_HOST: "0.0.0.0",
   LOOPBACK_IPV6: "::1",
 } as const);
 
