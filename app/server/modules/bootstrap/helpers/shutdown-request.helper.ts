@@ -7,7 +7,7 @@ import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant";
 import type { ShutdownRequestConfig } from "../types/bootstrap.type";
 
 const { SHUTDOWN_REQUEST_TIMEOUT_MS } = BOOTSTRAP_TIMING;
-const { LOOPBACK_HOSTS } = HOSTS;
+const { LOOPBACK_HOST_V4 } = HOSTS;
 const { SHUTDOWN } = INTERNAL_PATHS;
 const { HTTP } = PROTOCOLS;
 
@@ -18,7 +18,7 @@ const requestCooperativeShutdown = async ({
 }: ShutdownRequestConfig): Promise<boolean> => {
   try {
     const path =
-      `${HTTP}://${[...LOOPBACK_HOSTS][0]}:${Number(port)}${SHUTDOWN}` as const;
+      `${HTTP}://${LOOPBACK_HOST_V4}:${Number(port)}${SHUTDOWN}` as const;
     const url = new URL(path);
 
     await axios.post(

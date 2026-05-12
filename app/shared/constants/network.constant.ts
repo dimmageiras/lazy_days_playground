@@ -1,5 +1,8 @@
+const BIND_ALL_IPV4 = "0.0.0.0" as const;
+const LOOPBACK_HOST_V4 = "127.0.0.1" as const;
+
 const LOOPBACK_HOSTS = new Set([
-  "127.0.0.1",
+  LOOPBACK_HOST_V4,
   "::1",
   // Dual-stack hosts surface IPv4 loopback connections as v4-mapped IPv6
   // when the server binds to "::". Covers the case where the bind host ever
@@ -8,14 +11,16 @@ const LOOPBACK_HOSTS = new Set([
 ] as const);
 
 const HOSTS: {
-  BIND_ALL_IPV4: string;
+  BIND_ALL_IPV4: typeof BIND_ALL_IPV4;
+  LOOPBACK_HOST_V4: typeof LOOPBACK_HOST_V4;
   LOOPBACK_HOSTS: ReadonlySet<
     typeof LOOPBACK_HOSTS extends Set<infer Value>
       ? Value | (string & {})
       : never
   >;
 } = Object.freeze({
-  BIND_ALL_IPV4: "0.0.0.0",
+  BIND_ALL_IPV4,
+  LOOPBACK_HOST_V4,
   LOOPBACK_HOSTS,
 } as const);
 
