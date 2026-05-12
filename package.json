@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite-node ./app/server/server.ts",
+    "dev": "vite-node --watch ./app/server/server.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

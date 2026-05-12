@@ -6,7 +6,6 @@
     /* Language and Environment */
     "target": "ESNext",
     "lib": ["ESNext"],
-    "useDefineForClassFields": true,
     "moduleDetection": "force",
 
     /* Modules */
@@ -16,8 +15,6 @@
       "@shared/*": ["./app/shared/*"]
     },
     "types": ["node"],
-    "allowImportingTsExtensions": true,
-    "rewriteRelativeImportExtensions": true,
     "noUncheckedSideEffectImports": true,
     "resolveJsonModule": true,
 
@@ -28,13 +25,11 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "erasableSyntaxOnly": true,
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
 
     /* Type Checking */
     "strict": true,
-    "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "exactOptionalPropertyTypes": true,
