@@ -6,11 +6,11 @@ Reference material and process documentation for this project. Conceptual conten
 | --------------- | ------------------------------------------------------------------------------------------- |
 | `code-reviews/` | Area-specific review workflow: plans (templates) and findings (outputs from running a plan) |
 | `pnpm/`         | Standalone guides for pnpm features the project uses                                        |
-| `ts/`           | TypeScript reference material                                                               |
+| `ts/`           | TypeScript assets (schemas and, in future, narrative reference)                             |
 
 ## Adding new content
 
-- An ADR (architectural decision record) goes under `docs/adr/`. Use the template described in the `documentation-and-adrs` skill.
+- An ADR (architectural decision record) goes under `docs/adr/` using sequential `NNNN-slug.md` numbering. The template fields (Status, Context, Decision, Alternatives Considered, Consequences) are described in the `documentation-and-adrs` skill; the folder layout and numbering convention are described in the `grill-with-docs` ADR-FORMAT reference. Where the two skills differ on location, follow this project's `docs/adr/`.
 - A domain-glossary entry goes in `CONTEXT.md` at the repo root. Create it lazily when a second doc reuses the same term.
 - A topic-specific reference (similar to `pnpm/` or `ts/`) goes in its own folder named after the topic.
 

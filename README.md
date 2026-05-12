@@ -35,6 +35,6 @@ For details on conventions and how changes are reviewed, see [`docs/`](./docs/) 
 
 ## Documentation
 
-- [`docs/`](./docs/) — operational reference: pnpm guidance, TypeScript reference, and the code-review workflow
+- [`docs/`](./docs/) — operational reference: pnpm guidance, TypeScript assets, and the code-review workflow
 - [`docs/code-reviews/plans/`](./docs/code-reviews/plans/) — review plans split by area
 - [`CLAUDE.md`](./CLAUDE.md) — entry point for the project rules that govern contributions
