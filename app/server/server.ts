@@ -3,6 +3,7 @@ import Fastify from "fastify";
 import { SERVER_SETTINGS } from "./constants/server.constant";
 import { bootstrapServer } from "./modules/bootstrap/bootstrap.module";
 import { rootRoute } from "./routes/root.route";
+import { inits } from "./inits";
 
 const { PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
 
@@ -27,7 +28,7 @@ const { claimPort, shutdownRoute, shutdownRouteOptions } = bootstrapServer({
 
 try {
   await app.register(rootRoute);
-  await app.register(shutdownRoute, shutdownRouteOptions);
+  await inits(app);
   await claimPort();
 } catch (error) {
   app.log.fatal({ err: error }, "Server bootstrap failed.");
