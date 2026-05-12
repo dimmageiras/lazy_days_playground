@@ -9,6 +9,8 @@ const shutdownRoute = async (app: FastifyInstance): Promise<void> => {
     app,
     options: { port: PORT, token: SHUTDOWN_TOKEN },
   });
+
+  await app.register(shutdownRoute, shutdownRouteOptions);
 };
 
 export { shutdownRoute };
