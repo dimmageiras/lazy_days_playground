@@ -12,11 +12,9 @@ interface BootstrapConfig {
 }
 
 interface BootstrapServerReturn {
-  shutdownRouteWithListeners: readonly [
-    FastifyPluginAsync<ShutdownRouteOptions>,
-    ShutdownRouteOptions,
-  ];
   claimPort: () => Promise<void>;
+  shutdownRoute: FastifyPluginAsync<ShutdownRouteOptions>;
+  shutdownRouteOptions: ShutdownRouteOptions;
 }
 
 type CloseWithGraceReturn = ReturnType<typeof closeWithGrace>;

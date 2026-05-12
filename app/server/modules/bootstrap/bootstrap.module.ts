@@ -64,7 +64,8 @@ const bootstrapServer = ({
 
   return {
     claimPort,
-    shutdownRouteWithListeners: [shutdownRoute, { closeListeners }] as const,
+    shutdownRoute,
+    shutdownRouteOptions: { closeListeners },
   };
 };
 

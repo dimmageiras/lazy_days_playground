@@ -20,17 +20,16 @@ const app = Fastify({
   },
 });
 
-const bootstrapConfigOptions = {
-  port: PORT,
-  token: SHUTDOWN_TOKEN,
-};
-
-const { claimPort, shutdownRouteWithListeners } = bootstrapServer({
+const { claimPort, shutdownRoute, shutdownRouteOptions } = bootstrapServer({
   app,
-  options: bootstrapConfigOptions,
+  options: { port: PORT, token: SHUTDOWN_TOKEN },
 });
 
-await app.register(rootRoute);
-await app.register(...shutdownRouteWithListeners);
-
-await claimPort();
+try {
+  await app.register(rootRoute);
+  await app.register(shutdownRoute, shutdownRouteOptions);
+  await claimPort();
+} catch (error) {
+  app.log.fatal({ err: error }, "Server bootstrap failed.");
+  process.exit(1);
+}
