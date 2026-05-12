@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite-node ./app/server/server.ts"
+    "dev": "vite-node ./app/server/server.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "close-with-grace": "2.5.0",

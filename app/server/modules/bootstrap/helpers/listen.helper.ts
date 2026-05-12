@@ -6,7 +6,7 @@ import { HOSTS } from "@shared/constants/network.constant";
 import { TimingHelper } from "@shared/helpers/timing.helper";
 
 const { LISTEN_POLL_INTERVAL_MS } = BOOTSTRAP_TIMING;
-const { APP_HOST } = HOSTS;
+const { BIND_ALL } = HOSTS;
 
 const { delay } = TimingHelper;
 
@@ -15,7 +15,7 @@ const tryListen = async (
   port: number,
 ): Promise<boolean> => {
   try {
-    await app.listen({ port, host: APP_HOST });
+    await app.listen({ port, host: BIND_ALL });
 
     return true;
   } catch (error) {

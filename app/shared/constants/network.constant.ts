@@ -1,6 +1,13 @@
-const HOSTS = Object.freeze({
-  APP_HOST: "0.0.0.0",
-  LOOPBACK_IPV6: "::1",
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "::1"] as const);
+
+const HOSTS: {
+  BIND_ALL: string;
+  LOOPBACK_HOSTS: ReadonlySet<
+    typeof LOOPBACK_HOSTS extends Set<infer U> ? U | (string & {}) : never
+  >;
+} = Object.freeze({
+  BIND_ALL: "0.0.0.0",
+  LOOPBACK_HOSTS,
 } as const);
 
 /*
