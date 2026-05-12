@@ -1,4 +1,4 @@
-/** Resolves after `ms` milliseconds — promise-based `setTimeout`. */
+/** Resolves after `ms` milliseconds (clamped to 0 if negative) — promise-based `setTimeout`. */
 const delay = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 

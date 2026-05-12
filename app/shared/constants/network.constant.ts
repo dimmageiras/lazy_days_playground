@@ -1,27 +1,27 @@
 const BIND_ALL_IPV4 = "0.0.0.0" as const;
 const LOOPBACK_HOST_V4 = "127.0.0.1" as const;
 
-const LOOPBACK_HOSTS = new Set([
+const LOOPBACK_HOSTS: ReadonlySet<string> = new Set([
   LOOPBACK_HOST_V4,
   "::1",
   // Dual-stack hosts surface IPv4 loopback connections as v4-mapped IPv6
   // when the server binds to "::". Covers the case where the bind host ever
   // changes from "0.0.0.0" to "::" without breaking the cooperative handoff.
   "::ffff:127.0.0.1",
-] as const);
+]);
 
-const HOSTS: {
-  BIND_ALL_IPV4: typeof BIND_ALL_IPV4;
-  LOOPBACK_HOST_V4: typeof LOOPBACK_HOST_V4;
-  LOOPBACK_HOSTS: ReadonlySet<
-    typeof LOOPBACK_HOSTS extends Set<infer Value>
-      ? Value | (string & {})
-      : never
-  >;
-} = Object.freeze({
+const HOSTS = Object.freeze({
   BIND_ALL_IPV4,
   LOOPBACK_HOST_V4,
   LOOPBACK_HOSTS,
+} as const);
+
+const HTTP_METHODS = Object.freeze({
+  DELETE: "DELETE",
+  GET: "GET",
+  PATCH: "PATCH",
+  POST: "POST",
+  PUT: "PUT",
 } as const);
 
 const HTTP_STATUS = Object.freeze({
@@ -29,9 +29,7 @@ const HTTP_STATUS = Object.freeze({
   ACCEPTED: 202,
   NO_CONTENT: 204,
   BAD_REQUEST: 400,
-  /** No valid credentials. */
   UNAUTHORIZED: 401,
-  /** Authenticated but not permitted. */
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CSRF_TOKEN_MISMATCH: 419,
@@ -40,16 +38,9 @@ const HTTP_STATUS = Object.freeze({
   SERVICE_UNAVAILABLE: 503,
 } as const);
 
-const METHODS = Object.freeze({
-  DELETE: "DELETE",
-  GET: "GET",
-  POST: "POST",
-  PUT: "PUT",
-} as const);
-
 const PROTOCOLS = Object.freeze({
   HTTP: "http",
   HTTPS: "https",
 } as const);
 
-export { HOSTS, HTTP_STATUS, METHODS, PROTOCOLS };
+export { HOSTS, HTTP_METHODS, HTTP_STATUS, PROTOCOLS };
