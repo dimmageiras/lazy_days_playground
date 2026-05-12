@@ -1,11 +1,15 @@
 import type closeWithGrace from "close-with-grace";
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
+interface BootstrapConfigOptions {
+  hostLoopback: string;
+  port: number;
+  shutdownToken: string;
+}
+
 interface BootstrapConfig {
   app: FastifyInstance;
-  port: number;
-  shutdownPath: string;
-  shutdownToken: string;
+  options: BootstrapConfigOptions;
 }
 
 interface BootstrapServerReturn {
@@ -19,7 +23,7 @@ interface BootstrapServerReturn {
 type CloseWithGraceReturn = ReturnType<typeof closeWithGrace>;
 
 interface ShutdownRouteConfig {
-  path: string;
+  hostLoopback: string;
   token: string;
 }
 

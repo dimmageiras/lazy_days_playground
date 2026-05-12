@@ -1,30 +1,37 @@
 import type { FastifyPluginAsync } from "fastify";
 
+import { INTERNAL_PATHS } from "../../../constants/paths.constant";
 import type {
   ShutdownRouteConfig,
   ShutdownRouteOptions,
 } from "../types/bootstrap.type";
 
+import { HOSTS, HTTP_STATUS } from "#shared/constants/network.constant.js";
+
+const { ACCEPTED, FORBIDDEN, UNAUTHORIZED } = HTTP_STATUS;
+const { LOOPBACK_IPV6 } = HOSTS;
+const { SHUTDOWN } = INTERNAL_PATHS;
+
 const createShutdownRoute =
   ({
-    path,
+    hostLoopback,
     token,
   }: ShutdownRouteConfig): FastifyPluginAsync<ShutdownRouteOptions> =>
   async (app, { closeListeners }) => {
-    app.post(path, async (request, reply) => {
-      if (request.ip !== "127.0.0.1" && request.ip !== "::1") {
-        return reply.code(403).send({ ok: false });
+    app.post(SHUTDOWN, async (request, response) => {
+      if (request.ip !== hostLoopback && request.ip !== LOOPBACK_IPV6) {
+        return response.code(FORBIDDEN).send({ ok: false });
       }
 
       if (request.headers["x-shutdown-token"] !== token) {
-        return reply.code(401).send({ ok: false });
+        return response.code(UNAUTHORIZED).send({ ok: false });
       }
 
-      reply.raw.on("finish", () => {
+      response.raw.on("finish", () => {
         void closeListeners.close();
       });
 
-      return reply.code(202).send({ ok: true });
+      return response.code(ACCEPTED).send({ ok: true });
     });
   };
 

@@ -4,18 +4,18 @@ import { spawn } from "node:child_process";
 
 const findPidOnPort = (port: number): Promise<number | null> =>
   new Promise((resolve) => {
-    const ps = spawn("netstat", ["-ano"]);
+    const process = spawn("netstat", ["-ano"]);
     let stdout = "";
 
-    ps.stdout.on("data", (data: Buffer) => {
+    process.stdout.on("data", (data: Buffer) => {
       stdout += data.toString();
     });
 
-    ps.on("error", () => {
+    process.on("error", () => {
       resolve(null);
     });
 
-    ps.on("close", () => {
+    process.on("close", () => {
       const line = stdout
         .split("\n")
         .find((row) => row.includes(`:${port} `) && row.includes("LISTENING"));

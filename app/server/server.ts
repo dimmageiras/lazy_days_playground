@@ -1,20 +1,22 @@
 import Fastify from "fastify";
 
+import { SERVER_SETTINGS } from "./constants/server.constant";
 import { BootstrapModule } from "./modules/bootstrap/bootstrap.module";
 
-import { SERVER_SETTINGS } from "#shared/constants/server.constant";
-
-const { PORT, SHUTDOWN_PATH, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
+const { HOST_LOOPBACK, PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
 
 const { bootstrapServer } = BootstrapModule;
 
 const app = Fastify({ logger: true });
 
+const bootstrapConfigOptions = {
+  hostLoopback: HOST_LOOPBACK,
+  port: PORT,
+  shutdownToken: SHUTDOWN_TOKEN,
+};
 const { claimPort, shutdownRouteWithListeners } = bootstrapServer({
   app,
-  port: PORT,
-  shutdownPath: SHUTDOWN_PATH,
-  shutdownToken: SHUTDOWN_TOKEN,
+  options: bootstrapConfigOptions,
 });
 
 app.get("/", async () => ({ hello: "world" }));

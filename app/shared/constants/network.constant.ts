@@ -1,0 +1,46 @@
+/*
+  HTTP status codes used across the application
+*/
+const HTTP_STATUS = Object.freeze({
+  /** 200 - OK */
+  OK: 200,
+  /** 202 - Accepted */
+  ACCEPTED: 202,
+  /** 204 - No Content */
+  NO_CONTENT: 204,
+  /** 400 - Bad Request */
+  BAD_REQUEST: 400,
+  /** 401 - Authentication Required (no valid token) */
+  UNAUTHORIZED: 401,
+  /** 403 - Forbidden (valid token but insufficient permissions) */
+  FORBIDDEN: 403,
+  /** 404 - Not Found */
+  NOT_FOUND: 404,
+  /** 419 - CSRF Token Mismatch */
+  CSRF_TOKEN_MISMATCH: 419,
+  /** 429 - Many Requests Error (rate limit exceeded) */
+  MANY_REQUESTS_ERROR: 429,
+  /** 500 - Internal Server Error */
+  INTERNAL_SERVER_ERROR: 500,
+  /** 503 - Service Unavailable */
+  SERVICE_UNAVAILABLE: 503,
+} as const);
+
+const HOSTS = Object.freeze({
+  BIND_ALL: "0.0.0.0",
+  LOOPBACK_IPV6: "::1",
+} as const);
+
+const METHODS = Object.freeze({
+  DELETE: "DELETE",
+  GET: "GET",
+  POST: "POST",
+  PUT: "PUT",
+} as const);
+
+const PROTOCOLS = Object.freeze({
+  HTTP: "http",
+  HTTPS: "https",
+} as const);
+
+export { HOSTS, HTTP_STATUS, METHODS, PROTOCOLS };
