@@ -21,7 +21,7 @@ const bootstrapServer = async ({
   port,
   token,
 }: BootstrapConfig): Promise<void> => {
-  const closeListeners = setupCloseListeners(app);
+  const closeListeners = await setupCloseListeners(app);
 
   const shutdownRoute = createShutdownRoute({ token });
 

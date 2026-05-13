@@ -9,11 +9,27 @@ import type { CloseWithGraceReturn } from "../types/bootstrap.type";
 
 const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
 
-let activeCloseListeners: CloseWithGraceReturn | undefined;
+/**
+ * Installs close-with-grace listeners for `app` and, in vite-node `--watch`
+ * re-evals, retires the prior in-process instance first.
+ *
+ * Same-process retirement closes the prior `app` directly and only calls
+ * `.uninstall()` on the prior handle. We must NOT call `handle.close()` here:
+ * `close-with-grace` ends its run with `process.exit(0)`, which in a shared
+ * process kills the freshly-bootstrapping new instance along with the old.
+ * The cross-process cooperative-shutdown POST path (separate Node processes,
+ * separate `globalThis`) continues to use `handle.close()` and benefits from
+ * that exit.
+ */
+const setupCloseListeners = async (
+  app: FastifyInstance,
+): Promise<CloseWithGraceReturn> => {
+  const prior = globalThis.__priorInstance;
 
-/** Uninstalls the prior close-with-grace handler before installing a new one; the guard exists for HMR / module re-execution that would otherwise leave the previous handler armed and racing the new one. */
-const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn => {
-  activeCloseListeners?.uninstall();
+  if (prior) {
+    prior.handle.uninstall();
+    await prior.app.close();
+  }
 
   const closeListeners = closeWithGrace(
     { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS, logger: app.log },
@@ -35,7 +51,7 @@ const setupCloseListeners = (app: FastifyInstance): CloseWithGraceReturn => {
     },
   );
 
-  activeCloseListeners = closeListeners;
+  globalThis.__priorInstance = { app, handle: closeListeners };
 
   return closeListeners;
 };
