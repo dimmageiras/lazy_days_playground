@@ -13,7 +13,13 @@ const app = Fastify({
     level: "info",
     redact: {
       censor: "[REDACTED]",
-      paths: [`req.headers["${SHUTDOWN_TOKEN_HEADER}"]`],
+      paths: [
+        "req.headers.authorization",
+        "req.headers.cookie",
+        'req.headers["proxy-authorization"]',
+        'res.headers["set-cookie"]',
+        `req.headers["${SHUTDOWN_TOKEN_HEADER}"]`,
+      ],
     },
     transport: {
       options: { translateTime: "HH:MM:ss.l" },
