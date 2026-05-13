@@ -1,14 +1,10 @@
 import type closeWithGrace from "close-with-grace";
 import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
-interface BootstrapConfigOptions {
-  port: number;
-  token: string;
-}
-
 interface BootstrapConfig {
   app: FastifyInstance;
-  options: BootstrapConfigOptions;
+  port: number;
+  token: string;
 }
 
 interface BootstrapServerReturn {

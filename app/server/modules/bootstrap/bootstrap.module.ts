@@ -4,10 +4,7 @@ import { KillHelper } from "./helpers/kill.helper";
 import { ListenHelper } from "./helpers/listen.helper";
 import { ShutdownRequestHelper } from "./helpers/shutdown-request.helper";
 import { ShutdownRoute } from "./routes/shutdown.route";
-import type {
-  BootstrapConfig,
-  BootstrapServerReturn,
-} from "./types/bootstrap.type";
+import type { BootstrapConfig } from "./types/bootstrap.type";
 
 const { COOPERATIVE_HANDOVER_TIMEOUT_MS, FORCE_SHUTDOWN_TIMEOUT_MS } =
   BOOTSTRAP_TIMING;
@@ -19,10 +16,11 @@ const { tryListen, tryListenUntil } = ListenHelper;
 const { requestCooperativeShutdown } = ShutdownRequestHelper;
 const { createShutdownRoute } = ShutdownRoute;
 
-const bootstrapServer = ({
+const bootstrapServer = async ({
   app,
-  options: { port, token },
-}: BootstrapConfig): BootstrapServerReturn => {
+  port,
+  token,
+}: BootstrapConfig): Promise<void> => {
   const closeListeners = setupCloseListeners(app);
 
   const shutdownRoute = createShutdownRoute({ token });
@@ -37,25 +35,33 @@ const bootstrapServer = ({
 
       const cooperative = await requestCooperativeShutdown({ port, token });
 
-      if (cooperative) {
-        if (await tryListenUntil(app, port, COOPERATIVE_HANDOVER_TIMEOUT_MS)) {
+      if (
+        cooperative &&
+        (await tryListenUntil(app, port, COOPERATIVE_HANDOVER_TIMEOUT_MS))
+      ) {
+        return;
+      }
+
+      app.log.warn(
+        {
+          port,
+          signal: SIGTERM,
+          timeoutMs: cooperative ? COOPERATIVE_HANDOVER_TIMEOUT_MS : undefined,
+        },
+        cooperative
+          ? "Cooperative shutdown accepted but port not released in time — escalating to signal."
+          : "Cooperative shutdown request failed — escalating to signal.",
+      );
+
+      const killResult = await killPortOwner(port, SIGTERM, app.log);
+
+      if (!killResult.ok) {
+        // Port may have freed during the cooperative wait or between the kill
+        // attempt and now — try one last listen before aborting.
+        if (await tryListen(app, port)) {
           return;
         }
 
-        app.log.warn(
-          { port, timeoutMs: COOPERATIVE_HANDOVER_TIMEOUT_MS, signal: SIGTERM },
-          "Cooperative shutdown accepted but port not released in time — sending signal.",
-        );
-      } else {
-        app.log.warn(
-          { port, signal: SIGTERM },
-          "Cooperative shutdown request failed — sending signal.",
-        );
-      }
-
-      const killResult = await killPortOwner(port, SIGTERM);
-
-      if (!killResult.ok) {
         switch (killResult.reason) {
           case "unsupported-platform":
             app.log.error(
@@ -66,13 +72,13 @@ const bootstrapServer = ({
           case "no-pid":
             app.log.error(
               { port },
-              "No listening process found owning port — aborting.",
+              "No listening process found owning port and port still in use — aborting.",
             );
             break;
           case "kill-threw":
             app.log.error(
               { port },
-              "Failed to signal port owner — aborting.",
+              "Failed to signal port owner and port still in use — aborting.",
             );
             break;
         }
@@ -92,11 +98,8 @@ const bootstrapServer = ({
     }
   };
 
-  return {
-    claimPort,
-    shutdownRoute,
-    shutdownRouteOptions: { closeListeners },
-  };
+  await app.register(shutdownRoute, { closeListeners });
+  await claimPort();
 };
 
 export { bootstrapServer };

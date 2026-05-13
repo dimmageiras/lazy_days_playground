@@ -11,6 +11,10 @@ const { BIND_ALL_IPV4 } = HOSTS;
 
 const { delay } = TimingHelper;
 
+/* Type guard for NodeJS.ErrnoException */
+const isErrnoException = (error: unknown): error is NodeJS.ErrnoException =>
+  error instanceof Error && "code" in error;
+
 /** Single Fastify listen attempt on the IPv4 bind-all host; returns false for EADDRINUSE, rethrows other errors. */
 const tryListen = async (
   app: FastifyInstance,
@@ -21,7 +25,7 @@ const tryListen = async (
 
     return true;
   } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "EADDRINUSE") {
+    if (isErrnoException(error) && error.code === "EADDRINUSE") {
       return false;
     }
 

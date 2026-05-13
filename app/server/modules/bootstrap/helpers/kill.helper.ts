@@ -1,4 +1,5 @@
 import type { Signals } from "close-with-grace";
+import type { FastifyBaseLogger } from "fastify";
 import type { Buffer } from "node:buffer";
 import { spawn } from "node:child_process";
 
@@ -14,25 +15,43 @@ import type {
  * POSIX hosts short-circuit — the cooperative HTTP shutdown route is the
  * cross-platform graceful path; this force-kill fallback works only on Windows.
  */
-const findPidOnPort = (port: number): Promise<PidLookupResult> =>
+const findPidOnPort = (
+  port: number,
+  log: FastifyBaseLogger,
+): Promise<PidLookupResult> =>
   new Promise((resolve) => {
     if (process.platform !== "win32") {
       resolve({ found: false, reason: "unsupported-platform" });
       return;
     }
 
-    const netstat = spawn("netstat", ["-ano"]);
+    let stderr = "";
     let stdout = "";
+    const netstat = spawn("netstat", ["-ano"]);
 
     netstat.stdout.on("data", (data: Buffer) => {
       stdout += data.toString();
     });
 
-    netstat.on("error", () => {
+    netstat.stderr.on("data", (data: Buffer) => {
+      stderr += data.toString();
+    });
+
+    netstat.on("error", (error) => {
+      log.warn({ err: error, port }, "netstat spawn failed.");
       resolve({ found: false, reason: "no-pid" });
     });
 
-    netstat.on("close", () => {
+    netstat.on("close", (code) => {
+      if (code !== 0) {
+        log.warn(
+          { code, port, stderr: stderr.trim() },
+          "netstat exited non-zero.",
+        );
+        resolve({ found: false, reason: "no-pid" });
+        return;
+      }
+
       const match = stdout.split("\n").find((row) => {
         const cols = row.trim().split(/\s+/);
         // Windows netstat -ano LISTENING row: [proto, localAddr, foreignAddr, "LISTENING", pid]
@@ -58,8 +77,9 @@ const findPidOnPort = (port: number): Promise<PidLookupResult> =>
 const killPortOwner = async (
   port: number,
   signal: Signals,
+  log: FastifyBaseLogger,
 ): Promise<KillPortOwnerResult> => {
-  const lookup = await findPidOnPort(port);
+  const lookup = await findPidOnPort(port, log);
 
   if (!lookup.found) {
     return { ok: false, reason: lookup.reason };

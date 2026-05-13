@@ -12,6 +12,7 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
+      "@server/*": ["./app/server/*"],
       "@shared/*": ["./app/shared/*"]
     },
     "types": ["node"],

@@ -1,18 +1,19 @@
 import Fastify from "fastify";
 
 import { SERVER_SETTINGS } from "./constants/server.constant";
+import { BOOTSTRAP_PROTOCOL } from "./modules/bootstrap/constants/bootstrap.constant";
 import { bootstrapServer } from "./modules/bootstrap/bootstrap.module";
 import { rootRoute } from "./routes/root.route";
-import { inits } from "./inits";
 
 const { PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
+const { SHUTDOWN_TOKEN_HEADER } = BOOTSTRAP_PROTOCOL;
 
 const app = Fastify({
   logger: {
     level: "info",
     redact: {
       censor: "[REDACTED]",
-      paths: ['req.headers["x-shutdown-token"]'],
+      paths: [`req.headers["${SHUTDOWN_TOKEN_HEADER}"]`],
     },
     transport: {
       options: { translateTime: "HH:MM:ss.l" },
@@ -21,15 +22,13 @@ const app = Fastify({
   },
 });
 
-const { claimPort } = bootstrapServer({
-  app,
-  options: { port: PORT, token: SHUTDOWN_TOKEN },
-});
-
 try {
   await app.register(rootRoute);
-  await inits(app);
-  await claimPort();
+  await bootstrapServer({
+    app,
+    port: PORT,
+    token: SHUTDOWN_TOKEN,
+  });
 } catch (error) {
   app.log.fatal({ err: error }, "Server bootstrap failed.");
   process.exit(1);
