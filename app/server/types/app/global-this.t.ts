@@ -22,7 +22,6 @@ declare global {
      * cooperative-shutdown flow is the desired outcome but in same-process HMR
      * re-eval would kill the freshly-started instance along with the old one.
      */
-    // eslint-disable-next-line no-var
     var __priorInstance: PriorInstance | undefined;
   }
 }
