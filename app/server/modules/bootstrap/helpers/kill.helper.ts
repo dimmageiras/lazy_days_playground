@@ -3,10 +3,7 @@ import type { FastifyBaseLogger } from "fastify";
 import type { Buffer } from "node:buffer";
 import { spawn } from "node:child_process";
 
-import type {
-  KillPortOwnerResult,
-  PidLookupResult,
-} from "../types/bootstrap.type";
+import type { KillPortOwnerResult, PidLookupResult } from "../types";
 
 /**
  * Resolves the PID of whichever process is listening on the given TCP port.

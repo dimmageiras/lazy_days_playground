@@ -5,13 +5,10 @@ import { timingSafeEqual } from "node:crypto";
 import { INTERNAL_PATHS } from "@server/constants/paths.constant";
 import { HOSTS, HTTP_STATUS } from "@shared/constants/network.constant";
 
-import { BOOTSTRAP_PROTOCOL } from "../constants/bootstrap.constant";
-import type {
-  ShutdownRouteConfig,
-  ShutdownRouteOptions,
-} from "../types/bootstrap.type";
+import { PROTOCOLS } from "../constants";
+import type { ShutdownRouteConfig, ShutdownRouteOptions } from "../types";
 
-const { SHUTDOWN_TOKEN_HEADER } = BOOTSTRAP_PROTOCOL;
+const { SHUTDOWN_TOKEN_HEADER } = PROTOCOLS;
 const { LOOPBACK_HOSTS } = HOSTS;
 const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 const { SHUTDOWN } = INTERNAL_PATHS;

@@ -1,13 +1,12 @@
-import { BOOTSTRAP_TIMING, SIGNALS } from "./constants/bootstrap.constant";
+import { TIMING, SIGNALS } from "./constants";
 import { CloseHelper } from "./helpers/close.helper";
 import { KillHelper } from "./helpers/kill.helper";
 import { ListenHelper } from "./helpers/listen.helper";
 import { ShutdownRequestHelper } from "./helpers/shutdown-request.helper";
 import { ShutdownRoute } from "./routes/shutdown.route";
-import type { BootstrapConfig } from "./types/bootstrap.type";
+import type { BootstrapConfig } from "./types";
 
-const { COOPERATIVE_HANDOVER_TIMEOUT_MS, FORCE_SHUTDOWN_TIMEOUT_MS } =
-  BOOTSTRAP_TIMING;
+const { COOPERATIVE_HANDOVER_TIMEOUT_MS, FORCE_SHUTDOWN_TIMEOUT_MS } = TIMING;
 const { SIGTERM } = SIGNALS;
 
 const { setupCloseListeners } = CloseHelper;

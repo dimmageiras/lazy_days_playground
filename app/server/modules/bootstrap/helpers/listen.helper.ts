@@ -1,12 +1,11 @@
 import type { FastifyInstance } from "fastify";
 
-import { BOOTSTRAP_TIMING } from "../constants/bootstrap.constant";
+import { TIMING } from "../constants";
 
 import { HOSTS } from "@shared/constants/network.constant";
 import { TimingHelper } from "@shared/helpers/timing.helper";
 
-const { LISTEN_POLL_INITIAL_INTERVAL_MS, LISTEN_POLL_MAX_INTERVAL_MS } =
-  BOOTSTRAP_TIMING;
+const { LISTEN_POLL_INITIAL_INTERVAL_MS, LISTEN_POLL_MAX_INTERVAL_MS } = TIMING;
 const { BIND_ALL_IPV4 } = HOSTS;
 
 const { delay } = TimingHelper;

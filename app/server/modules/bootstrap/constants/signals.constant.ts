@@ -1,29 +1,5 @@
 import type { Signals } from "close-with-grace";
 
-import { TIMING } from "@shared/constants/timing.constant";
-
-const {
-  SECONDS_ONE_HALF_IN_MS,
-  SECONDS_ONE_IN_MS,
-  SECONDS_ONE_TENTH_IN_MS,
-  SECONDS_TEN_IN_MS,
-  SECONDS_THREE_IN_MS,
-  SECONDS_TWO_IN_MS,
-} = TIMING;
-
-const BOOTSTRAP_TIMING = Object.freeze({
-  COOPERATIVE_HANDOVER_TIMEOUT_MS: SECONDS_TEN_IN_MS + SECONDS_ONE_IN_MS,
-  FORCE_SHUTDOWN_TIMEOUT_MS: SECONDS_THREE_IN_MS,
-  GRACEFUL_SHUTDOWN_TIMEOUT_MS: SECONDS_TEN_IN_MS,
-  LISTEN_POLL_INITIAL_INTERVAL_MS: SECONDS_ONE_TENTH_IN_MS,
-  LISTEN_POLL_MAX_INTERVAL_MS: SECONDS_ONE_HALF_IN_MS,
-  SHUTDOWN_REQUEST_TIMEOUT_MS: SECONDS_TWO_IN_MS,
-} as const);
-
-const BOOTSTRAP_PROTOCOL = Object.freeze({
-  SHUTDOWN_TOKEN_HEADER: "x-shutdown-token",
-} as const);
-
 const SIGNALS: Readonly<Record<Signals, Signals>> = Object.freeze({
   SIGABRT: "SIGABRT",
   SIGBUS: "SIGBUS",
@@ -61,9 +37,4 @@ const SIGNALS_ERROR_MESSAGES = new Map<Signals, string>([
   [SIGNALS.SIGUSR2, "User-defined signal received (SIGUSR2). Shutting down."],
 ]);
 
-export {
-  BOOTSTRAP_PROTOCOL,
-  BOOTSTRAP_TIMING,
-  SIGNALS,
-  SIGNALS_ERROR_MESSAGES,
-};
+export { SIGNALS, SIGNALS_ERROR_MESSAGES };

@@ -1,57 +1,60 @@
 import closeWithGrace from "close-with-grace";
 import type { FastifyInstance } from "fastify";
 
-import {
-  BOOTSTRAP_TIMING,
-  SIGNALS_ERROR_MESSAGES,
-} from "../constants/bootstrap.constant";
-import type { CloseWithGraceReturn } from "../types/bootstrap.type";
+import { TIMING } from "../constants";
+import type { CloseWithGraceReturn } from "../types";
+import { BootstrapLifecycleHelper } from "./bootstrap-lifecycle.helper";
 
-const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = BOOTSTRAP_TIMING;
+const { GRACEFUL_SHUTDOWN_TIMEOUT_MS } = TIMING;
+
+const { createBootstrapLifecycleBus } = BootstrapLifecycleHelper;
 
 /**
- * Installs close-with-grace listeners for `app` and, in vite-node `--watch`
- * re-evals, retires the prior in-process instance first.
+ * Orchestrates instance lifecycle around `closeWithGrace`:
+ *   1. Emit `retire` (HMR path) so the prior instance, if any, closes
+ *      before the new handle attaches process-level listeners.
+ *   2. Install the new `closeWithGrace` handle. Its async callback
+ *      forwards the shutdown event to the bus so the same retire
+ *      listener handles the signal path.
+ *   3. Emit `register` so subsequent re-evals can find this instance.
  *
- * Same-process retirement closes the prior `app` directly and only calls
- * `.uninstall()` on the prior handle. We must NOT call `handle.close()` here:
- * `close-with-grace` ends its run with `process.exit(0)`, which in a shared
- * process kills the freshly-bootstrapping new instance along with the old.
- * The cross-process cooperative-shutdown POST path (separate Node processes,
- * separate `globalThis`) continues to use `handle.close()` and benefits from
- * that exit.
+ * Listener errors from `bus.emit` are logged but never thrown out of
+ * bootstrap — a buggy listener must not block the new instance from
+ * coming up.
  */
 const setupCloseListeners = async (
   app: FastifyInstance,
 ): Promise<CloseWithGraceReturn> => {
-  const prior = globalThis.__priorInstance;
+  const { bus: bootstrapLifecycleBus } = createBootstrapLifecycleBus();
 
-  if (prior) {
-    prior.handle.uninstall();
-    await prior.app.close();
+  try {
+    await bootstrapLifecycleBus.emit("retire", undefined);
+  } catch (error) {
+    app.log.error({ err: error }, "retire listeners failed during HMR re-eval");
   }
 
   const closeListeners = closeWithGrace(
     { delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS, logger: app.log },
-    async ({ signal, manual, err: error }) => {
-      if (error) {
-        app.log.error({ err: error }, "server closing with error");
-      } else if (manual) {
-        app.log.info(
-          "Another instance started (manual). Shutting down gracefully.",
-        );
-      } else {
-        app.log.info(
-          (signal && SIGNALS_ERROR_MESSAGES.get(signal)) ??
-            "Shutdown signal received. Shutting down gracefully.",
+    async (event) => {
+      try {
+        await bootstrapLifecycleBus.emit("retire", event);
+      } catch (error) {
+        app.log.error(
+          { err: error },
+          "retire listeners failed during shutdown",
         );
       }
-
-      await app.close();
     },
   );
 
-  globalThis.__priorInstance = { app, handle: closeListeners };
+  try {
+    await bootstrapLifecycleBus.emit("register", {
+      app,
+      handle: closeListeners,
+    });
+  } catch (error) {
+    app.log.error({ err: error }, "register listeners failed");
+  }
 
   return closeListeners;
 };

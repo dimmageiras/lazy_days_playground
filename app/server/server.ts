@@ -1,12 +1,13 @@
 import Fastify from "fastify";
 
 import { SERVER_SETTINGS } from "./constants/server.constant";
-import { BOOTSTRAP_PROTOCOL } from "./modules/bootstrap/constants/bootstrap.constant";
-import { bootstrapServer } from "./modules/bootstrap/bootstrap.module";
+import { inits } from "./inits";
+import { BootstrapModule } from "./modules/bootstrap";
 import { rootRoute } from "./routes/root.route";
 
 const { PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
-const { SHUTDOWN_TOKEN_HEADER } = BOOTSTRAP_PROTOCOL;
+
+const { bootstrapServer, shutdownTokenHeader } = BootstrapModule;
 
 const app = Fastify({
   logger: {
@@ -18,7 +19,7 @@ const app = Fastify({
         "req.headers.cookie",
         'req.headers["proxy-authorization"]',
         'res.headers["set-cookie"]',
-        `req.headers["${SHUTDOWN_TOKEN_HEADER}"]`,
+        `req.headers["${shutdownTokenHeader}"]`,
       ],
     },
     transport: {
@@ -29,6 +30,7 @@ const app = Fastify({
 });
 
 try {
+  await inits();
   await app.register(rootRoute);
   await bootstrapServer({
     app,

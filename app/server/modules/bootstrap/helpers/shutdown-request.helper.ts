@@ -1,19 +1,19 @@
 import axios from "axios";
 
 import { INTERNAL_PATHS } from "@server/constants/paths.constant";
-import { HOSTS, PROTOCOLS } from "@shared/constants/network.constant";
-
 import {
-  BOOTSTRAP_PROTOCOL,
-  BOOTSTRAP_TIMING,
-} from "../constants/bootstrap.constant";
-import type { ShutdownRequestConfig } from "../types/bootstrap.type";
+  HOSTS,
+  PROTOCOLS as NETWORK_PROTOCOLS,
+} from "@shared/constants/network.constant";
 
-const { SHUTDOWN_TOKEN_HEADER } = BOOTSTRAP_PROTOCOL;
-const { SHUTDOWN_REQUEST_TIMEOUT_MS } = BOOTSTRAP_TIMING;
+import { PROTOCOLS, TIMING } from "../constants";
+import type { ShutdownRequestConfig } from "../types";
+
+const { SHUTDOWN_TOKEN_HEADER } = PROTOCOLS;
+const { SHUTDOWN_REQUEST_TIMEOUT_MS } = TIMING;
 const { LOOPBACK_HOST_V4 } = HOSTS;
 const { SHUTDOWN } = INTERNAL_PATHS;
-const { HTTP } = PROTOCOLS;
+const { HTTP } = NETWORK_PROTOCOLS;
 
 /** POSTs to a sibling instance's cooperative-shutdown route; resolves true on 2xx, false on any failure or timeout. */
 const requestCooperativeShutdown = async ({
