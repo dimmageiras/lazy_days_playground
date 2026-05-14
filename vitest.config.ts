@@ -6,12 +6,7 @@ const vitestConfig = defineConfig({
   },
   test: {
     coverage: {
-      exclude: [
-        "**/*.d.ts",
-        "**/*.spec.{ts,tsx}",
-        "**/*.type.ts",
-        "**/index.ts",
-      ],
+      exclude: ["**/*.d.ts", "**/*.spec.{ts,tsx}"],
       include: ["app/shared/**/*.{ts,tsx}"],
       provider: "v8",
       reporter: ["text", "json", "html", "json-summary"],

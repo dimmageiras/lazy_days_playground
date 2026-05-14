@@ -9,7 +9,6 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@configs/*": ["./.configs/*"],
       "@shared/*": ["./app/shared/*"]
     },
     "types": ["node"],

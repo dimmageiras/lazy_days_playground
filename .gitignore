@@ -10,5 +10,8 @@
 # Node dependencies (installed from lockfile)
 /node_modules/
 
+# TypeScript incremental build cache (project-references buildinfo and emit)
+/.tsc-cache/
+
 # VS Code settings (developer-specific)
 /.vscode/settings.json

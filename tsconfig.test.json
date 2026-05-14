@@ -3,18 +3,22 @@
   "compilerOptions": {
     /* Projects */
     "composite": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.test.tsbuildinfo",
+    "tsBuildInfoFile": "./.tsc-cache/test/tsconfig.tsbuildinfo",
 
     /* Language and Environment */
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
 
     /* Modules */
+    "paths": {
+      "@configs/*": ["./.configs/*"],
+      "@shared/*": ["./app/shared/*"]
+    },
     "types": ["node", "vitest/globals"],
 
     /* Emit */
     "emitDeclarationOnly": true,
     "noEmit": false,
-    "outDir": "./node_modules/.tmp/tsc-test"
+    "outDir": "./.tsc-cache/test"
   },
   "include": [
     ".configs/**/*.ts",
