@@ -2,17 +2,21 @@
 
 ## Scope
 
-Cross-cutting **constants and helpers** consumed by multiple modules. The defining property: nothing here knows about Fastify, the bootstrap module, or any specific business domain. If it can't be reused by a hypothetical second module in this codebase, it doesn't belong in `shared`.
+Cross-cutting **constants, helpers, and shared types** consumed by multiple modules. The defining property: nothing here knows about Fastify, the bootstrap module, or any specific business domain. If it can't be reused by a hypothetical second module in this codebase, it doesn't belong in `shared`.
 
-Two sub-areas:
+Three sub-areas:
 
 - **Constants**: protocol/network primitives (HTTP status codes, methods, protocols, host literals), timing primitives (named durations)
 - **Helpers**: small, pure utility functions
+- **Types**: cross-cutting type declarations (branded primitives, utility types) that don't belong to any single module
 
 ## Files currently in scope
 
+These globs are operational hints for where the in-scope content currently lives — the conceptual scope above is canonical and survives a reorganisation.
+
 - `app/shared/constants/**` (HTTP primitives, timing constants, host literals)
 - `app/shared/helpers/**` (cross-cutting helpers)
+- `app/shared/types/**` (cross-cutting type declarations)
 
 ## Required skills
 

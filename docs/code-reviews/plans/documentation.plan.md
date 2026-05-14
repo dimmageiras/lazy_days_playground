@@ -8,6 +8,8 @@ Documentation has a different review bar than code. A bug in code shows up as a 
 
 ## Files currently in scope
 
+These globs are operational hints for where the in-scope content currently lives — the conceptual scope above is canonical and survives a reorganisation.
+
 - `docs/**/*.md` (operational docs, plans, guides)
 - `docs/adr/**/*.md` (architectural decision records, when present)
 - `CONTEXT.md` at repo root (domain glossary, when present)

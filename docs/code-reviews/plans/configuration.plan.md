@@ -2,22 +2,22 @@
 
 ## Scope
 
-Build, runtime, and package-manager configuration that governs how the codebase compiles, runs, and resolves modules. Concerns include:
+Build, runtime, and package-manager configuration that governs how the codebase compiles, runs, and resolves modules — the **tooling boundary**. Changes here can silently break dev, prod builds, or type-checking without showing up in feature code. Concerns include:
 
 - Package manifest and dependency hygiene
 - pnpm-specific configuration (workspace settings, supply-chain defaults)
 - TypeScript compiler options and path aliases
-- Vite configuration for runtime transforms (vite-node) and future client/SSR builds
+- Vite configuration for runtime transforms (vite-node) and future client/SSR builds (when present)
 - The relationship between tsconfig paths, package.json subpath imports, and Vite alias resolution
 
-This is the **tooling boundary**: changes here can silently break dev, prod builds, or type-checking, while never showing up in feature code.
-
 ## Files currently in scope
+
+These globs are operational hints for where the in-scope content currently lives — the conceptual scope above is canonical and survives a reorganisation.
 
 - `package.json` (deps, scripts, `imports` field, `engines`, `packageManager`)
 - `pnpm-workspace.yaml` (pnpm settings — even in single-package projects this is where pnpm config lives in v11+)
 - `tsconfig.json` (compiler options, paths, module resolution)
-- `vite.config.ts` (Vite resolve options, opt-in to built-in tsconfig-paths support)
+- `vite.config.ts` (Vite resolve options, opt-in to built-in tsconfig-paths support) (not yet present — applies when added)
 
 ## Required skills
 
@@ -57,7 +57,7 @@ This is the **tooling boundary**: changes here can silently break dev, prod buil
 
 ### Vite configuration
 
-- `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution (no need for `vite-tsconfig-paths` plugin in Vite 6+)
+- `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution (no need for `vite-tsconfig-paths` plugin in Vite 8+; pre-8 projects still need the plugin)
 - The config does **not** `import` from `"vite"` if `vite` isn't a direct dep — pnpm's strict node_modules will fail; a plain object export sidesteps this entirely (`defineConfig` is just a type helper)
 - Plugin order is reviewed when plugins exist (the first plugin to claim a request wins)
 - For future client/SSR work: the Environment API (`environments: { client, ssr }`) is the modern shape; flag adoption when a client is introduced
