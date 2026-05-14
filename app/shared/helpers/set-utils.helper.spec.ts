@@ -5,9 +5,19 @@ import { SetUtilsHelper } from "./set-utils.helper";
 const { hasSetValue } = SetUtilsHelper;
 
 const TEST_DATA = {
-  ABSENT_VALUE: "d",
+  MEMBERSHIP_CASES: [
+    {
+      name: "should return true if the value is in the set",
+      value: "a",
+      expected: true,
+    },
+    {
+      name: "should return false if the value is not in the set",
+      value: "d",
+      expected: false,
+    },
+  ],
   NEW_VALUE: "w",
-  PRESENT_VALUE: "a",
   get SET() {
     return new Set(["a", "b", "c"]);
   },
@@ -15,16 +25,12 @@ const TEST_DATA = {
 
 describe("SetUtilsHelper", () => {
   describe("hasSetValue", (it) => {
-    it("should return true if the value is in the set", ({ expect }) => {
-      const result = hasSetValue(TEST_DATA.SET, TEST_DATA.PRESENT_VALUE);
+    TEST_DATA.MEMBERSHIP_CASES.forEach(({ name, value, expected }) => {
+      it(name, ({ expect }) => {
+        const result = hasSetValue(TEST_DATA.SET, value);
 
-      expect(result).toBe(true);
-    });
-
-    it("should return false if the value is not in the set", ({ expect }) => {
-      const result = hasSetValue(TEST_DATA.SET, TEST_DATA.ABSENT_VALUE);
-
-      expect(result).toBe(false);
+        expect(result).toBe(expected);
+      });
     });
 
     it("should return true for a value added to the set after creation", ({

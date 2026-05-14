@@ -52,11 +52,20 @@ const TEST_DATA = {
       expected: "",
     },
   ],
-  EXPECTED_CAMEL_FROM_BASIC: "helloWorld",
-  EXPECTED_CAMEL_FROM_SNAKE: "userId",
+  CAMEL_CASES: [
+    {
+      name: "should convert a string to camelCase",
+      input: "hello world",
+      expected: "helloWorld",
+    },
+    {
+      name: "should convert snake case to camelCase",
+      input: "user_id",
+      expected: "userId",
+    },
+  ],
   EXPECTED_UPPER_FROM_BASIC: "HELLO WORLD",
   MAP_LOOKUP_MISS_INPUT: `&<>"'`,
-  SNAKE: "user_id",
 } as const;
 
 describe("StringUtilsHelper", () => {
@@ -96,16 +105,12 @@ describe("StringUtilsHelper", () => {
   });
 
   describe("safeCamelCase", (it) => {
-    it("should convert a string to camelCase", ({ expect }) => {
-      const result = safeCamelCase(TEST_DATA.BASIC);
+    TEST_DATA.CAMEL_CASES.forEach(({ name, input, expected }) => {
+      it(name, ({ expect }) => {
+        const result = safeCamelCase(input);
 
-      expect(result).toBe(TEST_DATA.EXPECTED_CAMEL_FROM_BASIC);
-    });
-
-    it("should convert snake case to camelCase", ({ expect }) => {
-      const result = safeCamelCase(TEST_DATA.SNAKE);
-
-      expect(result).toBe(TEST_DATA.EXPECTED_CAMEL_FROM_SNAKE);
+        expect(result).toBe(expected);
+      });
     });
   });
 

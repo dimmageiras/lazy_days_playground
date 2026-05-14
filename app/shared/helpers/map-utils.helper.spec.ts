@@ -5,11 +5,20 @@ import { MapUtilsHelper } from "./map-utils.helper";
 const { getMapValue } = MapUtilsHelper;
 
 const TEST_DATA = {
-  ABSENT_KEY: "d",
+  LOOKUP_CASES: [
+    {
+      name: "should return the value for a key present in the map",
+      key: "a",
+      expected: 1,
+    },
+    {
+      name: "should return undefined for a key absent from the map",
+      key: "d",
+      expected: undefined,
+    },
+  ],
   NEW_KEY: "w",
   NEW_VALUE: 99,
-  PRESENT_KEY: "a",
-  PRESENT_VALUE: 1,
   get MAP() {
     return new Map<string, number>([
       ["a", 1],
@@ -21,18 +30,12 @@ const TEST_DATA = {
 
 describe("MapUtilsHelper", () => {
   describe("getMapValue", (it) => {
-    it("should return the value for a key present in the map", ({ expect }) => {
-      const result = getMapValue(TEST_DATA.MAP, TEST_DATA.PRESENT_KEY);
+    TEST_DATA.LOOKUP_CASES.forEach(({ name, key, expected }) => {
+      it(name, ({ expect }) => {
+        const result = getMapValue(TEST_DATA.MAP, key);
 
-      expect(result).toBe(TEST_DATA.PRESENT_VALUE);
-    });
-
-    it("should return undefined for a key absent from the map", ({
-      expect,
-    }) => {
-      const result = getMapValue(TEST_DATA.MAP, TEST_DATA.ABSENT_KEY);
-
-      expect(result).toBeUndefined();
+        expect(result).toBe(expected);
+      });
     });
 
     it("should return the value for a key added to the map after creation", ({

@@ -129,21 +129,21 @@ describe("ObjectUtilsHelper", () => {
 
   describe("hasObjectKey", (it) => {
     it("should return true when the key exists", ({ expect }) => {
-      expect(hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.EXISTING)).toBe(
-        true,
-      );
+      expect(
+        hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.EXISTING),
+      ).toBe(true);
     });
 
     it("should return false when the key does not exist", ({ expect }) => {
-      expect(hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.ABSENT)).toBe(
-        false,
-      );
+      expect(
+        hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.ABSENT),
+      ).toBe(false);
     });
 
     it("should return false for an empty object", ({ expect }) => {
-      expect(hasObjectKey(TEST_DATA.OBJECTS.EMPTY, TEST_DATA.KEYS.EXISTING)).toBe(
-        false,
-      );
+      expect(
+        hasObjectKey(TEST_DATA.OBJECTS.EMPTY, TEST_DATA.KEYS.EXISTING),
+      ).toBe(false);
     });
 
     it("should return true for own array properties", ({ expect }) => {
@@ -165,7 +165,9 @@ describe("ObjectUtilsHelper", () => {
 
       if (hasObjectKey(value, TEST_DATA.NARROW.KEY)) {
         expectTypeOf(value[TEST_DATA.NARROW.KEY]).toEqualTypeOf<unknown>();
-        expect(value[TEST_DATA.NARROW.KEY]).toBe(TEST_DATA.NARROW.EXPECTED_VALUE);
+        expect(value[TEST_DATA.NARROW.KEY]).toBe(
+          TEST_DATA.NARROW.EXPECTED_VALUE,
+        );
       }
     });
   });

@@ -5,7 +5,10 @@ import { ArrayUtilsHelper } from "./array-utils.helper";
 const { isArray } = ArrayUtilsHelper;
 
 const TEST_DATA = {
-  EMPTY_ARRAY: [],
+  ARRAYS: [
+    { name: "should return true for an empty array", value: [] },
+    { name: "should return true for a populated array", value: [1, 2, 3] },
+  ],
   NON_ARRAYS: [
     { name: "should return false for null", value: null },
     { name: "should return false for undefined", value: undefined },
@@ -16,17 +19,14 @@ const TEST_DATA = {
     { name: "should return false for a Map", value: new Map() },
     { name: "should return false for a Set", value: new Set() },
   ],
-  POPULATED_ARRAY: [1, 2, 3],
 } as const;
 
 describe("ArrayUtilsHelper", () => {
   describe("isArray", (it) => {
-    it("should return true for an empty array", ({ expect }) => {
-      expect(isArray(TEST_DATA.EMPTY_ARRAY)).toBe(true);
-    });
-
-    it("should return true for a populated array", ({ expect }) => {
-      expect(isArray(TEST_DATA.POPULATED_ARRAY)).toBe(true);
+    TEST_DATA.ARRAYS.forEach(({ name, value }) => {
+      it(name, ({ expect }) => {
+        expect(isArray(value)).toBe(true);
+      });
     });
 
     TEST_DATA.NON_ARRAYS.forEach(({ name, value }) => {
