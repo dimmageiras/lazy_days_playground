@@ -4,6 +4,9 @@
 # Environment files (may contain secrets)
 .env.local*
 
+# Local logs and tool output
+/logs/
+
 # Node dependencies (installed from lockfile)
 /node_modules/
 
