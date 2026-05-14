@@ -61,12 +61,10 @@ const TEST_DATA = {
 
 describe("StringUtilsHelper", () => {
   describe("escapeHtml", (it) => {
-    beforeEach(() => {
-      mockGetMapValueProbe.forceMapLookupMiss = false;
-    });
-
     TEST_DATA.ESCAPE_HTML_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
+        mockGetMapValueProbe.forceMapLookupMiss = false;
+
         const result = escapeHtml(input);
 
         expect(result).toBe(expected);

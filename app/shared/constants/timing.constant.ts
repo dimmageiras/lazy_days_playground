@@ -11,7 +11,7 @@ const TIMING_IN_MS = Object.freeze({
   SECONDS_THIRTY: 30_000,
   SECONDS_THREE: 3_000,
   SECONDS_TWO: 2_000,
-});
+} as const);
 
 const TIMING_IN_S = Object.freeze({
   DAYS_SEVEN: 604_800,

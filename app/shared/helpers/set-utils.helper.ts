@@ -1,12 +1,9 @@
-import type { ValueOf } from "type-fest";
+import type { SetValue } from "@shared/types/app/utility-types";
 
-const hasSetValue = <
-  TSet extends Set<unknown>,
-  TValue extends ValueOf<TSet> | (string & {}),
->(
+const hasSetValue = <TSet extends ReadonlySet<unknown>>(
   set: TSet,
-  value: TValue,
-): value is NoInfer<TValue> => set.has(value);
+  value: SetValue<TSet> | (string & {}),
+): value is SetValue<TSet> => set.has(value);
 
 const SetUtilsHelper = Object.freeze({
   hasSetValue,

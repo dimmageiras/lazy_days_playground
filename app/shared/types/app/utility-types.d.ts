@@ -1,4 +1,4 @@
-import type { UnknownMap } from "type-fest";
+import type { KeyAsString, UnknownMap, UnknownSet, ValueOf } from "type-fest";
 
 type HasObjectKeyNarrow<TObject extends object, TKey extends string> =
   Extract<TObject, Record<TKey, unknown>> extends never
@@ -7,9 +7,6 @@ type HasObjectKeyNarrow<TObject extends object, TKey extends string> =
 
 type MapKey<TMap extends UnknownMap> =
   TMap extends ReadonlyMap<infer Key, unknown> ? Key : never;
-
-type MapValue<TMap extends UnknownMap> =
-  TMap extends ReadonlyMap<unknown, infer Value> ? Value : never;
 
 type MapValueAt<TMap extends UnknownMap, TKey> =
   TMap extends ReadonlyMap<infer Key, infer Value>
@@ -20,4 +17,19 @@ type MapValueAt<TMap extends UnknownMap, TKey> =
         : undefined
     : never;
 
-export type { HasObjectKeyNarrow, MapKey, MapValue, MapValueAt };
+type ObjectEntries<TObject extends Record<string, unknown>> = Array<
+  {
+    [Key in KeyAsString<TObject>]: [Key, ValueOf<TObject>];
+  }[KeyAsString<TObject>]
+>;
+
+type SetValue<TSet extends UnknownSet> =
+  TSet extends ReadonlySet<infer Value> ? Value : never;
+
+export type {
+  HasObjectKeyNarrow,
+  MapKey,
+  MapValueAt,
+  ObjectEntries,
+  SetValue,
+};

@@ -2,14 +2,14 @@ const BIND_ALL_IPV4 = "0.0.0.0" as const;
 
 const LOOPBACK_HOST_V4 = "127.0.0.1" as const;
 
-const LOOPBACK_HOSTS: Set<string> = new Set([
-  LOOPBACK_HOST_V4,
-  "::1",
-  // Dual-stack hosts surface IPv4 loopback connections as v4-mapped IPv6
-  // when the server binds to "::". Covers the case where the bind host ever
-  // changes from "0.0.0.0" to "::" without breaking the cooperative handoff.
-  "::ffff:127.0.0.1",
-]);
+const LOOPBACK_HOSTS: ReadonlySet<string> = Object.freeze(
+  new Set([
+    LOOPBACK_HOST_V4,
+    "::1",
+    // IPv4 loopback as it appears on dual-stack sockets (v4-mapped IPv6).
+    "::ffff:127.0.0.1",
+  ] as const),
+);
 
 const HOSTS = Object.freeze({
   BIND_ALL_IPV4,
@@ -36,17 +36,17 @@ const HTTP_STATUS = Object.freeze({
   SERVICE_UNAVAILABLE: 503,
 } as const);
 
-const SAFE_HTTP_METHODS = new Set(["GET", "HEAD", "OPTIONS", "TRACE"] as const);
-const UNSAFE_HTTP_METHODS = new Set([
-  "DELETE",
-  "PATCH",
-  "POST",
-  "PUT",
-] as const);
-export {
-  HOSTS,
-  HTTP_PROTOCOLS,
-  HTTP_STATUS,
-  SAFE_HTTP_METHODS,
-  UNSAFE_HTTP_METHODS,
-};
+const SAFE_HTTP_METHODS = Object.freeze(
+  new Set(["GET", "HEAD", "OPTIONS", "TRACE"] as const),
+);
+
+const UNSAFE_HTTP_METHODS = Object.freeze(
+  new Set(["DELETE", "PATCH", "POST", "PUT"] as const),
+);
+
+const HTTP_METHODS = Object.freeze({
+  SAFE: SAFE_HTTP_METHODS,
+  UNSAFE: UNSAFE_HTTP_METHODS,
+} as const);
+
+export { HOSTS, HTTP_METHODS, HTTP_PROTOCOLS, HTTP_STATUS };

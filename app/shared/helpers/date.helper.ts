@@ -18,7 +18,7 @@ const formatTimestampLocal = (date: ConfigType): string => {
 };
 
 const getCurrentISOTimestamp = (): string => {
-  return dayjs().utc().toISOString();
+  return dayjs().toISOString();
 };
 
 const getCurrentUTCDate = (): Date => {
@@ -32,7 +32,7 @@ const getFutureUTCDate = (
 };
 
 const toISOTimestamp = (date: ConfigType): string => {
-  return dayjs(date).utc().toISOString();
+  return dayjs(date).toISOString();
 };
 
 const DateHelper = Object.freeze({
