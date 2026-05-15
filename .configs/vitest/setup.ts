@@ -1,8 +1,8 @@
 import "@testing-library/jest-dom/vitest";
 
-import { sharedMocks } from "./mocks/shared";
+import { sharedMocks } from "./mocks";
 
-const vitestHelpers = () => {
+const vitestHelpers = (): typeof sharedMocks => {
   return {
     ...sharedMocks,
   };
