@@ -8,7 +8,7 @@ The pair is intentional: **plans define what to check; this folder records what 
 
 ## Files in this folder
 
-For every plan named `<area>.plan.md` under `../plans/`, this folder may contain a matching `<area>.finding.md`. The shared `<area>` prefix keeps plans and findings aligned alphabetically, and the differing suffixes make it easy to spot when an area is plan-but-no-findings (review pending) or findings-but-no-plan (orphaned output).
+For every plan named `<area>.plan.md` under `../plans/`, this folder may contain a matching `<area>.finding.md`. The shared `<area>` prefix lets a reader predict the matching findings filename from a plan filename (and vice versa), and the differing suffixes make it easy to spot when an area is plan-but-no-findings (review pending) or findings-but-no-plan (orphaned output).
 
 Additional files that may live here:
 

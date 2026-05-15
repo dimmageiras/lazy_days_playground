@@ -22,6 +22,7 @@ const findPidOnPort = (
   new Promise((resolve) => {
     if (process.platform !== "win32") {
       resolve({ found: false, reason: "unsupported-platform" });
+
       return;
     }
 
@@ -49,11 +50,13 @@ const findPidOnPort = (
           "netstat exited non-zero.",
         );
         resolve({ found: false, reason: "no-pid" });
+
         return;
       }
 
       const match = stdout.split("\n").find((row) => {
         const cols = row.trim().split(/\s+/);
+
         // Windows netstat -ano LISTENING row: [proto, localAddr, foreignAddr, "LISTENING", pid]
         if (cols.length < 5 || cols[3] !== "LISTENING") {
           return false;
@@ -62,10 +65,11 @@ const findPidOnPort = (
         return cols[1]?.endsWith(`:${port}`) ?? false;
       });
 
-      const pid = match ? Number(match.trim().split(/\s+/).pop()) : NaN;
+      const pid = match ? Number(match.trim().split(/\s+/).pop()) : Number.NaN;
 
       if (Number.isFinite(pid) && pid > 0) {
         resolve({ found: true, pid });
+
         return;
       }
 

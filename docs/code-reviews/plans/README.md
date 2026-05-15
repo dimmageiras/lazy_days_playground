@@ -15,13 +15,13 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 
 ## Areas
 
-| Area | Plan | Triggers (high-level) |
-| --- | --- | --- |
-| Server composition | [server-composition.plan.md](./server-composition.plan.md) | The server entry, top-level wiring, route registration into the Fastify instance |
-| Bootstrap module | [bootstrap.plan.md](./bootstrap.plan.md) | The single-instance handoff logic: lifecycle setup, port claim, cooperative-then-force shutdown, the shutdown HTTP route |
-| Shared utilities | [shared.plan.md](./shared.plan.md) | Cross-cutting constants and helpers consumed by multiple modules |
-| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files |
-| Documentation | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files |
+| Area                  | Plan                                                       | Triggers (high-level)                                                                                                    |
+| --------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Server composition    | [server-composition.plan.md](./server-composition.plan.md) | The server entry, top-level wiring, route registration into the Fastify instance                                         |
+| Bootstrap module      | [bootstrap.plan.md](./bootstrap.plan.md)                   | The single-instance handoff logic: lifecycle setup, port claim, cooperative-then-force shutdown, the shutdown HTTP route |
+| Shared utilities      | [shared.plan.md](./shared.plan.md)                         | Cross-cutting constants and helpers consumed by multiple modules                                                         |
+| Project configuration | [configuration.plan.md](./configuration.plan.md)           | Build, runtime, and package-manager configuration files                                                                  |
+| Documentation         | [documentation.plan.md](./documentation.plan.md)           | Markdown content under `docs/**`, ADRs, CONTEXT files                                                                    |
 
 ## Conventions
 

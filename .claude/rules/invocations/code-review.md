@@ -53,6 +53,6 @@ When the review targets a GitHub PR, post the findings as PR comments via the `g
 - Top-level review verdict → `gh pr review <pr> --approve` / `--request-changes` / `--comment` with a summary body.
 - One-off discussion comment (no review verdict) → `gh pr comment <pr> --body-file <tmp>`.
 
-`GH_TOKEN` is set in `.claude/settings.local.json` — the comments will be posted from the Claude reviewer account, not the user's personal account.
+`GH_TOKEN` is provided to the agent's environment by repo-local settings (currently `.claude/settings.local.json`; movable) — the comments will be posted from the Claude reviewer account, not the user's personal account.
 
 Do not paste review findings only into the chat when a PR exists; the goal is for the comments to live on GitHub where the author can act on them.

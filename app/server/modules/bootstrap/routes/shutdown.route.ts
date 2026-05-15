@@ -1,8 +1,8 @@
+import { INTERNAL_PATHS } from "@server/constants/paths.constant";
 import type { FastifyPluginAsync } from "fastify";
 import { Buffer } from "node:buffer";
 import { timingSafeEqual } from "node:crypto";
 
-import { INTERNAL_PATHS } from "@server/constants/paths.constant";
 import { HOSTS, HTTP_STATUS } from "@shared/constants/network.constant";
 
 import { BOOTSTRAP_PROTOCOL } from "../constants/bootstrap.constant";
@@ -41,7 +41,10 @@ const createShutdownRoute =
       // legitimate callers (correct IP + correct token) flow through to 202.
       if (
         !LOOPBACK_HOSTS.has(request.ip) ||
-        !isTokenValid(request.headers[SHUTDOWN_TOKEN_HEADER], token)
+        !isTokenValid(
+          Reflect.get(request.headers, SHUTDOWN_TOKEN_HEADER),
+          token,
+        )
       ) {
         return response.code(UNAUTHORIZED).send({ ok: false });
       }
@@ -51,7 +54,7 @@ const createShutdownRoute =
       // app.close() takes the listener down. Fastify's onResponse hook is
       // app-wide and not the right granularity here.
       response.raw.on("finish", () => {
-        void closeListeners.close();
+        closeListeners.close();
       });
 
       return response.code(ACCEPTED).send({ ok: true });

@@ -1,8 +1,8 @@
 import Fastify from "fastify";
 
 import { SERVER_SETTINGS } from "./constants/server.constant";
-import { BOOTSTRAP_PROTOCOL } from "./modules/bootstrap/constants/bootstrap.constant";
 import { bootstrapServer } from "./modules/bootstrap/bootstrap.module";
+import { BOOTSTRAP_PROTOCOL } from "./modules/bootstrap/constants/bootstrap.constant";
 import { rootRoute } from "./routes/root.route";
 
 const { PORT, SHUTDOWN_TOKEN } = SERVER_SETTINGS;
