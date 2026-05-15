@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /* Projects */
+    "composite": true,
+    "tsBuildInfoFile": "./.tsc-cache/app/tsconfig.tsbuildinfo",
+
+    /* Emit */
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./.tsc-cache/app"
+  },
+  "include": ["app/**/*.ts", "app/**/*.tsx"],
+  "exclude": ["**/*.spec.ts", "**/*.spec.tsx"]
+}

@@ -1,0 +1,14 @@
+# Explicit empty allowlist for install/postinstall scripts. The current dep tree
+# has no native build steps, so this is enforced. Add an entry here only after
+# auditing the package's build script.
+allowBuilds: []
+
+# Defence in depth: reject deps published with exotic specifiers (git+, file:, http:)
+# anywhere in the resolution graph. Default is true; pinned here so a future
+# loosening is a visible diff, not an inherited regression.
+blockExoticSubdeps: true
+
+# Accept 0-day packages — this is a learning playground with no production deploy.
+# pnpm v11's default (1440 minutes / 24 hours) is a left-pad-style supply-chain
+# defence; revisit before any external release.
+minimumReleaseAge: 0

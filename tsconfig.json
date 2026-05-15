@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "moduleDetection": "force",
+
+    /* Modules */
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@shared/*": ["./app/shared/*"]
+    },
+    "types": ["node"],
+    "noUncheckedSideEffectImports": true,
+    "resolveJsonModule": true,
+
+    /* Emit */
+    "noEmit": true,
+
+    /* Interop Constraints */
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "esModuleInterop": true,
+
+    /* Type Checking */
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+
+    /* Completeness */
+    "skipLibCheck": true
+  },
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.test.json" }
+  ]
+}

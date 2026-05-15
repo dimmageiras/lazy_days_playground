@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    /* Projects */
+    "composite": true,
+    "tsBuildInfoFile": "./.tsc-cache/test/tsconfig.tsbuildinfo",
+
+    /* Language and Environment */
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+
+    /* Modules */
+    "paths": {
+      "@configs/*": ["./.configs/*"],
+      "@shared/*": ["./app/shared/*"]
+    },
+    "types": ["node", "vitest/globals"],
+
+    /* Emit */
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "outDir": "./.tsc-cache/test"
+  },
+  "include": [
+    ".configs/**/*.ts",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "vitest.config.ts"
+  ],
+  "references": [{ "path": "./tsconfig.app.json" }]
+}
