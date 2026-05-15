@@ -12,3 +12,6 @@ blockExoticSubdeps: true
 # pnpm v11's default (1440 minutes / 24 hours) is a left-pad-style supply-chain
 # defence; revisit before any external release.
 minimumReleaseAge: 0
+
+patchedDependencies:
+  '@types/eslint-plugin-security@3.0.1': patches/@types__eslint-plugin-security@3.0.1.patch

@@ -1,0 +1,12 @@
+diff --git a/index.d.ts b/index.d.ts
+index c18a18133eec7e2fd1c631cc393ec7755d4ac79e..a0de7f998b0171ce53af458e2608e661acbaf51d 100644
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -7,6 +7,6 @@ export const rules: Record<string, Rule.RuleModule>;
+ export const rulesConfig: Record<string, Linter.Severity>;
+ 
+ export const configs: {
+-    readonly "recommended": Linter.Config;
++    readonly "recommended": import("@eslint/core").ConfigObject;
+     readonly "recommended-legacy": Linter.LegacyConfig;
+ };

@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    /* Projects */
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsc-cache/root/tsconfig.tsbuildinfo",
+
     /* Language and Environment */
     "target": "ESNext",
     "lib": ["ESNext"],
@@ -35,6 +39,7 @@
     "skipLibCheck": true
   },
   "files": [],
+  "include": ["eslint.config.ts"],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.test.json" }

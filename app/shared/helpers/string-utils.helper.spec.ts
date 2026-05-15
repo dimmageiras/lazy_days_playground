@@ -1,7 +1,7 @@
+import { vitestHelpers } from "@configs/vitest/setup";
 import { describe } from "vitest";
 
 import { StringUtilsHelper } from "./string-utils.helper";
-import { vitestHelpers } from "@configs/vitest/setup";
 
 const { mockGetMapValueProbe } = vitestHelpers();
 
