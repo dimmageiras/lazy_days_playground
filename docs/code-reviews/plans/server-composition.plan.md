@@ -23,7 +23,7 @@ Lives in the server's top-level files: the entry script and any sibling constant
 
 ### Correctness
 
-- Plugin registration order is sound — anything that depends on `closeListeners` runs after `setupCloseListeners`
+- Plugin registration order is sound — anything that depends on the process-level graceful-shutdown listeners runs after the bootstrap module has installed them
 - Top-level await flows are awaited (no dangling promises at module scope)
 - Business routes are registered against the same Fastify instance that the bootstrap factory received
 
@@ -42,7 +42,7 @@ Lives in the server's top-level files: the entry script and any sibling constant
 
 - `app.register(plugin, options)` is used for any plugin that needs encapsulation
 - Logging is configured at instance creation, not patched onto the instance later
-- `claimPort` (or equivalent listen-orchestrator) runs **after** plugins are registered so the shutdown route is live before the listener accepts traffic
+- The listen orchestrator runs **after** plugins are registered so the shutdown route is live before the listener accepts traffic
 
 ### Performance
 

@@ -30,7 +30,7 @@ pnpm --parallel run "/^dev:/"
 
 `--parallel` removes any ordering constraint and runs all matched scripts at the same time, with no cap on concurrency. For a small set of independent dev processes (e.g. one server, one client) this is the simplest possible orchestrator: pnpm spawns each, forwards Ctrl+C to all of them, and reports their output interleaved on the terminal.
 
-pnpm's documentation pairs `--parallel` with `--recursive` for monorepos; in a single-package project, combining `--parallel` with the regex-selector form picks up the same concurrent-spawn behaviour on current pnpm v11 releases. Treat the single-package case as empirically supported rather than formally specified — verify against the installed pnpm version if the behaviour ever drifts.
+pnpm's documentation pairs `--parallel` with `--recursive` for monorepos; in a single-package project, combining `--parallel` with the regex-selector form picks up the same concurrent-spawn behaviour on current pnpm v11 releases. **This single-package use is undocumented; treat it as best-effort and do not rely on it for ordered CI workflows.**
 
 ### Two reasons to skip `--parallel`
 
@@ -79,11 +79,11 @@ In a single-package project, this gotcha doesn't apply — there is no inter-pac
 
 ## When to reach for an external orchestrator
 
-pnpm's built-in parallelism covers most cases. Reach for `concurrently` (or similar) only when:
+pnpm's built-in parallelism covers most cases. Reach for an external parallel runner (e.g. `concurrently` as of writing) only when:
 
 - You need **named, coloured output prefixes** to tell streams apart visually. pnpm prefixes each line with the originating script name but doesn't colour-code.
-- You need **fail-fast semantics**: kill all sibling scripts as soon as one exits non-zero. `concurrently --kill-others-on-fail` does this.
-- You're integrating with a complex multi-process workflow where you need ordering primitives (e.g. "wait until process A logs `ready`, then start B"). `concurrently` doesn't do this either; reach for a proper process manager.
+- You need **fail-fast semantics**: kill all sibling scripts as soon as one exits non-zero.
+- You're integrating with a complex multi-process workflow where you need ordering primitives (e.g. "wait until process A logs `ready`, then start B"). A parallel runner doesn't do this either; reach for a proper process manager.
 
 For "start two or three independent dev processes and Ctrl+C them together", pnpm's regex + `--parallel` is sufficient and adds no dependencies.
 
@@ -139,8 +139,8 @@ A practical guide for picking the right orchestration shape:
 | Same as above, in CI with one-shot scripts                 | `pnpm --parallel --aggregate-output run "/^lint:/"` |
 | Multiple packages in a monorepo, ordering matters          | `pnpm -r run build` (no `--parallel`)               |
 | Multiple packages, ordering doesn't matter                 | `pnpm -r --parallel run lint`                       |
-| Need to kill all on first failure                          | `concurrently --kill-others-on-fail`                |
-| Need coloured per-stream labels                            | `concurrently -n a,b -c blue,green`                 |
+| Need to kill all on first failure                          | A parallel runner with fail-fast across processes   |
+| Need coloured per-stream labels                            | A parallel runner with coloured per-stream labels   |
 
 ## References
 

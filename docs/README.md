@@ -4,6 +4,7 @@ Reference material and process documentation for this project. Conceptual conten
 
 | Folder          | Purpose                                                                                     |
 | --------------- | ------------------------------------------------------------------------------------------- |
+| `adr/`          | Architectural decision records (status, context, decision, alternatives, consequences)      |
 | `code-reviews/` | Area-specific review workflow: plans (templates) and findings (outputs from running a plan) |
 | `pnpm/`         | Standalone guides for pnpm features the project uses                                        |
 | `testing/`      | Test-suite conventions: file layout, TEST_DATA, mocks, assertions, concurrency              |
@@ -11,7 +12,7 @@ Reference material and process documentation for this project. Conceptual conten
 
 ## Adding new content
 
-- An ADR (architectural decision record) goes under `docs/adr/` using sequential `NNNN-slug.md` numbering. The template fields (Status, Context, Decision, Alternatives Considered, Consequences) are described in the `documentation-and-adrs` skill; the folder layout and numbering convention are described in the `grill-with-docs` ADR-FORMAT reference. Where the two skills differ on location, follow this project's `docs/adr/`.
+- An ADR (architectural decision record) goes under `docs/adr/` using sequential four-digit `0001-slug.md` numbering. The template fields (Status, Context, Decision, Alternatives Considered, Consequences) are described in the `documentation-and-adrs` skill; the folder layout and numbering convention are described in the `grill-with-docs` ADR-FORMAT reference. Where the two skills differ on location, follow this project's `docs/adr/`.
 - A domain-glossary entry goes in `CONTEXT.md` at the repo root. Create it lazily when a second doc reuses the same term.
 - A topic-specific reference (similar to `pnpm/` or `ts/`) goes in its own folder named after the topic.
 

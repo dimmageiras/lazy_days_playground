@@ -10,7 +10,7 @@ Accepted
 
 ## Context
 
-The TypeScript source for this project runs directly through `vite-node` in dev and is intended to remain runnable by Node's native type-stripping (`node --experimental-strip-types`, stable on the LTS line the project targets) without a separate compile-and-emit step. Type stripping is a syntactic transform: the loader removes type-only syntax tokens and runs the resulting JavaScript. Anything the loader can't simply erase — `enum`, `namespace`, parameter properties (`constructor(private name: string)`), or value-position type imports — is a parse error at runtime, even though `tsc` accepts them.
+The TypeScript source for this project runs directly through `vite-node` in dev and is intended to remain runnable by Node's native type-stripping on a Node version on which the feature is stable (`node --experimental-strip-types`), without a separate compile-and-emit step. Type stripping is a syntactic transform: the loader removes type-only syntax tokens and runs the resulting JavaScript. Anything the loader can't simply erase — `enum`, `namespace`, parameter properties (`constructor(private name: string)`), or value-position type imports — is a parse error at runtime, even though `tsc` accepts them.
 
 The TypeScript compiler exposes two flags that, together, statically reject the syntax shapes type stripping cannot handle:
 
@@ -38,7 +38,7 @@ A PR that disables, narrows, or carves out exceptions from any of these flags mu
 ### Adopt ts-node / tsx / @swc-node as the runtime loader
 
 - Pros: Same dev-loop simplicity as type stripping; full TypeScript syntax accepted at runtime.
-- Cons: Introduces a third-party transformer in the hot path; pins the project to its release cadence and bug surface; defeats the "no extra transformer needed" benefit Node 24+ explicitly offers.
+- Cons: Introduces a third-party transformer in the hot path; pins the project to its release cadence and bug surface; defeats the "no extra transformer needed" benefit the runtime's native type-stripping feature explicitly offers.
 - Rejected: Native type stripping is the simpler runtime contract and has the platform's maintenance backing.
 
 ### Leave the flags off and rely on review/CI
@@ -51,5 +51,5 @@ A PR that disables, narrows, or carves out exceptions from any of these flags mu
 
 - The codebase cannot use `enum` (use `as const` object literals + union types instead), `namespace` value form (use plain object literals or modules), parameter properties (declare and assign in the constructor body), or value-position type imports (always `import type` for type-only references).
 - A new contributor surprised by an `erasableSyntaxOnly` error should be linked to this ADR rather than have the flag relaxed.
-- If Node retires native type stripping (unlikely on the project's targeted LTS line), this ADR is superseded by a new ADR choosing an alternative runtime loader; the flags are relaxed there.
+- If Node retires native type stripping, this ADR is superseded by a new ADR choosing an alternative runtime loader; the flags are relaxed there.
 - The discipline is enforced at typecheck time only — runtime breakage would happen if `tsc` were skipped in CI. Keep typecheck in the required-checks set.

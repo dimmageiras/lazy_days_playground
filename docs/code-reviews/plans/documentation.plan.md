@@ -63,7 +63,7 @@ Apply the **rename test**: if every file in the repo were renamed and reorganise
 
 ### Cross-references
 
-- Links to other docs use relative paths, not absolute URLs (so they survive a repo move)
+- Links to other docs use relative paths, not absolute URLs (so they survive a repo move) — relative paths for in-repo targets, absolute for upstream
 - Links to project rules (`.claude/rules/**`) are kept if the rule is invoked by the doc
 - Broken links would have been caught by a link checker; if no link checker is configured, flag
 

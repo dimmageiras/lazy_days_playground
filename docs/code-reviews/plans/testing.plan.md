@@ -12,7 +12,7 @@ The project's **test suite and the infrastructure that makes specs runnable**. C
 - The pollution probe used to detect cross-test mock leaks
 - The Vitest runner configuration that governs concurrency, isolation, coverage, and setup
 
-The defining property: it exists to **verify behaviour**, not to provide it. A change here must not be confused with a change to production code — even when it lives close to the source.
+The defining property: it exists to **verify behaviour**, not to provide it. A change here must not be confused with a change to production code — even when it lives close to the source. Test code only — the production source under test is reviewed under the matching area plan, not here.
 
 Testing has a different review bar than production code. A bug in a spec shows up as a flaky test, a false-positive merge, or a regression that slips past CI; a bug in test infrastructure shows up as silent cross-test pollution that no single failing test can explain. The review focuses on **isolation under concurrency** and **adherence to the project's testing conventions**.
 
@@ -27,8 +27,6 @@ These globs are operational hints for where the in-scope content currently lives
 - `vitest.config.ts` (runner config: pool, isolation, concurrency, setup files, coverage)
 - `tsconfig.test.json` (only the parts that affect spec compilation — paths the specs rely on)
 
-Out of this plan: the source code under test (`app/**/*.ts` excluding specs) lives in the area plans for those modules.
-
 ## Required skills
 
 | Skill                     | Why                                                                                                               |
@@ -42,7 +40,7 @@ Out of this plan: the source code under test (`app/**/*.ts` excluding specs) liv
 
 ## Pair with the project's testing documentation
 
-`docs/testing/README.md` is the **project doc that wins over the upstream Vitest skill** wherever the two diverge. Read it first. It captures decisions the upstream skill cannot know about: file layout, `TEST_DATA` shape, scope helpers, test-app factory, assertion style, concurrency rules, naming grammar.
+`docs/testing/README.md` is the **project doc that wins over the upstream Vitest skill** wherever the two diverge. Read it first. It captures decisions the upstream skill cannot know about: file layout, the frozen test-data object's shape, scope helpers, test-app factory, assertion style, concurrency rules, naming grammar.
 
 Every review focus below either restates a project-doc rule or sharpens it for review use.
 
@@ -50,7 +48,7 @@ Every review focus below either restates a project-doc rule or sharpens it for r
 
 ### File layout
 
-- Spec follows the canonical section order: imports → hoisted mocks → utility destructure → setup destructure → scope handles → pollution probe registration → subject destructure → `TEST_DATA` → `RESET_MOCK_ARRAY` → spec-local helpers → `describe` blocks
+- Spec follows the canonical section order: imports → hoisted mocks → utility destructure → setup destructure → scope handles → pollution probe registration → subject destructure → the spec's frozen test-data object → the module-level mock-reset array (when present) → spec-local helpers → `describe` blocks
 - Imports follow the grouping convention: `@configs` aliases, then npm/node + `vitest`, blank line, then `@shared` aliases, blank line, then local `./` paths; `import type` stays separate from value imports
 - Two-level `describe` nesting: outer is the namespace/class name, inner is the function under test; both labels are referenced by name, not paraphrased
 
@@ -91,14 +89,14 @@ The project runs tests **concurrently within a file**, and files run in parallel
 ### Resetting mocks
 
 - `clearMocks` is globally enabled — every spy's `mock.calls`, `mock.instances`, `mock.results` reset per test
-- Implementations and return-value queues are **not** wiped by `clearMocks`. **Prefer `mockResolvedValueOnce` / `mockReturnValueOnce` / `mockImplementationOnce`** for per-test setup — the `Once` queue is self-cleaning and needs no reset hook, which keeps specs free of cleanup boilerplate. Reach for `RESET_MOCK_ARRAY` + the test-app factory's `mocksToReset` option (or `mockReset()` inside `onTestFinished` when no test-app is involved) only when a queued behaviour genuinely outlives a single call, or when the spec installs a persistent `mockImplementation` that must be unwound between tests
+- Implementations and return-value queues are **not** wiped by `clearMocks`. **Prefer `mockResolvedValueOnce` / `mockReturnValueOnce` / `mockImplementationOnce`** for per-test setup — the `Once` queue is self-cleaning and needs no reset hook, which keeps specs free of cleanup boilerplate. Reach for the module-level mock-reset array + the test-app factory's reset-on-cleanup option for mock queues (or `mockReset()` inside `onTestFinished` when no test-app is involved) only when a queued behaviour genuinely outlives a single call, or when the spec installs a persistent `mockImplementation` that must be unwound between tests
 - Do **not** call `mockReset()` on a shared singleton from inline cleanup mid-test under concurrent execution — it wipes state other concurrent tests still depend on
 
 ### Test-app factory
 
-- Tests that need a Fastify instance use the project's single `createTestApp(onTestFinished, options)` factory — they do not construct an instance directly
+- Tests that need a Fastify instance use the project's shared test-app factory rather than constructing one inline; the factory is responsible for per-test isolation and cleanup registration
 - The factory builds a fresh app per test (logger disabled) and registers cleanup with `onTestFinished` — no manual `app.close()` calls
-- `mocksToReset` is the supported channel for queue-reset cleanup; `resetFn` is for free-form one-off restore work
+- The factory's reset-on-cleanup option for mock queues is the supported channel for queue-reset cleanup; its free-form cleanup-callback option is for one-off restore work
 
 ### Assertion style
 
@@ -112,7 +110,7 @@ The three canonical forms are applied uniformly:
 
 The wrapper matchers `toHaveBeenCalled`, `toHaveBeenCalledTimes`, `toHaveBeenCalledWith` are **intentionally avoided**. Flag uses of those wrappers — they read further from the spy's actual state and hide inconsistencies.
 
-For rejected promises: `await expect(fn()).rejects.toBeInstanceOf(ErrorClass)` or `.rejects.toBe(errorInstance)`. For asymmetric matchers: prefer the test-context `expect` from the destructured callback parameter; use a `vitest`-imported static `ExpectStatic` parameter when matchers must be built inside `TEST_DATA` factory functions.
+For rejected promises: `await expect(fn()).rejects.toBeInstanceOf(ErrorClass)` or `.rejects.toBe(errorInstance)`. For asymmetric matchers: prefer the test-context `expect` from the destructured callback parameter; use a `vitest`-imported static `ExpectStatic` parameter when matchers must be built inside the spec's test-data factory functions.
 
 ### Type-level assertions
 
@@ -134,7 +132,7 @@ For rejected promises: `await expect(fn()).rejects.toBeInstanceOf(ErrorClass)` o
 
 ### Security and supply chain (within the test surface)
 
-- No secrets in spec bodies, fixtures, or `TEST_DATA`
+- No secrets in spec bodies, fixtures, or the spec's frozen test-data object
 - External-fetch mocks return shapes the production code actually accepts — flag drift between the mock's response shape and the parser's expectation
 - Tests that spawn child processes or touch the filesystem do so under a sandbox helper, not via raw `child_process.spawn` / `node:fs` calls — flag unsandboxed direct calls
 

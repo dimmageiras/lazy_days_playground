@@ -47,7 +47,7 @@ The module exposes a single async orchestrator function consuming the Fastify in
 
 ### Race conditions and Windows quirks
 
-- Two consecutive port-availability checks against the same port don't collide on socket release (the listen-then-fail pattern handles this; an isolated `getPort`-style probe does not)
+- Two consecutive port-availability checks against the same port don't collide on socket release (the listen-then-fail pattern handles this; an isolated availability probe does not)
 - Signal mapping on Windows is documented in the comments or implicit in code (SIGTERM is delivered as immediate kill on Windows; the cooperative HTTP route is the cross-platform path)
 
 ### Security

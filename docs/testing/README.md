@@ -66,7 +66,7 @@ Within either surface:
 ## Resetting mocks
 
 - **`clearMocks` is enabled globally** — every spy's `mock.calls`, `mock.instances`, `mock.results` reset before each test runs. Implementations and return-value overrides are **not** wiped.
-- For shared singleton mocks that need their implementation/return-value queue reset between tests, pass the module-level mock-reset array to the test-app factory's `mocksToReset` option, or call `mockReset()` on the array elements inside `onTestFinished` when no test-app is involved.
+- For shared singleton mocks that need their implementation/return-value queue reset between tests, pass the module-level mock-reset array to the test-app factory's reset-on-cleanup option for mock queues, or call `mockReset()` on the array elements inside `onTestFinished` when no test-app is involved.
 - Do **not** call `mockReset()` on a shared singleton from inline cleanup mid-flight under concurrent execution — it wipes state other concurrent tests are still depending on.
 
 ## Scope helpers
@@ -80,11 +80,11 @@ Both are safe under concurrent execution because the scope is async-local, not m
 
 ## Test-app factory
 
-Tests that need a Fastify instance use the project's test-app factory, which receives an `onTestFinished` handle plus an options bag. The factory:
+Tests that need a Fastify instance use the project's shared test-app factory, which receives the per-test cleanup handle plus an options bag. The factory:
 
 - Constructs a fresh app per test (logger disabled).
 - Registers the cleanup automatically with `onTestFinished` — no manual `app.close()` calls.
-- Accepts a `mocksToReset` option (array of spies to `mockReset` on cleanup) and a free-form `resetFn` for one-off restore work (e.g. restoring a stubbed `process.platform`).
+- Accepts a reset-on-cleanup option for mock queues (array of spies the factory will `mockReset` on cleanup) and a free-form cleanup-callback option for one-off restore work (e.g. restoring a stubbed `process.platform`).
 
 Specs that don't need an app (e.g. testing a pure HTTP-client wrapper) skip the factory and reset shared mocks manually inside `onTestFinished`.
 
@@ -115,7 +115,7 @@ Use `expectTypeOf` for compile-time checks. Co-locate them with the runtime asse
 - The implication: every mock must be designed so concurrent tests **cannot collide** on it.
   - For callback-capture patterns, key a registry off a per-test identity (e.g. a logger reference unique to each test's app) so concurrent lookups never cross paths. Avoid FIFO `mockImplementationOnce` queues — the await order is not guaranteed to match the queue order.
   - For process-global / globalThis-global state (`process.exit`, `process.kill`, ambient globals), use the project's `AsyncLocalStorage`-backed scope helpers and `run(impl, fn)` wrappers so each test's override is isolated to its async context.
-  - For shared spies that need their queues cleared, register `mocksToReset` with the test-app factory so cleanup is bound to the right test's lifecycle.
+  - For shared spies that need their queues cleared, register the reset list with the test-app factory's reset-on-cleanup option so cleanup is bound to the right test's lifecycle.
 
 ## Fake timers
 
@@ -125,7 +125,7 @@ Use `expectTypeOf` for compile-time checks. Co-locate them with the runtime asse
 
 ## Pollution debugging
 
-A pollution probe is registered per spec via `trackEndStateAfterEach(label)`. When the project's debug flag is set, it logs the end-of-test mock-call counts for every spy in the shared mock set, prefixed with the spec label. Useful when investigating cross-test mock leaks under non-isolated execution.
+A pollution probe is registered per spec via the shared helper that hooks `afterEach` and logs end-of-test mock-call counts for every spy in the shared mock set, prefixed with the spec label, when the project's debug flag is set. Useful when investigating cross-test mock leaks under non-isolated execution.
 
 ## Coverage
 
