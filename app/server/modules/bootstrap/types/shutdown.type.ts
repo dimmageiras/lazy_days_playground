@@ -5,7 +5,7 @@ import type {
   FastifyTypeProviderDefault,
   RawServerDefault,
 } from "fastify";
-import type { IncomingMessage, ServerResponse } from "http";
+import type { IncomingMessage, ServerResponse } from "node:http";
 
 type CloseWithGraceReturn = ReturnType<typeof closeWithGrace>;
 
