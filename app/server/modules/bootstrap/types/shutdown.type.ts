@@ -10,13 +10,13 @@ import type { IncomingMessage, ServerResponse } from "http";
 type CloseWithGraceReturn = ReturnType<typeof closeWithGrace>;
 
 interface ShutdownRequestConfig {
-  readonly log: FastifyInstance<
+  readonly app: FastifyInstance<
     RawServerDefault,
     IncomingMessage,
     ServerResponse<IncomingMessage>,
     FastifyBaseLogger,
     FastifyTypeProviderDefault
-  >["log"];
+  >;
   readonly port: number;
   readonly token: string;
 }

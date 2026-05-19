@@ -23,7 +23,7 @@ const claimPort = async ({
   app.log.warn({ port }, "Port in use — requesting cooperative shutdown.");
 
   const cooperative = await requestCooperativeShutdown({
-    log: app.log,
+    app,
     port,
     token,
   });
@@ -46,11 +46,10 @@ const claimPort = async ({
       : "Cooperative shutdown request failed — escalating to signal.",
   );
 
-  // Retry the cooperative request before force-killing. If a now-listening
-  // peer accepts it, the port belongs to a sibling new instance — force-
-  // killing would stomp the legitimate winner of the handover race.
+  // Retry cooperative first: if a sibling new instance now owns the port,
+  // force-killing would stomp the legitimate handover winner.
   const siblingClaim = await requestCooperativeShutdown({
-    log: app.log,
+    app,
     port,
     token,
   });
@@ -65,12 +64,11 @@ const claimPort = async ({
   }
 
   // On win32 process.kill(pid, signal) is always a hard kill — cooperative
-  // HTTP shutdown above is the only graceful path on this platform.
+  // HTTP shutdown is the only graceful path on this platform.
   const killResult = await killPortOwner(port, SIGTERM, app.log);
 
   if (!killResult.ok) {
-    // Port may have freed during the cooperative wait or between the kill
-    // attempt and now — try one last listen before aborting.
+    // Port may have freed between the kill attempt and now — try one last listen.
     if (await tryListen(app, port)) {
       return;
     }
@@ -91,6 +89,8 @@ const claimPort = async ({
   }
 
   if (await tryListenUntil(app, port, FORCE_SHUTDOWN_TIMEOUT_MS)) {
+    app.log.warn({ port, signal: SIGTERM }, "Port reclaimed after signal.");
+
     return;
   }
 

@@ -1,23 +1,10 @@
 import { VitestSetup } from "@configs/vitest/setup";
-import type { FastifyBaseLogger } from "fastify";
 import type { ExpectStatic } from "vitest";
-import { beforeEach, describe, vi } from "vitest";
+import { beforeEach, describe } from "vitest";
 
 import { ShutdownRequestHelper } from "./shutdown-request.helper";
 
-const createFakeLog = (): FastifyBaseLogger => ({
-  child: vi.fn(),
-  debug: vi.fn(),
-  error: vi.fn(),
-  fatal: vi.fn(),
-  info: vi.fn(),
-  level: "info",
-  silent: vi.fn(),
-  trace: vi.fn(),
-  warn: vi.fn(),
-});
-
-const { mockAxiosPost, trackEndStateAfterEach } = VitestSetup();
+const { createTestApp, mockAxiosPost, trackEndStateAfterEach } = VitestSetup();
 
 trackEndStateAfterEach("shutdown-request.helper");
 
@@ -91,11 +78,11 @@ describe("ShutdownRequestHelper", () => {
 
   describe("requestCooperativeShutdown", (it) => {
     TEST_DATA.RESULT_CASES.forEach(({ name, expected, setupMock }) => {
-      it(name, async ({ expect }) => {
+      it(name, async ({ expect, onTestFinished }) => {
         setupMock();
 
         const result = await requestCooperativeShutdown({
-          log: createFakeLog(),
+          app: createTestApp(onTestFinished),
           port: TEST_DATA.PORT,
           token: TEST_DATA.TOKEN,
         });
@@ -105,11 +92,11 @@ describe("ShutdownRequestHelper", () => {
     });
 
     TEST_DATA.REQUEST_SHAPE_CASES.forEach(({ name, buildExpectedArgs }) => {
-      it(name, async ({ expect }) => {
+      it(name, async ({ expect, onTestFinished }) => {
         mockAxiosPost.mockResolvedValueOnce(undefined);
 
         await requestCooperativeShutdown({
-          log: createFakeLog(),
+          app: createTestApp(onTestFinished),
           port: TEST_DATA.PORT,
           token: TEST_DATA.TOKEN,
         });

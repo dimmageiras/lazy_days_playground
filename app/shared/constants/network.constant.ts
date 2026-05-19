@@ -1,6 +1,6 @@
 const HTTP_PROTOCOLS = Object.freeze({
-  HTTP: "http:",
-  HTTPS: "https:",
+  HTTP: "http",
+  HTTPS: "https",
 } as const);
 
 const HTTP_STATUS = Object.freeze({

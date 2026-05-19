@@ -107,12 +107,6 @@ A PR that touches:
 
 Even small changes here have outsized impact — this module decides whether two `pnpm dev` invocations cleanly hand off or stomp on each other.
 
-### Documentation refresh
-
-The bootstrap area also carries **file-specific walkthroughs** under [`docs/bootstrap/`](../../bootstrap/). These name specific source identifiers (function names, constants, exports) by design — the docs in that folder are onboarding material rather than long-term reference, and they drift the moment the named identifier moves or changes shape.
-
-Treat the walkthroughs as in-scope for this plan: any PR touching a file in this module must also refresh the matching `<file>.md` under `docs/bootstrap/` so the named identifiers, code excerpts, and step-by-step narrative match the post-change source. If the walkthrough format is no longer worth the upkeep cost, decide that as part of the PR (delete the per-file doc, or move it to a clearly-ephemeral location) rather than letting the drift accumulate.
-
 ## Output
 
 Apply the standard review delivery: if reviewing a GitHub PR, post inline findings via the `gh api … reviews` call (see the code-review project rule).

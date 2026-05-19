@@ -12,12 +12,12 @@ const { LOOPBACK_HOST_V4 } = SERVER_HOSTS;
 const { SHUTDOWN_REQUEST_TIMEOUT_MS } = TIMING;
 
 const requestCooperativeShutdown = async ({
-  log,
+  app,
   port,
   token,
 }: ShutdownRequestConfig): Promise<boolean> => {
   try {
-    const url = `${HTTP}//${LOOPBACK_HOST_V4}:${port}${SHUTDOWN}` as const;
+    const url = `${HTTP}://${LOOPBACK_HOST_V4}:${port}${SHUTDOWN}` as const;
 
     await axios.post(
       url,
@@ -33,7 +33,7 @@ const requestCooperativeShutdown = async ({
 
     return true;
   } catch (error) {
-    log.warn({ err: error, port }, "Cooperative shutdown request failed.");
+    app.log.warn({ err: error, port }, "Cooperative shutdown request failed.");
 
     return false;
   }

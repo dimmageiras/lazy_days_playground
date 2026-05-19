@@ -49,29 +49,38 @@ const shutdownRoute: FastifyPluginAsync<ShutdownRouteOptions> = async (
   app,
   { closeListeners, token },
 ) => {
-  app.post(SHUTDOWN, async (request, response) => {
-    if (
-      !LOOPBACK_HOSTS.has(request.ip) ||
-      !isTokenValid(Reflect.get(request.headers, SHUTDOWN_TOKEN_HEADER), token)
-    ) {
-      return response.code(UNAUTHORIZED).send({ ok: false });
-    }
+  app.post(
+    SHUTDOWN,
+    { schema: { body: { type: "null" } } },
+    async (request, response) => {
+      if (
+        !LOOPBACK_HOSTS.has(request.ip) ||
+        !isTokenValid(
+          Reflect.get(request.headers, SHUTDOWN_TOKEN_HEADER),
+          token,
+        )
+      ) {
+        request.log.warn({ ip: request.ip }, "Shutdown request rejected.");
 
-    let triggered = false;
-    const triggerClose = (): void => {
-      if (triggered) {
-        return;
+        return response.code(UNAUTHORIZED).send({ ok: false });
       }
 
-      triggered = true;
-      closeListeners.close();
-    };
+      let triggered = false;
+      const triggerClose = (): void => {
+        if (triggered) {
+          return;
+        }
 
-    response.raw.once("finish", triggerClose);
-    response.raw.once("close", triggerClose);
+        triggered = true;
+        closeListeners.close();
+      };
 
-    return response.code(ACCEPTED).send({ ok: true });
-  });
+      response.raw.once("finish", triggerClose);
+      response.raw.once("close", triggerClose);
+
+      return response.code(ACCEPTED).send({ ok: true });
+    },
+  );
 };
 
 export { shutdownRoute };

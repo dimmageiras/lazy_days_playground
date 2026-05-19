@@ -1,10 +1,9 @@
 import { VitestSetup } from "@configs/vitest/setup";
 import { Buffer } from "node:buffer";
 import { EventEmitter } from "node:events";
+import { join } from "node:path";
 import type { OnTestFinishedHandler } from "vitest";
 import { describe, vi } from "vitest";
-
-import { ObjectHelper } from "@shared/helpers/object.helper";
 
 import { KillHelper } from "./kill.helper";
 
@@ -24,17 +23,15 @@ const { run: runWithKill } = createProcessScope("kill");
 
 trackEndStateAfterEach("kill.helper");
 
-const { stripKeysInPlace } = ObjectHelper;
-
 const { killPortOwner } = KillHelper;
 
 const TEST_DATA = {
   KNOWN_PID: 12345,
+  NETSTAT_BIN: join(String.raw`C:\Windows`, "System32", "netstat.exe"),
   NON_WIN32_PLATFORM: "linux",
   PORT: 5173,
   SIGNAL: "SIGTERM",
   WIN32_PLATFORM: "win32",
-  WINDOWS_FALLBACK_FRAGMENT: "Windows",
 } as const;
 
 const RESET_MOCK_ARRAY = [mockSpawn];
@@ -242,7 +239,7 @@ describe("KillHelper", () => {
       );
     });
 
-    it("should fall back to the default Windows directory when SystemRoot is not set", async ({
+    it("should spawn netstat from the hardcoded Windows System32 path", async ({
       expect,
       onTestFinished,
     }) => {
@@ -255,28 +252,18 @@ describe("KillHelper", () => {
 
       mockSpawn.mockReturnValueOnce(fakeChild);
 
-      const originalSystemRoot = process.env.SystemRoot;
-      let resultPromise: Promise<unknown>;
-
-      try {
-        stripKeysInPlace(process.env, ["SystemRoot"]);
-        resultPromise = killPortOwner(
-          TEST_DATA.PORT,
-          TEST_DATA.SIGNAL,
-          app.log,
-        );
-      } finally {
-        if (originalSystemRoot !== undefined) {
-          process.env.SystemRoot = originalSystemRoot;
-        }
-      }
+      const resultPromise = killPortOwner(
+        TEST_DATA.PORT,
+        TEST_DATA.SIGNAL,
+        app.log,
+      );
 
       fakeChild.emit("close", 1);
 
       await resultPromise;
 
       expect(mockSpawn.mock.calls).toContainEqual([
-        expect.stringContaining(TEST_DATA.WINDOWS_FALLBACK_FRAGMENT),
+        TEST_DATA.NETSTAT_BIN,
         ["-ano"],
       ]);
     });

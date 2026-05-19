@@ -82,6 +82,8 @@ const killPortOwner = async (
     return { ok: false, reason: lookup.reason };
   }
 
+  log.warn({ pid: lookup.pid, port, signal }, "Signalling port owner.");
+
   try {
     process.kill(lookup.pid, signal);
 
