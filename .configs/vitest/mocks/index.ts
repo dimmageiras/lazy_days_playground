@@ -1,3 +1,3 @@
-import { sharedMocks } from "./shared.mock";
+import { ServerMock } from "./server.mock";
 
-export { sharedMocks };
+export { ServerMock };

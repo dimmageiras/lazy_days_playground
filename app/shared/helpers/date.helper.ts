@@ -1,24 +1,16 @@
 import dayjs, { type ConfigType } from "dayjs";
-import utc from "dayjs/plugin/utc.js";
+import utcPlugin from "dayjs/plugin/utc.js";
 
 import type { TIMING_IN_S } from "@shared/constants/timing.constant";
 
-dayjs.extend(utc);
-
-const formatHourForDisplay = (date: ConfigType): string => {
-  return dayjs(date).utc().format("h a");
-};
-
-const formatTimestampForDisplay = (date: ConfigType): string => {
-  return dayjs(date).utc().format("YYYY-MM-DD HH:mm:ss [UTC]");
-};
-
-const formatTimestampLocal = (date: ConfigType): string => {
-  return dayjs(date).format("MM/DD/YYYY, hh:mm:ss A");
-};
+dayjs.extend(utcPlugin);
 
 const getCurrentISOTimestamp = (): string => {
   return dayjs().toISOString();
+};
+
+const getCurrentTimestamp = (): number => {
+  return dayjs().valueOf();
 };
 
 const getCurrentUTCDate = (): Date => {
@@ -26,23 +18,36 @@ const getCurrentUTCDate = (): Date => {
 };
 
 const getFutureUTCDate = (
-  maxAge: (typeof TIMING_IN_S)[keyof typeof TIMING_IN_S],
+  maxAgeSeconds: (typeof TIMING_IN_S)[keyof typeof TIMING_IN_S],
 ): Date => {
-  return dayjs().utc().add(maxAge, "seconds").toDate();
+  return dayjs().utc().add(maxAgeSeconds, "seconds").toDate();
+};
+
+const toDisplayHour = (date: ConfigType): string => {
+  return dayjs(date).utc().format("h a");
+};
+
+const toDisplayTimestamp = (date: ConfigType): string => {
+  return dayjs(date).utc().format("YYYY-MM-DD HH:mm:ss [UTC]");
 };
 
 const toISOTimestamp = (date: ConfigType): string => {
   return dayjs(date).toISOString();
 };
 
+const toLocalTimestamp = (date: ConfigType): string => {
+  return dayjs(date).format("MM/DD/YYYY, hh:mm:ss A");
+};
+
 const DateHelper = Object.freeze({
-  formatHourForDisplay,
-  formatTimestampForDisplay,
-  formatTimestampLocal,
   getCurrentISOTimestamp,
+  getCurrentTimestamp,
   getCurrentUTCDate,
   getFutureUTCDate,
+  toDisplayHour,
+  toDisplayTimestamp,
   toISOTimestamp,
-});
+  toLocalTimestamp,
+} as const);
 
 export { DateHelper };

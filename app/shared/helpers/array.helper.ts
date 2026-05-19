@@ -4,8 +4,8 @@ const isArray = (value: unknown): value is UnknownArray => {
   return Array.isArray(value);
 };
 
-const ArrayUtilsHelper = Object.freeze({
+const ArrayHelper = Object.freeze({
   isArray,
 } as const);
 
-export { ArrayUtilsHelper };
+export { ArrayHelper };

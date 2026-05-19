@@ -17,7 +17,7 @@ These globs are operational hints for where the in-scope content currently lives
 - `package.json` (deps, scripts, `imports` field, `engines`, `packageManager`)
 - `pnpm-workspace.yaml` (pnpm settings — even in single-package projects this is where pnpm config lives in v11+)
 - `tsconfig.json` (compiler options, paths, module resolution)
-- `vite.config.ts` (Vite resolve options, opt-in to built-in tsconfig-paths support) (not yet present — applies when added)
+- `vite.config.ts` and `vitest.config.ts` (resolve options including opt-in to built-in tsconfig-paths support, plugin order)
 
 ## Required skills
 
@@ -57,7 +57,7 @@ These globs are operational hints for where the in-scope content currently lives
 
 ### Vite configuration
 
-- `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution (no need for `vite-tsconfig-paths` plugin in Vite 8+; pre-8 projects still need the plugin)
+- `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution where the installed Vite version supports it; older Vite releases require the `vite-tsconfig-paths` plugin. Verify against the changelog of the Vite version in use before relying on the built-in option.
 - The config does **not** `import` from `"vite"` if `vite` isn't a direct dep — pnpm's strict node_modules will fail; a plain object export sidesteps this entirely (`defineConfig` is just a type helper)
 - Plugin order is reviewed when plugins exist (the first plugin to claim a request wins)
 - For future client/SSR work: the Environment API (`environments: { client, ssr }`) is the modern shape; flag adoption when a client is introduced

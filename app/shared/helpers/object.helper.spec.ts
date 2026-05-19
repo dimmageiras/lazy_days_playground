@@ -1,42 +1,30 @@
+import { VitestSetup } from "@configs/vitest/setup";
 import { describe, expectTypeOf } from "vitest";
 
-import { ObjectUtilsHelper } from "./object-utils.helper";
+import { ObjectHelper } from "./object.helper";
+
+const { trackEndStateAfterEach } = VitestSetup();
+
+trackEndStateAfterEach("object.helper");
 
 const {
-  deleteObjectKeys,
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
-  hasObjectKey,
+  isObjectKey,
   isPlainObject,
-} = ObjectUtilsHelper;
+  stripKeysInPlace,
+} = ObjectHelper;
 
 const TEST_DATA = {
-  DELETE_CASES: [
-    {
-      name: "should remove all keys listed for deletion",
-      keys: ["a", "b"],
-      expected: { c: 3 },
-    },
-    {
-      name: "should leave keys not listed for deletion intact",
-      keys: ["a"],
-      expected: { b: 2, c: 3 },
-    },
-    {
-      name: "should be a no-op for a key not present on the object",
-      keys: ["nonexistent"],
-      expected: { a: 1, b: 2, c: 3 },
-    },
-  ] as const,
-  EMPTY_ARRAY: [] as const,
+  EMPTY_ARRAY: [],
   EXPECTED_ENTRIES: [
     ["name", "John"],
     ["age", 30],
     ["active", true],
-  ] as const,
-  EXPECTED_KEYS: ["name", "age", "active"] as const,
-  EXPECTED_VALUES: ["John", 30, true] as const,
+  ],
+  EXPECTED_KEYS: ["name", "age", "active"],
+  EXPECTED_VALUES: ["John", 30, true],
   KEYS: {
     ABSENT: "unknown",
     ARRAY_OWN: "length",
@@ -46,9 +34,7 @@ const TEST_DATA = {
   NARROW: {
     EXPECTED_VALUE: 42,
     KEY: "extra",
-    get OBJECT(): object {
-      return { name: "John", extra: 42 };
-    },
+    OBJECT: { name: "John", extra: 42 },
   },
   NON_PLAIN_OBJECTS: [
     null,
@@ -62,33 +48,38 @@ const TEST_DATA = {
     /regex/,
   ],
   OBJECTS: {
+    get DELETABLE() {
+      return { a: 1, b: 2, c: 3 };
+    },
     EMPTY: {},
     NESTED: {
       user: { name: "Jane", age: 25 },
       settings: { theme: "dark", notifications: true },
     },
     SIMPLE: { name: "John", age: 30, active: true },
-    get DELETABLE() {
-      return { a: 1, b: 2, c: 3 };
-    },
   },
-  PLAIN_OBJECTS: [{}, { name: "John" }] as const,
+  PLAIN_OBJECTS: [{}, { name: "John" }],
   PROTO_OBJECT: Object.create(Object.prototype),
+  STRIP_CASES: [
+    {
+      name: "should remove all keys listed for stripping",
+      keys: ["a", "b"],
+      expected: { c: 3 },
+    },
+    {
+      name: "should leave keys not listed for stripping intact",
+      keys: ["a"],
+      expected: { b: 2, c: 3 },
+    },
+    {
+      name: "should be a no-op for a key not present on the object",
+      keys: ["nonexistent"],
+      expected: { a: 1, b: 2, c: 3 },
+    },
+  ],
 } as const;
 
-describe("ObjectUtilsHelper", () => {
-  describe("deleteObjectKeys", (it) => {
-    TEST_DATA.DELETE_CASES.forEach(({ name, keys, expected }) => {
-      it(name, ({ expect }) => {
-        const object = TEST_DATA.OBJECTS.DELETABLE;
-
-        const result = deleteObjectKeys(object, keys);
-
-        expect(result).toStrictEqual(expected);
-      });
-    });
-  });
-
+describe("ObjectHelper", () => {
   describe("getObjectEntries", (it) => {
     it("should return typed entries for a simple object", ({ expect }) => {
       const result = getObjectEntries(TEST_DATA.OBJECTS.SIMPLE);
@@ -127,47 +118,44 @@ describe("ObjectUtilsHelper", () => {
     });
   });
 
-  describe("hasObjectKey", (it) => {
-    it("should return true when the key exists", ({ expect }) => {
+  describe("isObjectKey", (it) => {
+    it("should return true for an own-property key", ({ expect }) => {
       expect(
-        hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.EXISTING),
+        isObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.EXISTING),
       ).toBe(true);
     });
 
-    it("should return false when the key does not exist", ({ expect }) => {
+    it("should return false for an absent key", ({ expect }) => {
       expect(
-        hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.ABSENT),
+        isObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.ABSENT),
       ).toBe(false);
     });
 
-    it("should return false for an empty object", ({ expect }) => {
+    it("should return false for an empty-object lookup", ({ expect }) => {
       expect(
-        hasObjectKey(TEST_DATA.OBJECTS.EMPTY, TEST_DATA.KEYS.EXISTING),
+        isObjectKey(TEST_DATA.OBJECTS.EMPTY, TEST_DATA.KEYS.EXISTING),
       ).toBe(false);
     });
 
-    it("should return true for own array properties", ({ expect }) => {
+    it("should return true for an own array property key", ({ expect }) => {
       expect(
-        hasObjectKey(TEST_DATA.EMPTY_ARRAY, TEST_DATA.KEYS.ARRAY_OWN),
+        isObjectKey(TEST_DATA.EMPTY_ARRAY, TEST_DATA.KEYS.ARRAY_OWN),
       ).toBe(true);
     });
 
-    it("should return true for inherited prototype keys", ({ expect }) => {
+    it("should return false for an inherited prototype key", ({ expect }) => {
       expect(
-        hasObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.INHERITED),
-      ).toBe(true);
+        isObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.INHERITED),
+      ).toBe(false);
     });
 
-    it("should narrow the object type to include the asserted key", ({
-      expect,
-    }) => {
-      const value = TEST_DATA.NARROW.OBJECT;
+    it("should narrow the key to keyof the object", ({ expect }) => {
+      const object = TEST_DATA.NARROW.OBJECT;
+      const key: string = TEST_DATA.NARROW.KEY;
 
-      if (hasObjectKey(value, TEST_DATA.NARROW.KEY)) {
-        expectTypeOf(value[TEST_DATA.NARROW.KEY]).toEqualTypeOf<unknown>();
-        expect(value[TEST_DATA.NARROW.KEY]).toBe(
-          TEST_DATA.NARROW.EXPECTED_VALUE,
-        );
+      if (isObjectKey(object, key)) {
+        expectTypeOf(key).toEqualTypeOf<keyof typeof object>();
+        expect(Reflect.get(object, key)).toBe(TEST_DATA.NARROW.EXPECTED_VALUE);
       }
     });
   });
@@ -190,6 +178,18 @@ describe("ObjectUtilsHelper", () => {
     it("should return false for non-plain objects", ({ expect }) => {
       TEST_DATA.NON_PLAIN_OBJECTS.forEach((item) => {
         expect(isPlainObject(item)).toBe(false);
+      });
+    });
+  });
+
+  describe("stripKeysInPlace", (it) => {
+    TEST_DATA.STRIP_CASES.forEach(({ name, keys, expected }) => {
+      it(name, ({ expect }) => {
+        const object: Record<string, number> = TEST_DATA.OBJECTS.DELETABLE;
+
+        stripKeysInPlace(object, keys);
+
+        expect(object).toStrictEqual(expected);
       });
     });
   });

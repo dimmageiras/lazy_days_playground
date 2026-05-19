@@ -1,8 +1,13 @@
+import { VitestSetup } from "@configs/vitest/setup";
 import { describe } from "vitest";
 
-import { MapUtilsHelper } from "./map-utils.helper";
+import { MapHelper } from "./map.helper";
 
-const { getMapValue } = MapUtilsHelper;
+const { trackEndStateAfterEach } = VitestSetup();
+
+trackEndStateAfterEach("map.helper");
+
+const { getMapValue } = MapHelper;
 
 const TEST_DATA = {
   LOOKUP_CASES: [
@@ -17,8 +22,6 @@ const TEST_DATA = {
       expected: undefined,
     },
   ],
-  NEW_KEY: "w",
-  NEW_VALUE: 99,
   get MAP() {
     return new Map<string, number>([
       ["a", 1],
@@ -26,9 +29,11 @@ const TEST_DATA = {
       ["c", 3],
     ]);
   },
+  NEW_KEY: "w",
+  NEW_VALUE: 99,
 } as const;
 
-describe("MapUtilsHelper", () => {
+describe("MapHelper", () => {
   describe("getMapValue", (it) => {
     TEST_DATA.LOOKUP_CASES.forEach(({ name, key, expected }) => {
       it(name, ({ expect }) => {

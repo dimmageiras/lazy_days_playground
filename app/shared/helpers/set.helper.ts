@@ -5,8 +5,8 @@ const hasSetValue = <TSet extends ReadonlySet<unknown>>(
   value: SetValue<TSet> | (string & {}),
 ): value is SetValue<TSet> => set.has(value);
 
-const SetUtilsHelper = Object.freeze({
+const SetHelper = Object.freeze({
   hasSetValue,
 } as const);
 
-export { SetUtilsHelper };
+export { SetHelper };
