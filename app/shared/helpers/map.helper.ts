@@ -2,20 +2,16 @@ import type { UnknownMap } from "type-fest";
 
 import type { MapKey, MapValueAt } from "@shared/types/app/utility-types";
 
-import { TypesHelper } from "./types.helper";
-
-const { castAsType } = TypesHelper;
-
 const getMapValue = <
   TMap extends UnknownMap,
   TKey extends MapKey<TMap> | (string & {}),
 >(
   map: TMap,
   key: TKey,
-): MapValueAt<TMap, TKey> => castAsType<MapValueAt<TMap, TKey>>(map.get(key));
+): MapValueAt<TMap, TKey> => map.get(key) as MapValueAt<TMap, TKey>;
 
-const MapUtilsHelper = Object.freeze({
+const MapHelper = Object.freeze({
   getMapValue,
 } as const);
 
-export { MapUtilsHelper };
+export { MapHelper };

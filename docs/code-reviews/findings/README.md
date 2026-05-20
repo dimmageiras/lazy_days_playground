@@ -80,5 +80,6 @@ For multi-area reviews, run each plan independently — keeping reviewers (or ag
 ## Related
 
 - [`../plans/README.md`](../plans/README.md) — area definitions, scope conventions, and skill pairings
-- [`../../../.claude/rules/invocations/code-review.md`](../../../.claude/rules/invocations/code-review.md) — project rule for when to invoke `code-review-and-quality` and the trigger-to-skill mapping that informs each plan
+- [`../../../.claude/rules/invocations/code-review-local.md`](../../../.claude/rules/invocations/code-review-local.md) — project rule for running the plans locally and producing the files in this folder (one Opus sub-agent per plan, in parallel)
+- [`../../../.claude/rules/invocations/code-review.md`](../../../.claude/rules/invocations/code-review.md) — sister project rule for diff- and PR-targeted review (deliverable is review comments); its trigger-to-skill mapping informs each plan
 - [`../../../.claude/rules/code-comments.md`](../../../.claude/rules/code-comments.md) — applies to inline comments and JSDoc during every review

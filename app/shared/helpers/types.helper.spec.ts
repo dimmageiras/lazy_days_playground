@@ -1,6 +1,11 @@
+import { VitestSetup } from "@configs/vitest/setup";
 import { describe, expectTypeOf } from "vitest";
 
 import { TypesHelper } from "./types.helper";
+
+const { trackEndStateAfterEach } = VitestSetup();
+
+trackEndStateAfterEach("types.helper");
 
 const { castAsType } = TypesHelper;
 

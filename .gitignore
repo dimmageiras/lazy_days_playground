@@ -10,6 +10,9 @@
 # Node dependencies (installed from lockfile)
 /node_modules/
 
+# SonarLint settings and cache (machine-specific)
+/.sonarlint/
+
 # TypeScript incremental build cache (project-references buildinfo and emit)
 /.tsc-cache/
 

@@ -1,11 +1,27 @@
 import "@testing-library/jest-dom/vitest";
 
-import { sharedMocks } from "./mocks";
+import {
+  FastifyHelper,
+  GlobalThisScopeHelper,
+  ProcessScopeHelper,
+  StateProbeHelper,
+} from "./helpers";
+import { ServerMock } from "./mocks";
 
-const vitestHelpers = (): typeof sharedMocks => {
-  return {
-    ...sharedMocks,
-  };
-};
+type VitestSetupReturn = typeof FastifyHelper &
+  typeof GlobalThisScopeHelper &
+  typeof ProcessScopeHelper &
+  typeof ServerMock &
+  typeof StateProbeHelper;
 
-export { vitestHelpers };
+const vitestSetupValue: VitestSetupReturn = Object.freeze({
+  ...FastifyHelper,
+  ...GlobalThisScopeHelper,
+  ...ProcessScopeHelper,
+  ...ServerMock,
+  ...StateProbeHelper,
+});
+
+const VitestSetup = (): VitestSetupReturn => vitestSetupValue;
+
+export { VitestSetup };

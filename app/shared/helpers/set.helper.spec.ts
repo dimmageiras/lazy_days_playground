@@ -1,18 +1,23 @@
+import { VitestSetup } from "@configs/vitest/setup";
 import { describe } from "vitest";
 
-import { SetUtilsHelper } from "./set-utils.helper";
+import { SetHelper } from "./set.helper";
 
-const { hasSetValue } = SetUtilsHelper;
+const { trackEndStateAfterEach } = VitestSetup();
+
+trackEndStateAfterEach("set.helper");
+
+const { hasSetValue } = SetHelper;
 
 const TEST_DATA = {
   MEMBERSHIP_CASES: [
     {
-      name: "should return true if the value is in the set",
+      name: "should return true for a value present in the set",
       value: "a",
       expected: true,
     },
     {
-      name: "should return false if the value is not in the set",
+      name: "should return false for a value absent from the set",
       value: "d",
       expected: false,
     },
@@ -23,7 +28,7 @@ const TEST_DATA = {
   },
 } as const;
 
-describe("SetUtilsHelper", () => {
+describe("SetHelper", () => {
   describe("hasSetValue", (it) => {
     TEST_DATA.MEMBERSHIP_CASES.forEach(({ name, value, expected }) => {
       it(name, ({ expect }) => {

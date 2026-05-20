@@ -1,8 +1,14 @@
-# Invoke `code-review-and-quality` + area-specific skills
+# Invoke `code-review-and-quality` + area-specific skills (remote / diff mode)
+
+This rule covers **diff-based** and **PR-targeted** review — the deliverable is review comments (in chat or posted to a GitHub PR via the `gh` CLI).
+
+For **plan-based local area review** — running `docs/code-reviews/plans/<area>.plan.md` against the current codebase and producing `<area>.finding.md` files — use the sister rule [`./code-review-local.md`](./code-review-local.md) instead.
+
+## Triggers
 
 Invoke the `code-review-and-quality` skill when:
 
-- the user asks for a code review (own changes, another agent's output, or a human's PR)
+- the user asks for a code review of own changes, another agent's output, or a human's PR
 - before merging any change to `main`
 - the user wants quality assessed across multiple dimensions
 
