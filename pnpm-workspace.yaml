@@ -1,3 +1,8 @@
+# Single-package project — this file holds pnpm v11 settings, not a workspace
+# declaration. Since pnpm v11 these settings live here rather than in `.npmrc`
+# (which is now auth/registry only). The absence of a `packages:` field is
+# intentional: there is no monorepo to declare.
+
 # Explicit empty allowlist for install/postinstall scripts. The current dep tree
 # has no native build steps, so this is enforced. Add an entry here only after
 # auditing the package's build script.
@@ -8,10 +13,15 @@ allowBuilds: []
 # loosening is a visible diff, not an inherited regression.
 blockExoticSubdeps: true
 
+# Have pnpm self-update to the version pinned in package.json#packageManager on
+# every install, so contributors without Corepack enabled still converge on the
+# project-pinned pnpm version instead of silently using their global one.
+manage-package-manager-versions: true
+
 # Accept 0-day packages — this is a learning playground with no production deploy.
 # pnpm v11's default (1440 minutes / 24 hours) is a left-pad-style supply-chain
 # defence; revisit before any external release.
 minimumReleaseAge: 0
 
 patchedDependencies:
-  '@types/eslint-plugin-security@3.0.1': patches/@types__eslint-plugin-security@3.0.1.patch
+  '@types/eslint-plugin-security@3.0.1': .configs/pnpm/patches/@types__eslint-plugin-security@3.0.1.patch

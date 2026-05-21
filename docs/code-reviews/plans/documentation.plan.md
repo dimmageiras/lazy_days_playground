@@ -4,30 +4,32 @@
 
 The project's prose: markdown files under `docs/**`, the domain glossary (`CONTEXT.md`), architectural decision records (`docs/adr/**`), README files, and any other `*.md` checked into the repo. The defining property: it describes **concepts, decisions, and conventions**, not the current state of specific files.
 
-Documentation has a different review bar than code. A bug in code shows up as a failing test or runtime error; a bug in docs shows up as an engineer (or agent) acting on outdated information without realising it. The review focuses on **accuracy that survives a refactor** and **clarity for a reader without the author's context**.
+Documentation has a different review bar than code. A bug in code shows up as a failing test or runtime error; a bug in docs shows up as an engineer (or agent) acting on outdated information without realising it. The review focuses on **accuracy that survives the rename test** (defined in [`CONTEXT.md`](../../../CONTEXT.md#rename-test); applied operationally under [Codebase-agnostic test](#codebase-agnostic-test) below) and **clarity for a reader without the author's context**.
 
 ## Files currently in scope
 
-These globs are operational hints for where the in-scope content currently lives — the conceptual scope above is canonical and survives a reorganisation.
+These globs are **operational hints** — see the plans-index [`README.md`](./README.md#conventions) and [`CONTEXT.md`](../../../CONTEXT.md#operational-hint) for the canonical statement.
 
 - `docs/**/*.md` (operational docs, plans, guides)
 - `docs/adr/**/*.md` (architectural decision records, when present)
 - `CONTEXT.md` at repo root (domain glossary, when present)
+- `CLAUDE.md` at repo root (agent-facing rule index, when present)
+- `.claude/rules/**/*.md` (project rules — conventions written as prose)
 - Every `README.md` (root and any nested ones)
 
 ## Required skills
 
-| Skill                     | Why                                                                                                                                                |
-| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `code-review-and-quality` | Multi-axis baseline (clarity, correctness of claims, completeness)                                                                                 |
-| `doc-coauthoring`         | The structured review of prose: context-gathering, structure, reader testing                                                                       |
-| `documentation-and-adrs`  | Decides whether claims belong in inline comments, README, an ADR, or here; checks ADR template adherence and the lifecycle of superseded decisions |
+| Skill                     | Why                                                                          |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `code-review-and-quality` | Multi-axis baseline (clarity, correctness of claims, completeness)           |
+| `doc-coauthoring`         | The structured review of prose: context-gathering, structure, reader testing |
+| `documentation-and-adrs`  | Checks ADR template adherence and the lifecycle of superseded decisions      |
 
 ## Review focus
 
 ### Codebase-agnostic test
 
-Apply the **rename test**: if every file in the repo were renamed and reorganised tomorrow, would this doc still read correctly? If no, the doc is over-coupled to current implementation.
+Apply the **rename test** (defined in [`CONTEXT.md`](../../../CONTEXT.md#rename-test)): if every file in the repo were renamed and reorganised tomorrow, would this doc still read correctly? If no, the doc is over-coupled to current implementation.
 
 - No literal code snippets pasted from this repo as illustrations — use minimal generic examples that show the pattern
 - No specific function names, file paths, component names, or variable identifiers referenced as load-bearing parts of the prose
@@ -56,6 +58,8 @@ Apply the **rename test**: if every file in the repo were renamed and reorganise
 
 ### ADRs specifically
 
+Applies when `docs/adr/` contains any ADR; otherwise skip and surface the absence as a finding if the area being reviewed implies a load-bearing decision was made without record.
+
 - Status field is current (`Proposed`, `Accepted`, `Superseded by ADR-N`, `Deprecated`)
 - Old ADRs are **not deleted** when superseded — they record historical reasoning
 - Each ADR has: context, decision, alternatives considered (with rejection reasons), consequences
@@ -69,7 +73,9 @@ Apply the **rename test**: if every file in the repo were renamed and reorganise
 
 ### Reader testing
 
-When reviewing a substantial doc change, run the `doc-coauthoring` reader-testing step: paste the doc into a fresh context and ask the questions that a real reader would ask. Issues that reader-testing exposes:
+Applies primarily to **PR-targeted reviews** where a human reviewer can open a fresh context and play the reader. In plan-based local reviews dispatched from a sub-agent, the reader-testing step is typically not reachable — sub-agents cannot easily dispatch their own sub-agents — so this step degrades to an editorial pass over the same content from the reviewer's existing context.
+
+When the step **is** reachable, run the `doc-coauthoring` reader-testing step: paste the doc into a fresh context and ask the questions that a real reader would ask. Issues that reader-testing exposes:
 
 - Knowledge assumptions that aren't met
 - Ambiguities that read fine to the author but mislead the reader
@@ -92,9 +98,9 @@ Inline comments are reviewed under a lighter rule (the project's `code-comments.
 A PR that:
 
 - Adds or modifies any `*.md` under `docs/**`
-- Adds or supersedes an ADR
+- Adds or supersedes an ADR under `docs/adr/**` (when present)
 - Updates a README (root or nested)
-- Modifies `CONTEXT.md`
+- Modifies `CONTEXT.md` (when present)
 - Introduces a new docs subdirectory (review the structure decision, not just the content)
 
 ## Output

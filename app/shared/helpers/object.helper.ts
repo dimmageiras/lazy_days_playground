@@ -1,29 +1,11 @@
 import type { KeyAsString, UnknownRecord, ValueOf } from "type-fest";
 
-import type {
-  HasObjectKeyNarrow,
-  ObjectEntries,
-} from "@shared/types/app/utility-types";
-
-import { ArrayUtilsHelper } from "./array-utils.helper";
+import type { ObjectEntries } from "../types/app/utility-types";
+import { ArrayHelper } from "./array.helper";
 import { TypesHelper } from "./types.helper";
 
-const { isArray } = ArrayUtilsHelper;
+const { isArray } = ArrayHelper;
 const { castAsType } = TypesHelper;
-
-const deleteObjectKeys = <
-  TObject extends Record<string, unknown>,
-  TKeys extends KeyAsString<TObject> | (string & {}),
->(
-  object: TObject,
-  keysToDelete: ReadonlyArray<TKeys>,
-): Omit<TObject, TKeys> => {
-  for (const key of keysToDelete) {
-    Reflect.deleteProperty(object, key);
-  }
-
-  return object;
-};
 
 const getObjectEntries = <TObject extends Record<string, unknown>>(
   object: TObject,
@@ -40,19 +22,17 @@ const getObjectValues = <TObject extends Record<string, unknown>>(
 ): Array<ValueOf<TObject>> =>
   castAsType<Array<ValueOf<TObject>>>(Object.values(object));
 
-const isObject = (item: unknown): item is Record<string, unknown> => {
+const isObjectKey = <TObject extends object>(
+  object: TObject,
+  key: PropertyKey,
+): key is keyof TObject => Object.hasOwn(object, key);
+
+const isObjectLike = (item: unknown): item is Record<string, unknown> => {
   return typeof item === "object" && item != null && !isArray(item);
 };
 
-const hasObjectKey = <TObject extends object, TKey extends string>(
-  object: TObject,
-  key: TKey,
-): object is HasObjectKeyNarrow<TObject, TKey> => {
-  return Reflect.has(object, key);
-};
-
 const isPlainObject = (item: unknown): item is UnknownRecord => {
-  if (!isObject(item)) {
+  if (!isObjectLike(item)) {
     return false;
   }
 
@@ -61,14 +41,25 @@ const isPlainObject = (item: unknown): item is UnknownRecord => {
   return proto === null || proto === Object.prototype;
 };
 
-const ObjectUtilsHelper = Object.freeze({
-  deleteObjectKeys,
+const stripKeysInPlace = <
+  TObject extends Record<string, unknown>,
+  TKeys extends KeyAsString<TObject> | (string & {}),
+>(
+  object: TObject,
+  keysToStrip: ReadonlyArray<TKeys>,
+): void => {
+  for (const key of keysToStrip) {
+    Reflect.deleteProperty(object, key);
+  }
+};
+
+const ObjectHelper = Object.freeze({
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
-  hasObjectKey,
-  isObject,
+  isObjectKey,
   isPlainObject,
+  stripKeysInPlace,
 } as const);
 
-export { ObjectUtilsHelper };
+export { ObjectHelper };

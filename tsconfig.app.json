@@ -5,6 +5,10 @@
     "composite": true,
     "tsBuildInfoFile": "./.tsc-cache/app/tsconfig.tsbuildinfo",
 
+    /* Language and Environment */
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": [],
+
     /* Emit */
     "emitDeclarationOnly": true,
     "noEmit": false,

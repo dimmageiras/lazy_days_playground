@@ -15,17 +15,21 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 
 ## Areas
 
-| Area                  | Plan                                             | Triggers (high-level)                                                              |
-| --------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------- |
-| Shared utilities      | [shared.plan.md](./shared.plan.md)               | Cross-cutting constants and helpers consumed by multiple modules                   |
-| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                            |
-| Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                              |
+| Area                  | Plan                                             | Triggers (high-level)                                                       |
+| --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
+| Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                       |
+| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                     |
+| Shared helpers        | [helpers.plan.md](./helpers.plan.md)             | Pure utility functions and their matching specs; depth complement to shared |
+| Shared utilities      | [shared.plan.md](./shared.plan.md)               | Cross-cutting constants, helpers, and types consumed by multiple modules    |
+| Testing               | [testing.plan.md](./testing.plan.md)             | Specs, runner config, setup files, helper layer, diagnostics                |
 
 ## Conventions
 
 - Every plan invokes `code-review-and-quality` as the multi-axis baseline. The area-specific skills sharpen criteria for that domain.
 - Plans are operational documents — they may reference current paths to help reviewers locate scope. The conceptual definition of the area is what survives a refactor.
 - A plan should be updated when its area's responsibilities change, not when individual files move within it.
+- Each plan's "Files currently in scope" entries are **operational hints** (see [`../../../CONTEXT.md`](../../../CONTEXT.md#operational-hint)) — the conceptual scope at the top of each plan is canonical and survives a reorganisation.
+- See [`../findings/README.md`](../findings/README.md#lifecycle) for the canonical plan/finding lifecycle.
 
 ## Related project rules
 

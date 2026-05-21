@@ -1,8 +1,14 @@
-# Invoke `code-review-and-quality` + area-specific skills
+# Invoke `code-review-and-quality` + area-specific skills (remote / diff mode)
+
+This rule covers **diff-based** and **PR-targeted** review — the deliverable is review comments (in chat or posted to a GitHub PR via the `gh` CLI).
+
+For **plan-based local area review** — running `docs/code-reviews/plans/<area>.plan.md` against the current codebase and producing `<area>.finding.md` files — use the sister rule [`./code-review-local.md`](./code-review-local.md) instead.
+
+## Triggers
 
 Invoke the `code-review-and-quality` skill when:
 
-- the user asks for a code review (own changes, another agent's output, or a human's PR)
+- the user asks for a code review of own changes, another agent's output, or a human's PR
 - before merging any change to `main`
 - the user wants quality assessed across multiple dimensions
 
@@ -12,25 +18,25 @@ The skill performs multi-axis review (correctness, security, performance, readab
 
 `code-review-and-quality` covers cross-cutting concerns. For domain-specific depth, **also** invoke the skill matching the area being reviewed. Inspect the diff and stack each relevant skill on top:
 
-| Trigger in the diff                                                   | Also invoke                                                                        |
-| --------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `import … from 'react-hook-form'`                                     | `react-hook-form-writer`                                                           |
-| `import … from 'react-router'` or changes to `react-router.config.ts` | `react-router-framework-mode`                                                      |
-| `import … from '@tanstack/react-query'`                               | `tanstack-query-best-practices`                                                    |
-| `import … from 'zod'`                                                 | `zod`                                                                              |
-| `import … from 'zustand'` or `import … from 'zustand-x'`              | `zustand`; also apply [`../state-management.md`](../state-management.md)           |
-| `import … from 'vitest'` or `*.test.ts(x)` / `*.spec.ts(x)` files     | `vitest`                                                                           |
-| `import … from 'fastify'`                                             | `fastify-best-practices`                                                           |
-| JSX in `.tsx` files (React component or hook changes)                 | `react-best-practices`, `composition-patterns`                                     |
-| `vite.config.ts` or any Vite plugin                                   | `vite`                                                                             |
-| `pnpm-workspace.yaml` or `pnpm` field in `package.json`               | `pnpm`                                                                             |
-| Node.js server code in `.ts` files (Node 24+, no Vite/RR runtime)     | `node`                                                                             |
-| TypeScript generics, conditional/mapped types, `any` removal          | `typescript-magician`                                                              |
-| Test-first / red-green-refactor commits                               | `tdd`                                                                              |
-| Module-boundary or deepening opportunity changes                      | `improve-codebase-architecture`                                                    |
-| Bug-fix changes claiming to resolve a regression                      | `diagnose`                                                                         |
-| `*.md`, `docs/**`, `CONTEXT.md`, `docs/adr/**`                        | `doc-coauthoring`, `documentation-and-adrs`                                        |
-| Inline code comments, JSDoc blocks                                    | (no skill) — apply [`../code-comments.md`](../code-comments.md) as review criteria |
+| Trigger in the diff                                                                                        | Also invoke                                                                        |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `import … from 'react-hook-form'`                                                                          | `react-hook-form-writer`                                                           |
+| `import … from 'react-router'` or changes to `react-router.config.ts`                                      | `react-router-framework-mode`                                                      |
+| `import … from '@tanstack/react-query'`                                                                    | `tanstack-query-best-practices`                                                    |
+| `import … from 'zod'`                                                                                      | `zod`                                                                              |
+| `import … from 'zustand'` or `import … from 'zustand-x'`                                                   | `zustand`; also apply [`../state-management.md`](../state-management.md)           |
+| `import … from 'vitest'` or `*.test.ts(x)` / `*.spec.ts(x)` files                                          | `vitest`                                                                           |
+| `import … from 'fastify'`                                                                                  | `fastify-best-practices`                                                           |
+| JSX in `.tsx` files (React component or hook changes)                                                      | `react-best-practices`, `composition-patterns`                                     |
+| `vite.config.ts` or any Vite plugin                                                                        | `vite`                                                                             |
+| `pnpm-workspace.yaml` or `pnpm` field in `package.json`                                                    | `pnpm`                                                                             |
+| Node.js server code in `.ts` files (Node engine pinned in `package.json#engines.node`, no Vite/RR runtime) | `node`                                                                             |
+| TypeScript generics, conditional/mapped types, `any` removal                                               | `typescript-magician`                                                              |
+| Test-first / red-green-refactor commits                                                                    | `tdd`                                                                              |
+| Module-boundary or deepening opportunity changes                                                           | `improve-codebase-architecture`                                                    |
+| Bug-fix changes claiming to resolve a regression                                                           | `diagnose`                                                                         |
+| `*.md`, `docs/**`, `CONTEXT.md`, `docs/adr/**`                                                             | `doc-coauthoring`, `documentation-and-adrs`                                        |
+| Inline code comments, JSDoc blocks                                                                         | (no skill) — apply [`../code-comments.md`](../code-comments.md) as review criteria |
 
 Multiple areas in one diff → invoke each matching skill. The general skill sets the structure; the area skills sharpen the criteria for that part of the diff.
 

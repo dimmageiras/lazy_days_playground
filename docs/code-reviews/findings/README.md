@@ -32,7 +32,7 @@ Each findings file follows the same shape:
 - **Strengths observed** — short list of what's done well in the area
 - **Out of scope** — issues that belong to another review area, surfaced so the reviewer of that area sees the lead
 
-Each finding inside the file carries:
+Each finding entry includes:
 
 - A **severity label**
 - A **file path** and approximate **line or range**
@@ -56,6 +56,8 @@ Findings are **point-in-time snapshots**. The expected flow:
 1. Run a review → produces findings files in this folder
 2. Findings are acted on — blockers and warnings get PRs, nits get triaged, info entries get filed mentally
 3. Once acted on, findings are stale: delete them, or replace them with a fresh review batch
+
+When re-running a plan, the reviewer (or sub-agent) overwrites the existing file in place; partial in-place edits are forbidden, but full overwrites are the expected flow.
 
 This folder is **not** a long-term archive by default. If a snapshot needs preserving (for instance, "the state of the code at v1.0"), capture it via a git tag or a separate baseline subdirectory rather than letting findings rot here.
 
