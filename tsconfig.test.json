@@ -7,13 +7,7 @@
 
     /* Language and Environment */
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-
-    /* Modules */
-    "paths": {
-      "@configs/*": ["./.configs/*"],
-      "@shared/*": ["./app/shared/*"]
-    },
-    "types": ["node", "vitest/globals"],
+    "types": ["node"],
 
     /* Emit */
     "emitDeclarationOnly": true,
@@ -24,6 +18,7 @@
     ".configs/**/*.ts",
     "**/*.spec.ts",
     "**/*.spec.tsx",
+    "app/**/*.d.ts",
     "vitest.config.ts"
   ],
   "references": [{ "path": "./tsconfig.app.json" }]

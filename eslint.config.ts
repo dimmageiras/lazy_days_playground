@@ -34,7 +34,6 @@ export default defineConfig([
           arrowFunctions: true,
           classes: false,
           destructuring: true,
-          jsx: true,
           spread: true,
         },
         projectService: true,
@@ -105,11 +104,6 @@ export default defineConfig([
       ],
       "sonarjs/no-unused-vars": "off",
       curly: ["error", "all"],
-    },
-    settings: {
-      react: {
-        version: "detect",
-      },
     },
   },
   // Test files: disable SonarJS assertions rule

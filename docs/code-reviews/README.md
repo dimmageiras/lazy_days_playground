@@ -9,4 +9,4 @@ See [`plans/README.md`](./plans/README.md) for the area index, and [`findings/RE
 
 ## Lifecycle
 
-Plans **evolve** when an area's responsibilities change. Findings are **regenerated** each time the plans are re-run against current code — they are point-in-time snapshots, not long-term archives.
+See [`findings/README.md`](./findings/README.md#lifecycle) — the canonical statement of how plans and findings evolve over time.

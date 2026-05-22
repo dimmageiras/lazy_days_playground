@@ -47,11 +47,16 @@ createStore(state, {
 devtools(persist(immer(create(...))));
 ```
 
-`subscribeWithSelector` is **always applied internally** by `zustand-x` and is not configurable through the option bag. It is also not surfaced in the type-level mutator tuple, so don't add it to `TStateApi`.
-
 `persist` is a passthrough to zustand's `persist` middleware — all of `name`, `storage`, `partialize`, `version`, `migrate`, `merge`, `skipHydration`, `onRehydrateStorage` apply unchanged. `name` falls back to the store's top-level `name` when omitted.
 
-> **Production gating** — never set `devtools: true` unconditionally. Gate on a build-time env flag (e.g. `import.meta.env.DEV` or a project-level constant) so the Redux DevTools listener stays out of production bundles. The bare `true` in the examples below is shorthand for the gated value.
+#### What is not supported
+
+- `subscribeWithSelector` is **always applied internally** by `zustand-x` and is not configurable through the option bag. It is also not surfaced in the type-level mutator tuple, so don't add it to `TStateApi`.
+- `extendMiddleware` does **not** exist — middleware is configured only via the option bag at `createStore` time.
+
+#### Production gating
+
+Never set `devtools: true` unconditionally. Gate on a build-time env flag (e.g. `import.meta.env.DEV` or a project-level constant) so the Redux DevTools listener stays out of production bundles. The bare `true` in the examples below is shorthand for the gated value.
 
 ### Type stores with `TStateApi`, not `StateCreator`
 
@@ -83,8 +88,6 @@ const store = createStore(initialState, { name: "extended" })
     isZero: () => get("count") === 0,
   }));
 ```
-
-`extendMiddleware` does **not** exist — middleware is configured only via the option bag at `createStore` time.
 
 ### Module-level singleton stores
 

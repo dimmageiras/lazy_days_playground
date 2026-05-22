@@ -7,12 +7,12 @@ Build, runtime, and package-manager configuration that governs how the codebase 
 - Package manifest and dependency hygiene
 - pnpm-specific configuration (workspace settings, supply-chain defaults)
 - TypeScript compiler options and path aliases
-- Vite configuration for runtime transforms (vite-node) and future client/SSR builds (when present)
+- Vite configuration for future client/SSR builds (when present)
 - The relationship between tsconfig paths, package.json subpath imports, and Vite alias resolution
 
 ## Files currently in scope
 
-These globs are operational hints for where the in-scope content currently lives — the conceptual scope above is canonical and survives a reorganisation.
+These globs are **operational hints** — see the plans-index [`README.md`](./README.md#conventions) and [`CONTEXT.md`](../../../CONTEXT.md#operational-hint) for the canonical statement.
 
 - `package.json` (deps, scripts, `imports` field, `engines`, `packageManager`)
 - `pnpm-workspace.yaml` (pnpm settings — even in single-package projects this is where pnpm config lives in v11+)
@@ -33,7 +33,7 @@ These globs are operational hints for where the in-scope content currently lives
 ### Dependency hygiene
 
 - Every direct dep is actually imported somewhere; tree-shaking can't compensate for unused runtime deps in `dependencies`
-- Dev-only tools (Vite, vite-node, types) are in `devDependencies`, not `dependencies`
+- Dev-only tools (bundlers, test runners, types) are in `devDependencies`, not `dependencies`
 - A package imported via `import { x } from "pkg"` must be a **direct** dep — pnpm's strict node_modules won't surface transitive deps for app-code imports (even if they appear in the lockfile)
 - `engines.node` matches the minimum Node version that the code actually requires (e.g. Node 24+ if using stable type-stripping)
 - `packageManager` is pinned so contributors can't accidentally use the wrong pnpm version
@@ -52,10 +52,13 @@ These globs are operational hints for where the in-scope content currently lives
 - `moduleResolution: "bundler"` pairs with `module: "preserve"` (or `"esnext"`); not `"nodenext"`
 - Paths in `tsconfig.paths` mirror any package.json `imports` mapping (or one of the two is the single source of truth)
 - `allowImportingTsExtensions` is on only if `.ts` extensions actually appear in source imports
-- `noEmit: true` for projects that don't build (vite-node runtime)
+- `noEmit: true` for projects that do not produce a build artefact (the type-checker is the only emitter, and the test runner imports source directly)
 - Library list (`lib`) matches the runtime target
+- Value imports and type-only imports from the same module stay on separate `import` statements — the type-only line uses `import type { … }`, the value line uses the standard form. Combining them via inline `type` modifiers is not used here; the separation keeps the intent visible at a glance and survives `verbatimModuleSyntax` without depending on inline-modifier emit semantics.
 
 ### Vite configuration
+
+Applies when `vite.config.ts` is added; until then this section is preparatory. The "`vite` is a direct dep" claim below assumes Vite is declared in the manifest — re-verify against the actual dep tree at use time.
 
 - `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution (no need for `vite-tsconfig-paths` plugin in Vite 8+; pre-8 projects still need the plugin)
 - The config does **not** `import` from `"vite"` if `vite` isn't a direct dep — pnpm's strict node_modules will fail; a plain object export sidesteps this entirely (`defineConfig` is just a type helper)
@@ -70,8 +73,8 @@ These globs are operational hints for where the in-scope content currently lives
 
 ### Scripts
 
-- The `dev` script invokes a real runtime; verify the binary exists in deps and the entry path actually starts the server (a Vite dev-server-only invocation will silently start Vite and never start Fastify)
-- Lint/typecheck/test scripts (when present) reference the right configs (`vitest.config.ts`, `eslint.config.ts`, etc.)
+- Lint, typecheck, and test scripts reference the right configs (`vitest.config.ts`, `eslint.config.ts`, etc.) — each binary the script invokes is in `devDependencies`, and each config path resolves.
+- Scripts (when added) that invoke a runtime entry point are reviewed under "Scripts (when a runtime is added)": verify the binary exists in deps and the entry path actually starts the intended process, not a side-runtime (e.g. a dev-server-only invocation silently starting the bundler and never starting the server).
 
 ### Security
 
