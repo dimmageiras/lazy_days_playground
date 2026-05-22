@@ -51,4 +51,4 @@ The contract every shared test helper follows: the helper module holds no state 
 
 ### Test data
 
-The single `TEST_DATA` constant at the top of every spec — a frozen `as const` object holding every input, fixture, and table-driven case the spec needs. Keys are `SCREAMING_SNAKE_CASE`; table cases are arrays of objects shaped `{ name, input, expected, … }`.
+The single `TEST_DATA` constant at the top of every spec. See [`docs/testing/README.md`](./docs/testing/README.md#test-data--the-test_data-constant) for the canonical shape and conventions.

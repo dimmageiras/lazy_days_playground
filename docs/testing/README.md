@@ -46,9 +46,9 @@ Implications you must internalise:
 
 Every spec that uses inputs, fixtures, or table-driven cases collects them into a single `TEST_DATA` object frozen with `as const`. Conventions:
 
-- Declared once, near the top of the spec, after imports and helper destructuring.
+- Specs open in this order: imports → setup-helper destructure (`VitestSetup()`) → `trackLeaksInSpec(<label>)` → unit-under-test destructure → frozen `TEST_DATA` → `describe`.
 - Keys are `SCREAMING_SNAKE_CASE` and describe the case group (`DELAY_CASES`, `ESCAPE_HTML_CASES`) or the named value (`PENDING_DELAY_MS`).
-- Table-driven cases are arrays of objects with `name`, `input`, and `expected` (plus any extra inputs the case needs). The `name` is what `it` receives.
+- Table-driven cases are arrays of objects shaped `{ name, …case-specific inputs, expected? }`. The `name` is what `it` receives. Per-case input keys are named after the parameter under test (`value` for predicates, `input` for transforms, `ms` for durations, etc.). An `expected` key is included whenever the spec asserts an exact value; predicates that assert `true`/`false` may omit it.
 - No mutation, no computed values that close over module state — everything inside `TEST_DATA` must be inspectable at glance.
 
 ### Assertion style

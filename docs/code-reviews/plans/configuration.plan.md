@@ -16,7 +16,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 - `package.json` (deps, scripts, `imports` field, `engines`, `packageManager`)
 - `pnpm-workspace.yaml` (pnpm settings — even in single-package projects this is where pnpm config lives in v11+)
-- `tsconfig.json` (compiler options, paths, module resolution)
+- `tsconfig.json`, `tsconfig.app.json`, `tsconfig.test.json` (solution-style — root is the entry point, siblings are referenced; operational hints, file names may move)
 - `vite.config.ts` (Vite resolve options, opt-in to built-in tsconfig-paths support) (not yet present — applies when added)
 
 ## Required skills
@@ -35,7 +35,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - Every direct dep is actually imported somewhere; tree-shaking can't compensate for unused runtime deps in `dependencies`
 - Dev-only tools (bundlers, test runners, types) are in `devDependencies`, not `dependencies`
 - A package imported via `import { x } from "pkg"` must be a **direct** dep — pnpm's strict node_modules won't surface transitive deps for app-code imports (even if they appear in the lockfile)
-- `engines.node` matches the minimum Node version that the code actually requires (e.g. Node 24+ if using stable type-stripping)
+- `engines.node` matches the minimum Node version that the code actually requires (e.g. Node 26+ if the code uses Node 26-only APIs, type-stripping flags, or runtime features)
 - `packageManager` is pinned so contributors can't accidentally use the wrong pnpm version
 
 ### pnpm settings
@@ -54,7 +54,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - `allowImportingTsExtensions` is on only if `.ts` extensions actually appear in source imports
 - `noEmit: true` for projects that do not produce a build artefact (the type-checker is the only emitter, and the test runner imports source directly)
 - Library list (`lib`) matches the runtime target
-- Value imports and type-only imports from the same module stay on separate `import` statements — the type-only line uses `import type { … }`, the value line uses the standard form. Combining them via inline `type` modifiers is not used here; the separation keeps the intent visible at a glance and survives `verbatimModuleSyntax` without depending on inline-modifier emit semantics.
+- Value imports and type-only imports from the same module stay on separate `import` statements — the type-only line uses `import type { … }`, the value line uses the standard form. The separation keeps the intent visible at a glance and survives `verbatimModuleSyntax` without depending on inline-modifier emit semantics.
 
 ### Vite configuration
 

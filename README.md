@@ -4,21 +4,10 @@ A learning playground for experimenting with build tooling, test infrastructure,
 
 ## Quick start
 
-Prerequisites are pinned in `package.json`:
+- Install any recent pnpm globally; `pnpm install` self-converges on the version pinned in `package.json#packageManager` (no Corepack step needed).
+- Run `pnpm test` once the install finishes.
 
-- A Node version satisfying the `engines.node` field
-- pnpm at the version pinned by `packageManager` (pnpm self-updates to it on install when `manage-package-manager-versions` is on, which it is)
-
-```sh
-pnpm install
-pnpm test
-```
-
-See `package.json` `scripts` for the rest of the entry points (lint, typecheck, coverage, and the probed coverage run).
-
-### First-time setup
-
-You don't need to match the pinned pnpm version manually. Install any recent pnpm globally — on first `pnpm install` the project's `manage-package-manager-versions` setting converges your local pnpm onto the version recorded in `packageManager`. No Corepack step is required.
+Prerequisites — a Node version satisfying the `engines.node` field — are pinned in `package.json`. See its `scripts` block for the other entry points (lint, typecheck, coverage, and the probed coverage run).
 
 ## Repo layout
 

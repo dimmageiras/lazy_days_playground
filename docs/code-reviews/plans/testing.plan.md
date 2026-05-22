@@ -47,8 +47,8 @@ The first criterion the reviewer applies: where the upstream `vitest` skill and 
 
 - Specs live next to source, not under a separate top-level test tree.
 - The spec suffix is `.spec.ts(x)`; the runner glob targets only that suffix.
-- A spec opens with imports, helper destructuring, the per-spec leak-tracker invocation, then a single frozen `TEST_DATA` constant before the first `describe`.
-- `TEST_DATA` is a single object frozen with `as const`. Keys are `SCREAMING_SNAKE_CASE`; table-driven cases are arrays of objects shaped `{ name, input, expected, … }`.
+- Specs open in this order: imports → setup-helper destructure → leak-tracker → unit-under-test destructure → frozen `TEST_DATA` → `describe`.
+- `TEST_DATA` is a single object frozen with `as const`. Keys are `SCREAMING_SNAKE_CASE`; table-driven cases are arrays of objects shaped `{ name, …case-specific inputs, expected? }`.
 - Suites use nested `describe` blocks per public method; `it` comes from the parent `describe` callback (`describe("…", (it) => { it(…) })`), not the module-level import. The runner exposes a block-scoped `it`; reaching past it loses per-block context.
 - Assertions destructure `expect` from the test context (`async ({ expect }) => …`) rather than the top-level `vitest` import, so per-test identity flows through.
 

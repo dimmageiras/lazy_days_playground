@@ -33,7 +33,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 - No I/O — no `fetch`, no `fs`, no timers (other than the explicit timing helpers), no environment reads.
 - No shared mutable state at module scope. A helper that needs scratch storage uses a closure inside the function body, not a module-level cache.
-- No side effects on its inputs by default. If a helper logically mutates a structure, it returns a new one. The exception: helpers whose contract is in-place mutation flag it in the name with an `<verb>InPlace` suffix (e.g. `stripKeysInPlace`) — the name carries the side effect into the call site so the caller cannot miss it.
+- No side effects on its inputs by default. If a helper logically mutates a structure, it returns a new one. The exception: helpers whose contract is in-place mutation flag it in the name with an `<verb>InPlace` suffix (e.g. `removeEntriesInPlace`) — the name carries the side effect into the call site so the caller cannot miss it.
 
 ### Size and cohesion
 
