@@ -1,8 +1,9 @@
 import { VitestSetup } from "@configs/vitest/setup";
-import { beforeEach, describe, vi } from "vitest";
+import { afterAll, beforeAll, describe, vi } from "vitest";
 
 import { TIMING_IN_MS, TIMING_IN_S } from "../constants/timing.constant";
 import { DateHelper } from "./date.helper";
+import { TypesHelper } from "./types.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
@@ -11,42 +12,89 @@ trackLeaksInSpec("date.helper");
 const { MINUTES_FIVE: FIVE_MIN_MS } = TIMING_IN_MS;
 const { MINUTES_FIVE: FIVE_MIN_S } = TIMING_IN_S;
 
+const { castAsType } = TypesHelper;
+
 const {
+  getCurrentDate,
   getCurrentISOTimestamp,
   getCurrentTimestamp,
-  getCurrentUTCDate,
-  getFutureUTCDate,
+  getFutureDate,
   toDisplayHour,
   toDisplayTimestamp,
   toISOTimestamp,
   toLocalTimestamp,
 } = DateHelper;
 
-const EXAMPLE_TIMESTAMP = "2025-01-03T15:00:00.000Z" as const;
-
 const TEST_DATA = {
-  DATE: new Date(EXAMPLE_TIMESTAMP),
-  DATE_AS_ISO: EXAMPLE_TIMESTAMP,
-  EXPECTED_FORMATTED_HOUR: "3 pm",
-  EXPECTED_FORMATTED_TIMESTAMP: EXAMPLE_TIMESTAMP.replace("T", " ").replace(
-    /\.\d+Z$/,
-    " UTC",
-  ),
-  EXPECTED_FUTURE_ISO: new Date(
-    new Date(EXAMPLE_TIMESTAMP).getTime() + FIVE_MIN_MS,
-  ).toISOString(),
-  EXPECTED_TIMESTAMP_MS: new Date(EXAMPLE_TIMESTAMP).getTime(),
-  FIXED_NOW: EXAMPLE_TIMESTAMP,
-  LOCAL_TIMESTAMP_SHAPE: /^\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} [AP]M$/,
-  MAX_AGE: FIVE_MIN_S,
+  DATE: new Date("2025-01-03T15:00:00.000Z"),
+  DATE_AS_ISO: "2025-01-03T15:00:00.000Z",
+  DISPLAY_HOUR_CASES: [
+    {
+      expected: "12 am",
+      input: new Date("2025-01-03T00:00:00.000Z"),
+      name: "should format midnight as 12 am",
+    },
+    {
+      expected: "12 pm",
+      input: new Date("2025-01-03T12:00:00.000Z"),
+      name: "should format noon as 12 pm",
+    },
+    {
+      expected: "3 pm",
+      input: new Date("2025-01-03T15:00:00.000Z"),
+      name: "should format afternoon hour as h pm",
+    },
+    {
+      expected: "1 am",
+      input: new Date("2025-01-03T01:00:00.000Z"),
+      name: "should format early-morning hour without leading zero",
+    },
+  ],
+  EXPECTED_FORMATTED_TIMESTAMP: "2025-01-03 15:00:00 UTC",
+  EXPECTED_LOCAL_TIMESTAMP_SHAPE:
+    /^\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} [AP]M$/,
+  EXPECTED_TIMESTAMP_MS: new Date("2025-01-03T15:00:00.000Z").getTime(),
+  FIXED_NOW: "2025-01-03T15:00:00.000Z",
+  FUTURE_DATE_CASES: [
+    {
+      expected: new Date(
+        new Date("2025-01-03T15:00:00.000Z").getTime() + FIVE_MIN_MS,
+      ).toISOString(),
+      name: "should offset by five minutes (300s)",
+      offset: FIVE_MIN_S,
+    },
+    {
+      expected: new Date(
+        new Date("2025-01-03T15:00:00.000Z").getTime() + 60_000,
+      ).toISOString(),
+      name: "should offset by sixty seconds",
+      offset: 60,
+    },
+    {
+      expected: new Date(
+        new Date("2025-01-03T15:00:00.000Z").getTime() + 86_400_000,
+      ).toISOString(),
+      name: "should offset by one day (86_400s)",
+      offset: 86_400,
+    },
+  ],
+  TZ_UTC: "UTC",
 } as const;
 
 describe("DateHelper", () => {
-  beforeEach(({ onTestFinished }) => {
+  beforeAll(() => {
     vi.setSystemTime(new Date(TEST_DATA.FIXED_NOW));
+  });
 
-    onTestFinished(() => {
-      vi.useRealTimers();
+  afterAll(() => {
+    vi.useRealTimers();
+  });
+
+  describe("getCurrentDate", (it) => {
+    it("should get the current date", ({ expect }) => {
+      const result = getCurrentDate();
+
+      expect(result.toISOString()).toStrictEqual(TEST_DATA.FIXED_NOW);
     });
   });
 
@@ -68,29 +116,25 @@ describe("DateHelper", () => {
     });
   });
 
-  describe("getCurrentUTCDate", (it) => {
-    it("should get the current UTC date", ({ expect }) => {
-      const result = getCurrentUTCDate();
+  describe("getFutureDate", (it) => {
+    TEST_DATA.FUTURE_DATE_CASES.forEach(({ name, offset, expected }) => {
+      it(name, ({ expect }) => {
+        const result = getFutureDate(
+          castAsType<(typeof TIMING_IN_S)[keyof typeof TIMING_IN_S]>(offset),
+        ).toISOString();
 
-      expect(result.toISOString()).toStrictEqual(TEST_DATA.FIXED_NOW);
-    });
-  });
-
-  describe("getFutureUTCDate", (it) => {
-    it("should return a date offset by the given number of seconds", ({
-      expect,
-    }) => {
-      const result = getFutureUTCDate(TEST_DATA.MAX_AGE).toISOString();
-
-      expect(result).toStrictEqual(TEST_DATA.EXPECTED_FUTURE_ISO);
+        expect(result).toStrictEqual(expected);
+      });
     });
   });
 
   describe("toDisplayHour", (it) => {
-    it("should format the hour for display", ({ expect }) => {
-      const result = toDisplayHour(TEST_DATA.DATE);
+    TEST_DATA.DISPLAY_HOUR_CASES.forEach(({ name, input, expected }) => {
+      it(name, ({ expect }) => {
+        const result = toDisplayHour(input);
 
-      expect(result).toStrictEqual(TEST_DATA.EXPECTED_FORMATTED_HOUR);
+        expect(result).toStrictEqual(expected);
+      });
     });
   });
 
@@ -116,7 +160,7 @@ describe("DateHelper", () => {
       // formats in local tz, so CI machines on different zones would diverge.
       const result = toLocalTimestamp(TEST_DATA.DATE);
 
-      expect(result).toMatch(TEST_DATA.LOCAL_TIMESTAMP_SHAPE);
+      expect(result).toMatch(TEST_DATA.EXPECTED_LOCAL_TIMESTAMP_SHAPE);
     });
   });
 });
