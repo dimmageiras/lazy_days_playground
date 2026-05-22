@@ -8,6 +8,6 @@ const HTML_ESCAPE_CHARS = Map([
   ["'", "&#39;"],
 ] as const);
 
-const HTML_ESCAPE_PATTERN = /[&<>"']/g;
+const HTML_ESCAPE_REPLACE_REGEX = /[&<>"']/g;
 
-export { HTML_ESCAPE_CHARS, HTML_ESCAPE_PATTERN };
+export { HTML_ESCAPE_CHARS, HTML_ESCAPE_REPLACE_REGEX };
