@@ -1,6 +1,6 @@
 import type { KeyAsString, UnknownRecord, ValueOf } from "type-fest";
 
-import type { ObjectEntries } from "../types/app/utility-types";
+import type { ObjectEntries } from "../types/utility-types";
 import { ArrayHelper } from "./array.helper";
 import { TypesHelper } from "./types.helper";
 
@@ -21,6 +21,11 @@ const getObjectValues = <TObject extends Record<string, unknown>>(
   object: TObject,
 ): Array<ValueOf<TObject>> =>
   castAsType<Array<ValueOf<TObject>>>(Object.values(object));
+
+const hasObjectKey = <TObject extends object, TKey extends PropertyKey>(
+  object: TObject,
+  key: TKey,
+): object is TObject & Record<TKey, unknown> => Object.hasOwn(object, key);
 
 const isObjectKey = <TObject extends object>(
   object: TObject,
@@ -47,16 +52,19 @@ const stripKeysInPlace = <
 >(
   object: TObject,
   keysToStrip: ReadonlyArray<TKeys>,
-): void => {
+): Omit<TObject, TKeys> => {
   for (const key of keysToStrip) {
     Reflect.deleteProperty(object, key);
   }
+
+  return object;
 };
 
 const ObjectHelper = Object.freeze({
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
+  hasObjectKey,
   isObjectKey,
   isPlainObject,
   stripKeysInPlace,
