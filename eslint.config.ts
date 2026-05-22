@@ -106,14 +106,12 @@ export default defineConfig([
       curly: ["error", "all"],
     },
   },
-  // Test files: disable SonarJS assertions rule
   {
     files: ["**/*.spec.{ts,tsx}"],
     rules: {
       "sonarjs/assertions-in-tests": "off",
     },
   },
-  // Config files and entry points: allow default exports
   {
     files: ["**/*.config.ts", "**/*.d.ts"],
     rules: {

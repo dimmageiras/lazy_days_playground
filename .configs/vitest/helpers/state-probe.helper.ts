@@ -3,15 +3,7 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vitest";
 
 import { FakeTimerRegistry } from "../fake-timer-registry";
 
-/**
- * State probe — stateless dispatcher.
- *
- * All state lives in closures inside `trackLeaksInSpec` (per-spec snapshots,
- * concurrent-test latch) or in the setup-owned `FakeTimerRegistry` (file-exit
- * cross-spec fake-timer detection). The helper module itself holds no
- * module-level state, satisfying the helper dispatcher contract under
- * `isolate: false`.
- */
+/** Stateless dispatcher — see docs/testing/README.md for the contract. */
 
 interface StateSnapshot {
   activeResources: Map<string, number>;
@@ -116,6 +108,12 @@ const trackLeaksInSpec = (specName: string): void => {
     fileBaseline = snapshotState();
     // `testPath` is a Jest-compat surface on `expect.getState()`; reverify presence on Vitest major bumps.
     filePath = expect.getState().testPath ?? null;
+
+    if (filePath === null) {
+      process.stderr.write(
+        `[WARN ${specName} <file-init>] expect.getState().testPath was undefined — fake-timer attribution and registry cleanup will not run for this spec.\n`,
+      );
+    }
   });
 
   beforeEach(({ onTestFinished, task }) => {
@@ -161,7 +159,7 @@ const trackLeaksInSpec = (specName: string): void => {
 
     if (fileAdvancedTimers) {
       process.stderr.write(
-        `[RISK ${specName} <file-exit>] fake timers were advanced in this spec — under concurrent execution sibling tests share the clock. Apply .sequential to opt out.\n`,
+        `[RISK ${specName} <file-exit>] fake timers were advanced in this spec — under concurrent execution sibling tests share the clock. Hoist the clock to beforeAll/afterAll or use a deterministic-clock pattern that does not advance the shared fake timer.\n`,
       );
     }
 
