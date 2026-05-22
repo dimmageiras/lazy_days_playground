@@ -4,7 +4,7 @@ import { expect } from "vitest";
 import "@testing-library/jest-dom/vitest";
 
 import { FakeTimerRegistry } from "./fake-timer-registry";
-import type * as ViteHelpers from "./helpers";
+import type * as VitestHelpers from "./helpers";
 import { StateProbeHelper } from "./helpers";
 
 // Setup module owns the fake-timer registry state (Vitest setup files are
@@ -19,7 +19,7 @@ FakeTimerRegistry.installHijack(() => {
 });
 
 type VitestSetupReturn = UnionToIntersection<
-  (typeof ViteHelpers)[keyof typeof ViteHelpers]
+  (typeof VitestHelpers)[keyof typeof VitestHelpers]
 >;
 
 const vitestSetupValue: VitestSetupReturn = Object.freeze({

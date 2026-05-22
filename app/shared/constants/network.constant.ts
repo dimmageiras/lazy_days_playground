@@ -1,6 +1,6 @@
 import { Set } from "immutable";
 
-const HTTP_PROTOCOLS = Object.freeze({
+const HTTP_SCHEMES = Object.freeze({
   HTTP: "http",
   HTTPS: "https",
 } as const);
@@ -28,4 +28,4 @@ const HTTP_METHODS = Object.freeze({
   UNSAFE: UNSAFE_HTTP_METHODS,
 } as const);
 
-export { HTTP_METHODS, HTTP_PROTOCOLS, HTTP_STATUS };
+export { HTTP_METHODS, HTTP_SCHEMES, HTTP_STATUS };

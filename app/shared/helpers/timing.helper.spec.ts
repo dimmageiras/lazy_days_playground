@@ -34,7 +34,7 @@ describe("TimingHelper", () => {
       });
     });
 
-    it("resolves with undefined", async ({ expect }) => {
+    it("should resolve with undefined", async ({ expect }) => {
       const promise = delay(0);
 
       const result = await promise;
@@ -43,7 +43,7 @@ describe("TimingHelper", () => {
       expect(result).toBeUndefined();
     });
 
-    it("waits at least the specified time", async ({ expect }) => {
+    it("should wait at least the specified time", async ({ expect }) => {
       const start = performance.now();
 
       await delay(TEST_DATA.WAIT_MS);

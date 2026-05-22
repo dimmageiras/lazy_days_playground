@@ -13,6 +13,10 @@ The glossary is intentionally minimal at this stage. Add a term only when it has
 
 ## Terms
 
+### Finding
+
+A point-in-time record of what a code review surfaced when the matching plan was last run against current code. Findings live under `docs/code-reviews/findings/`. Findings are regenerated each time the plan is re-run; they are never amended in place. See also **Plan**.
+
 ### Load-bearing decision
 
 A decision whose consequences propagate beyond the file it lives in — changing it would force changes elsewhere or break an unstated contract. Load-bearing decisions deserve an architectural decision record under `docs/adr/`; non-load-bearing decisions stay in code.
@@ -20,10 +24,6 @@ A decision whose consequences propagate beyond the file it lives in — changing
 ### Operational hint
 
 A reference to a current file path, directory, or identifier inside an otherwise codebase-agnostic doc — labelled as movable. Operational hints help a reader locate the area in scope today; they are explicitly not the canonical definition of the area.
-
-### Finding
-
-A point-in-time record of what a code review surfaced when the matching plan was last run against current code. Findings live under `docs/code-reviews/findings/`. Findings are regenerated each time the plan is re-run; they are never amended in place. See also **Plan**.
 
 ### Plan
 

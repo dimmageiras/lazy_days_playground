@@ -136,4 +136,3 @@ Every rule above exists because of a documented trade-off. Before deviating:
 
 - [`../../docs/code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream `vitest` skill, and the precedence rule with this README
-- [`../adr/`](../adr/) — architectural decisions about the testing infrastructure (worker model, immutable.js in test infra, etc.)

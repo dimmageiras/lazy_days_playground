@@ -89,6 +89,12 @@ describe("ObjectHelper", () => {
         expect(TEST_DATA.EXPECTED_KEYS).toContain(key);
       });
     });
+
+    it("should return an empty array for an empty object", ({ expect }) => {
+      const result = getObjectEntries(TEST_DATA.OBJECTS.EMPTY);
+
+      expect(result).toStrictEqual(TEST_DATA.EMPTY_ARRAY);
+    });
   });
 
   describe("getObjectKeys", (it) => {
@@ -102,6 +108,12 @@ describe("ObjectHelper", () => {
         expect(TEST_DATA.EXPECTED_KEYS).toContain(key);
       });
     });
+
+    it("should return an empty array for an empty object", ({ expect }) => {
+      const result = getObjectKeys(TEST_DATA.OBJECTS.EMPTY);
+
+      expect(result).toStrictEqual(TEST_DATA.EMPTY_ARRAY);
+    });
   });
 
   describe("getObjectValues", (it) => {
@@ -113,6 +125,12 @@ describe("ObjectHelper", () => {
       result.forEach((value) => {
         expect(TEST_DATA.EXPECTED_VALUES).toContain(value);
       });
+    });
+
+    it("should return an empty array for an empty object", ({ expect }) => {
+      const result = getObjectValues(TEST_DATA.OBJECTS.EMPTY);
+
+      expect(result).toStrictEqual(TEST_DATA.EMPTY_ARRAY);
     });
   });
 
