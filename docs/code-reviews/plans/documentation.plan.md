@@ -60,7 +60,7 @@ Apply the **rename test** (defined in [`CONTEXT.md`](../../../CONTEXT.md#rename-
 
 Applies when `docs/adr/` contains any ADR; otherwise skip and surface the absence as a finding if the area being reviewed implies a load-bearing decision was made without record.
 
-- Status field is current (`Proposed`, `Accepted`, `Superseded by ADR-N`, `Deprecated`)
+- Status field is current (`Proposed`, `Accepted`, `Superseded by NNNN-...`, `Deprecated`)
 - Old ADRs are **not deleted** when superseded — they record historical reasoning
 - Each ADR has: context, decision, alternatives considered (with rejection reasons), consequences. A scaffold template lives in [`../../adr/README.md`](../../adr/README.md) — copy and fill in.
 - The decision is something a future engineer/agent might reasonably want to undo; trivial decisions don't need ADRs

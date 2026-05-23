@@ -31,7 +31,7 @@ A specification of what to check for one area of the codebase — scope, require
 
 ### Pollution probe
 
-The debug instrumentation that diffs `globalThis` keys, `process` listeners, active resources, and fake-timer state across each test boundary. Emits `[LEAK]` and `[RISK]` lines on stderr when state survives where it shouldn't. Gated by an environment variable so the default test run stays quiet.
+The debug instrumentation that diffs `globalThis` keys, `process` listeners, active resources, and fake-timer state across each test boundary. Emits `[WARN]`, `[LEAK]`, and `[RISK]` lines on stderr when state survives where it shouldn't or when the runner contract the probe relies on is not met. Gated by an environment variable so the default test run stays quiet.
 
 ### Rename test
 

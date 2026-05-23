@@ -30,7 +30,7 @@ Three settings shape every spec in this repo:
 Implications you must internalise:
 
 - **Helpers under `.configs/vitest/helpers/**` are stateless dispatchers.\*\* Module-level state in a helper outlives every spec in the worker and leaks across files. If a helper needs per-spec state, scope it inside the function the helper exports — never inside the module body.
-- **Advancing the shared fake clock from a `.concurrent` test is forbidden.** Fake clocks are global to the worker; sibling tests in the same file share them. Installing a fixed clock with `vi.setSystemTime` and restoring real timers in cleanup (Pattern A) is permitted under concurrent execution — sibling tests converge on the same fixed instant. Calling `vi.useFakeTimers()` and then advancing the clock (Pattern B) breaks siblings' pending timers; opt out with `describe.sequential` / `it.sequential` if a test must advance the clock.
+- **Advancing the shared fake clock from a `.concurrent` test is forbidden.** Fake clocks are global to the worker; sibling tests in the same file share them. Installing a fixed clock with `vi.setSystemTime` and restoring real timers in cleanup (Pattern A) is permitted under concurrent execution — sibling tests converge on the same fixed instant. Calling `vi.useFakeTimers()` and then advancing the clock (Pattern B) breaks siblings' pending timers; hoist the clock to `beforeAll`/`afterAll` or use a deterministic-clock pattern that does not advance the shared fake timer.
 - **No reliance on test order.** Inside a file, between files, or between runs.
 
 ## Spec conventions
@@ -114,16 +114,17 @@ The probe itself is a stateless dispatcher: every per-spec snapshot lives in a c
 A single environment variable gates every diagnostic output:
 
 - **`DEBUG_TEST_POLLUTION` unset or `"0"`** — probes are no-ops. This is the default for `test` and `test:cov`.
-- **`DEBUG_TEST_POLLUTION="1"`** — probes emit `[LEAK …]` and `[RISK …]` lines on stderr at each boundary. Used by `test:cov:debug`.
+- **`DEBUG_TEST_POLLUTION="1"`** — probes emit `[WARN …]`, `[LEAK …]`, and `[RISK …]` lines on stderr at each boundary. Used by `test:cov:debug`.
 
-The contract: a green run with the probe enabled means no detected pollution; any `[LEAK]` or `[RISK]` line is a real signal to investigate.
+The contract: a green run with the probe enabled means no detected pollution; any `[WARN]`, `[LEAK]`, or `[RISK]` line is a real signal to investigate.
 
 Output semantics:
 
+- `[WARN <spec> <file-init>] …` — the probe could not resolve the spec's absolute path from `expect.getState().testPath`, so fake-timer attribution and registry cleanup will not run for that spec. Indicates a runtime gap rather than test-state pollution; investigate the Jest-compat surface (see the major-bump reverify checklist).
 - `[LEAK <spec> > <test>] …` — state changed between the test's start and finish (a global key added, a listener attached, a resource not released).
 - `[LEAK <spec> <file-exit>] …` — state changed across the whole file lifetime.
 - `[RISK <spec> > <test>] concurrent test advanced fake timers — sibling tests share the clock` — a `.concurrent` test advanced the shared fake clock (Pattern B). Installing a fixed clock without advancing it (Pattern A) is not flagged.
-- `[RISK <spec> <file-exit>] fake timers were advanced in this spec — under concurrent execution sibling tests share the clock. Apply .sequential to opt out.` — the spec file advanced the shared clock at some point during the run. Apply `.sequential` to the test that advanced the clock, or refactor to Pattern A if a fixed instant is sufficient.
+- `[RISK <spec> <file-exit>] fake timers were advanced in this spec — under concurrent execution sibling tests share the clock. Hoist the clock to beforeAll/afterAll or use a deterministic-clock pattern that does not advance the shared fake timer.` — the spec file advanced the shared clock at some point during the run. Hoist the clock to a `beforeAll`/`afterAll` pair, or refactor to Pattern A if a fixed instant is sufficient.
 
 ## When to deviate
 

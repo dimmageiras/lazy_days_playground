@@ -1,18 +1,16 @@
 import { VitestSetup } from "@configs/vitest/setup";
 import { afterAll, beforeAll, describe, vi } from "vitest";
 
-import { TIMING_IN_MS, TIMING_IN_S } from "../constants/timing.constant";
+import { TIMING_IN_MS, TIMING_IN_S } from "@shared/constants/timing.constant";
+
 import { DateHelper } from "./date.helper";
-import { TypesHelper } from "./types.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("date.helper");
 
 const { MINUTES_FIVE: FIVE_MIN_MS } = TIMING_IN_MS;
-const { MINUTES_FIVE: FIVE_MIN_S } = TIMING_IN_S;
-
-const { castAsType } = TypesHelper;
+const { DAYS_ONE, MINUTES_FIVE: FIVE_MIN_S, MINUTES_ONE } = TIMING_IN_S;
 
 const {
   getCurrentDate,
@@ -68,17 +66,16 @@ const TEST_DATA = {
         new Date("2025-01-03T15:00:00.000Z").getTime() + 60_000,
       ).toISOString(),
       name: "should offset by sixty seconds",
-      offset: 60,
+      offset: MINUTES_ONE,
     },
     {
       expected: new Date(
         new Date("2025-01-03T15:00:00.000Z").getTime() + 86_400_000,
       ).toISOString(),
       name: "should offset by one day (86_400s)",
-      offset: 86_400,
+      offset: DAYS_ONE,
     },
   ],
-  TZ_UTC: "UTC",
 } as const;
 
 describe("DateHelper", () => {
@@ -119,9 +116,7 @@ describe("DateHelper", () => {
   describe("getFutureDate", (it) => {
     TEST_DATA.FUTURE_DATE_CASES.forEach(({ name, offset, expected }) => {
       it(name, ({ expect }) => {
-        const result = getFutureDate(
-          castAsType<(typeof TIMING_IN_S)[keyof typeof TIMING_IN_S]>(offset),
-        ).toISOString();
+        const result = getFutureDate(offset).toISOString();
 
         expect(result).toStrictEqual(expected);
       });

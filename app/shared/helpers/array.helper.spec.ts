@@ -10,18 +10,15 @@ trackLeaksInSpec("array.helper");
 
 const { isArray } = ArrayHelper;
 
-const makeArguments = function (this: void, args: unknown) {
-  return args;
-};
+function makeArguments(..._args: unknown[]): IArguments {
+  // eslint-disable-next-line prefer-rest-params -- real `arguments` is the contract under test
+  return arguments;
+}
 
 const TEST_DATA = {
   ARRAY_CASES: [
     { name: "should return true for a populated array", value: [1, 2, 3] },
     { name: "should return true for an empty array", value: [] },
-    {
-      name: "should return true for an arguments array",
-      value: makeArguments([1, 2, 3]),
-    },
   ],
   NON_ARRAY_CASES: [
     { name: "should return false for a boolean", value: true },
@@ -35,7 +32,7 @@ const TEST_DATA = {
     { name: "should return false for undefined", value: undefined },
     {
       name: "should return false for an arguments object",
-      value: makeArguments({}),
+      value: makeArguments(1, 2, 3),
     },
   ],
 } as const;

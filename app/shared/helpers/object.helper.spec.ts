@@ -52,18 +52,6 @@ const TEST_DATA = {
   },
   OWN_KEY_CASES: [
     {
-      expected: true,
-      key: "name",
-      name: "should return true for an own-property key",
-      object: { active: true, age: 30, name: "John" },
-    },
-    {
-      expected: false,
-      key: "unknown",
-      name: "should return false for an absent key",
-      object: { active: true, age: 30, name: "John" },
-    },
-    {
       expected: false,
       key: "name",
       name: "should return false for an empty-object lookup",
@@ -73,6 +61,24 @@ const TEST_DATA = {
       expected: false,
       key: "toString",
       name: "should return false for an inherited prototype key",
+      object: { active: true, age: 30, name: "John" },
+    },
+    {
+      expected: false,
+      key: "unknown",
+      name: "should return false for an absent key",
+      object: { active: true, age: 30, name: "John" },
+    },
+    {
+      expected: true,
+      key: "length",
+      name: "should return true for an array's own `length` property",
+      object: [],
+    },
+    {
+      expected: true,
+      key: "name",
+      name: "should return true for an own-property key",
       object: { active: true, age: 30, name: "John" },
     },
     {

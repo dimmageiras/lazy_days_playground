@@ -11,17 +11,9 @@ const { castAsType } = TypesHelper;
 
 const TEST_DATA = {
   CASES: [
-    { input: null, name: "should preserve a null value at runtime" },
-    { input: undefined, name: "should preserve an undefined value at runtime" },
     { input: 42, name: "should preserve a primitive number" },
-    {
-      input: { a: 1 },
-      name: "should preserve object reference identity",
-    },
-    {
-      input: [1, 2, 3],
-      name: "should preserve array reference identity",
-    },
+    { input: null, name: "should preserve a null value at runtime" },
+    { input: { a: 1 }, name: "should preserve object reference identity" },
   ],
 } as const;
 

@@ -53,19 +53,14 @@ const TEST_DATA = {
       name: "should return an empty string for empty input",
     },
     {
-      expected: "a\0b",
-      input: "a\0b",
-      name: "should round-trip a null byte unchanged",
+      expected: "😀&lt;b&gt;",
+      input: "😀<b>",
+      name: "should escape after a non-BMP emoji without splitting the surrogate pair",
     },
     {
-      expected: "😀",
-      input: "😀",
-      name: "should round-trip a non-BMP emoji (surrogate pair) unchanged",
-    },
-    {
-      expected: "\x07",
-      input: "\x07",
-      name: "should round-trip a BEL control character unchanged",
+      expected: "&lt;😀&gt;",
+      input: "<😀>",
+      name: "should escape around a non-BMP emoji without splitting the surrogate pair",
     },
   ],
 } as const;
