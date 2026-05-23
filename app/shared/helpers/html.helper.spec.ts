@@ -52,6 +52,16 @@ const TEST_DATA = {
       input: "",
       name: "should return an empty string for empty input",
     },
+    {
+      expected: "😀&lt;b&gt;",
+      input: "😀<b>",
+      name: "should escape after a non-BMP emoji without splitting the surrogate pair",
+    },
+    {
+      expected: "&lt;😀&gt;",
+      input: "<😀>",
+      name: "should escape around a non-BMP emoji without splitting the surrogate pair",
+    },
   ],
 } as const;
 

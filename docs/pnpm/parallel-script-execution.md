@@ -18,7 +18,11 @@ Common shapes:
 | `"/^(dev\|test):/"` | every script starting with `dev:` or `test:` |
 | `"/:watch$/"`       | every script ending in `:watch`              |
 
-Pipes appear escaped (`\|`) inside the markdown table — drop the backslash when copying the pattern into a shell.
+The pipe in the second row reads `\|` in markdown source because the table cell needs the escape — drop the backslash when running it. Corrected shell form:
+
+```sh
+pnpm run "/^(dev|test):/"
+```
 
 The regex syntax is standard JavaScript regex inside the leading/trailing `/` delimiters.
 

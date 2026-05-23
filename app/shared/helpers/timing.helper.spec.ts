@@ -1,55 +1,111 @@
 import { VitestSetup } from "@configs/vitest/setup";
-import { describe } from "vitest";
+import type { setTimeout } from "node:timers";
+import { afterEach, describe, vi } from "vitest";
 
 import { TimingHelper } from "./timing.helper";
+import { TypesHelper } from "./types.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("timing.helper");
 
+const { castAsType } = TypesHelper;
+
 const { delay } = TimingHelper;
 
 const TEST_DATA = {
-  DELAY_CASES: [
-    { ms: 0, name: "should resolve on next tick for 0ms" },
-    { ms: 100, name: "should resolve after 100ms" },
+  PASSTHROUGH_CASES: [
+    { ms: -1, name: "should forward -1 to setTimeout" },
+    { ms: 0, name: "should forward 0 to setTimeout" },
+    { ms: 100, name: "should forward 100 to setTimeout" },
+    { ms: Number.NaN, name: "should forward NaN to setTimeout" },
+    {
+      ms: Number.POSITIVE_INFINITY,
+      name: "should forward Infinity to setTimeout",
+    },
   ],
-  WAIT_MS_FLOOR: 45,
-  WAIT_MS: 50,
 } as const;
+
+const stubSetTimeout = <T extends Parameters<typeof setTimeout>[0]>(
+  capture: (callback: T) => void,
+) =>
+  castAsType<typeof setTimeout>((callback: T) => {
+    capture(callback);
+
+    return 0;
+  });
 
 describe("TimingHelper", () => {
   describe("delay", (it) => {
-    TEST_DATA.DELAY_CASES.forEach(({ ms, name }) => {
-      it(name, async ({ expect }) => {
-        let resolved = false;
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
 
-        const promise = delay(ms).then(() => {
-          resolved = true;
-        });
+    TEST_DATA.PASSTHROUGH_CASES.forEach(({ ms, name }) => {
+      it(name, ({ expect }) => {
+        const setTimeoutSpy = vi
+          .spyOn(globalThis, "setTimeout")
+          .mockImplementation(stubSetTimeout(() => undefined));
 
-        await promise;
+        void delay(ms);
 
-        expect(resolved).toBe(true);
+        const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
+          Object.is(delayMs, ms),
+        );
+
+        expect(spyCalls).toHaveLength(1);
       });
     });
 
-    it("should resolve with undefined", async ({ expect }) => {
+    it("should resolve with undefined once the scheduled callback fires", async ({
+      expect,
+    }) => {
+      let capturedCallback: Parameters<typeof setTimeout>[0] | undefined;
+
+      vi.spyOn(globalThis, "setTimeout").mockImplementation(
+        stubSetTimeout((callback) => {
+          capturedCallback = callback;
+        }),
+      );
+
       const promise = delay(0);
+
+      expect(promise).toBeInstanceOf(Promise);
+      expect(capturedCallback).toBeTypeOf("function");
+
+      capturedCallback?.();
 
       const result = await promise;
 
-      expect(promise).toBeInstanceOf(Promise);
       expect(result).toBeUndefined();
     });
 
-    it("should wait at least the specified time", async ({ expect }) => {
-      const start = performance.now();
+    it("should not resolve before the scheduled callback fires", async ({
+      expect,
+    }) => {
+      let capturedCallback: Parameters<typeof setTimeout>[0] | undefined;
 
-      await delay(TEST_DATA.WAIT_MS);
-      const elapsed = performance.now() - start;
+      vi.spyOn(globalThis, "setTimeout").mockImplementation(
+        stubSetTimeout((callback) => {
+          capturedCallback = callback;
+        }),
+      );
 
-      expect(elapsed).toBeGreaterThanOrEqual(TEST_DATA.WAIT_MS_FLOOR);
+      let resolved = false;
+
+      const promise = delay(0).then(() => {
+        resolved = true;
+      });
+
+      await Promise.resolve();
+
+      expect(resolved).toBe(false);
+
+      capturedCallback?.();
+
+      await promise;
+
+      expect(resolved).toBe(true);
     });
   });
 });

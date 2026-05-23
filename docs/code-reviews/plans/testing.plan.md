@@ -41,14 +41,14 @@ The first criterion the reviewer applies: where the upstream `vitest` skill and 
 - Worker isolation is off by design — helpers and any module-level state persist for the worker. Any new module-level state in `.configs/vitest/**` is a regression unless it is genuinely worker-scoped infrastructure with a deliberate decision recorded.
 - Concurrency-by-default is on. New specs are `.concurrent` unless they have a documented reason to be sequential.
 - File ordering and in-file test ordering are randomised. Specs that pass only under a particular order are broken.
-- No advancing the shared fake clock from a `.concurrent` test — fake clocks are worker-global. Installing a fixed clock with `vi.setSystemTime` and restoring real timers in cleanup is permitted (sibling tests converge on the same instant); advancing the clock breaks siblings' pending timers and requires `.sequential`.
+- No advancing the shared fake clock from a `.concurrent` test — fake clocks are worker-global. Installing a fixed clock with `vi.setSystemTime` and restoring real timers in cleanup is permitted (sibling tests converge on the same instant); advancing the clock breaks siblings' pending timers. Fix by hoisting the clock to a `beforeAll` / `afterAll` pair, or by isolating the time-dependent behaviour from the shared clock entirely — e.g. spy on the underlying scheduler primitive and drive the captured callback by hand, so the test never advances any worker-global clock.
 
 ### Spec conventions
 
 - Specs live next to source, not under a separate top-level test tree.
 - The spec suffix is `.spec.ts(x)`; the runner glob targets only that suffix.
-- A spec opens with imports, helper destructuring, the per-spec leak-tracker invocation, then a single frozen `TEST_DATA` constant before the first `describe`.
-- `TEST_DATA` is a single object frozen with `as const`. Keys are `SCREAMING_SNAKE_CASE`; table-driven cases are arrays of objects shaped `{ name, input, expected, … }`.
+- Specs open in this order: imports → setup-helper destructure → leak-tracker → unit-under-test destructure → frozen `TEST_DATA` → `describe`.
+- `TEST_DATA` is a single object frozen with `as const`. Keys are `SCREAMING_SNAKE_CASE`; table-driven cases are arrays of objects shaped `{ name, …case-specific inputs, expected? }`.
 - Suites use nested `describe` blocks per public method; `it` comes from the parent `describe` callback (`describe("…", (it) => { it(…) })`), not the module-level import. The runner exposes a block-scoped `it`; reaching past it loses per-block context.
 - Assertions destructure `expect` from the test context (`async ({ expect }) => …`) rather than the top-level `vitest` import, so per-test identity flows through.
 
@@ -66,7 +66,7 @@ The first criterion the reviewer applies: where the upstream `vitest` skill and 
 ### Diagnostics — the pollution probe
 
 - A single environment variable (`DEBUG_TEST_POLLUTION`) gates probe output. Default-off in `test` / `test:cov`; on for `test:cov:debug` (and any future smoke flow when added).
-- A green probed run is the contract. Any `[LEAK]` or `[RISK]` line on stderr is a real signal — chase it; do not suppress it.
+- A green probed run is the contract. Any `[WARN]`, `[LEAK]`, or `[RISK]` line on stderr is a real signal — chase it; do not suppress it. `[WARN]` flags a runtime gap in the Jest-compat surface the probe relies on; `[LEAK]` flags state that survived where it shouldn't; `[RISK]` flags worker-global clock advances under concurrent execution.
 - The probe diffs `globalThis` keys, `process` event listeners, active resources, and fake-timer state. New global mutation in test or production code shows up here first.
 
 ### Smoke flow (when present)

@@ -1,10 +1,14 @@
 import dayjs, { type ConfigType } from "dayjs";
 import utcPlugin from "dayjs/plugin/utc.js";
 
-import type { TIMING_IN_S } from "../constants/timing.constant";
+import type { TIMING_IN_S } from "@shared/constants/timing.constant";
 
 // Extend dayjs with UTC plugin once at module load; downstream `.utc()` calls depend on it.
 dayjs.extend(utcPlugin);
+
+const getCurrentDate = (): Date => {
+  return dayjs().toDate();
+};
 
 const getCurrentISOTimestamp = (): string => {
   return dayjs().toISOString();
@@ -14,11 +18,7 @@ const getCurrentTimestamp = (): number => {
   return dayjs().valueOf();
 };
 
-const getCurrentUTCDate = (): Date => {
-  return dayjs().toDate();
-};
-
-const getFutureUTCDate = (
+const getFutureDate = (
   maxAgeSeconds: (typeof TIMING_IN_S)[keyof typeof TIMING_IN_S],
 ): Date => {
   return dayjs().add(maxAgeSeconds, "seconds").toDate();
@@ -41,10 +41,10 @@ const toLocalTimestamp = (date: ConfigType): string => {
 };
 
 const DateHelper = Object.freeze({
+  getCurrentDate,
   getCurrentISOTimestamp,
   getCurrentTimestamp,
-  getCurrentUTCDate,
-  getFutureUTCDate,
+  getFutureDate,
   toDisplayHour,
   toDisplayTimestamp,
   toISOTimestamp,

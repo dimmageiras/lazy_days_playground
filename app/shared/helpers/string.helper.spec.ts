@@ -1,6 +1,6 @@
 import { VitestSetup } from "@configs/vitest/setup";
 import { Map, Set } from "immutable";
-import { describe } from "vitest";
+import { describe, expectTypeOf } from "vitest";
 
 import { StringHelper } from "./string.helper";
 
@@ -11,7 +11,6 @@ trackLeaksInSpec("string.helper");
 const { isString, toCamelCase, toUpperCase } = StringHelper;
 
 const TEST_DATA = {
-  BASIC: "hello world",
   CAMEL_CASES: [
     {
       expected: "helloWorld",
@@ -33,8 +32,12 @@ const TEST_DATA = {
       input: "",
       name: "should return an empty string for an empty input",
     },
+    {
+      expected: "alreadyCamel",
+      input: "alreadyCamel",
+      name: "should return a camelCase input unchanged",
+    },
   ],
-  EXPECTED_UPPER_FROM_BASIC: "HELLO WORLD",
   NON_STRING_CASES: [
     { name: "should return false for a boolean", value: true },
     { name: "should return false for a Map", value: Map() },
@@ -48,6 +51,43 @@ const TEST_DATA = {
   STRING_CASES: [
     { name: "should return true for a populated string", value: "hello world" },
     { name: "should return true for an empty string", value: "" },
+  ],
+  UPPER_CASES: [
+    {
+      expected: "HELLO WORLD",
+      input: "hello world",
+      name: "should uppercase basic lowercase ASCII",
+    },
+    {
+      expected: "",
+      input: "",
+      name: "should return an empty string for empty input",
+    },
+    {
+      expected: "ALREADY UPPER",
+      input: "ALREADY UPPER",
+      name: "should leave already-uppercase ASCII unchanged",
+    },
+    {
+      expected: "MIXED CASE",
+      input: "mIxEd CaSe",
+      name: "should uppercase mixed-case ASCII",
+    },
+    {
+      expected: "SS",
+      input: "ß",
+      name: "should expand the German sharp s to SS (Unicode case mapping)",
+    },
+    {
+      expected: "Σ",
+      input: "σ",
+      name: "should uppercase Greek sigma",
+    },
+    {
+      expected: "I",
+      input: "i",
+      name: "should uppercase Latin i to ASCII I (locale-insensitive)",
+    },
   ],
 } as const;
 
@@ -77,10 +117,16 @@ describe("StringHelper", () => {
   });
 
   describe("toUpperCase", (it) => {
-    it("should convert a string to uppercase", ({ expect }) => {
-      const result = toUpperCase(TEST_DATA.BASIC);
+    TEST_DATA.UPPER_CASES.forEach(({ name, input, expected }) => {
+      it(name, ({ expect }) => {
+        const result = toUpperCase(input);
 
-      expect(result).toBe(TEST_DATA.EXPECTED_UPPER_FROM_BASIC);
+        expect(result).toBe(expected);
+      });
+    });
+
+    it("should narrow the return type to Uppercase<TString>", () => {
+      expectTypeOf(toUpperCase("ab" as const)).toEqualTypeOf<"AB">();
     });
   });
 });

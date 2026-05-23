@@ -31,7 +31,7 @@ A specification of what to check for one area of the codebase — scope, require
 
 ### Pollution probe
 
-The debug instrumentation that diffs `globalThis` keys, `process` listeners, active resources, and fake-timer state across each test boundary. Emits `[LEAK]` and `[RISK]` lines on stderr when state survives where it shouldn't. Gated by an environment variable so the default test run stays quiet.
+The debug instrumentation that diffs `globalThis` keys, `process` listeners, active resources, and fake-timer state across each test boundary. Emits `[WARN]`, `[LEAK]`, and `[RISK]` lines on stderr when state survives where it shouldn't or when the runner contract the probe relies on is not met. Gated by an environment variable so the default test run stays quiet.
 
 ### Rename test
 
@@ -51,4 +51,4 @@ The contract every shared test helper follows: the helper module holds no state 
 
 ### Test data
 
-The single `TEST_DATA` constant at the top of every spec — a frozen `as const` object holding every input, fixture, and table-driven case the spec needs. Keys are `SCREAMING_SNAKE_CASE`; table cases are arrays of objects shaped `{ name, input, expected, … }`.
+The single `TEST_DATA` constant at the top of every spec. See [`docs/testing/README.md`](./docs/testing/README.md#test-data--the-test_data-constant) for the canonical shape and conventions.

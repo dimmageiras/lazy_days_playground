@@ -15,9 +15,11 @@ const TIMING_IN_MS = Object.freeze({
 
 const TIMING_IN_S = Object.freeze({
   SECONDS_TEN: 10,
+  MINUTES_ONE: 60,
   MINUTES_FIVE: 300,
   MINUTES_TEN: 600,
   MINUTES_FIFTEEN: 900,
+  DAYS_ONE: 86_400,
   DAYS_SEVEN: 604_800,
   YEARS_ONE: 31_536_000,
 } as const);

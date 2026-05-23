@@ -1,6 +1,7 @@
 import type { KeyAsString, UnknownRecord, ValueOf } from "type-fest";
 
-import type { ObjectEntries } from "../types/app/utility-types";
+import type { ObjectEntries } from "@shared/types/app/utility-types";
+
 import { ArrayHelper } from "./array.helper";
 import { TypesHelper } from "./types.helper";
 
@@ -22,6 +23,13 @@ const getObjectValues = <TObject extends Record<string, unknown>>(
 ): Array<ValueOf<TObject>> =>
   castAsType<Array<ValueOf<TObject>>>(Object.values(object));
 
+/** Narrows the object to include `key`. Use when runtime carries keys the static type omits. */
+const hasObjectKey = <TObject extends object, TKey extends PropertyKey>(
+  object: TObject,
+  key: TKey,
+): object is TObject & Record<TKey, unknown> => Object.hasOwn(object, key);
+
+/** Narrows `key` to `keyof TObject`. Use when iterating an untyped string against a typed object. */
 const isObjectKey = <TObject extends object>(
   object: TObject,
   key: PropertyKey,
@@ -47,16 +55,19 @@ const stripKeysInPlace = <
 >(
   object: TObject,
   keysToStrip: ReadonlyArray<TKeys>,
-): void => {
+): Omit<TObject, TKeys> => {
   for (const key of keysToStrip) {
     Reflect.deleteProperty(object, key);
   }
+
+  return object;
 };
 
 const ObjectHelper = Object.freeze({
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
+  hasObjectKey,
   isObjectKey,
   isPlainObject,
   stripKeysInPlace,

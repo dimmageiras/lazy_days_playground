@@ -11,26 +11,18 @@ const {
   getObjectEntries,
   getObjectKeys,
   getObjectValues,
+  hasObjectKey,
   isObjectKey,
   isPlainObject,
   stripKeysInPlace,
 } = ObjectHelper;
 
+class TaggedClass {
+  tag = "I am a tagged class instance";
+}
+
 const TEST_DATA = {
   EMPTY_ARRAY: [],
-  EXPECTED_ENTRIES: [
-    ["active", true],
-    ["age", 30],
-    ["name", "John"],
-  ],
-  EXPECTED_KEYS: ["active", "age", "name"],
-  EXPECTED_VALUES: [true, 30, "John"],
-  KEYS: {
-    ABSENT: "unknown",
-    ARRAY_OWN: "length",
-    EXISTING: "name",
-    INHERITED: "toString",
-  },
   NARROW: {
     EXPECTED_VALUE: 42,
     KEY: "extra",
@@ -46,6 +38,8 @@ const TEST_DATA = {
     null,
     true,
     undefined,
+    Object.create({ a: 1 }),
+    new TaggedClass(),
   ],
   OBJECTS: {
     DELETABLE: { a: 1, b: 2, c: 3 },
@@ -56,7 +50,45 @@ const TEST_DATA = {
     },
     SIMPLE: { active: true, age: 30, name: "John" },
   },
-  PLAIN_OBJECTS: [{}, { name: "John" }],
+  OWN_KEY_CASES: [
+    {
+      expected: false,
+      key: "name",
+      name: "should return false for an empty-object lookup",
+      object: {},
+    },
+    {
+      expected: false,
+      key: "toString",
+      name: "should return false for an inherited prototype key",
+      object: { active: true, age: 30, name: "John" },
+    },
+    {
+      expected: false,
+      key: "unknown",
+      name: "should return false for an absent key",
+      object: { active: true, age: 30, name: "John" },
+    },
+    {
+      expected: true,
+      key: "length",
+      name: "should return true for an array's own `length` property",
+      object: [],
+    },
+    {
+      expected: true,
+      key: "name",
+      name: "should return true for an own-property key",
+      object: { active: true, age: 30, name: "John" },
+    },
+    {
+      expected: true,
+      key: "runtimeOnly",
+      name: "should return true when the runtime object carries a key its declared type omits",
+      object: { declared: 1, runtimeOnly: 2 } as Record<string, unknown>,
+    },
+  ],
+  PLAIN_OBJECTS: [{}, { name: "John" }, Object.create(null) as object],
   PROTO_OBJECT: Object.create(Object.prototype),
   STRIP_CASES: [
     {
@@ -79,15 +111,10 @@ const TEST_DATA = {
 
 describe("ObjectHelper", () => {
   describe("getObjectEntries", (it) => {
-    it("should return typed entries for a simple object", ({ expect }) => {
+    it("should return entries matching the source object", ({ expect }) => {
       const result = getObjectEntries(TEST_DATA.OBJECTS.SIMPLE);
 
-      expect(result).toStrictEqual(TEST_DATA.EXPECTED_ENTRIES);
-
-      result.forEach(([key]) => {
-        expect(typeof key).toBe("string");
-        expect(TEST_DATA.EXPECTED_KEYS).toContain(key);
-      });
+      expect(result).toStrictEqual(Object.entries(TEST_DATA.OBJECTS.SIMPLE));
     });
 
     it("should return an empty array for an empty object", ({ expect }) => {
@@ -98,15 +125,10 @@ describe("ObjectHelper", () => {
   });
 
   describe("getObjectKeys", (it) => {
-    it("should return typed keys for a simple object", ({ expect }) => {
+    it("should return keys matching the source object", ({ expect }) => {
       const result = getObjectKeys(TEST_DATA.OBJECTS.SIMPLE);
 
-      expect(result).toStrictEqual(TEST_DATA.EXPECTED_KEYS);
-
-      result.forEach((key) => {
-        expect(typeof key).toBe("string");
-        expect(TEST_DATA.EXPECTED_KEYS).toContain(key);
-      });
+      expect(result).toStrictEqual(Object.keys(TEST_DATA.OBJECTS.SIMPLE));
     });
 
     it("should return an empty array for an empty object", ({ expect }) => {
@@ -117,14 +139,10 @@ describe("ObjectHelper", () => {
   });
 
   describe("getObjectValues", (it) => {
-    it("should return typed values for a simple object", ({ expect }) => {
+    it("should return values matching the source object", ({ expect }) => {
       const result = getObjectValues(TEST_DATA.OBJECTS.SIMPLE);
 
-      expect(result).toStrictEqual(TEST_DATA.EXPECTED_VALUES);
-
-      result.forEach((value) => {
-        expect(TEST_DATA.EXPECTED_VALUES).toContain(value);
-      });
+      expect(result).toStrictEqual(Object.values(TEST_DATA.OBJECTS.SIMPLE));
     });
 
     it("should return an empty array for an empty object", ({ expect }) => {
@@ -134,40 +152,39 @@ describe("ObjectHelper", () => {
     });
   });
 
+  describe("hasObjectKey", (it) => {
+    TEST_DATA.OWN_KEY_CASES.forEach(({ name, object, key, expected }) => {
+      it(name, ({ expect }) => {
+        expect(hasObjectKey(object, key)).toBe(expected);
+      });
+    });
+
+    it("should narrow the object to include a key omitted from its type", ({
+      expect,
+    }) => {
+      const object = { hidden: 99, visible: "x" } as { visible: string };
+
+      expect(hasObjectKey(object, "hidden")).toBe(true);
+
+      if (hasObjectKey(object, "hidden")) {
+        expectTypeOf(object.hidden).toEqualTypeOf<unknown>();
+        expect(object.hidden).toBe(99);
+      }
+    });
+  });
+
   describe("isObjectKey", (it) => {
-    it("should return true for an own-property key", ({ expect }) => {
-      expect(
-        isObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.EXISTING),
-      ).toBe(true);
-    });
-
-    it("should return false for an absent key", ({ expect }) => {
-      expect(isObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.ABSENT)).toBe(
-        false,
-      );
-    });
-
-    it("should return false for an empty-object lookup", ({ expect }) => {
-      expect(
-        isObjectKey(TEST_DATA.OBJECTS.EMPTY, TEST_DATA.KEYS.EXISTING),
-      ).toBe(false);
-    });
-
-    it("should return true for an own array property key", ({ expect }) => {
-      expect(isObjectKey(TEST_DATA.EMPTY_ARRAY, TEST_DATA.KEYS.ARRAY_OWN)).toBe(
-        true,
-      );
-    });
-
-    it("should return false for an inherited prototype key", ({ expect }) => {
-      expect(
-        isObjectKey(TEST_DATA.OBJECTS.SIMPLE, TEST_DATA.KEYS.INHERITED),
-      ).toBe(false);
+    TEST_DATA.OWN_KEY_CASES.forEach(({ name, object, key, expected }) => {
+      it(name, ({ expect }) => {
+        expect(isObjectKey(object, key)).toBe(expected);
+      });
     });
 
     it("should narrow the key to keyof the object", ({ expect }) => {
       const object = TEST_DATA.NARROW.OBJECT;
       const key: string = TEST_DATA.NARROW.KEY;
+
+      expect(isObjectKey(object, key)).toBe(true);
 
       if (isObjectKey(object, key)) {
         expectTypeOf(key).toEqualTypeOf<keyof typeof object>();
