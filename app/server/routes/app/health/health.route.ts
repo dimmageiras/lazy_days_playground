@@ -1,14 +1,10 @@
-import { ROUTES } from "@server/constants/routes.constant";
+import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
 import { SERVICE } from "@server/constants/service.constant";
 import type { FastifyPluginAsync } from "fastify";
 
 import { DateHelper } from "@shared/helpers/date.helper";
 
-const {
-  API: {
-    HEALTH: { SERVER },
-  },
-} = ROUTES;
+const { SERVER } = API_HEALTH_ENDPOINTS;
 const { NAME } = SERVICE;
 
 const { getCurrentTimestamp } = DateHelper;
