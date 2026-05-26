@@ -4,7 +4,7 @@
 
 The test-infrastructure surface beneath the specs — the setup factory, the fake-timer registry, the state-probe / pollution-probe helpers, and the cross-spec mock surface. The defining property: this code runs **once per worker**, before any spec, and any state it carries persists for the worker's lifetime under the project's `isolate: false` contract. A regression here doesn't fail a spec; it lets specs lie about correctness or leak state between unrelated files.
 
-This plan is the depth complement to [`./testing.plan.md`](./testing.plan.md). The testing plan owns spec-authoring conventions (the consumer's seat); this plan owns the infrastructure the consumer destructures from.
+This plan is the depth complement to [`./testing.plan.md`](./testing.plan.md). The testing plan owns spec-authoring conventions (the consumer's seat); this plan owns the infrastructure the consumer destructures from. A PR spans both seats when, for example, it adds a new helper namespace to the setup factory and a spec that consumes it, when it changes the mode-flag → env mapping and the spec-side scripts that invoke it, or when it adjusts the probe's line-shape contract and the specs that rely on the existing shape — run both plans in those cases.
 
 Project-specific testing conventions live in [`../../testing/README.md`](../../testing/README.md). That README is canonical for the lane this plan and the testing plan jointly enforce.
 
@@ -49,7 +49,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - The hijack is **gated on the same probe flag** the helper uses (`DEBUG_TEST_POLLUTION`). When the probe is off, the registry is never read, so paying the wrapper cost is wasted. A hijack that runs unconditionally is a finding.
 - The hijack wraps **only Pattern B entry points** — the methods that flush pending timers against the shared fake clock. Pattern A (`vi.setSystemTime` + `vi.useRealTimers()` cleanup) is concurrency-safe and is deliberately not tracked; expanding the wrap list to cover Pattern A is a regression of the trade-off.
 - Each wrapped method binds the original, calls the attribution callback the setup module passed in, then forwards to the original with arguments preserved. Dynamic property indexing on the runner namespace (e.g. iterating method names) is forbidden — explicit per-method assignments keep the wrap auditable and avoid `no-unsafe-member-access` violations.
-- The registry exposes a narrow API: record a file, query a file, clear a file. The probe's per-file teardown calls clear; cross-test state survives only between record and clear.
+- The registry exposes a narrow API: record a file, query a file, clear a file. The probe's per-file teardown calls clear; cross-test state survives only between record and clear. Iteration over the registry and bulk-clear operations are excluded by design — neither is needed by the probe and both would invite cross-file coupling. Flag any addition that widens the API beyond record / query / clear.
 - The registry's frozen namespace object follows the helper contract (frozen, `as const`, named functions) — even though the registry lives next to the setup module rather than under the helpers folder.
 
 ### State-probe / pollution-probe contract

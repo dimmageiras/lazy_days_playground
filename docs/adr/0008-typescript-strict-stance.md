@@ -60,6 +60,7 @@ The mirror image of the above — keep `exactOptionalPropertyTypes`, `noUnchecke
 - **The codebase is single-file-transpiler safe.** `isolatedModules` ensures every file can be transpiled in isolation, which the toolchain (Vite, the test runner, the dev runner) already requires.
 - **Adding a new file or refactoring an existing one happens under the strict-plus contract.** New code is written to satisfy the opt-ins by default; the cost of the stance is paid at write time, not at adoption time.
 - **Dropping any opt-in is an ADR-level change.** The combination is the stance; per-opt-in exceptions are not granted at PR level. A repository-wide reason to relax one of the flags is the trigger for a new ADR that records what changed and why.
+- **Per-line escape hatches are permitted at intentional boundaries.** A narrow `as` assertion or a `@ts-expect-error` comment at a boundary the author chose (an external-data ingestion point, a known-narrower runtime invariant the type system cannot express) is an acceptable local cost of the stance — it keeps the strict-plus posture for the rest of the file. The same hatch used to silence a check inside otherwise-strict code (rather than at a boundary) is a finding, and a pattern of such hatches across the codebase is the trigger for revisiting the opt-in that prompted them.
 
 ## Related
 

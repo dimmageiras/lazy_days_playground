@@ -20,7 +20,7 @@ The project splits application state across **two lanes with non-overlapping res
 
 Neither library is in the dependency tree at the time this ADR is recorded. The rule activates when the client slice and its state-management dependencies land; at that point, the lanes are binding from the first commit.
 
-**The lane split is the decision.** Either library may be replaced by an equivalent on its own side without invalidating this ADR; mixing the responsibilities (server state in the client store, ephemeral UI flags in the server cache) is what this ADR forbids.
+**The lane split is the decision.** The server-state library may be replaced by an equivalent on its own side without invalidating this ADR. Replacing the client-state library would also invalidate the wrapper conventions the project rule layers on top of it; that swap requires a follow-up ADR covering the wrapper / API conventions. Mixing the responsibilities (server state in the client store, ephemeral UI flags in the server cache) is what this ADR forbids on either side.
 
 ## Alternatives considered
 

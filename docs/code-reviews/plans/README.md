@@ -15,13 +15,16 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 
 ## Areas
 
-| Area                  | Plan                                             | Triggers (high-level)                                                       |
-| --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------- |
-| Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                       |
-| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                     |
-| Shared helpers        | [helpers.plan.md](./helpers.plan.md)             | Pure utility functions and their matching specs; depth complement to shared |
-| Shared utilities      | [shared.plan.md](./shared.plan.md)               | Cross-cutting constants, helpers, and types consumed by multiple modules    |
-| Testing               | [testing.plan.md](./testing.plan.md)             | Specs, runner config, setup files, helper layer, diagnostics                |
+| Area                  | Plan                                             | Triggers (high-level)                                                                               |
+| --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                                               |
+| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                                             |
+| Build configs         | [build-configs.plan.md](./build-configs.plan.md) | Vite shared base and per-runtime configs, the cross-surface alias-coherence invariant               |
+| Server                | [server.plan.md](./server.plan.md)               | Server bootstrap, typed instance alias, route plugins, server-only constants                        |
+| Shared helpers        | [helpers.plan.md](./helpers.plan.md)             | Pure utility functions and their matching specs; depth complement to shared                         |
+| Shared utilities      | [shared.plan.md](./shared.plan.md)               | Cross-cutting constants, helpers, and types consumed by multiple modules                            |
+| Testing               | [testing.plan.md](./testing.plan.md)             | Specs and spec-author conventions; the consumer's seat                                              |
+| Test infrastructure   | [test-infra.plan.md](./test-infra.plan.md)       | Setup factory, fake-timer registry, helper layer, runner-side bindings; depth complement to testing |
 
 ## Conventions
 
@@ -36,3 +39,4 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 - [`.claude/rules/invocations/code-review.md`](../../../.claude/rules/invocations/code-review.md) — when to invoke `code-review-and-quality` and the trigger-to-skill mapping that informs each plan.
 - [`.claude/rules/code-comments.md`](../../../.claude/rules/code-comments.md) — applies to inline comments and JSDoc during every review.
 - [`.claude/rules/invocations/doc-editing.md`](../../../.claude/rules/invocations/doc-editing.md) — applies when the PR touches documentation.
+- [`../../adr/README.md`](../../adr/README.md) — the architectural decision records the plans frequently cross-reference; each plan's "Related" section links the ADRs that govern its area.

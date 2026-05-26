@@ -6,7 +6,7 @@ Build, runtime, and package-manager configuration that governs how the codebase 
 
 - Package manifest and dependency hygiene
 - pnpm-specific configuration (workspace settings, supply-chain defaults)
-- TypeScript compiler options as JSON manifests — the extends graph, target/lib/module choices, and the `paths` block as the canonical source of truth for the alias scheme
+- TypeScript compiler options as jsonc manifests (JSON with comments, as TypeScript accepts) — the extends graph, target/lib/module choices, and the `paths` block as the canonical source of truth for the alias scheme
 - ESLint flat-config orchestration — plugin registration, parser options, scoped overrides
 - The test-runner config as a configuration artefact (the runner-side bindings; the test-infrastructure surface it wires in lives in its own plan)
 - Git or lint hooks (when present)
@@ -50,9 +50,9 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - Build-script allowlist (`allowBuilds` in v11) is explicit — packages with native build scripts are listed, nothing else can run install scripts
 - `onlyBuiltDependencies` / `neverBuiltDependencies` (legacy) are migrated to `allowBuilds`
 
-### TypeScript configuration (JSON manifests)
+### TypeScript configuration (jsonc manifests)
 
-The tsconfigs are reviewed as **JSON manifests** that govern the type-checker and the language service. The way `paths` flows through the bundler and the linter is a cross-surface concern owned by [`./build-configs.plan.md`](./build-configs.plan.md); only the manifest side is reviewed here.
+The tsconfigs are reviewed as **jsonc manifests** (JSON with comments — the form TypeScript accepts for `tsconfig` files) that govern the type-checker and the language service. The way `paths` flows through the bundler and the linter is a cross-surface concern owned by [`./build-configs.plan.md`](./build-configs.plan.md); only the manifest side is reviewed here.
 
 - `strict: true` is on; targeted opt-outs (e.g. `noUnusedLocals: false`) have a reason.
 - The extends graph is shallow and explicit — a base tsconfig at the root, sibling tsconfigs referenced from it for app and test scope. The root is the entry point; siblings carry the per-scope overrides.
@@ -77,7 +77,7 @@ The tsconfigs are reviewed as **JSON manifests** that govern the type-checker an
 - The Vite-merge surface (importing and merging the shared Vite base via `mergeConfig`) is reviewed under [`./build-configs.plan.md`](./build-configs.plan.md).
 - The runner-config bindings that wire in the test infrastructure (the setup file entry, the mode → env mapping, the coverage configuration, the isolate/concurrency posture) are reviewed under [`./test-infra.plan.md`](./test-infra.plan.md) (for the infrastructure side) and [`./testing.plan.md`](./testing.plan.md) (for the spec-author side).
 
-### Module resolution coherence
+### Module resolution coherence (manifest side)
 
 - The same alias must mean the same thing across every surface that resolves it. The TypeScript `paths` block is the canonical definition; how it flows through the bundler and the linter is reviewed under [`./build-configs.plan.md`](./build-configs.plan.md).
 - Subpath imports starting with `#` are package.json-only — those work natively in Node and the bundler. Aliases starting with `@`, `~`, etc. need either tsconfig paths + bundler resolve config, or a plugin.

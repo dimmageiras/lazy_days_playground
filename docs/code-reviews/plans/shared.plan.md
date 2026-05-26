@@ -32,7 +32,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - Every constants object uses `Object.freeze({...} as const)` — runtime freeze + literal-type narrowing
 - No mutation paths exist (the freeze is real; no helper hands out a writable reference)
 - `as const` is on the object literal, not on the freeze wrapper, so TypeScript narrows the value types to literals
-- Carve-out: `immutable.Map` / `immutable.Set` are acceptable when the constant naturally maps to a keyed lookup or a set; `Object.freeze({...} as const)` stays the default for record-shaped groups.
+- Carve-out: `immutable.Map` / `immutable.Set` are acceptable when the constant naturally maps to a keyed lookup or a set; `Object.freeze({...} as const)` stays the default for record-shaped groups. The same persistent-collection primitives are used by the test-infrastructure state-probe helper for structural-sharing snapshots — a separate concern from the constants carve-out here, but the same dependency.
 
 ### Naming
 

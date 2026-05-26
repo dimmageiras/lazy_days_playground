@@ -24,7 +24,7 @@ export { ExampleHelper };
 
 Conventions:
 
-- The namespace name is the PascalCase form of the kebab-case file name (`example.helper.ts` → `ExampleHelper`).
+- The namespace name is the PascalCase form of the kebab-case file name, with the `.helper` infix dropped before PascalCasing (`example.helper.ts` → `ExampleHelper`, not `ExampleHelperHelper`).
 - The object literal is frozen at runtime via `Object.freeze` and narrowed at the type level via `as const`.
 - Only the namespace is exported; the individual functions remain module-internal.
 - No default exports anywhere — an ESLint rule enforces this.

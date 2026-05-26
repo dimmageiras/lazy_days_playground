@@ -9,7 +9,7 @@ Records of load-bearing decisions — see the **Load-bearing decision** term in 
 ## Lifecycle
 
 - New ADRs start with status `Proposed`.
-- On merge the status flips to `Accepted`.
+- The status flips to `Accepted` when the decision is in force. For an ADR that lands together with the change that puts it in force, that flip happens on the same merge. For an ADR that records a forward-looking commitment whose enforcement depends on a later implementation slice, the flip waits for that slice — each ADR's `Status` line is the source of truth for which case applies, and the `Date` field on the ADR is updated to the date of the status change.
 - A superseded ADR keeps its file (history is the point) and updates its status to `Superseded by NNNN-...`. The superseding ADR cross-links back.
 - A deprecated decision (no longer applies; no replacement) updates status to `Deprecated` and explains why in a short closing note.
 

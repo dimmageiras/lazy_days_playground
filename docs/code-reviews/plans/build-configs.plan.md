@@ -19,7 +19,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - `.configs/vite/shared.config.ts` (the shared base — owns keys both runtimes pay for: resolve options, the opt-in to built-in tsconfig-paths resolution, any plugin/define defaults)
 - `.configs/vite/server.config.ts` (per-runtime Node-side config layered on the shared base via `mergeConfig`)
 - `.configs/vite/<runtime>.config.ts` (any additional per-runtime config that lands later, layered on the shared base via the same composition pattern)
-- `vite.config.ts` at the repo root (forward-looking client entry — applies once the React Router framework-mode client lands; the root location is where Vite's default config discovery looks)
+- `vite.config.ts` at the repo root (forward-looking client entry — applies once the React Router framework-mode client lands; the root location is where Vite's default config discovery looks). The rest of this plan is active today against the shared base, the server config, and the runner's Vite-merge surface; only the client-config section below activates when that file lands.
 - `vitest.config.ts` (test-runner config that merges the shared Vite base; the runner-specific surface lives in the testing plan, the Vite-merge surface is reviewed here)
 - `tsconfig.json` `paths` block (canonical alias definition — the Vite shared base consumes it via the built-in tsconfig-paths opt-in)
 - `eslint.config.ts` import-sort group definitions (the alias-prefix groups that must stay coherent with the paths block)
@@ -44,6 +44,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 ### `mergeConfig` arity and source-type guard
 
 - `mergeConfig(base, override)` takes a `UserConfig` object literal as the second argument. Passing a function that returns a config (rather than the resolved config object) silently yields `{}` for the override side, and the per-runtime overrides are lost. The runtime still produces a config — the bug is invisible to type-checking.
+- A falsy second argument is a no-op, not a type error — `mergeConfig` returns the base unchanged when the override is `undefined`, `null`, or another falsy value. Flag any conditional that may evaluate to a falsy second argument; the silent passthrough is the bug to catch.
 - `defineConfig(({ command, mode }) => mergeConfig(base, override))` is the correct shape when the per-runtime config needs the build context. The function wraps the **outer** call, not the second argument to `mergeConfig`.
 - The second argument carries `satisfies UserConfig` so a typo in a nested key fails at type-check time. A bare object literal at that position is a missed safety net; `as UserConfig` (assertion rather than satisfaction) widens the literal and lets typos through silently.
 

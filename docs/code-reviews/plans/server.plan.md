@@ -44,7 +44,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - The catch block logs the error through the instance logger, awaits `close()` to release active handles, then exits with a non-zero code. Returning from the bootstrap on error without `process.exit` leaves the worker alive with no listener, which CI/orchestrators interpret as healthy.
 - The exit code is non-zero (`1` is fine) — `0` on a caught error masks the failure to any supervisor.
 - `disableRequestLogging: true` plus a non-default logger is a deliberate pairing — the default access-log line is suppressed so the future structured logger can own request observability. Flag any change that toggles one without the other.
-- No top-level `await` outside the try block — a rejection from import-time work leaves the instance unconstructed and the catch path unreachable.
+- No top-level `await` outside the try block — a rejection from import-time work leaves the instance unconstructed and the catch path unreachable. Top-level `await` inside the try block (registration calls, the `listen` call) is fine; the catch path catches those rejections by design.
 
 ### Typed instance alias
 
