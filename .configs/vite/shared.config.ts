@@ -1,9 +1,10 @@
 import type { UserConfig } from "vite";
+import { defineConfig } from "vite";
 
-export default {
+const sharedConfig = defineConfig({
   resolve: {
-    // Vite 8: `tsconfigPaths` resolves against the closest tsconfig; behaviour
-    // around project `references` is version-sensitive — re-verify on bumps.
     tsconfigPaths: true,
   },
-} satisfies UserConfig;
+} satisfies UserConfig);
+
+export default sharedConfig;
