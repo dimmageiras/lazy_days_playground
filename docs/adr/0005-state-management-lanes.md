@@ -38,7 +38,7 @@ Skip the dedicated client-state library entirely and lean on React's built-in pr
 
 ### URL search params as the canonical client-state store
 
-Keep ephemeral UI state in the URL and re-derive from there. Rejected as a global default: URL state is the right answer for shareable, navigable state (active tab in a page, filter criteria on a list) but is a poor fit for transient flags, form drafts, and anything the user expects to survive a within-session navigation. The lane rule does not forbid URL state for the right kind of UI state — it forbids putting *server* state in the client store, not picking a different client-state mechanism per case.
+Keep ephemeral UI state in the URL and re-derive from there. Rejected as a global default: URL state is the right answer for shareable, navigable state (active tab in a page, filter criteria on a list) but is a poor fit for transient flags, form drafts, and anything the user expects to survive a within-session navigation. The lane rule does not forbid URL state for the right kind of UI state — it forbids putting _server_ state in the client store, not picking a different client-state mechanism per case.
 
 ## Consequences
 
