@@ -1,7 +1,7 @@
 # 0001. Vite multi-target config layout
 
-- **Status:** Proposed
-- **Date:** 2026-05-25
+- **Status:** Accepted
+- **Date:** 2026-05-26
 
 ## Context
 

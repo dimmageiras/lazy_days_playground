@@ -13,20 +13,21 @@ Prerequisites — a Node version satisfying the `engines.node` field — are pin
 
 Paths below are operational hints — the conceptual scope of each folder is what matters; the path may move.
 
-| Path                 | What lives there                                                                                                   |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `app/`               | Application source code, organised by area                                                                         |
-| `.configs/`          | Configuration that is not a top-level config file — test helpers, pnpm patches, area-specific tool configs         |
-| `docs/`              | Project documentation (see the docs index below)                                                                   |
-| `docs/adr/`          | Where architectural decision records will live — folder is currently empty                                         |
-| `docs/code-reviews/` | Review plans (what to check per area) and findings (point-in-time outputs of running the plans)                    |
-| `docs/testing/`      | Canonical testing conventions — file layout, worker model, helper contract, diagnostics                            |
-| `docs/pnpm/`         | pnpm-specific operational notes (currently: parallel-script execution)                                             |
-| `docs/ts/`           | JSON schemas for the TypeScript toolchain (currently: `tsconfig.schema.json`)                                      |
-| `CONTEXT.md`         | Domain glossary — precise meanings of project-specific terms; do not invent synonyms                               |
-| `CLAUDE.md`          | Entry point for AI agents working in this repo; points at the rule files under `.claude/`                          |
-| `.claude/rules/`     | Project rules for agent and human contributors — code comments, git mutations, skill invocations, state management |
-| `.claude/skills/`    | Skill definitions invoked by agents working in this repo                                                           |
+| Path                 | What lives there                                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `app/`               | Application source code, organised by area                                                                                                             |
+| `.configs/`          | Configuration that is not a top-level config file — test helpers, pnpm patches, area-specific tool configs                                             |
+| `docs/`              | Project documentation (see the docs index below)                                                                                                       |
+| `docs/adr/`          | Records of load-bearing decisions                                                                                                                      |
+| `docs/code-reviews/` | Review plans (what to check per area) and findings (point-in-time outputs of running the plans)                                                        |
+| `docs/testing/`      | Canonical testing conventions — file layout, worker model, helper contract, diagnostics                                                                |
+| `docs/pnpm/`         | pnpm-specific operational notes (currently: parallel-script execution)                                                                                 |
+| `docs/ts/`           | JSON schemas for the TypeScript toolchain. Reference-only — not auto-consumed by any build step (currently: `tsconfig.schema.json` — operational hint) |
+| `docs/vite/`         | Vite multi-target pattern doc (cross-linked from ADR-0001)                                                                                             |
+| `CONTEXT.md`         | Domain glossary — precise meanings of project-specific terms; do not invent synonyms                                                                   |
+| `CLAUDE.md`          | Entry point for AI agents working in this repo; points at the rule files under `.claude/`                                                              |
+| `.claude/rules/`     | Project rules for agent and human contributors — code comments, git mutations, skill invocations, state management                                     |
+| `.claude/skills/`    | Skill definitions invoked by agents working in this repo                                                                                               |
 
 ## Where to start
 
@@ -36,7 +37,7 @@ Depending on what you're doing:
 - **Writing or reviewing code** → read [`CLAUDE.md`](./CLAUDE.md) and the rules it links under [`.claude/rules/`](./.claude/rules/).
 - **Adding or changing a test** → read [`docs/testing/README.md`](./docs/testing/README.md). The worker model is opinionated; the conventions are non-obvious without it.
 - **Running a code review** → pick the relevant plan under [`docs/code-reviews/plans/`](./docs/code-reviews/plans/). The plan tells you which skills to invoke and what to look for.
-- **Making an architectural decision** → record it as an ADR under [`docs/adr/`](./docs/adr/); the folder is currently empty, so the first ADR establishes the format (the `grill-with-docs` skill in `.claude/skills/` documents the expected shape).
+- **Making an architectural decision** → record it as an ADR under [`docs/adr/`](./docs/adr/); see [`docs/adr/README.md`](./docs/adr/README.md) for the template (the `grill-with-docs` skill in `.claude/skills/` documents the expected shape).
 - **Looking up a term** → [`CONTEXT.md`](./CONTEXT.md). If a term is missing from the glossary but already in use, add it as part of the change that uses it.
 
 ## Convention summary
