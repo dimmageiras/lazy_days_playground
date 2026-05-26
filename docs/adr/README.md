@@ -13,7 +13,7 @@ Records of load-bearing decisions — see the **Load-bearing decision** term in 
 - A superseded ADR keeps its file (history is the point) and updates its status to `Superseded by NNNN-...`. The superseding ADR cross-links back.
 - A deprecated decision (no longer applies; no replacement) updates status to `Deprecated` and explains why in a short closing note.
 
-ADRs are never deleted — they are the audit trail. If a decision turned out wrong, the new ADR explains what changed.
+ADRs are never deleted — they are the audit trail. If a decision turned out wrong, the new ADR explains what changed. An ADR withdrawn during review before it ever merged has no on-disk presence — the sequence number is simply skipped.
 
 ## Template
 

@@ -84,7 +84,7 @@ A smoke flow is **not currently configured**; this section applies once a smoke 
 
 ### Scripts
 
-- Test scripts in `package.json` toggle the probe via Vitest's `--mode` flag (e.g. `--mode=debug`), and the Vitest config maps the mode to `test.env.DEBUG_TEST_POLLUTION`. This sidesteps the POSIX-vs-cmd env-var-prefix sharp edge — flag a regression that reintroduces an inline `DEBUG_TEST_POLLUTION=...` prefix in a script.
+- The probed run toggles the probe via Vitest's `--mode` flag (`--mode=debug`); the default and coverage runs leave it off via the config's mode → env mapping. This sidesteps the POSIX-vs-cmd env-var-prefix sharp edge — flag a regression that reintroduces an inline `DEBUG_TEST_POLLUTION=...` prefix in a script.
 - Each script's purpose is distinct: a default run, a coverage run, a probed coverage run, and (when added) a smoke run. Duplication or near-duplicates without a stated reason are review findings.
 
 ### TypeScript test config

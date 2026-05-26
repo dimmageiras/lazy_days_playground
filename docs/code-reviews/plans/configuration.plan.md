@@ -17,7 +17,9 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - `package.json` (deps, scripts, `imports` field, `engines`, `packageManager`)
 - `pnpm-workspace.yaml` (pnpm settings — even in single-package projects this is where pnpm config lives in v11+)
 - `tsconfig.json`, `tsconfig.app.json`, `tsconfig.test.json` (solution-style — root is the entry point, siblings are referenced; operational hints, file names may move)
-- `vite.config.ts` (Vite resolve options, opt-in to built-in tsconfig-paths support) (not yet present — applies when added)
+- `.configs/vite/shared.config.ts` (Vite shared base — resolve options, opt-in to built-in tsconfig-paths support)
+- `.configs/vite/server.config.ts` (per-runtime Node-side Vite config layered on the shared base via `mergeConfig`)
+- `vite.config.ts` (forward-looking client entry — applies when the client slice lands)
 
 ## Required skills
 
@@ -58,9 +60,9 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 ### Vite configuration
 
-Applies when `vite.config.ts` is added; until then this section is preparatory. The "`vite` is a direct dep" claim below assumes Vite is declared in the manifest — re-verify against the actual dep tree at use time.
+Applies to the Vite shared base and any per-runtime configs. The "`vite` is a direct dep" claim below assumes Vite is declared in the manifest — re-verify against the actual dep tree at use time.
 
-- `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution (no need for `vite-tsconfig-paths` plugin in Vite 8+; pre-8 projects still need the plugin)
+- `resolve.tsconfigPaths: true` opts in to Vite's built-in tsconfig-paths resolution; pre-8 projects need an external plugin instead.
 - The config does **not** `import` from `"vite"` if `vite` isn't a direct dep — pnpm's strict node_modules will fail; a plain object export sidesteps this entirely (`defineConfig` is just a type helper)
 - Plugin order is reviewed when plugins exist (the first plugin to claim a request wins)
 - For future client/SSR work: the Environment API (`environments: { client, ssr }`) is the modern shape; flag adoption when a client is introduced

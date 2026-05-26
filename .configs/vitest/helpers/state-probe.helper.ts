@@ -3,7 +3,7 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vitest";
 
 import { FakeTimerRegistry } from "../fake-timer-registry";
 
-/** Stateless dispatcher — see docs/testing/README.md for the contract. */
+/** Stateless dispatcher — see project testing conventions for the contract. */
 
 interface StateSnapshot {
   activeResources: Map<string, number>;
