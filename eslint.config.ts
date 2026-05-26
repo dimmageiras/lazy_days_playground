@@ -72,6 +72,17 @@ export default defineConfig([
         "error",
         { restrictDefaultExports: { direct: true } },
       ],
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              message: "Only one ../ is allowed. Use aliases instead.",
+              regex: String.raw`^\.\.\/\.\.\/`,
+            },
+          ],
+        },
+      ],
       "no-use-before-define": "error",
       "padding-line-between-statements": [
         "error",

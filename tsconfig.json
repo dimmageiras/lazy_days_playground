@@ -14,6 +14,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "@configs/*": ["./.configs/*"],
+      "@server/*": ["./app/server/*"],
       "@shared/*": ["./app/shared/*"]
     },
     "types": ["node"],
@@ -39,7 +40,7 @@
     "skipLibCheck": true
   },
   "files": [],
-  "include": ["eslint.config.ts"],
+  "include": ["eslint.config.ts", "knip.config.ts"],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.test.json" }
