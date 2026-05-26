@@ -1,4 +1,4 @@
-import type { UserConfig, UserConfigFnObject } from "vite";
+import type { UserConfig } from "vite";
 import { defineConfig, mergeConfig } from "vite";
 
 import sharedConfig from "./shared.config";
@@ -9,6 +9,6 @@ const serverConfig = defineConfig(() =>
       conditions: ["node"],
     },
   } satisfies UserConfig),
-) satisfies UserConfigFnObject;
+);
 
 export default serverConfig;

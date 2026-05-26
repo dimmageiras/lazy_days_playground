@@ -6,9 +6,7 @@ import { BASE_URLS } from "./constants/base-urls.constant";
 import { healthRoutes } from "./routes/app/health/health.route";
 import type { APIAppInstance } from "./types/instance.type";
 
-const {
-  API: { HEALTH },
-} = BASE_URLS;
+const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
 
 const instance: APIAppInstance = fastify({
@@ -19,7 +17,7 @@ const instance: APIAppInstance = fastify({
 
 try {
   await instance.register(healthRoutes, {
-    prefix: `${HEALTH}`,
+    prefix: API_HEALTH,
   });
 
   await instance.listen({ port: 5173 });
