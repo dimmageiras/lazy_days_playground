@@ -2,7 +2,7 @@
 /.claude/settings.local.json
 
 # Environment files (may contain secrets)
-.env.local*
+.env.*.local
 
 # Local logs and tool output
 /logs/

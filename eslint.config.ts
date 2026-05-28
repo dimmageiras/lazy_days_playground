@@ -83,6 +83,21 @@ export default defineConfig([
           ],
         },
       ],
+      "no-restricted-syntax": [
+        "error",
+        {
+          message:
+            "Raise custom Zod issues via ZodHelper.addCustomIssue so params.code stays typed as IssueCodes.",
+          selector:
+            "CallExpression[callee.property.name='addIssue'] > ObjectExpression > Property[key.name='code'][value.value='custom']",
+        },
+        {
+          message:
+            "Raise custom Zod issues via ZodHelper.addCustomIssue so params.code stays typed as IssueCodes.",
+          selector:
+            "CallExpression[callee.property.name='addIssue'] > ObjectExpression > Property[key.value='code'][value.value='custom']",
+        },
+      ],
       "no-use-before-define": "error",
       "padding-line-between-statements": [
         "error",
@@ -124,7 +139,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/*.config.ts", "**/*.d.ts"],
+    files: ["**/*.config.ts"],
     rules: {
       "no-restricted-exports": [
         "error",
