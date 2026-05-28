@@ -7,8 +7,8 @@ const PortSchema = zCoerce
   .max(65535, { error: "Must be between 1 and 65535" })
   .brand<"Port">();
 
-const serverEnvSchema = zObject({
+const appEnvSchema = zObject({
   VITE_APP_PORT: PortSchema,
 });
 
-export { serverEnvSchema };
+export { appEnvSchema };

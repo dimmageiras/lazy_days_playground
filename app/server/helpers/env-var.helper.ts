@@ -1,11 +1,11 @@
-import { serverEnvSchema } from "@server/schemas/server-env.schema";
+import { appEnvSchema } from "@shared/schemas/app-env.schema";
 
 import { ZodServerHelper } from "./zod-server.helper";
 
 const { getFormattedZodIssues } = ZodServerHelper;
 
 const validateEnv = (env: ImportMetaEnv): void => {
-  const result = serverEnvSchema.safeParse(env);
+  const result = appEnvSchema.safeParse(env);
 
   if (result.success) {
     return;
