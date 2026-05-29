@@ -1,4 +1,5 @@
 import { VitestSetup } from "@configs/vitest/setup";
+import { Set as ImmutableSet } from "immutable";
 import { describe, expectTypeOf } from "vitest";
 
 import type { SetValue } from "@shared/types/app/utility-types";
@@ -19,12 +20,22 @@ const TEST_DATA = {
     {
       expectedSize: 4,
       name: "should add a value absent from the set",
-      value: "w",
+      values: ["w"],
     },
     {
       expectedSize: 3,
       name: "should keep an already-present value present without growing",
-      value: "a",
+      values: ["a"],
+    },
+    {
+      expectedSize: 5,
+      name: "should add several absent values in one call",
+      values: ["w", "x"],
+    },
+    {
+      expectedSize: 3,
+      name: "should be a no-op for an empty values array",
+      values: [],
     },
   ],
   DELETE_CASES: [
@@ -37,6 +48,11 @@ const TEST_DATA = {
       expectedSize: 2,
       name: "should be a no-op for a value absent from the set",
       values: ["a", "z"],
+    },
+    {
+      expectedSize: 3,
+      name: "should be a no-op for an empty values array",
+      values: [],
     },
   ],
   MEMBERSHIP_CASES: [
@@ -55,6 +71,9 @@ const TEST_DATA = {
     MEMBER: castAsType<string>("a"),
     NON_MEMBER: castAsType<string>("x"),
   },
+  get IMMUTABLE_SET() {
+    return ImmutableSet(["a", "b", "c"]);
+  },
   get SET() {
     return new Set(["a", "b", "c"]);
   },
@@ -62,13 +81,15 @@ const TEST_DATA = {
 
 describe("SetHelper", () => {
   describe("addValuesInPlace", (it) => {
-    TEST_DATA.ADD_CASES.forEach(({ name, value, expectedSize }) => {
+    TEST_DATA.ADD_CASES.forEach(({ name, values, expectedSize }) => {
       it(name, ({ expect }) => {
         const set = TEST_DATA.SET;
 
-        addValuesInPlace(set, [value]);
+        addValuesInPlace(set, values);
 
-        expect(set.has(value)).toBe(true);
+        values.forEach((value) => {
+          expect(set.has(value)).toBe(true);
+        });
         expect(set.size).toBe(expectedSize);
       });
     });
@@ -81,8 +102,19 @@ describe("SetHelper", () => {
       });
     });
 
-    it("should accept any string at the call site (the (string & {}) widening)", () => {
-      hasSetValue(TEST_DATA.SET, TEST_DATA.TYPE_TEST.NON_MEMBER);
+    it("should resolve membership for an immutable Set", ({ expect }) => {
+      const { IMMUTABLE_SET } = TEST_DATA;
+
+      expect(hasSetValue(IMMUTABLE_SET, "a")).toBe(true);
+      expect(hasSetValue(IMMUTABLE_SET, "d")).toBe(false);
+    });
+
+    it("should accept any string at the call site (the (PropertyKey & {}) widening)", ({
+      expect,
+    }) => {
+      expect(hasSetValue(TEST_DATA.SET, TEST_DATA.TYPE_TEST.NON_MEMBER)).toBe(
+        false,
+      );
     });
 
     it("should narrow the value to the set's element type when true", () => {
