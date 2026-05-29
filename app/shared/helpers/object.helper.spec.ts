@@ -20,7 +20,7 @@ const {
   hasObjectKey,
   isObjectKey,
   isPlainObject,
-  stripKeysInPlace,
+  stripKeysInObject,
 } = ObjectHelper;
 
 class TaggedClass {
@@ -250,23 +250,26 @@ describe("ObjectHelper", () => {
     });
   });
 
-  describe("stripKeysInPlace", (it) => {
+  describe("stripKeysInObject", (it) => {
     TEST_DATA.STRIP_CASES.forEach(({ name, keys, expected }) => {
       it(name, ({ expect }) => {
         const object = { ...TEST_DATA.OBJECTS.DELETABLE };
 
-        stripKeysInPlace(object, keys);
+        stripKeysInObject(object, keys);
 
         expect(object).toStrictEqual(expected);
       });
     });
 
     it("should omit stripped keys from the return type", () => {
-      const object = { ...TEST_DATA.OBJECTS.DELETABLE };
+      const object: Record<string, unknown> = {
+        ...TEST_DATA.OBJECTS.DELETABLE,
+      };
       const { keys } = TEST_DATA.STRIP_CASES[0];
-      const result = stripKeysInPlace(object, keys);
 
-      expectTypeOf(result).toEqualTypeOf<
+      stripKeysInObject(object, keys);
+
+      expectTypeOf(object).toEqualTypeOf<
         Omit<typeof object, (typeof keys)[number]>
       >();
     });

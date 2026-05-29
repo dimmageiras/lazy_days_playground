@@ -49,7 +49,7 @@ const isPlainObject = (item: unknown): item is UnknownRecord => {
   return proto === null || proto === Object.prototype;
 };
 
-const stripKeysInPlace = <
+const stripKeysInObject = <
   TObject extends Record<string, unknown>,
   TKeys extends KeyAsString<TObject> | (string & {}),
 >(
@@ -70,7 +70,7 @@ const ObjectHelper = Object.freeze({
   hasObjectKey,
   isObjectKey,
   isPlainObject,
-  stripKeysInPlace,
+  stripKeysInObject,
 } as const);
 
 export { ObjectHelper };

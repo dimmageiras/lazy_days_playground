@@ -12,22 +12,45 @@ trackLeaksInSpec("set.helper");
 
 const { castAsType } = TypesHelper;
 
-const { hasSetValue } = SetHelper;
+const { addValuesInSet, hasSetValue, stripValuesInSet } = SetHelper;
 
 const TEST_DATA = {
-  MEMBERSHIP_CASES: [
+  ADD_CASES: [
     {
-      name: "should return true for a value present in the set",
-      value: "a",
-      expected: true,
+      expectedSize: 4,
+      name: "should add a value absent from the set",
+      value: "w",
     },
     {
-      name: "should return false for a value absent from the set",
-      value: "d",
-      expected: false,
+      expectedSize: 3,
+      name: "should keep an already-present value present without growing",
+      value: "a",
     },
   ],
-  NEW_VALUE: "w",
+  DELETE_CASES: [
+    {
+      expectedSize: 2,
+      name: "should remove a value present in the set",
+      values: ["a"],
+    },
+    {
+      expectedSize: 2,
+      name: "should be a no-op for a value absent from the set",
+      values: ["a", "z"],
+    },
+  ],
+  MEMBERSHIP_CASES: [
+    {
+      expected: true,
+      name: "should return true for a value present in the set",
+      value: "a",
+    },
+    {
+      expected: false,
+      name: "should return false for a value absent from the set",
+      value: "d",
+    },
+  ],
   TYPE_TEST: {
     MEMBER: castAsType<string>("a"),
     NON_MEMBER: castAsType<string>("x"),
@@ -38,12 +61,23 @@ const TEST_DATA = {
 } as const;
 
 describe("SetHelper", () => {
+  describe("addValuesInSet", (it) => {
+    TEST_DATA.ADD_CASES.forEach(({ name, value, expectedSize }) => {
+      it(name, ({ expect }) => {
+        const set = TEST_DATA.SET;
+
+        addValuesInSet(set, [value]);
+
+        expect(set.has(value)).toBe(true);
+        expect(set.size).toBe(expectedSize);
+      });
+    });
+  });
+
   describe("hasSetValue", (it) => {
     TEST_DATA.MEMBERSHIP_CASES.forEach(({ name, value, expected }) => {
       it(name, ({ expect }) => {
-        const result = hasSetValue(TEST_DATA.SET, value);
-
-        expect(result).toBe(expected);
+        expect(hasSetValue(TEST_DATA.SET, value)).toBe(expected);
       });
     });
 
@@ -58,17 +92,20 @@ describe("SetHelper", () => {
         expectTypeOf(MEMBER).toEqualTypeOf<SetValue<typeof TEST_DATA.SET>>();
       }
     });
+  });
 
-    it("should return true for a value added to the set after creation", ({
-      expect,
-    }) => {
-      const set = TEST_DATA.SET;
+  describe("stripValuesInSet", (it) => {
+    TEST_DATA.DELETE_CASES.forEach(({ name, values, expectedSize }) => {
+      it(name, ({ expect }) => {
+        const set = TEST_DATA.SET;
 
-      set.add(TEST_DATA.NEW_VALUE);
+        stripValuesInSet(set, values);
 
-      const result = hasSetValue(set, TEST_DATA.NEW_VALUE);
-
-      expect(result).toBe(true);
+        values.forEach((value) => {
+          expect(set.has(value)).toBe(false);
+        });
+        expect(set.size).toBe(expectedSize);
+      });
     });
   });
 });

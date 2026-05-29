@@ -1,8 +1,11 @@
 import { vi } from "vitest";
 
+import { SetHelper } from "@shared/helpers/set.helper";
+
 import { FunctionWrapHelper } from "./helpers/function-wrap.helper";
 
 const { wrapWithCallback } = FunctionWrapHelper;
+const { addValuesInSet, hasSetValue, stripValuesInSet } = SetHelper;
 
 // Pattern B (clock-advance): any call that flushes pending timers against the
 // shared fake clock. Pattern A (`setSystemTime` + `useRealTimers()` cleanup)
@@ -73,15 +76,15 @@ const installHijack = (recordCurrentFile: () => void): void => {
 };
 
 const recordFakeTimerFile = (filePath: string): void => {
-  clockAdvanceFilePaths.add(filePath);
+  addValuesInSet(clockAdvanceFilePaths, [filePath]);
 };
 
 const didFileAdvanceFakeTimers = (filePath: string): boolean => {
-  return clockAdvanceFilePaths.has(filePath);
+  return hasSetValue(clockAdvanceFilePaths, filePath);
 };
 
 const clearFakeTimerFile = (filePath: string): void => {
-  clockAdvanceFilePaths.delete(filePath);
+  stripValuesInSet(clockAdvanceFilePaths, [filePath]);
 };
 
 const FakeTimerRegistry = Object.freeze({

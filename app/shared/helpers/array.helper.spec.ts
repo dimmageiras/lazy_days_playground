@@ -14,7 +14,7 @@ const { castAsType } = TypesHelper;
 
 const { isArray } = ArrayHelper;
 
-function makeArguments(..._args: unknown[]): IArguments {
+function makeArguments(..._args: Array<unknown>): IArguments {
   // eslint-disable-next-line prefer-rest-params -- real `arguments` is the contract under test
   return arguments;
 }

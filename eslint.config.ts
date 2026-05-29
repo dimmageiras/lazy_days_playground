@@ -147,4 +147,4 @@ export default defineConfig([
       ],
     },
   },
-]) satisfies Linter.Config[];
+]) satisfies Array<Linter.Config>;

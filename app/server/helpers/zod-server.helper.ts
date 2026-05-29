@@ -27,7 +27,9 @@ const addCustomIssue = (
   context.addIssue({ code: ISSUE_CODES.CUSTOM, message, params: { code } });
 };
 
-const getFormattedZodIssues = (issues: readonly $ZodIssue[]): ZodIssueDto[] =>
+const getFormattedZodIssues = (
+  issues: ReadonlyArray<$ZodIssue>,
+): Array<ZodIssueDto> =>
   issues.map<ZodIssueDto>((issue) => {
     const customCode: unknown =
       issue.code === ISSUE_CODES.CUSTOM ? issue.params?.code : undefined;

@@ -1,4 +1,4 @@
-const wrapWithCallback = <TArgs extends unknown[], TReturn>(
+const wrapWithCallback = <TArgs extends Array<unknown>, TReturn>(
   original: (...args: TArgs) => TReturn,
   onCall: () => void,
 ): ((...args: TArgs) => TReturn) => {

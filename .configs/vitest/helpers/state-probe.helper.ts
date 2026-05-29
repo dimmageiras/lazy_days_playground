@@ -1,7 +1,12 @@
-import { Map, Set } from "immutable";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vitest";
 
+import { SetHelper } from "@shared/helpers/set.helper";
+
 import { FakeTimerRegistry } from "../fake-timer-registry";
+
+const { hasSetValue } = SetHelper;
+
+const { clearFakeTimerFile, didFileAdvanceFakeTimers } = FakeTimerRegistry;
 
 interface StateSnapshot {
   activeResources: Map<string, number>;
@@ -11,17 +16,18 @@ interface StateSnapshot {
 }
 
 const snapshotState = (): StateSnapshot => {
-  const globalKeys = Set<string | symbol>(Reflect.ownKeys(globalThis));
+  const globalKeys = new Set<string | symbol>(Reflect.ownKeys(globalThis));
 
-  const processListeners = Map<string | symbol, number>(
+  const processListeners = new Map<string | symbol, number>(
     process.eventNames().map((name) => [name, process.listenerCount(name)]),
   );
 
   const activeResources = process
     .getActiveResourcesInfo()
     .reduce(
-      (acc, resource) => acc.set(resource, (acc.get(resource) ?? 0) + 1),
-      Map<string, number>(),
+      (resourceCounts, resource) =>
+        resourceCounts.set(resource, (resourceCounts.get(resource) ?? 0) + 1),
+      new Map<string, number>(),
     );
 
   return {
@@ -39,17 +45,17 @@ const diffKeys = (
   label: string,
   before: Set<string | symbol>,
   after: Set<string | symbol>,
-): string[] => {
-  const lines: string[] = [];
+): Array<string> => {
+  const lines: Array<string> = [];
 
   for (const key of after) {
-    if (!before.has(key)) {
+    if (!hasSetValue(before, key)) {
       lines.push(`${label}+${String(key)}`);
     }
   }
 
   for (const key of before) {
-    if (!after.has(key)) {
+    if (!hasSetValue(after, key)) {
       lines.push(`${label}-${String(key)}`);
     }
   }
@@ -61,9 +67,9 @@ const diffCounts = (
   label: string,
   before: Map<string | symbol, number>,
   after: Map<string | symbol, number>,
-): string[] => {
-  const lines: string[] = [];
-  const keys = Set([...before.keys(), ...after.keys()]);
+): Array<string> => {
+  const lines: Array<string> = [];
+  const keys = new Set([...before.keys(), ...after.keys()]);
 
   for (const key of keys) {
     const beforeCount = before.get(key) ?? 0;
@@ -80,7 +86,7 @@ const diffCounts = (
 const diffSnapshots = (
   before: StateSnapshot,
   after: StateSnapshot,
-): string[] => {
+): Array<string> => {
   const lines = [
     ...diffKeys("globalThis", before.globalKeys, after.globalKeys),
     ...diffCounts("process", before.processListeners, after.processListeners),
@@ -132,8 +138,7 @@ const trackLeaksInSpec = (specName: string): void => {
       // the same fixed clock. Pattern B (advancing the shared clock) breaks
       // siblings' pending timers; only that signal is treated as a risk.
       const fileAdvancedTimers =
-        filePath !== null &&
-        FakeTimerRegistry.didFileAdvanceFakeTimers(filePath);
+        filePath !== null && didFileAdvanceFakeTimers(filePath);
 
       if (task.concurrent && fileAdvancedTimers) {
         process.stderr.write(
@@ -153,7 +158,7 @@ const trackLeaksInSpec = (specName: string): void => {
     }
 
     const fileAdvancedTimers =
-      filePath !== null && FakeTimerRegistry.didFileAdvanceFakeTimers(filePath);
+      filePath !== null && didFileAdvanceFakeTimers(filePath);
 
     if (fileAdvancedTimers) {
       process.stderr.write(
@@ -162,7 +167,7 @@ const trackLeaksInSpec = (specName: string): void => {
     }
 
     if (filePath !== null) {
-      FakeTimerRegistry.clearFakeTimerFile(filePath);
+      clearFakeTimerFile(filePath);
     }
   });
 };
