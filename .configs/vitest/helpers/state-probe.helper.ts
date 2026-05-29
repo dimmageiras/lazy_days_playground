@@ -1,3 +1,4 @@
+import { Map as ImmutableMap, Set as ImmutableSet } from "immutable";
 import { afterAll, beforeAll, beforeEach, expect, vi } from "vitest";
 
 import { SetHelper } from "@shared/helpers/set.helper";
@@ -9,16 +10,16 @@ const { hasSetValue } = SetHelper;
 const { clearFakeTimerFile, didFileAdvanceFakeTimers } = FakeTimerRegistry;
 
 interface StateSnapshot {
-  activeResources: Map<string, number>;
+  activeResources: ImmutableMap<string, number>;
   fakeTimers: boolean;
-  globalKeys: Set<string | symbol>;
-  processListeners: Map<string | symbol, number>;
+  globalKeys: ImmutableSet<string | symbol>;
+  processListeners: ImmutableMap<string | symbol, number>;
 }
 
 const snapshotState = (): StateSnapshot => {
-  const globalKeys = new Set<string | symbol>(Reflect.ownKeys(globalThis));
+  const globalKeys = ImmutableSet<string | symbol>(Reflect.ownKeys(globalThis));
 
-  const processListeners = new Map<string | symbol, number>(
+  const processListeners = ImmutableMap<string | symbol, number>(
     process.eventNames().map((name) => [name, process.listenerCount(name)]),
   );
 
@@ -27,7 +28,7 @@ const snapshotState = (): StateSnapshot => {
     .reduce(
       (resourceCounts, resource) =>
         resourceCounts.set(resource, (resourceCounts.get(resource) ?? 0) + 1),
-      new Map<string, number>(),
+      ImmutableMap<string, number>(),
     );
 
   return {
@@ -43,8 +44,8 @@ const snapshotState = (): StateSnapshot => {
 
 const diffKeys = (
   label: string,
-  before: Set<string | symbol>,
-  after: Set<string | symbol>,
+  before: ImmutableSet<string | symbol>,
+  after: ImmutableSet<string | symbol>,
 ): Array<string> => {
   const lines: Array<string> = [];
 
@@ -65,11 +66,11 @@ const diffKeys = (
 
 const diffCounts = (
   label: string,
-  before: Map<string | symbol, number>,
-  after: Map<string | symbol, number>,
+  before: ImmutableMap<string | symbol, number>,
+  after: ImmutableMap<string | symbol, number>,
 ): Array<string> => {
   const lines: Array<string> = [];
-  const keys = new Set([...before.keys(), ...after.keys()]);
+  const keys = ImmutableSet([...before.keys(), ...after.keys()]);
 
   for (const key of keys) {
     const beforeCount = before.get(key) ?? 0;

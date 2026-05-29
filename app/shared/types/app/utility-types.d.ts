@@ -9,6 +9,11 @@ type ObjectEntries<TObject extends Record<string, unknown>> = Array<
 
 type SetValue<
   TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
-> = TSet extends Set<infer Value> ? Value : never;
+> =
+  TSet extends ImmutableSet<infer Value>
+    ? Value
+    : TSet extends ReadonlySet<infer Value>
+      ? Value
+      : never;
 
 export type { ObjectEntries, SetValue };

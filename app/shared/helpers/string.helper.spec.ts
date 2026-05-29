@@ -56,6 +56,8 @@ const TEST_DATA = {
     { name: "should return true for an empty string", value: "" },
   ],
   TYPE_TEST: {
+    CAMELCASE_EXPECTED: "helloWorld",
+    CAMELCASE_INPUT: "hello world",
     UNKNOWN_VALUE: castAsType<unknown>("hello"),
     UPPERCASE_EXPECTED: "AB",
     UPPERCASE_INPUT: "ab",
@@ -129,6 +131,12 @@ describe("StringHelper", () => {
 
         expect(result).toBe(expected);
       });
+    });
+
+    it("should narrow the return type to CamelCase<TString>", () => {
+      expectTypeOf(
+        toCamelCase(TEST_DATA.TYPE_TEST.CAMELCASE_INPUT),
+      ).toEqualTypeOf<typeof TEST_DATA.TYPE_TEST.CAMELCASE_EXPECTED>();
     });
   });
 

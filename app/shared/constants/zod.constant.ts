@@ -1,4 +1,8 @@
-const ISSUE_CODES = Object.freeze({
+import type { $ZodIssue } from "zod/v4/core";
+
+const ISSUE_CODES: Readonly<{
+  [Code in $ZodIssue["code"] as Uppercase<Code>]: Code;
+}> = Object.freeze({
   CUSTOM: "custom",
   INVALID_ELEMENT: "invalid_element",
   INVALID_FORMAT: "invalid_format",

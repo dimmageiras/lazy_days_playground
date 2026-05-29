@@ -5,7 +5,7 @@ import { SetHelper } from "@shared/helpers/set.helper";
 import { FunctionWrapHelper } from "./helpers/function-wrap.helper";
 
 const { wrapWithCallback } = FunctionWrapHelper;
-const { addValuesInSet, hasSetValue, stripValuesInSet } = SetHelper;
+const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
 // Pattern B (clock-advance): any call that flushes pending timers against the
 // shared fake clock. Pattern A (`setSystemTime` + `useRealTimers()` cleanup)
@@ -76,7 +76,7 @@ const installHijack = (recordCurrentFile: () => void): void => {
 };
 
 const recordFakeTimerFile = (filePath: string): void => {
-  addValuesInSet(clockAdvanceFilePaths, [filePath]);
+  addValuesInPlace(clockAdvanceFilePaths, [filePath]);
 };
 
 const didFileAdvanceFakeTimers = (filePath: string): boolean => {
@@ -84,7 +84,7 @@ const didFileAdvanceFakeTimers = (filePath: string): boolean => {
 };
 
 const clearFakeTimerFile = (filePath: string): void => {
-  stripValuesInSet(clockAdvanceFilePaths, [filePath]);
+  stripValuesInPlace(clockAdvanceFilePaths, [filePath]);
 };
 
 const FakeTimerRegistry = Object.freeze({

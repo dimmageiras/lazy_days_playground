@@ -12,7 +12,7 @@ trackLeaksInSpec("set.helper");
 
 const { castAsType } = TypesHelper;
 
-const { addValuesInSet, hasSetValue, stripValuesInSet } = SetHelper;
+const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
 const TEST_DATA = {
   ADD_CASES: [
@@ -61,12 +61,12 @@ const TEST_DATA = {
 } as const;
 
 describe("SetHelper", () => {
-  describe("addValuesInSet", (it) => {
+  describe("addValuesInPlace", (it) => {
     TEST_DATA.ADD_CASES.forEach(({ name, value, expectedSize }) => {
       it(name, ({ expect }) => {
         const set = TEST_DATA.SET;
 
-        addValuesInSet(set, [value]);
+        addValuesInPlace(set, [value]);
 
         expect(set.has(value)).toBe(true);
         expect(set.size).toBe(expectedSize);
@@ -94,12 +94,12 @@ describe("SetHelper", () => {
     });
   });
 
-  describe("stripValuesInSet", (it) => {
+  describe("stripValuesInPlace", (it) => {
     TEST_DATA.DELETE_CASES.forEach(({ name, values, expectedSize }) => {
       it(name, ({ expect }) => {
         const set = TEST_DATA.SET;
 
-        stripValuesInSet(set, values);
+        stripValuesInPlace(set, values);
 
         values.forEach((value) => {
           expect(set.has(value)).toBe(false);

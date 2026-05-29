@@ -2,7 +2,7 @@ import type { Set as ImmutableSet } from "immutable";
 
 import type { SetValue } from "@shared/types/app/utility-types";
 
-const addValuesInSet = <TSet extends Set<unknown>>(
+const addValuesInPlace = <TSet extends Set<unknown>>(
   set: TSet,
   values: ReadonlyArray<SetValue<TSet> | (PropertyKey & {})>,
 ): void => {
@@ -18,7 +18,7 @@ const hasSetValue = <
   value: SetValue<TSet> | (PropertyKey & {}),
 ): value is SetValue<TSet> => set.has(value);
 
-const stripValuesInSet = <TSet extends Set<unknown>>(
+const stripValuesInPlace = <TSet extends Set<unknown>>(
   set: TSet,
   values: ReadonlyArray<SetValue<TSet> | (PropertyKey & {})>,
 ): void => {
@@ -28,9 +28,9 @@ const stripValuesInSet = <TSet extends Set<unknown>>(
 };
 
 const SetHelper = Object.freeze({
-  addValuesInSet,
+  addValuesInPlace,
   hasSetValue,
-  stripValuesInSet,
+  stripValuesInPlace,
 } as const);
 
 export { SetHelper };
