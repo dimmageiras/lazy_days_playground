@@ -87,13 +87,13 @@ export default defineConfig([
         "error",
         {
           message:
-            "Raise custom Zod issues via ZodHelper.addCustomIssue so params.code stays typed as IssueCodes.",
+            "Raise custom Zod issues via ZodServerHelper.addCustomIssue so params.code stays typed as IssueCodes.",
           selector:
             "CallExpression[callee.property.name='addIssue'] > ObjectExpression > Property[key.name='code'][value.value='custom']",
         },
         {
           message:
-            "Raise custom Zod issues via ZodHelper.addCustomIssue so params.code stays typed as IssueCodes.",
+            "Raise custom Zod issues via ZodServerHelper.addCustomIssue so params.code stays typed as IssueCodes.",
           selector:
             "CallExpression[callee.property.name='addIssue'] > ObjectExpression > Property[key.value='code'][value.value='custom']",
         },

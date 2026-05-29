@@ -34,6 +34,11 @@ const TEST_DATA = {
     KEY: "extra",
     OBJECT: { name: "John", extra: 42 },
   },
+  NARROW_HIDDEN: {
+    EXPECTED_VALUE: 99,
+    KEY: "hidden",
+    OBJECT: castAsType<{ visible: string }>({ hidden: 99, visible: "x" }),
+  },
   NON_PLAIN_OBJECTS: [
     "string",
     () => {},
@@ -192,16 +197,13 @@ describe("ObjectHelper", () => {
     it("should narrow the object to include a key omitted from its type", ({
       expect,
     }) => {
-      const object = castAsType<{ visible: string }>({
-        hidden: 99,
-        visible: "x",
-      });
+      const { EXPECTED_VALUE, KEY, OBJECT } = TEST_DATA.NARROW_HIDDEN;
 
-      expect(hasObjectKey(object, "hidden")).toBe(true);
+      expect(hasObjectKey(OBJECT, KEY)).toBe(true);
 
-      if (hasObjectKey(object, "hidden")) {
-        expectTypeOf(object.hidden).toEqualTypeOf<unknown>();
-        expect(object.hidden).toBe(99);
+      if (hasObjectKey(OBJECT, KEY)) {
+        expectTypeOf(Reflect.get(OBJECT, KEY)).toEqualTypeOf<unknown>();
+        expect(Reflect.get(OBJECT, KEY)).toBe(EXPECTED_VALUE);
       }
     });
   });

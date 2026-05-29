@@ -1,6 +1,6 @@
 import fastify from "fastify";
 
-import { APP_PORT } from "@shared/constants/app-env.constant";
+import { APP_ENV } from "@shared/constants/app-env.constant";
 import { TIMING_IN_MS } from "@shared/constants/timing.constant";
 
 import { BASE_URLS } from "./constants/base-urls.constant";
@@ -8,6 +8,7 @@ import { EnvVarHelper } from "./helpers/env-var.helper";
 import { healthRoutes } from "./routes/app/health/health.route";
 import type { APIAppInstance } from "./types/instance.type";
 
+const { APP_PORT } = APP_ENV;
 const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
 

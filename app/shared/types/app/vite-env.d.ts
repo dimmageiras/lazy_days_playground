@@ -3,6 +3,7 @@
 
 interface EnvironmentVariables {
   VITE_APP_PORT: `${number}`;
+  VITE_APP_SERVICE_NAME: string;
 }
 
 declare global {
