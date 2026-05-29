@@ -1,4 +1,4 @@
-import type { Set } from "immutable";
+import type { Set as ImmutableSet } from "immutable";
 import type { KeyAsString } from "type-fest";
 
 type ObjectEntries<TObject extends Record<string, unknown>> = Array<
@@ -7,7 +7,8 @@ type ObjectEntries<TObject extends Record<string, unknown>> = Array<
   }[KeyAsString<TObject>]
 >;
 
-type SetValue<TSet extends ReadonlySet<unknown> | Set<unknown>> =
-  TSet extends Set<infer Value> ? Value : never;
+type SetValue<
+  TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
+> = TSet extends Set<infer Value> ? Value : never;
 
 export type { ObjectEntries, SetValue };
