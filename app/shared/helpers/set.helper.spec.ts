@@ -1,5 +1,4 @@
 import { VitestSetup } from "@configs/vitest/setup";
-import { Set } from "immutable";
 import { describe, expectTypeOf } from "vitest";
 
 import type { SetValue } from "@shared/types/app/utility-types";
@@ -28,12 +27,13 @@ const TEST_DATA = {
       expected: false,
     },
   ],
-  get SET() {
-    return Set(["a", "b", "c"] as const);
-  },
+  NEW_VALUE: "w",
   TYPE_TEST: {
     MEMBER: castAsType<string>("a"),
     NON_MEMBER: castAsType<string>("x"),
+  },
+  get SET() {
+    return new Set(["a", "b", "c"]);
   },
 } as const;
 
@@ -57,6 +57,18 @@ describe("SetHelper", () => {
       if (hasSetValue(TEST_DATA.SET, MEMBER)) {
         expectTypeOf(MEMBER).toEqualTypeOf<SetValue<typeof TEST_DATA.SET>>();
       }
+    });
+
+    it("should return true for a value added to the set after creation", ({
+      expect,
+    }) => {
+      const set = TEST_DATA.SET;
+
+      set.add(TEST_DATA.NEW_VALUE);
+
+      const result = hasSetValue(set, TEST_DATA.NEW_VALUE);
+
+      expect(result).toBe(true);
     });
   });
 });

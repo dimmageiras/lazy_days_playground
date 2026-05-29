@@ -7,7 +7,7 @@ type ObjectEntries<TObject extends Record<string, unknown>> = Array<
   }[KeyAsString<TObject>]
 >;
 
-type SetValue<TSet extends Set<unknown>> =
+type SetValue<TSet extends ReadonlySet<unknown> | Set<unknown>> =
   TSet extends Set<infer Value> ? Value : never;
 
 export type { ObjectEntries, SetValue };

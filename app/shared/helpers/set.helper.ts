@@ -2,7 +2,7 @@ import type { Set } from "immutable";
 
 import type { SetValue } from "@shared/types/app/utility-types";
 
-const hasSetValue = <TSet extends Set<unknown>>(
+const hasSetValue = <TSet extends ReadonlySet<unknown> | Set<unknown>>(
   set: TSet,
   value: SetValue<TSet> | (string & {}),
 ): value is SetValue<TSet> => set.has(value);
