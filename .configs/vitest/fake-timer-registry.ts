@@ -1,5 +1,9 @@
 import { vi } from "vitest";
 
+import { FunctionWrapHelper } from "./helpers/function-wrap.helper";
+
+const { wrapWithCallback } = FunctionWrapHelper;
+
 // Pattern B (clock-advance): any call that flushes pending timers against the
 // shared fake clock. Pattern A (`setSystemTime` + `useRealTimers()` cleanup)
 // is concurrency-safe and is deliberately not tracked.
@@ -17,92 +21,55 @@ const installHijack = (recordCurrentFile: () => void): void => {
   // shared fake clock affects sibling concurrent tests — hijack each entry
   // point so file attribution catches whichever the test chose.
   //
-  // Explicit assignments avoid dynamic property indexing on the `vi` object.
+  // Explicit per-method assignments (no dynamic indexing on `vi`) keep the
+  // wrap list auditable; `wrapWithCallback` factors the record/forward body.
 
-  const originalAdvanceTimersByTime = vi.advanceTimersByTime.bind(vi);
+  vi.advanceTimersByTime = wrapWithCallback(
+    vi.advanceTimersByTime.bind(vi),
+    recordCurrentFile,
+  );
 
-  vi.advanceTimersByTime = (ms) => {
-    recordCurrentFile();
+  vi.advanceTimersByTimeAsync = wrapWithCallback(
+    vi.advanceTimersByTimeAsync.bind(vi),
+    recordCurrentFile,
+  );
 
-    return originalAdvanceTimersByTime(ms);
-  };
+  vi.advanceTimersToNextTimer = wrapWithCallback(
+    vi.advanceTimersToNextTimer.bind(vi),
+    recordCurrentFile,
+  );
 
-  const originalAdvanceTimersByTimeAsync =
-    vi.advanceTimersByTimeAsync.bind(vi);
+  vi.advanceTimersToNextTimerAsync = wrapWithCallback(
+    vi.advanceTimersToNextTimerAsync.bind(vi),
+    recordCurrentFile,
+  );
 
-  vi.advanceTimersByTimeAsync = (ms) => {
-    recordCurrentFile();
+  vi.advanceTimersToNextFrame = wrapWithCallback(
+    vi.advanceTimersToNextFrame.bind(vi),
+    recordCurrentFile,
+  );
 
-    return originalAdvanceTimersByTimeAsync(ms);
-  };
+  vi.runAllTimers = wrapWithCallback(
+    vi.runAllTimers.bind(vi),
+    recordCurrentFile,
+  );
 
-  const originalAdvanceTimersToNextTimer =
-    vi.advanceTimersToNextTimer.bind(vi);
+  vi.runAllTimersAsync = wrapWithCallback(
+    vi.runAllTimersAsync.bind(vi),
+    recordCurrentFile,
+  );
 
-  vi.advanceTimersToNextTimer = () => {
-    recordCurrentFile();
+  vi.runAllTicks = wrapWithCallback(vi.runAllTicks.bind(vi), recordCurrentFile);
 
-    return originalAdvanceTimersToNextTimer();
-  };
+  vi.runOnlyPendingTimers = wrapWithCallback(
+    vi.runOnlyPendingTimers.bind(vi),
+    recordCurrentFile,
+  );
 
-  const originalAdvanceTimersToNextTimerAsync =
-    vi.advanceTimersToNextTimerAsync.bind(vi);
-
-  vi.advanceTimersToNextTimerAsync = () => {
-    recordCurrentFile();
-
-    return originalAdvanceTimersToNextTimerAsync();
-  };
-
-  const originalAdvanceTimersToNextFrame =
-    vi.advanceTimersToNextFrame.bind(vi);
-
-  vi.advanceTimersToNextFrame = () => {
-    recordCurrentFile();
-
-    return originalAdvanceTimersToNextFrame();
-  };
-
-  const originalRunAllTimers = vi.runAllTimers.bind(vi);
-
-  vi.runAllTimers = () => {
-    recordCurrentFile();
-
-    return originalRunAllTimers();
-  };
-
-  const originalRunAllTimersAsync = vi.runAllTimersAsync.bind(vi);
-
-  vi.runAllTimersAsync = () => {
-    recordCurrentFile();
-
-    return originalRunAllTimersAsync();
-  };
-
-  const originalRunAllTicks = vi.runAllTicks.bind(vi);
-
-  vi.runAllTicks = () => {
-    recordCurrentFile();
-
-    return originalRunAllTicks();
-  };
-
-  const originalRunOnlyPendingTimers = vi.runOnlyPendingTimers.bind(vi);
-
-  vi.runOnlyPendingTimers = () => {
-    recordCurrentFile();
-
-    return originalRunOnlyPendingTimers();
-  };
-
-  const originalRunOnlyPendingTimersAsync =
-    vi.runOnlyPendingTimersAsync.bind(vi);
-
-  vi.runOnlyPendingTimersAsync = () => {
-    recordCurrentFile();
-
-    return originalRunOnlyPendingTimersAsync();
-  };
+  vi.runOnlyPendingTimersAsync = wrapWithCallback(
+    vi.runOnlyPendingTimersAsync.bind(vi),
+    recordCurrentFile,
+  );
 };
 
 const recordFakeTimerFile = (filePath: string): void => {
