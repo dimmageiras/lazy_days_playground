@@ -20,6 +20,14 @@ const TEST_DATA = {
     VITE_APP_SERVICE_NAME: "",
   }),
   MISSING_ENV: castAsType<ImportMetaEnv>({}),
+  REJECTED_PORT_FORMAT_CASES: [
+    { name: "should reject an empty port string", port: "" },
+    { name: "should reject a whitespace-padded port", port: " 5173 " },
+    { name: "should reject a hex literal port", port: "0x100" },
+    { name: "should reject a scientific-notation port", port: "1e3" },
+    { name: "should reject a signed port", port: "+5173" },
+    { name: "should reject a decimal port", port: "5173.0" },
+  ],
   VALID_ENV: castAsType<ImportMetaEnv>({
     VITE_APP_PORT: "5173",
     VITE_APP_SERVICE_NAME: "lazy-days",
@@ -59,6 +67,19 @@ describe("EnvVarHelper", () => {
         .filter((line) => line.startsWith("- "));
 
       expect(issueLines).toHaveLength(2);
+    });
+
+    TEST_DATA.REJECTED_PORT_FORMAT_CASES.forEach(({ name, port }) => {
+      it(name, ({ expect }) => {
+        expect(() =>
+          validateEnv(
+            castAsType<ImportMetaEnv>({
+              VITE_APP_PORT: port,
+              VITE_APP_SERVICE_NAME: "lazy-days",
+            }),
+          ),
+        ).toThrow(/VITE_APP_PORT/);
+      });
     });
   });
 });

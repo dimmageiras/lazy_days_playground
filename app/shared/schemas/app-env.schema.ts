@@ -1,15 +1,18 @@
 import { zNumber, zObject, zString } from "@shared/wrappers/zod.wrapper";
 
+const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
+
 const portSchema = zString({
   error: (issue) =>
     issue.input === undefined ? "Is required" : "Must be a string",
 })
+  .regex(/^\d+$/, { error: "Must be a string of digits" })
   .transform(Number)
   .pipe(
     zNumber({ error: "Must be a number" })
       .int({ error: "Must be an integer" })
-      .min(1, { error: "Must be between 1 and 65535" })
-      .max(65535, { error: "Must be between 1 and 65535" }),
+      .min(1, { error: PORT_RANGE_MESSAGE })
+      .max(65535, { error: PORT_RANGE_MESSAGE }),
   )
   .brand<"Port">();
 
