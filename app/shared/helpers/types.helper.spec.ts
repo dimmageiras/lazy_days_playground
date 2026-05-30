@@ -11,7 +11,7 @@ trackLeaksInSpec("types.helper");
 const { castAsType } = TypesHelper;
 
 const TEST_DATA = {
-  CASES: [
+  PASSTHROUGH_CASES: [
     { input: 42, name: "should preserve a primitive number" },
     { input: null, name: "should preserve a null value at runtime" },
     { input: { a: 1 }, name: "should preserve object reference identity" },
@@ -20,7 +20,7 @@ const TEST_DATA = {
 
 describe("TypesHelper", () => {
   describe("castAsType", (it) => {
-    TEST_DATA.CASES.forEach(({ name, input }) => {
+    TEST_DATA.PASSTHROUGH_CASES.forEach(({ name, input }) => {
       it(name, ({ expect }) => {
         const result = castAsType<string>(input);
 

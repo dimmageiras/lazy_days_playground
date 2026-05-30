@@ -1,6 +1,4 @@
 import { Set } from "immutable";
-import type { $ZodIssue } from "zod/v4/core";
-import { toDotPath } from "zod/v4/core";
 
 import type {
   CustomIssueContext,
@@ -11,6 +9,8 @@ import type {
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { ObjectHelper } from "@shared/helpers/object.helper";
 import { SetHelper } from "@shared/helpers/set.helper";
+import type { ZodIssue } from "@shared/wrappers/zod.wrapper";
+import { zToDotPath } from "@shared/wrappers/zod.wrapper";
 
 const { getObjectValues } = ObjectHelper;
 const { hasSetValue } = SetHelper;
@@ -29,7 +29,7 @@ const addCustomIssue = (
 };
 
 const getFormattedZodIssues = (
-  issues: ReadonlyArray<$ZodIssue>,
+  issues: ReadonlyArray<ZodIssue>,
 ): Array<ZodIssueDto> =>
   issues.map<ZodIssueDto>((issue) => {
     const customCode: unknown =
@@ -41,7 +41,7 @@ const getFormattedZodIssues = (
 
     return {
       message: issue.message,
-      path: toDotPath(issue.path),
+      path: zToDotPath(issue.path),
       validationCode,
     };
   });

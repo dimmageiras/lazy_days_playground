@@ -39,11 +39,25 @@ const TEST_DATA = {
   ADD_CUSTOM_ISSUE_CASES: [
     {
       code: ISSUE_CODES.INVALID_VALUE,
+      expected: [
+        {
+          code: ISSUE_CODES.CUSTOM,
+          message: "must be one of the allowed values",
+          params: { code: ISSUE_CODES.INVALID_VALUE },
+        },
+      ],
       message: "must be one of the allowed values",
       name: "should raise a custom issue carrying the code in params",
     },
     {
       code: ISSUE_CODES.TOO_BIG,
+      expected: [
+        {
+          code: ISSUE_CODES.CUSTOM,
+          message: "must be smaller",
+          params: { code: ISSUE_CODES.TOO_BIG },
+        },
+      ],
       message: "must be smaller",
       name: "should raise a custom issue for a different code",
     },
@@ -166,17 +180,17 @@ const TEST_DATA = {
 
 describe("ZodServerHelper", () => {
   describe("addCustomIssue", (it) => {
-    TEST_DATA.ADD_CUSTOM_ISSUE_CASES.forEach(({ name, code, message }) => {
-      it(name, ({ expect }) => {
-        const { captured, context } = createIssueContext();
+    TEST_DATA.ADD_CUSTOM_ISSUE_CASES.forEach(
+      ({ name, code, expected, message }) => {
+        it(name, ({ expect }) => {
+          const { captured, context } = createIssueContext();
 
-        addCustomIssue(context, message, code);
+          addCustomIssue(context, message, code);
 
-        expect(captured).toStrictEqual([
-          { code: ISSUE_CODES.CUSTOM, message, params: { code } },
-        ]);
-      });
-    });
+          expect(captured).toStrictEqual(expected);
+        });
+      },
+    );
   });
 
   describe("getFormattedZodIssues", (it) => {

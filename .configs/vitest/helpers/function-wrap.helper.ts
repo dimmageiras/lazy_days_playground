@@ -1,4 +1,6 @@
-const wrapWithCallback = <TArgs extends Array<unknown>, TReturn>(
+import type { UnknownArray } from "type-fest";
+
+const wrapWithCallback = <TArgs extends UnknownArray, TReturn>(
   original: (...args: TArgs) => TReturn,
   onCall: () => void,
 ): ((...args: TArgs) => TReturn) => {

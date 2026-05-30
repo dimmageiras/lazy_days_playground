@@ -2,7 +2,7 @@ import { vi } from "vitest";
 
 import { SetHelper } from "@shared/helpers/set.helper";
 
-import { FunctionWrapHelper } from "./helpers/function-wrap.helper";
+import { FunctionWrapHelper } from "./helpers";
 
 const { wrapWithCallback } = FunctionWrapHelper;
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
