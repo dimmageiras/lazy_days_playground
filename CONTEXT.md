@@ -21,6 +21,10 @@ A point-in-time record of what a code review surfaced when the matching plan was
 
 A decision whose consequences propagate beyond the file it lives in — changing it would force changes elsewhere or break an unstated contract. Load-bearing decisions deserve an architectural decision record under `docs/adr/`; non-load-bearing decisions stay in code.
 
+### Module-level singleton
+
+A state store whose lifetime is the application's — declared once at module scope, instantiated on first import, and consumed by importing the store directly without any provider plumbing. Appropriate for state that is genuinely global to the running process: UI flags, app-wide selections, session, theme, and anything else that does not vary by request, tenant, or route. Contrast with **Scoped store**.
+
 ### Operational hint
 
 A reference to a current file path, directory, or identifier inside an otherwise codebase-agnostic doc — labelled as movable. Operational hints help a reader locate the area in scope today; they are explicitly not the canonical definition of the area.

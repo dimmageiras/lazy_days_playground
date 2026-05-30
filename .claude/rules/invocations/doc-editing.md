@@ -19,6 +19,6 @@ Documentation and ADRs describe **concepts, decisions, and conventions** — not
 - **Do** describe the rule, the trade-off, the contract, or the decision in language that survives a refactor — abstract away the current implementation so the doc stays correct after the next rewrite.
 - ADRs are the only exception for naming a system/component — they record the _decision_ about that component. Even there, focus on the decision and the alternatives considered, not the current code.
 
-The test: if every file in the repo were renamed and reorganised tomorrow, the doc should still read correctly.
+The [rename test](../../../CONTEXT.md#rename-test): if every file in the repo were renamed and reorganised tomorrow, the doc should still read correctly.
 
 For inline code comments and JSDoc, see [`../code-comments.md`](../code-comments.md) — lighter rules, no skill needed.
