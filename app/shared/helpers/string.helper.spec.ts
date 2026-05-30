@@ -116,8 +116,10 @@ describe("StringHelper", () => {
       });
     });
 
-    it("should narrow the value to string when true", () => {
+    it("should narrow the value to string when true", ({ expect }) => {
       const { UNKNOWN_VALUE } = TEST_DATA.TYPE_TEST;
+
+      expect(isString(UNKNOWN_VALUE)).toBe(true);
 
       if (isString(UNKNOWN_VALUE)) {
         expectTypeOf(UNKNOWN_VALUE).toEqualTypeOf<string>();

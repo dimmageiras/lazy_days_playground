@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { TIMING_IN_MS, TIMING_IN_S } from "@shared/constants/timing.constant";
+import { TIMING_IN_S } from "@shared/constants/timing.constant";
 
 import { DateHelper } from "./date.helper";
 
@@ -10,7 +10,6 @@ const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("date.helper");
 
-const { MINUTES_FIVE: FIVE_MIN_MS } = TIMING_IN_MS;
 const { DAYS_ONE, MINUTES_FIVE: FIVE_MIN_S, MINUTES_ONE } = TIMING_IN_S;
 
 const {
@@ -52,29 +51,23 @@ const TEST_DATA = {
   EXPECTED_FORMATTED_TIMESTAMP: "2025-01-03 15:00:00 UTC",
   EXPECTED_LOCAL_TIMESTAMP_SHAPE:
     /^\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} [AP]M$/,
-  EXPECTED_TIMESTAMP_MS: new Date("2025-01-03T15:00:00.000Z").getTime(),
+  EXPECTED_TIMESTAMP_MS: 1735916400000,
   FIXED_NOW: "2025-01-03T15:00:00.000Z",
   FUTURE_DATE_CASES: [
     {
-      expected: new Date(
-        new Date("2025-01-03T15:00:00.000Z").getTime() + FIVE_MIN_MS,
-      ).toISOString(),
+      expected: "2025-01-03T15:05:00.000Z",
+      maxAgeSeconds: FIVE_MIN_S,
       name: "should offset by five minutes (300s)",
-      offset: FIVE_MIN_S,
     },
     {
-      expected: new Date(
-        new Date("2025-01-03T15:00:00.000Z").getTime() + 60_000,
-      ).toISOString(),
+      expected: "2025-01-03T15:01:00.000Z",
+      maxAgeSeconds: MINUTES_ONE,
       name: "should offset by sixty seconds",
-      offset: MINUTES_ONE,
     },
     {
-      expected: new Date(
-        new Date("2025-01-03T15:00:00.000Z").getTime() + 86_400_000,
-      ).toISOString(),
+      expected: "2025-01-04T15:00:00.000Z",
+      maxAgeSeconds: DAYS_ONE,
       name: "should offset by one day (86_400s)",
-      offset: DAYS_ONE,
     },
   ],
 } as const;
@@ -115,9 +108,9 @@ describe("DateHelper", () => {
   });
 
   describe("getFutureDate", (it) => {
-    TEST_DATA.FUTURE_DATE_CASES.forEach(({ name, offset, expected }) => {
+    TEST_DATA.FUTURE_DATE_CASES.forEach(({ name, maxAgeSeconds, expected }) => {
       it(name, ({ expect }) => {
-        const result = getFutureDate(offset).toISOString();
+        const result = getFutureDate(maxAgeSeconds).toISOString();
 
         expect(result).toStrictEqual(expected);
       });

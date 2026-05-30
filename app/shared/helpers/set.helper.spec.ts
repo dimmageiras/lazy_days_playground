@@ -16,7 +16,7 @@ const { castAsType } = TypesHelper;
 
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
-const TEST_DATA = {
+const { makeImmutableSet, makeSet, ...TEST_DATA } = {
   ADD_CASES: [
     {
       expectedSize: 4,
@@ -46,8 +46,13 @@ const TEST_DATA = {
       values: ["a"],
     },
     {
-      expectedSize: 2,
+      expectedSize: 3,
       name: "should be a no-op for a value absent from the set",
+      values: ["z"],
+    },
+    {
+      expectedSize: 2,
+      name: "should remove the present value and ignore the absent one in the same call",
       values: ["a", "z"],
     },
     {
@@ -68,15 +73,16 @@ const TEST_DATA = {
       value: "d",
     },
   ],
+  SET_ELEMENTS: ["a", "b", "c"],
   TYPE_TEST: {
     MEMBER: castAsType<string>("a"),
     NON_MEMBER: castAsType<string>("x"),
   },
-  get IMMUTABLE_SET() {
-    return ImmutableSet(["a", "b", "c"]);
+  get makeImmutableSet() {
+    return () => ImmutableSet<string>(this.SET_ELEMENTS);
   },
-  get SET() {
-    return new Set(["a", "b", "c"]);
+  get makeSet() {
+    return () => new Set<string>(this.SET_ELEMENTS);
   },
 } as const;
 
@@ -84,7 +90,7 @@ describe("SetHelper", () => {
   describe("addValuesInPlace", (it) => {
     TEST_DATA.ADD_CASES.forEach(({ name, values, expectedSize }) => {
       it(name, ({ expect }) => {
-        const set = TEST_DATA.SET;
+        const set = makeSet();
 
         addValuesInPlace(set, values);
 
@@ -99,30 +105,35 @@ describe("SetHelper", () => {
   describe("hasSetValue", (it) => {
     TEST_DATA.MEMBERSHIP_CASES.forEach(({ name, value, expected }) => {
       it(name, ({ expect }) => {
-        expect(hasSetValue(TEST_DATA.SET, value)).toBe(expected);
+        expect(hasSetValue(makeSet(), value)).toBe(expected);
       });
     });
 
     it("should resolve membership for an immutable Set", ({ expect }) => {
-      const { IMMUTABLE_SET } = TEST_DATA;
+      const immutableSet = makeImmutableSet();
 
-      expect(hasSetValue(IMMUTABLE_SET, "a")).toBe(true);
-      expect(hasSetValue(IMMUTABLE_SET, "d")).toBe(false);
+      expect(hasSetValue(immutableSet, "a")).toBe(true);
+      expect(hasSetValue(immutableSet, "d")).toBe(false);
     });
 
     it("should accept any string at the call site (the (PropertyKey & {}) widening)", ({
       expect,
     }) => {
-      expect(hasSetValue(TEST_DATA.SET, TEST_DATA.TYPE_TEST.NON_MEMBER)).toBe(
+      expect(hasSetValue(makeSet(), TEST_DATA.TYPE_TEST.NON_MEMBER)).toBe(
         false,
       );
     });
 
-    it("should narrow the value to the set's element type when true", () => {
+    it("should narrow the value to the set's element type when true", ({
+      expect,
+    }) => {
       const { MEMBER } = TEST_DATA.TYPE_TEST;
+      const set = makeSet();
 
-      if (hasSetValue(TEST_DATA.SET, MEMBER)) {
-        expectTypeOf(MEMBER).toEqualTypeOf<SetValue<typeof TEST_DATA.SET>>();
+      expect(hasSetValue(set, MEMBER)).toBe(true);
+
+      if (hasSetValue(set, MEMBER)) {
+        expectTypeOf(MEMBER).toEqualTypeOf<SetValue<typeof set>>();
       }
     });
   });
@@ -130,7 +141,7 @@ describe("SetHelper", () => {
   describe("stripValuesInPlace", (it) => {
     TEST_DATA.DELETE_CASES.forEach(({ name, values, expectedSize }) => {
       it(name, ({ expect }) => {
-        const set = TEST_DATA.SET;
+        const set = makeSet();
 
         stripValuesInPlace(set, values);
 

@@ -43,6 +43,12 @@ try {
   await instance.listen({ port: VITE_APP_PORT });
 } catch (error) {
   instance.log.error(error);
-  await instance.close();
+
+  try {
+    await instance.close();
+  } catch (closeError) {
+    instance.log.error(closeError);
+  }
+
   process.exit(1);
 }

@@ -29,6 +29,7 @@ class TaggedClass {
 }
 
 const TEST_DATA = {
+  ARRAY_WITH_ONE_KEY: ["a"],
   EMPTY_ARRAY: [],
   NARROW: {
     EXPECTED_VALUE: 42,
@@ -263,15 +264,13 @@ describe("ObjectHelper", () => {
     });
 
     it("should omit stripped keys from the return type", () => {
-      const object: Record<string, unknown> = {
-        ...TEST_DATA.OBJECTS.DELETABLE,
-      };
-      const { keys } = TEST_DATA.STRIP_CASES[0];
+      const source = { ...TEST_DATA.OBJECTS.DELETABLE };
+      const keys = TEST_DATA.ARRAY_WITH_ONE_KEY;
 
-      stripKeysInPlace(object, keys);
+      const stripped = stripKeysInPlace(source, keys);
 
-      expectTypeOf(object).toEqualTypeOf<
-        Omit<typeof object, (typeof keys)[number]>
+      expectTypeOf(stripped).toEqualTypeOf<
+        Omit<typeof source, (typeof keys)[number]>
       >();
     });
   });

@@ -15,7 +15,7 @@ const validateEnv = (env: ImportMetaEnv): ViteAppEnv => {
   const formattedErrors = getFormattedZodIssues(result.error.issues);
 
   throw new Error(
-    `❌ Environment variables:\n${formattedErrors
+    `Environment variables:\n${formattedErrors
       .map((issue) => `- ${issue.path}: ${issue.message}`)
       .join("\n")}`,
   );

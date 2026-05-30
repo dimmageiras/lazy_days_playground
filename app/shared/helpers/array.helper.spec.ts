@@ -59,8 +59,10 @@ describe("ArrayHelper", () => {
       });
     });
 
-    it("should narrow the value to UnknownArray when true", () => {
+    it("should narrow the value to UnknownArray when true", ({ expect }) => {
       const { UNKNOWN_VALUE } = TEST_DATA.TYPE_TEST;
+
+      expect(isArray(UNKNOWN_VALUE)).toBe(true);
 
       if (isArray(UNKNOWN_VALUE)) {
         expectTypeOf(UNKNOWN_VALUE).toEqualTypeOf<UnknownArray>();
