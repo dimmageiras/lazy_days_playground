@@ -1,5 +1,6 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { describe } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { TypesHelper } from "@shared/helpers/types.helper";
 

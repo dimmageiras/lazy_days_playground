@@ -1,6 +1,7 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { Set as ImmutableSet } from "immutable";
 import { describe, expectTypeOf } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import type { SetValue } from "@shared/types/app/utility-types";
 

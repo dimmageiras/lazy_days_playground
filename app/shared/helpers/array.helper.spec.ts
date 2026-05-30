@@ -1,7 +1,8 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { Map, Set } from "immutable";
 import type { UnknownArray } from "type-fest";
 import { describe, expectTypeOf } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { ArrayHelper } from "./array.helper";
 import { TypesHelper } from "./types.helper";

@@ -1,6 +1,7 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import type { KeyAsString, ValueOf } from "type-fest";
 import { describe, expectTypeOf } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import type { ObjectEntries } from "@shared/types/app/utility-types";
 

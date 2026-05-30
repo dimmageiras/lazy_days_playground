@@ -1,6 +1,7 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import type { setTimeout } from "node:timers";
 import { afterEach, describe, vi } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { TimingHelper } from "./timing.helper";
 import { TypesHelper } from "./types.helper";

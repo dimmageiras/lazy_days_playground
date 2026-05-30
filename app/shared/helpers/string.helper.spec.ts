@@ -1,6 +1,7 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { Map, Set } from "immutable";
 import { describe, expectTypeOf } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { StringHelper } from "./string.helper";
 import { TypesHelper } from "./types.helper";

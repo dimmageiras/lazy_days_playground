@@ -1,7 +1,9 @@
-import { VitestSetup } from "@configs/vitest/setup";
-import type { CustomIssueContext } from "@server/types/zod.type";
 import { describe } from "vitest";
 import type { $ZodIssue } from "zod/v4/core";
+
+import { VitestSetup } from "@configs/vitest/setup";
+
+import type { CustomIssueContext } from "@server/types/zod.type";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { TypesHelper } from "@shared/helpers/types.helper";
@@ -54,7 +56,11 @@ const TEST_DATA = {
     },
     {
       expected: [
-        { message: "Invalid input", path: "VITE_APP_PORT", validationCode: "invalid_type" },
+        {
+          message: "Invalid input",
+          path: "VITE_APP_PORT",
+          validationCode: "invalid_type",
+        },
       ],
       issues: [
         castAsType<$ZodIssue>({
@@ -67,7 +73,11 @@ const TEST_DATA = {
     },
     {
       expected: [
-        { message: "bad value", path: "field", validationCode: "invalid_value" },
+        {
+          message: "bad value",
+          path: "field",
+          validationCode: "invalid_value",
+        },
       ],
       issues: [
         castAsType<$ZodIssue>({
@@ -108,7 +118,11 @@ const TEST_DATA = {
     },
     {
       expected: [
-        { message: "Invalid input", path: "user[0].name", validationCode: "invalid_type" },
+        {
+          message: "Invalid input",
+          path: "user[0].name",
+          validationCode: "invalid_type",
+        },
       ],
       issues: [
         castAsType<$ZodIssue>({
@@ -121,8 +135,16 @@ const TEST_DATA = {
     },
     {
       expected: [
-        { message: "too small", path: "VITE_APP_PORT", validationCode: "too_small" },
-        { message: "empty", path: "VITE_APP_SERVICE_NAME", validationCode: "invalid_value" },
+        {
+          message: "too small",
+          path: "VITE_APP_PORT",
+          validationCode: "too_small",
+        },
+        {
+          message: "empty",
+          path: "VITE_APP_SERVICE_NAME",
+          validationCode: "invalid_value",
+        },
       ],
       issues: [
         castAsType<$ZodIssue>({

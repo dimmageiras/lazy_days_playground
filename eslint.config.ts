@@ -122,6 +122,8 @@ export default defineConfig([
         {
           groups: [
             [String.raw`^@?\w`],
+            ["^@configs"],
+            ["^@server"],
             ["^@shared"],
             [String.raw`^\u0000`],
             [String.raw`^\.`],

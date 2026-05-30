@@ -1,5 +1,6 @@
-import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
 import type { FastifyPluginAsync } from "fastify";
+
+import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
 
 import { DateHelper } from "@shared/helpers/date.helper";
 

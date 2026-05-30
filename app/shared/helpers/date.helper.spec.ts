@@ -1,5 +1,6 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { afterAll, beforeAll, describe, vi } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { TIMING_IN_MS, TIMING_IN_S } from "@shared/constants/timing.constant";
 
