@@ -27,8 +27,13 @@ const TEST_DATA = {
 
 describe("EnvVarHelper", () => {
   describe("validateEnv", (it) => {
-    it("should return without throwing for a valid env", ({ expect }) => {
-      expect(() => validateEnv(TEST_DATA.VALID_ENV)).not.toThrow();
+    it("should return the validated branded record for a valid env", ({
+      expect,
+    }) => {
+      expect(validateEnv(TEST_DATA.VALID_ENV)).toEqual({
+        VITE_APP_PORT: 5173,
+        VITE_APP_SERVICE_NAME: "lazy-days",
+      });
     });
 
     it("should throw an aggregated message for an out-of-range port and empty service name", ({

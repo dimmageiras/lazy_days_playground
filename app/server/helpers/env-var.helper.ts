@@ -1,14 +1,15 @@
 import { appEnvSchema } from "@shared/schemas/app-env.schema";
+import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { ZodServerHelper } from "./zod-server.helper";
 
 const { getFormattedZodIssues } = ZodServerHelper;
 
-const validateEnv = (env: ImportMetaEnv): void => {
+const validateEnv = (env: ImportMetaEnv): ViteAppEnv => {
   const result = appEnvSchema.safeParse(env);
 
   if (result.success) {
-    return;
+    return result.data;
   }
 
   const formattedErrors = getFormattedZodIssues(result.error.issues);

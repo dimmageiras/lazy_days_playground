@@ -1,0 +1,14 @@
+import type { CamelCase } from "type-fest";
+
+import type { appEnvSchema } from "@shared/schemas/app-env.schema";
+import type { ZodInfer } from "@shared/wrappers/zod.wrapper";
+
+type ViteAppEnv = ZodInfer<typeof appEnvSchema>;
+
+type AppEnv = {
+  [Key in keyof ViteAppEnv as Key extends `VITE_APP_${infer Suffix}`
+    ? CamelCase<Suffix>
+    : never]: ViteAppEnv[Key];
+};
+
+export type { AppEnv, ViteAppEnv };

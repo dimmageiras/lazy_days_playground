@@ -1,13 +1,10 @@
 /// <reference types="vite/client" />
-/// <reference types="vitest/config" />
 
-interface EnvironmentVariables {
-  VITE_APP_PORT: `${number}`;
-  VITE_APP_SERVICE_NAME: string;
-}
+import type { appEnvSchema } from "@shared/schemas/app-env.schema";
+import type { ZodInput } from "@shared/wrappers/zod.wrapper";
 
 declare global {
-  interface ImportMetaEnv extends EnvironmentVariables {
+  interface ImportMetaEnv extends ZodInput<typeof appEnvSchema> {
     [key: string]: unknown;
   }
 
