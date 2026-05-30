@@ -10,6 +10,8 @@ Three sub-areas:
 - **Helpers**: small, pure utility functions
 - **Types**: cross-cutting type declarations (branded primitives, utility types) that don't belong to any single module
 
+The schema-driven value-validation surface that also lives under the shared tree — the schema library wrapper (`app/shared/wrappers/**`), the schemas (`app/shared/schemas/**`), and the issue-code vocabulary constant — is **delegated to** [`./validation.plan.md`](./validation.plan.md). This plan still owns the generic constant/helper/type rules those files inherit; the validation-specific criteria (schema discipline, branded outputs, issue-code derivation, the library-config seam) belong to the validation plan. A PR touching those files runs both, with the skill set unioned.
+
 ## Files currently in scope
 
 These globs are **operational hints** — see the plans-index [`README.md`](./README.md#conventions) and [`CONTEXT.md`](../../../CONTEXT.md#operational-hint) for the canonical statement.

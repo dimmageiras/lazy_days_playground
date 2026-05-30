@@ -14,7 +14,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 - `.configs/vitest/setup.ts` (the setup module that exposes the helper bundle via a zero-arg factory)
 - `.configs/vitest/fake-timer-registry.ts` (the cross-spec registry that records which files advanced the shared fake clock)
-- `.configs/vitest/helpers/**` (the stateless-dispatcher helper layer — state-probe / pollution-probe helper, future helpers)
+- `.configs/vitest/helpers/**` (the stateless-dispatcher helper layer — state-probe / pollution-probe helper)
 - `.configs/vitest/helpers/index.ts` (the barrel that the setup module destructures from to build the helper bundle)
 - The Vite-merge / setup-files / mode → env mapping side of `vitest.config.ts` (the runner-config bindings that wire the infra in; the spec-author-facing config concerns live in the testing plan)
 

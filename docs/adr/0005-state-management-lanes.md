@@ -9,7 +9,7 @@ A React application typically manages two structurally different kinds of state:
 
 The library choices for each kind are mature: TanStack Query is the conventional answer for server state (query keys, stale-time, cache invalidation, mutation lifecycle), and Zustand is the conventional answer for ergonomic local stores. The decision that matters most is not which library to pick on either side, it is the **boundary** — what is permitted in each lane and what is forbidden — and the consequence of treating that boundary as a binding rule rather than a soft preference.
 
-The project does not have a client slice today. The React Router framework-mode client is the next runtime to land; until it does, neither TanStack Query nor Zustand nor the Zustand wrapper this project uses is present in the dependency tree. The rule is **forward-looking**: it commits the project to a posture so the first PR that introduces a client and a piece of state lands inside the lanes rather than choosing them after the fact.
+The project's state-management rule fixes this boundary as a binding convention. Any state a module introduces is placed by the lane its origin dictates, rather than choosing a container after the fact.
 
 ## Decision
 
@@ -18,9 +18,7 @@ The project splits application state across **two lanes with non-overlapping res
 - **Server state** — anything fetched from an API, a database, or any external system — flows through **TanStack Query**.
 - **Client state** — UI flags, local form state, ephemeral selections, session, theme — flows through **Zustand**, accessed via the `zustand-x` wrapper.
 
-Neither library is in the dependency tree at the time this ADR is recorded. The rule activates when the client slice and its state-management dependencies land; at that point, the lanes are binding from the first commit.
-
-**The lane split is the decision.** The server-state library may be replaced by an equivalent on its own side without invalidating this ADR. Replacing the client-state library would also invalidate the wrapper conventions the project rule layers on top of it; that swap requires a follow-up ADR covering the wrapper / API conventions. Mixing the responsibilities (server state in the client store, ephemeral UI flags in the server cache) is what this ADR forbids on either side.
+The lanes bind any state placed in either container. **The lane split is the decision.** The server-state library may be replaced by an equivalent on its own side without invalidating this ADR. Replacing the client-state library would also invalidate the wrapper conventions the project rule layers on top of it; that swap requires a follow-up ADR covering the wrapper / API conventions. Mixing the responsibilities (server state in the client store, ephemeral UI flags in the server cache) is what this ADR forbids on either side.
 
 ## Alternatives considered
 
@@ -47,9 +45,8 @@ Keep ephemeral UI state in the URL and re-derive from there. Rejected as a globa
 - **Client state never appears in the server cache.** Ephemeral flags, draft inputs, and UI selections do not get a query key; they live in the client store (or in component state when they don't need cross-component reach).
 - **The wrapper conventions for the client store are normative.** The project does not call the underlying Zustand API directly; the wrapper's `createStore` + option-bag middleware + tracked-store hooks are the surface, with module-level singletons for app-wide state and a Context-plus-factory pattern for scoped stores. The current project rule for state management spells the conventions out in full; this ADR records the decision the rule rests on.
 - **Rejecting the lane split in a single feature is an ADR-level change.** A PR that proposes "this one slice can live in both lanes" is proposing a different architecture; it is not a per-feature exception to grant.
-- **Activation is conditional.** Until the client slice and the state-management dependencies land, this ADR records a commitment, not an enforced rule. A reader looking for state-management code in the current tree will not find any — and that is the expected state.
 
 ## Related
 
 - [`../../.claude/rules/state-management.md`](../../.claude/rules/state-management.md) — the canonical statement of the lane split and the wrapper conventions; this ADR records the decision that rule rests on.
-- [ADR-0001](./0001-vite-multi-target-config.md) — the client config that introduces the React Router framework-mode runtime is the activation point for this ADR.
+- [ADR-0001](./0001-vite-multi-target-config.md) — the multi-target build layout the state-management surface sits on.
