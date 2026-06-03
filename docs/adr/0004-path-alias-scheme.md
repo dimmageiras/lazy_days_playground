@@ -16,7 +16,7 @@ Node 22+'s `package.json#imports` field offers a runtime-level alternative — `
 The project uses an **alias-prefix scheme** for internal imports — `@<area>/*` notations where each area maps to one top-level directory.
 
 - The mapping is declared once in the root TypeScript config's `paths` block.
-- Vite picks the same mapping up via its built-in `tsconfigPaths` resolver option in the shared base; every config that merges the base inherits it.
+- Vite picks the same mapping up via its built-in `tsconfigPaths` resolver option in the shared base; both runtimes (server config and the planned client config) inherit it.
 - ESLint's import-sort groups recognise the same prefixes so the auto-fix orders external, alias-prefixed, and relative imports into a stable sequence.
 
 The three surfaces — TypeScript paths, the Vite resolver, the ESLint sort groups — are treated as a **single invariant**: adding, renaming, or removing an alias is one change applied to all three in the same commit. `package.json#imports` `#`-subpaths are explicitly rejected as the alternative scheme.
