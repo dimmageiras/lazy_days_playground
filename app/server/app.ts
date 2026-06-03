@@ -25,12 +25,16 @@ const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
       serviceName: VITE_APP_SERVICE_NAME,
     });
 
-    instance.register(healthRoutes, {
+    await instance.register(healthRoutes, {
       prefix: API_HEALTH,
     });
 
+    await instance.ready();
+
     return instance;
   } catch (error) {
+    instance.log.error(error);
+
     await instance.close();
 
     throw error;
