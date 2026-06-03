@@ -5,10 +5,10 @@ A learning playground for experimenting with build tooling, test infrastructure,
 ## Quick start
 
 - Install any recent pnpm globally; `pnpm install` self-converges on the version pinned in `package.json#packageManager` (no Corepack step needed).
-- Create a local environment file matching the gitignored `.env.*.local` pattern (the dev script loads `.env.dev.local`) — copy [`sample.env`](./sample.env) as a starting template and fill in any values it leaves blank. The dev process validates the environment against a schema before it starts and refuses to proceed if anything is missing or malformed; the authoritative list of expected variables lives in [ADR-0009](./docs/adr/0009-bootstrap-environment-validation.md) and the schema it points at.
+- Create a local environment file matching the gitignored `.env.*.local` pattern (the dev script loads `.env.dev.local`) — copy [`sample.env`](./sample.env) as a starting template and fill in any values it leaves blank. The dev process validates the environment against a schema before it starts and refuses to proceed if anything is missing or malformed; [`sample.env`](./sample.env) enumerates the expected variables, and [ADR-0009](./docs/adr/0009-bootstrap-environment-validation.md) records the validation contract and its rationale.
 - Run `pnpm test` once the install finishes.
 
-Prerequisites — a Node version satisfying the `engines.node` field — are pinned in `package.json`. See its `scripts` block for the other entry points (lint, typecheck, coverage, and the probed coverage run).
+Prerequisites — a Node version satisfying the `engines.node` field — are pinned in `package.json`. See its `scripts` block for other entry points such as lint, typecheck, coverage, and the pollution-probe run.
 
 ## Repo layout
 

@@ -1,5 +1,7 @@
 # Research dossier — pnpm `--parallel` (v11.5.0)
 
+> Point-in-time snapshot (research dated 2026-05-30). Items 1 and 3 of [Suggested doc tightening](#suggested-doc-tightening) have since been applied to `parallel-script-execution.md`; the remaining items are still open. Project-internal artefacts are referenced rather than pasted so this snapshot does not drift from the live config.
+>
 > Scope: behaviour of `--parallel` as the `pnpm` CLI ships at tag `v11.5.0`. The official site (`https://pnpm.io/cli/run`) is thin; canonical authority below is the GitHub source at that tag.
 >
 > Source-of-truth note: `node_modules/pnpm/` does not exist in this project. pnpm is delivered as a single-file Windows executable (`<node-install>/pnpm.exe`) shipped with the Node 26 install; it is a SEA bundle, not a readable JS tree. Therefore every source citation below points at `pnpm/pnpm@v11.5.0` on GitHub, retrieved via `gh api`. This project's `package.json#packageManager` actually pins `pnpm@11.5.1`; the adjacent tag `v11.5.0` is read here as a behaviour-equivalent proxy, because the cross-version stability table below shows no `--parallel`-relevant change across the v11 series — so the published code at `v11.5.0` matches the `11.5.1` running on disk for every behaviour this dossier cites.
@@ -304,35 +306,11 @@ docs/pnpm/parallel-script-execution.md        — the project documentation file
 .claude/skills/node/rules/flaky-tests.md       — upstream node skill (not project code)
 ```
 
-`package.json#scripts` contains **no** `--parallel` invocation in the current tree:
-
-```json
-"scripts": {
-  "dev": "vite-node --config ./.configs/vite/server.config.ts --mode dev --watch ./app/server/start.ts",
-  "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\"",
-  "lint:fix": "pnpm lint --fix",
-  "obsolete": "knip",
-  "pretest:pollution": "node -e \"require('fs').mkdirSync('logs/unit-tests', { recursive: true })\"",
-  "test": "vitest run",
-  "test:cov": "vitest run --coverage",
-  "test:pollution": "vitest run --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.log 2>&1",
-  "typecheck": "tsc -b"
-}
-```
-
-So `--parallel` is **documented as available but not currently invoked** by any project script. The doc captures it as a pattern for future use — currently most plausible candidates would be a hypothetical `dev` regex (`pnpm --parallel run "/^dev:/"`) or `lint` regex (`pnpm --parallel run "/^lint:/"`).
+`package.json#scripts` contains **no** `--parallel` invocation in the current tree. So `--parallel` is **documented as available but not currently invoked** by any project script. The doc captures it as a pattern for future use — the most plausible candidates would be a hypothetical `dev` regex (`pnpm --parallel run "/^dev:/"`) or `lint` regex (`pnpm --parallel run "/^lint:/"`).
 
 ### pnpm-workspace.yaml settings that affect parallel-script behaviour
 
-```yaml
-allowBuilds: [] # install-time, not run-time
-blockExoticSubdeps: true # install-time, not run-time
-manage-package-manager-versions: true # corepack/self-update, not run-time
-minimumReleaseAge: 0 # install-time
-patchedDependencies: { ... } # install-time
-```
-
-None affect `pnpm run --parallel`. The file does **not** set `workspace-concurrency`, so the default of `min(4, cores)` applies when `--parallel` is absent. With `--parallel`, the shorthand override wins regardless.
+None of the settings in `pnpm-workspace.yaml` (the supply-chain allowlist, the exotic-subdep block, the self-update toggle, the release-age floor, the patched-dependency map) affect `pnpm run --parallel` — they are all install-time, not run-time. The file does **not** set `workspace-concurrency`, so the default of `min(4, cores)` applies when `--parallel` is absent. With `--parallel`, the shorthand override wins regardless.
 
 ### Cross-reference against `docs/pnpm/parallel-script-execution.md`
 
@@ -374,11 +352,11 @@ For each load-bearing aspect, here is whether it's stable across v9 / v10 / v11.
 
 ## Suggested doc tightening
 
-Concrete changes (each a separate user-initiated action; this dossier does not apply them):
+Concrete changes (each a separate user-initiated action; this dossier does not apply them). Items 1 and 3 have since been applied to `parallel-script-execution.md` — they are kept here for the audit trail, marked **Applied**:
 
-1. **Refute the "sequentially in name order" claim.** Replace the line "By itself, this runs the matched scripts sequentially in name order" with a statement that the default cap is `min(4, cores)` and that strict one-at-a-time requires `--sequential`. Cite `concurrency.ts:getWorkspaceConcurrency` or just the docs `pnpm run --help` output.
+1. **[Applied] Refute the "sequentially in name order" claim.** Replace the line "By itself, this runs the matched scripts sequentially in name order" with a statement that the default cap is `min(4, cores)` and that strict one-at-a-time requires `--sequential`. Cite `concurrency.ts:getWorkspaceConcurrency` or just the docs `pnpm run --help` output.
 2. **Soften the "undocumented; treat as best-effort" hedge** for single-package `--parallel`. The behaviour is upstream-intentional since PR #6785 (2023-07). The legitimate caveat is the same as the workspace caveat: do not use `--parallel` when ordering matters. The "best-effort" wording overstates risk.
-3. **Drop or substantiate the "Cleaner script output" v11 claim.** I could not find a CHANGELOG entry that supports it. Either cite a commit or remove the sentence — it reads like undocumented folklore.
+3. **[Applied] Drop or substantiate the "Cleaner script output" v11 claim.** I could not find a CHANGELOG entry that supports it. Either cite a commit or remove the sentence — it reads like undocumented folklore.
 4. **Add a one-liner about `--no-bail` semantics** so readers understand they aggregate rather than fail-fast — useful when running multiple checks in parallel and wanting to see all failures.
 5. **Mention `--sequential` explicitly** in the "Two reasons to skip `--parallel`" section under "Order matters". The current doc says "use `--workspace-concurrency`" but that's monorepo-only; in single-package, `--sequential` is the right escape hatch.
 6. **Add `--reporter-hide-prefix`** to the output-handling section. Useful in CI (GitHub Actions annotations) and currently absent from the doc.

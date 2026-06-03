@@ -35,7 +35,7 @@ A specification of what to check for one area of the codebase — scope, require
 
 ### Pollution probe
 
-The debug instrumentation that diffs `globalThis` keys, `process` listeners, active resources, and fake-timer state across each test boundary. Emits `[WARN]`, `[LEAK]`, and `[RISK]` lines on stderr when state survives where it shouldn't or when the runner contract the probe relies on is not met. Gated by an environment variable so the default test run stays quiet.
+The debug instrumentation that diffs `globalThis` keys, `process` listeners, and fake-timer state across each test boundary, plus Node active resources at the file boundary. Emits `[WARN]`, `[LEAK]`, and `[RISK]` lines on stderr when state survives where it shouldn't or when the runner contract the probe relies on is not met. Gated by an environment variable so the default test run stays quiet.
 
 ### Rename test
 
@@ -43,7 +43,7 @@ The codebase-agnostic check applied to documentation: if every file in the repo 
 
 ### Scoped store
 
-A state store whose lifetime is per-request, per-tenant, or per-route — built via a factory plus React context plus provider, then consumed through a fixed set of typed hooks. Contrast with **module-level singleton**: a store that is genuinely global to the app, declared once at module scope, and consumed by importing the store directly.
+A state store whose lifetime is per-request, per-tenant, or per-route — built via a factory plus React context plus provider, then consumed through a fixed set of typed hooks. Contrast with **Module-level singleton**: a store that is genuinely global to the app, declared once at module scope, and consumed by importing the store directly.
 
 ### Spec
 
