@@ -26,8 +26,11 @@ const TEST_DATA = {
       name: "should forward Infinity to setTimeout",
     },
   ],
-  RESOLVE_SENTINEL_MS: -1001,
-  RESOLVE_PENDING_SENTINEL_MS: -1002,
+  // Disjoint markers, not durations: per-test filtering of the worker-shared
+  // setTimeout spy keys on `ms`, so these must never collide with any
+  // PASSTHROUGH_CASES value or the resolve tests would cross-match siblings.
+  RESOLVE_MARKER_MS: -1001,
+  RESOLVE_PENDING_MARKER_MS: -1002,
 } as const;
 
 const stubSetTimeout = castAsType<typeof setTimeout>(() => 0);
@@ -61,12 +64,12 @@ describe("TimingHelper", () => {
     it("should resolve with undefined once the scheduled callback fires", async ({
       expect,
     }) => {
-      const sentinel = TEST_DATA.RESOLVE_SENTINEL_MS;
+      const marker = TEST_DATA.RESOLVE_MARKER_MS;
 
-      const promise = delay(sentinel);
+      const promise = delay(marker);
 
       const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
-        Object.is(delayMs, sentinel),
+        Object.is(delayMs, marker),
       );
 
       expect(spyCalls).toHaveLength(1);
@@ -86,16 +89,16 @@ describe("TimingHelper", () => {
     it("should not resolve before the scheduled callback fires", async ({
       expect,
     }) => {
-      const sentinel = TEST_DATA.RESOLVE_PENDING_SENTINEL_MS;
+      const marker = TEST_DATA.RESOLVE_PENDING_MARKER_MS;
 
       let resolved = false;
 
-      const promise = delay(sentinel).then(() => {
+      const promise = delay(marker).then(() => {
         resolved = true;
       });
 
       const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
-        Object.is(delayMs, sentinel),
+        Object.is(delayMs, marker),
       );
 
       expect(spyCalls).toHaveLength(1);
