@@ -16,7 +16,7 @@ blockExoticSubdeps: true
 # Have pnpm self-update to the version pinned in package.json#packageManager on
 # every install, so contributors without Corepack enabled still converge on the
 # project-pinned pnpm version instead of silently using their global one.
-manage-package-manager-versions: true
+managePackageManagerVersions: true
 
 # Accept 0-day packages — this is a learning playground with no production deploy.
 # pnpm v11's default (1440 minutes / 24 hours) is a left-pad-style supply-chain
