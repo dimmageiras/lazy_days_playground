@@ -2,7 +2,7 @@
 
 > Scope: behaviour of `--parallel` as the `pnpm` CLI ships at tag `v11.5.0`. The official site (`https://pnpm.io/cli/run`) is thin; canonical authority below is the GitHub source at that tag.
 >
-> Source-of-truth note: `node_modules/pnpm/` does not exist in this project. pnpm is delivered as a single-file Windows executable (`<node-install>/pnpm.exe`) shipped with the Node 26 install; it is a SEA bundle, not a readable JS tree. Therefore every source citation below points at `pnpm/pnpm@v11.5.0` on GitHub, retrieved via `gh api`. Tag `v11.5.0` is the version that this project's `package.json#packageManager` pins, so the published code on GitHub at that tag is the running code on disk.
+> Source-of-truth note: `node_modules/pnpm/` does not exist in this project. pnpm is delivered as a single-file Windows executable (`<node-install>/pnpm.exe`) shipped with the Node 26 install; it is a SEA bundle, not a readable JS tree. Therefore every source citation below points at `pnpm/pnpm@v11.5.0` on GitHub, retrieved via `gh api`. This project's `package.json#packageManager` actually pins `pnpm@11.5.1`; the adjacent tag `v11.5.0` is read here as a behaviour-equivalent proxy, because the cross-version stability table below shows no `--parallel`-relevant change across the v11 series — so the published code at `v11.5.0` matches the `11.5.1` running on disk for every behaviour this dossier cites.
 
 ---
 

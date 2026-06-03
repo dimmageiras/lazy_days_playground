@@ -26,7 +26,7 @@ pnpm run "/^(dev|test):/"
 
 The regex syntax is standard JavaScript regex inside the leading/trailing `/` delimiters.
 
-By itself, this runs the matched scripts **sequentially** in name order. Add `--parallel` (next section) to run them concurrently.
+By itself, this runs the matched scripts with pnpm's **default concurrency cap** (`min(4, number of CPU cores)`) — concurrently, not one at a time. Use `--sequential` to force strict one-at-a-time execution in name order, or `--parallel` (next section) to lift the cap entirely.
 
 ## Parallel execution
 
@@ -96,10 +96,6 @@ For "start two or three independent dev processes and Ctrl+C them together", pnp
 ## pnpm v11 behaviours worth knowing
 
 pnpm v11 didn't change the parallel-script syntax — `pnpm --parallel run "/<regex>/"` works the same as in v9 and v10. But several v11 defaults can surprise you.
-
-### Cleaner script output
-
-Parallel runs are easier to read in v11 — the formatting of interleaved output got a clarity pass. If you stayed on pnpm 10 and remembered the output as messy, try v11 before reaching for an external parallel runner.
 
 ### Drops legacy Node majors
 

@@ -1,24 +1,23 @@
-import type { ViteAppEnv } from "@shared/types/app-env.type";
-
 import { buildApp } from "./app";
 import { EnvVarHelper } from "./helpers/env-var.helper";
+import type { APIAppInstance } from "./types/instance.type";
 
 const { validateEnv } = EnvVarHelper;
 
-let validatedEnv: ViteAppEnv;
+let instance: APIAppInstance;
 
 try {
-  validatedEnv = validateEnv(import.meta.env);
+  const validatedEnv = validateEnv(import.meta.env);
+
+  instance = buildApp(validatedEnv);
 } catch (error) {
   console.error(error instanceof Error ? error.message : error);
 
   process.exit(1);
 }
 
-const instance = buildApp(validatedEnv);
-
 try {
-  await instance.listen({ port: validatedEnv.VITE_APP_PORT });
+  await instance.listen({ port: instance.appEnv.port });
 } catch (error) {
   instance.log.error(error);
 
