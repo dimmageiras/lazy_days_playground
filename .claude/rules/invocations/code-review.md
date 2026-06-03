@@ -62,3 +62,10 @@ When the review targets a GitHub PR, post the findings as PR comments via the `g
 `GH_TOKEN` is provided to the agent's environment by repo-local settings (currently `.claude/settings.local.json`; movable) — the comments will be posted from the Claude reviewer account, not the user's personal account.
 
 Do not paste review findings only into the chat when a PR exists; the goal is for the comments to live on GitHub where the author can act on them.
+
+## What not to post
+
+The `gh` CLI is available to the agent, but two categories of content must **never** be posted as PR review verdicts, inline comments, or discussion comments:
+
+- **No test or placeholder content.** Do not post `test`, `test inline`, "checking gh works", "ping", smoke-test bodies, or any other diagnostic content as a PR comment. The reviewer account's history is read by humans and aggregated by GitHub's notification surface; test posts erode trust in every subsequent review and create noise the author has to scroll past. If `gh` write access needs verifying, use a read-only call (`gh pr view`, `gh pr list`, `gh api ... -X GET`) — never a write-side one.
+- **No `info`-severity findings as PR comments.** Per the findings README's severity vocabulary (`blocker | warning | nit | info`), only `blocker`, `warning`, and `nit` entries belong on the PR — they are findings the author can act on before merging. `info` entries are observations, version-specific quirks, or future considerations that do not request a change; they belong in the chat summary or in a local findings file, not on the PR thread. Posting `info` lines as PR comments overruns the actionable signal with noise the author cannot resolve.
