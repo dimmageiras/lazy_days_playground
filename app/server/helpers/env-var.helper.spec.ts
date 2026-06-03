@@ -12,7 +12,7 @@ trackLeaksInSpec("env-var.helper");
 
 const { castAsType } = TypesHelper;
 
-const { validateEnv } = EnvVarHelper;
+const { isEnvValidationError, validateEnv } = EnvVarHelper;
 
 const TEST_DATA = {
   INVALID_ENV: castAsType<ImportMetaEnv>({
@@ -45,11 +45,12 @@ describe("EnvVarHelper", () => {
       });
     });
 
-    it("should throw an aggregated message for an out-of-range port and empty service name", ({
+    it("should throw a message naming both the invalid port and the empty service name", ({
       expect,
     }) => {
+      expect(() => validateEnv(TEST_DATA.INVALID_ENV)).toThrow(/VITE_APP_PORT/);
       expect(() => validateEnv(TEST_DATA.INVALID_ENV)).toThrow(
-        /VITE_APP_PORT[\s\S]*VITE_APP_SERVICE_NAME/,
+        /VITE_APP_SERVICE_NAME/,
       );
     });
 
@@ -80,6 +81,26 @@ describe("EnvVarHelper", () => {
           ),
         ).toThrow(/VITE_APP_PORT/);
       });
+    });
+  });
+
+  describe("isEnvValidationError", (it) => {
+    it("should identify the error validateEnv throws on a failed parse", ({
+      expect,
+    }) => {
+      let thrown: unknown;
+
+      try {
+        validateEnv(TEST_DATA.MISSING_ENV);
+      } catch (error) {
+        thrown = error;
+      }
+
+      expect(isEnvValidationError(thrown)).toBe(true);
+    });
+
+    it("should reject an unrelated error", ({ expect }) => {
+      expect(isEnvValidationError(new Error("boom"))).toBe(false);
     });
   });
 });

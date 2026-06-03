@@ -16,7 +16,8 @@ trackLeaksInSpec("zod-server.helper");
 
 const { castAsType } = TypesHelper;
 
-const { addCustomIssue, getFormattedZodIssues } = ZodServerHelper;
+const { addCustomIssue, getFormattedZodIssues, getFormattedZodIssueLines } =
+  ZodServerHelper;
 
 type CapturedIssue = Parameters<CustomIssueContext["addIssue"]>[0];
 
@@ -60,6 +61,31 @@ const TEST_DATA = {
       ],
       message: "must be smaller",
       name: "should raise a custom issue for a different code",
+    },
+  ],
+  FORMAT_LINES_CASES: [
+    {
+      expected: "",
+      issues: [],
+      name: "should render an empty string for no issues",
+    },
+    {
+      expected:
+        "- VITE_APP_PORT: too small\n- VITE_APP_SERVICE_NAME: empty",
+      issues: [
+        castAsType<$ZodIssue>({
+          code: "too_small",
+          message: "too small",
+          path: ["VITE_APP_PORT"],
+        }),
+        castAsType<$ZodIssue>({
+          code: "custom",
+          message: "empty",
+          params: { code: "invalid_value" },
+          path: ["VITE_APP_SERVICE_NAME"],
+        }),
+      ],
+      name: "should render one dash-prefixed line per issue joined by newlines",
     },
   ],
   FORMAT_CASES: [
@@ -197,6 +223,14 @@ describe("ZodServerHelper", () => {
     TEST_DATA.FORMAT_CASES.forEach(({ name, issues, expected }) => {
       it(name, ({ expect }) => {
         expect(getFormattedZodIssues(issues)).toStrictEqual(expected);
+      });
+    });
+  });
+
+  describe("getFormattedZodIssueLines", (it) => {
+    TEST_DATA.FORMAT_LINES_CASES.forEach(({ name, issues, expected }) => {
+      it(name, ({ expect }) => {
+        expect(getFormattedZodIssueLines(issues)).toBe(expected);
       });
     });
   });

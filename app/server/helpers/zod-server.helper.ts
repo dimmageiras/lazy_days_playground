@@ -46,9 +46,15 @@ const getFormattedZodIssues = (
     };
   });
 
+const getFormattedZodIssueLines = (issues: ReadonlyArray<ZodIssue>): string =>
+  getFormattedZodIssues(issues)
+    .map((issue) => `- ${issue.path}: ${issue.message}`)
+    .join("\n");
+
 const ZodServerHelper = Object.freeze({
   addCustomIssue,
   getFormattedZodIssues,
+  getFormattedZodIssueLines,
 } as const);
 
 export { ZodServerHelper };
