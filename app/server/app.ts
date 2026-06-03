@@ -10,7 +10,7 @@ import type { APIAppInstance } from "./types/instance.type";
 const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
 
-const buildApp = (env: ViteAppEnv): APIAppInstance => {
+const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
   const { VITE_APP_PORT, VITE_APP_SERVICE_NAME } = env;
 
   const instance: APIAppInstance = fastify({
@@ -19,16 +19,22 @@ const buildApp = (env: ViteAppEnv): APIAppInstance => {
     requestTimeout: SECONDS_TEN,
   });
 
-  instance.decorate("appEnv", {
-    port: VITE_APP_PORT,
-    serviceName: VITE_APP_SERVICE_NAME,
-  });
+  try {
+    instance.decorate("appEnv", {
+      port: VITE_APP_PORT,
+      serviceName: VITE_APP_SERVICE_NAME,
+    });
 
-  instance.register(healthRoutes, {
-    prefix: API_HEALTH,
-  });
+    instance.register(healthRoutes, {
+      prefix: API_HEALTH,
+    });
 
-  return instance;
+    return instance;
+  } catch (error) {
+    await instance.close();
+
+    throw error;
+  }
 };
 
 export { buildApp };

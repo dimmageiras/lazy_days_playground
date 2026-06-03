@@ -9,12 +9,12 @@ const { SERVER } = API_HEALTH_ENDPOINTS;
 const { getCurrentTimestamp } = DateHelper;
 
 const healthRoutes: FastifyPluginAsync = async (instance) => {
-  const { appEnv } = instance;
-
-  instance.get(`/${SERVER}`, () => ({
-    service: appEnv.serviceName,
+  const serverHealthCheckRoute = () => ({
+    service: instance.appEnv.serviceName,
     timestamp: getCurrentTimestamp(),
-  }));
+  });
+
+  instance.get(`/${SERVER}`, serverHealthCheckRoute);
 };
 
 export { healthRoutes };

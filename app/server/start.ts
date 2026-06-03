@@ -2,16 +2,16 @@ import { buildApp } from "./app";
 import { EnvVarHelper } from "./helpers/env-var.helper";
 import type { APIAppInstance } from "./types/instance.type";
 
-const { validateEnv } = EnvVarHelper;
+const { isEnvValidationError, validateEnv } = EnvVarHelper;
 
 let instance: APIAppInstance;
 
 try {
   const validatedEnv = validateEnv(import.meta.env);
 
-  instance = buildApp(validatedEnv);
+  instance = await buildApp(validatedEnv);
 } catch (error) {
-  console.error(error instanceof Error ? error.message : error);
+  console.error(isEnvValidationError(error) ? error.message : error);
 
   process.exit(1);
 }
