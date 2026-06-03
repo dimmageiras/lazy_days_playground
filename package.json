@@ -7,7 +7,7 @@
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\"",
     "lint:fix": "pnpm lint --fix",
     "obsolete": "knip",
-    "pretest:pollution": "node -e \"require('fs').mkdirSync('logs/unit-tests', { recursive: true })\"",
+    "pretest:pollution": "node --input-type=module -e \"import { mkdirSync } from 'node:fs'; mkdirSync('logs/unit-tests', { recursive: true });\"",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
     "test:pollution": "vitest run --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.log 2>&1",

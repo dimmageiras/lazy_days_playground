@@ -19,7 +19,6 @@ const vitestConfig = defineConfig(({ mode }) =>
         exclude: [
           "**/*.constant.ts",
           "**/*.d.ts",
-          "**/*.schema.ts",
           "**/*.spec.{ts,tsx}",
           "**/*.type.ts",
           "**/*.wrapper.ts",

@@ -1,0 +1,464 @@
+import { describe, expectTypeOf } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
+
+import { ISSUE_CODES } from "@shared/constants/zod.constant";
+import { TypesHelper } from "@shared/helpers/types.helper";
+import type { Port, ServiceName, ViteAppEnv } from "@shared/types/app-env.type";
+
+import { appEnvSchema } from "./app-env.schema";
+
+const { trackLeaksInSpec } = VitestSetup();
+
+trackLeaksInSpec("app-env.schema");
+
+const { castAsType } = TypesHelper;
+
+const PORT_FORMAT_MESSAGE = "Must be a string of digits";
+const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
+const REQUIRED_INPUT_MESSAGE = "Is required";
+const STRING_INPUT_MESSAGE = "Must be a string";
+
+const TEST_DATA = {
+  ACCEPTED_PORT_CASES: [
+    {
+      expected: 1,
+      input: "1",
+      name: "should accept the smallest legal port",
+    },
+    {
+      expected: 5173,
+      input: "5173",
+      name: "should accept a typical port",
+    },
+    {
+      expected: 65535,
+      input: "65535",
+      name: "should accept the largest legal port",
+    },
+  ],
+  ACCEPTED_SERVICE_NAME_CASES: [
+    {
+      expected: "a",
+      input: "a",
+      name: "should accept the shortest legal service name",
+    },
+    {
+      expected: "lazy-days",
+      input: "lazy-days",
+      name: "should accept a typical service name",
+    },
+  ],
+  EXPECTED_VALID_PARSE: {
+    VITE_APP_PORT: 5173,
+    VITE_APP_SERVICE_NAME: "lazy-days",
+  },
+  FILLER_PORT: "5173",
+  FILLER_SERVICE_NAME: "lazy-days",
+  INVALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_PORT: "0",
+    VITE_APP_SERVICE_NAME: "",
+  }),
+  INVALID_PARSE_INPUT: {
+    VITE_APP_PORT: "abc",
+    VITE_APP_SERVICE_NAME: "",
+  },
+  MISSING_ENV: castAsType<ImportMetaEnv>({}),
+  PORT_FORMAT_MESSAGE,
+  PORT_RANGE_MESSAGE,
+  REJECTED_PORT_FORMAT_CASES: [
+    {
+      input: "",
+      name: "should reject an empty port string",
+    },
+    {
+      input: " 5173 ",
+      name: "should reject a whitespace-padded port",
+    },
+    {
+      input: "0x100",
+      name: "should reject a hex literal port",
+    },
+    {
+      input: "1e3",
+      name: "should reject a scientific-notation port",
+    },
+    {
+      input: "+5173",
+      name: "should reject a signed port",
+    },
+    {
+      input: "-5173",
+      name: "should reject a negative-signed port",
+    },
+    {
+      input: "5173.0",
+      name: "should reject a decimal port",
+    },
+  ],
+  REJECTED_PORT_RANGE_CASES: [
+    {
+      expectedCode: ISSUE_CODES.TOO_SMALL,
+      input: "0",
+      name: "should reject a port below the minimum",
+    },
+    {
+      expectedCode: ISSUE_CODES.TOO_BIG,
+      input: "65536",
+      name: "should reject a port above the maximum",
+    },
+  ],
+  REJECTED_PORT_TYPE_CASES: [
+    {
+      expectedMessage: REQUIRED_INPUT_MESSAGE,
+      input: undefined,
+      name: "should reject a missing port with the required-input message",
+    },
+    {
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 5173,
+      name: "should reject a numeric port input",
+    },
+    {
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: null,
+      name: "should reject a null port input",
+    },
+    {
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: true,
+      name: "should reject a boolean port input",
+    },
+    {
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: ["5173"],
+      name: "should reject an array port input",
+    },
+  ],
+  REJECTED_SERVICE_NAME_CASES: [
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: REQUIRED_INPUT_MESSAGE,
+      input: undefined,
+      name: "should reject a missing service name with the required-input message",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 42,
+      name: "should reject a numeric service name input",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: null,
+      name: "should reject a null service name input",
+    },
+    {
+      expectedCode: ISSUE_CODES.TOO_SMALL,
+      expectedMessage: "Must not be empty",
+      input: "",
+      name: "should reject an empty service name with the min-length message",
+    },
+  ],
+  REQUIRED_INPUT_MESSAGE,
+  STRING_INPUT_MESSAGE,
+  VALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_PORT: "5173",
+    VITE_APP_SERVICE_NAME: "lazy-days",
+  }),
+} as const;
+
+describe("appEnvSchema", () => {
+  describe("VITE_APP_PORT", (it) => {
+    TEST_DATA.ACCEPTED_PORT_CASES.forEach(({ name, input, expected }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          VITE_APP_PORT: input,
+          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        });
+
+        expect(result.success).toBe(true);
+
+        if (result.success) {
+          expect(result.data.VITE_APP_PORT).toBe(expected);
+        }
+      });
+    });
+
+    TEST_DATA.REJECTED_PORT_TYPE_CASES.forEach(
+      ({ name, input, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_PORT: input,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const portIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_PORT",
+            );
+
+            expect(portIssues).toHaveLength(1);
+            expect(portIssues[0]?.code).toBe(ISSUE_CODES.INVALID_TYPE);
+            expect(portIssues[0]?.message).toBe(expectedMessage);
+            expect(portIssues[0]?.path).toStrictEqual(["VITE_APP_PORT"]);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_PORT_FORMAT_CASES.forEach(({ name, input }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          VITE_APP_PORT: input,
+          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        });
+
+        expect(result.success).toBe(false);
+
+        if (!result.success) {
+          const portIssues = result.error.issues.filter(
+            (issue) => issue.path[0] === "VITE_APP_PORT",
+          );
+
+          expect(portIssues).toHaveLength(1);
+          expect(portIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
+          expect(portIssues[0]?.message).toBe(TEST_DATA.PORT_FORMAT_MESSAGE);
+          expect(portIssues[0]?.path).toStrictEqual(["VITE_APP_PORT"]);
+        }
+      });
+    });
+
+    TEST_DATA.REJECTED_PORT_RANGE_CASES.forEach(
+      ({ name, input, expectedCode }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_PORT: input,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const portIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_PORT",
+            );
+
+            expect(portIssues).toHaveLength(1);
+            expect(portIssues[0]?.code).toBe(expectedCode);
+            expect(portIssues[0]?.message).toBe(TEST_DATA.PORT_RANGE_MESSAGE);
+            expect(portIssues[0]?.path).toStrictEqual(["VITE_APP_PORT"]);
+          }
+        });
+      },
+    );
+
+    it("should stop at the regex failure without surfacing range issues", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: "abc",
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const portIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_PORT",
+        );
+
+        expect(portIssues).toHaveLength(1);
+        expect(portIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
+      }
+    });
+
+    it("should brand the parsed port output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(result.data.VITE_APP_PORT).toEqualTypeOf<Port>();
+        expectTypeOf<Port>().not.toEqualTypeOf<number>();
+        expectTypeOf<Port>().toExtend<number>();
+      }
+    });
+  });
+
+  describe("VITE_APP_SERVICE_NAME", (it) => {
+    TEST_DATA.ACCEPTED_SERVICE_NAME_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: input,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_SERVICE_NAME).toBe(expected);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_SERVICE_NAME_CASES.forEach(
+      ({ name, input, expectedCode, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: input,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const serviceIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_SERVICE_NAME",
+            );
+
+            expect(serviceIssues).toHaveLength(1);
+            expect(serviceIssues[0]?.code).toBe(expectedCode);
+            expect(serviceIssues[0]?.message).toBe(expectedMessage);
+            expect(serviceIssues[0]?.path).toStrictEqual([
+              "VITE_APP_SERVICE_NAME",
+            ]);
+          }
+        });
+      },
+    );
+
+    it("should brand the parsed service name output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_SERVICE_NAME,
+        ).toEqualTypeOf<ServiceName>();
+        expectTypeOf<ServiceName>().not.toEqualTypeOf<string>();
+        expectTypeOf<ServiceName>().toExtend<string>();
+        expectTypeOf<ServiceName>().not.toEqualTypeOf<Port>();
+      }
+    });
+  });
+
+  describe("aggregate", (it) => {
+    it("should return a discriminated-union success branch carrying the parsed record", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expect(result.data).toStrictEqual(TEST_DATA.EXPECTED_VALID_PARSE);
+        expectTypeOf(result.data).toEqualTypeOf<ViteAppEnv>();
+      }
+    });
+
+    it("should aggregate one issue per failing field rather than short-circuit", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.INVALID_ENV);
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        expect(result.error.issues).toHaveLength(2);
+
+        const paths = result.error.issues.map((issue) => issue.path[0]);
+
+        expect(paths).toContain("VITE_APP_PORT");
+        expect(paths).toContain("VITE_APP_SERVICE_NAME");
+      }
+    });
+
+    it("should aggregate every missing variable when the record is empty", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.MISSING_ENV);
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        expect(result.error.issues).toHaveLength(2);
+
+        result.error.issues.forEach((issue) => {
+          expect(issue.code).toBe(ISSUE_CODES.INVALID_TYPE);
+          expect(issue.message).toBe(TEST_DATA.REQUIRED_INPUT_MESSAGE);
+        });
+
+        const paths = result.error.issues.map((issue) => issue.path[0]);
+
+        expect(paths).toContain("VITE_APP_PORT");
+        expect(paths).toContain("VITE_APP_SERVICE_NAME");
+      }
+    });
+
+    it("should produce identical issue paths and codes regardless of failing-field order", ({
+      expect,
+    }) => {
+      const firstResult = appEnvSchema.safeParse(TEST_DATA.INVALID_PARSE_INPUT);
+
+      const secondResult = appEnvSchema.safeParse({
+        VITE_APP_SERVICE_NAME: "",
+        VITE_APP_PORT: "abc",
+      });
+
+      expect(firstResult.success).toBe(false);
+      expect(secondResult.success).toBe(false);
+
+      if (!firstResult.success && !secondResult.success) {
+        const project = (
+          issues: typeof firstResult.error.issues,
+        ): Array<{
+          code: string;
+          path: ReadonlyArray<PropertyKey>;
+        }> =>
+          issues
+            .map((issue) => ({ code: issue.code, path: [...issue.path] }))
+            .sort((a, b) =>
+              String(a.path[0] ?? "").localeCompare(String(b.path[0] ?? "")),
+            );
+
+        expect(project(firstResult.error.issues)).toStrictEqual(
+          project(secondResult.error.issues),
+        );
+      }
+    });
+
+    it("should strip unknown keys from the parsed output", ({ expect }) => {
+      const result = appEnvSchema.safeParse({
+        ...TEST_DATA.VALID_ENV,
+        VITE_APP_EXTRA: "ignored",
+      });
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expect(result.data).toStrictEqual(TEST_DATA.EXPECTED_VALID_PARSE);
+        expect("VITE_APP_EXTRA" in result.data).toBe(false);
+      }
+    });
+
+    it("should expose the discriminated-union failure branch with an issues array", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.MISSING_ENV);
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        expectTypeOf(result.error.issues).toBeArray();
+        expect(Array.isArray(result.error.issues)).toBe(true);
+      }
+    });
+  });
+});
