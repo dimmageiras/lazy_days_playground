@@ -1,5 +1,5 @@
 import type { Set as ImmutableSet } from "immutable";
-import type { KeyAsString } from "type-fest";
+import type { KeyAsString, LiteralToPrimitive } from "type-fest";
 
 type ObjectEntries<TObject extends Record<string, unknown>> = Array<
   {
@@ -16,4 +16,8 @@ type SetValue<
       ? Value
       : never;
 
-export type { ObjectEntries, SetValue };
+type SetValueInput<
+  TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
+> = SetValue<TSet> | LiteralToPrimitive<SetValue<TSet>>;
+
+export type { ObjectEntries, SetValue, SetValueInput };

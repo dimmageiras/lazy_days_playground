@@ -116,7 +116,7 @@ describe("SetHelper", () => {
       expect(hasSetValue(immutableSet, "d")).toBe(false);
     });
 
-    it("should accept any string at the call site (the (PropertyKey & {}) widening)", ({
+    it("should accept any string at the call site (the element-base widening)", ({
       expect,
     }) => {
       expect(hasSetValue(makeSet(), TEST_DATA.TYPE_TEST.NON_MEMBER)).toBe(
@@ -148,8 +148,34 @@ describe("SetHelper", () => {
         values.forEach((value) => {
           expect(set.has(value)).toBe(false);
         });
+        const strippedValues: ReadonlyArray<string> = values;
+
+        TEST_DATA.SET_ELEMENTS.filter(
+          (element) => !strippedValues.includes(element),
+        ).forEach((survivor) => {
+          expect(set.has(survivor)).toBe(true);
+        });
         expect(set.size).toBe(expectedSize);
       });
+    });
+
+    it("should constrain both mutators to the set's element type at the call site", ({
+      expect,
+    }) => {
+      const set = makeSet();
+      const { NON_MEMBER } = TEST_DATA.TYPE_TEST;
+
+      addValuesInPlace(set, [NON_MEMBER]);
+      stripValuesInPlace(set, [NON_MEMBER]);
+
+      expect(set.size).toBe(TEST_DATA.SET_ELEMENTS.length);
+
+      expectTypeOf(addValuesInPlace<Set<string>>)
+        .parameter(1)
+        .toEqualTypeOf<ReadonlyArray<string>>();
+      expectTypeOf(stripValuesInPlace<Set<string>>)
+        .parameter(1)
+        .toEqualTypeOf<ReadonlyArray<string>>();
     });
   });
 });
