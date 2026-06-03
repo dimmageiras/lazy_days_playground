@@ -84,14 +84,91 @@ const diffCounts = (
   return lines;
 };
 
-const diffSnapshots = (
+// Active resources are diffed increase-only: a never-released handle (the real
+// leak signal) shows as a net growth, while a release (decrease) or net-zero
+// churn — both of which the process-global active-resource table produces
+// constantly under concurrent execution — is not a leak.
+const diffActiveIncrease = (
+  before: Map<string, number>,
+  after: Map<string, number>,
+): Array<string> => {
+  const lines: Array<string> = [];
+  const keys = Set([...before.keys(), ...after.keys()]);
+
+  for (const key of keys) {
+    const beforeCount = before.get(key) ?? 0;
+    const afterCount = after.get(key) ?? 0;
+
+    if (afterCount > beforeCount) {
+      lines.push(`active.${String(key)}=${beforeCount}->${afterCount}`);
+    }
+  }
+
+  return lines;
+};
+
+// Per-key minimum across two snapshots: a handle counts as still-present only
+// if it survives both. Transients in flight during one snapshot but drained by
+// the next collapse to their lower count, so they do not register as a leak.
+const minCounts = (
+  first: Map<string, number>,
+  second: Map<string, number>,
+): Map<string, number> => {
+  const keys = Set<string>([...first.keys(), ...second.keys()]);
+
+  return keys.reduce(
+    (counts, key) =>
+      counts.set(key, Math.min(first.get(key) ?? 0, second.get(key) ?? 0)),
+    Map<string, number>(),
+  );
+};
+
+// Drain transient worker/scheduler/environment handles across a few macrotask
+// and real-timer ticks before sampling the active-resource table at file exit.
+const settle = async (): Promise<void> => {
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 15);
+  });
+
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
+};
+
+// Per-test scope tracks only the surfaces a single test realistically pollutes
+// and that stay stable under concurrent execution: global keys, process
+// listeners, and whether fake timers were left installed. Active resources are
+// deliberately excluded here — the per-test window is too short and overlaps
+// siblings too heavily to attribute reliably.
+const diffPerTestSurfaces = (
   before: StateSnapshot,
   after: StateSnapshot,
 ): Array<string> => {
   const lines = [
     ...diffKeys("globalThis", before.globalKeys, after.globalKeys),
     ...diffCounts("process", before.processListeners, after.processListeners),
-    ...diffCounts("active", before.activeResources, after.activeResources),
+  ];
+
+  if (before.fakeTimers !== after.fakeTimers) {
+    lines.push(`fakeTimers=${before.fakeTimers}->${after.fakeTimers}`);
+  }
+
+  return lines;
+};
+
+const diffFileSurfaces = (
+  before: StateSnapshot,
+  after: StateSnapshot,
+  settledActive: Map<string, number>,
+): Array<string> => {
+  const lines = [
+    ...diffKeys("globalThis", before.globalKeys, after.globalKeys),
+    ...diffCounts("process", before.processListeners, after.processListeners),
+    ...diffActiveIncrease(before.activeResources, settledActive),
   ];
 
   if (before.fakeTimers !== after.fakeTimers) {
@@ -126,7 +203,7 @@ const trackLeaksInSpec = (specName: string): void => {
 
     onTestFinished(() => {
       const after = snapshotState();
-      const diffs = diffSnapshots(testBaseline, after);
+      const diffs = diffPerTestSurfaces(testBaseline, after);
 
       if (diffs.length > 0) {
         process.stderr.write(
@@ -149,8 +226,27 @@ const trackLeaksInSpec = (specName: string): void => {
     });
   });
 
-  afterAll(() => {
-    const diffs = diffSnapshots(fileBaseline, snapshotState());
+  afterAll(async () => {
+    const preSettle = snapshotState();
+
+    // The settle relies on real timers; if a spec left fake timers installed
+    // (itself a flagged leak via the `fakeTimers` diff) the settle would never
+    // fire, so skip it and fall back to the unsettled active snapshot.
+    let settledActive = preSettle.activeResources;
+
+    if (!preSettle.fakeTimers) {
+      await settle();
+
+      const firstActive = snapshotState().activeResources;
+
+      await settle();
+
+      const secondActive = snapshotState().activeResources;
+
+      settledActive = minCounts(firstActive, secondActive);
+    }
+
+    const diffs = diffFileSurfaces(fileBaseline, preSettle, settledActive);
 
     if (diffs.length > 0) {
       process.stderr.write(

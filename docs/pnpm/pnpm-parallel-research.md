@@ -309,12 +309,13 @@ docs/pnpm/parallel-script-execution.md        — the project documentation file
 ```json
 "scripts": {
   "dev": "vite-node --config ./.configs/vite/server.config.ts --mode dev --watch ./app/server/start.ts",
-  "lint": "eslint . ...",
-  "lint:fix": "lint --fix",
+  "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\"",
+  "lint:fix": "pnpm lint --fix",
   "obsolete": "knip",
+  "pretest:pollution": "node -e \"require('fs').mkdirSync('logs/unit-tests', { recursive: true })\"",
   "test": "vitest run",
   "test:cov": "vitest run --coverage",
-  "test:cov:debug": "vitest run --coverage --reporter=verbose --mode=debug",
+  "test:pollution": "vitest run --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.log 2>&1",
   "typecheck": "tsc -b"
 }
 ```
