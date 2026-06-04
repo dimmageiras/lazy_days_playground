@@ -6,3 +6,12 @@ Follow the rules defined in `.claude/rules/`:
 - **Git mutations** — [`.claude/rules/git-mutations.md`](.claude/rules/git-mutations.md) — never auto-stage or auto-commit; commit-flow skills are context, not authorisation.
 - **Skill invocation** — [`.claude/rules/invocations/`](.claude/rules/invocations/) — one file per skill (or grouped skills), describing when to invoke. Read every file in this folder before acting.
 - **State management** — [`.claude/rules/state-management.md`](.claude/rules/state-management.md) — server-state vs client-state lanes; `zustand-x` wrapper conventions.
+
+## Where to look next
+
+- [`README.md`](README.md) — project overview, quick start, and repo layout.
+- [`CONTEXT.md`](CONTEXT.md) — domain glossary; the canonical definition for any project-specific term.
+- [`docs/testing/README.md`](docs/testing/README.md) — testing conventions (worker model, spec shape, helper contract).
+- [`docs/code-reviews/plans/`](docs/code-reviews/plans/) — per-area review plans; each plan names the skills to invoke and what to look for.
+- [`docs/adr/README.md`](docs/adr/README.md) — architectural decision records and the ADR template.
+- [`docs/vite/multi-target-config.md`](docs/vite/multi-target-config.md) — multi-target Vite pattern referenced by ADR-0001.

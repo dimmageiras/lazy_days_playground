@@ -1,6 +1,8 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import type { setTimeout } from "node:timers";
-import { afterEach, describe, vi } from "vitest";
+import type { MockInstance } from "vitest";
+import { afterAll, beforeAll, describe, vi } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { TimingHelper } from "./timing.helper";
 import { TypesHelper } from "./types.helper";
@@ -24,29 +26,31 @@ const TEST_DATA = {
       name: "should forward Infinity to setTimeout",
     },
   ],
+  // Disjoint markers, not durations: per-test filtering of the worker-shared
+  // setTimeout spy keys on `ms`, so these must never collide with any
+  // PASSTHROUGH_CASES value or the resolve tests would cross-match siblings.
+  RESOLVE_MARKER_MS: -1001,
+  RESOLVE_PENDING_MARKER_MS: -1002,
 } as const;
 
-const stubSetTimeout = <T extends Parameters<typeof setTimeout>[0]>(
-  capture: (callback: T) => void,
-) =>
-  castAsType<typeof setTimeout>((callback: T) => {
-    capture(callback);
-
-    return 0;
-  });
+const stubSetTimeout = castAsType<typeof setTimeout>(() => 0);
 
 describe("TimingHelper", () => {
   describe("delay", (it) => {
-    afterEach(() => {
-      vi.restoreAllMocks();
+    let setTimeoutSpy: MockInstance<typeof setTimeout>;
+
+    beforeAll(() => {
+      setTimeoutSpy = vi
+        .spyOn(globalThis, "setTimeout")
+        .mockImplementation(stubSetTimeout);
+    });
+
+    afterAll(() => {
+      setTimeoutSpy.mockRestore();
     });
 
     TEST_DATA.PASSTHROUGH_CASES.forEach(({ ms, name }) => {
       it(name, ({ expect }) => {
-        const setTimeoutSpy = vi
-          .spyOn(globalThis, "setTimeout")
-          .mockImplementation(stubSetTimeout(() => undefined));
-
         void delay(ms);
 
         const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
@@ -60,20 +64,22 @@ describe("TimingHelper", () => {
     it("should resolve with undefined once the scheduled callback fires", async ({
       expect,
     }) => {
-      let capturedCallback: Parameters<typeof setTimeout>[0] | undefined;
+      const marker = TEST_DATA.RESOLVE_MARKER_MS;
 
-      vi.spyOn(globalThis, "setTimeout").mockImplementation(
-        stubSetTimeout((callback) => {
-          capturedCallback = callback;
-        }),
+      const promise = delay(marker);
+
+      const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
+        Object.is(delayMs, marker),
       );
 
-      const promise = delay(0);
+      expect(spyCalls).toHaveLength(1);
+
+      const [callback] = spyCalls[0]!;
 
       expect(promise).toBeInstanceOf(Promise);
-      expect(capturedCallback).toBeTypeOf("function");
+      expect(callback).toBeTypeOf("function");
 
-      capturedCallback?.();
+      callback();
 
       const result = await promise;
 
@@ -83,25 +89,27 @@ describe("TimingHelper", () => {
     it("should not resolve before the scheduled callback fires", async ({
       expect,
     }) => {
-      let capturedCallback: Parameters<typeof setTimeout>[0] | undefined;
-
-      vi.spyOn(globalThis, "setTimeout").mockImplementation(
-        stubSetTimeout((callback) => {
-          capturedCallback = callback;
-        }),
-      );
+      const marker = TEST_DATA.RESOLVE_PENDING_MARKER_MS;
 
       let resolved = false;
 
-      const promise = delay(0).then(() => {
+      const promise = delay(marker).then(() => {
         resolved = true;
       });
+
+      const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
+        Object.is(delayMs, marker),
+      );
+
+      expect(spyCalls).toHaveLength(1);
+
+      const [callback] = spyCalls[0]!;
 
       await Promise.resolve();
 
       expect(resolved).toBe(false);
 
-      capturedCallback?.();
+      callback();
 
       await promise;
 

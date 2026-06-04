@@ -9,12 +9,9 @@ The Fastify HTTP server slice — bootstrap, the typed framework-instance alias,
 - Route plugin organisation — one plugin per resource, prefix encapsulation, no inline handlers in the bootstrap
 - Server-only constants — protocol/route primitives that only the server runtime consumes
 
-Several adjacent slices are **deferred and forward-looking**, not absent defects. Plans that flag them as missing today regress the project's intentional posture:
+The bootstrap validates required environment variables against a schema before constructing the instance, and the values it consumes (the listen port, the service identity) flow from environment variables rather than from literals. Other values (the route prefix, the request timeout) are literal/constant-sourced — expected today, not defects.
 
-- Schema tooling for route validation and response shaping (a Zod-backed type provider, an OpenAPI exporter, and a generated client SDK consuming the resulting spec) — when that slice lands, the schema-coherence checks live in this plan.
-- Pino integration as the explicit logger — the typed instance alias already reserves the logger slot for the swap.
-- Explicit return types on route handlers — co-arrives with the schema slice.
-- Environment-variable loading — port, prefix, and timeout are hardcoded today by intent.
+Routes return plain object literals with no response schema attached, and the framework's default logger is configured by setting the `logger` flag to `true`. The typed instance alias names the logger slot so a logger swap stays a one-line change. Handler return types are inferred. None of these are absent-defect findings.
 
 ## Files currently in scope
 
@@ -43,14 +40,14 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - The try block wraps **every** registration and the listen call together — partial success (registrations completed, listen failed) must still flow through the same cleanup path.
 - The catch block logs the error through the instance logger, awaits `close()` to release active handles, then exits with a non-zero code. Returning from the bootstrap on error without `process.exit` leaves the worker alive with no listener, which CI/orchestrators interpret as healthy.
 - The exit code is non-zero (`1` is fine) — `0` on a caught error masks the failure to any supervisor.
-- `disableRequestLogging: true` plus a non-default logger is a deliberate pairing — the default access-log line is suppressed so the future structured logger can own request observability. Flag any change that toggles one without the other.
+- `disableRequestLogging: true` plus the configured logger is a deliberate pairing — the default access-log line is suppressed so the logger owns request observability. Flag any change that toggles one without the other.
 - No top-level `await` outside the try block — a rejection from import-time work leaves the instance unconstructed and the catch path unreachable. Top-level `await` inside the try block (registration calls, the `listen` call) is fine; the catch path catches those rejections by design.
 
 ### Typed instance alias
 
 - The slice exposes **one** typed alias for the framework instance. Every route, plugin, and helper consuming the instance imports the alias rather than re-parameterising the generic at the call site.
 - The alias pre-stages every generic slot the framework exposes: server type, incoming-message type, response type, logger type, and type-provider type. Each slot's argument is the project's chosen pairing for that slot, not the framework's default.
-- The logger slot is named even when the project still uses the framework's default logger — it reserves the type position for the future logger swap so consumers don't break when the swap lands.
+- The logger slot is named even though the project uses the framework's default logger — it holds the type position so a logger swap doesn't break consumers.
 - Alias drift is a regression: two files declaring near-identical aliases with different slot orderings will type-check today and silently diverge at the next framework major. The single-alias rule is the guard.
 - Generic-arity changes between framework majors are version-pinned, not version-floating — a major bump that adds a new generic slot is an explicit update to the alias, not an inferred one.
 
@@ -59,7 +56,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - One route plugin per resource. Each plugin owns the routes under its prefix and is registered from the bootstrap with that prefix.
 - The prefix passed at registration is the only place the resource's base URL appears — handlers reference relative paths only, so a base-URL rename touches one constant.
 - No inline route handlers in the bootstrap. The bootstrap registers plugins; plugins register handlers. The boundary keeps the bootstrap diffable and the plugin loadable into tests in isolation.
-- Plugins are async, even when the body is synchronous, so a future plugin that needs to `await` doesn't force a signature change.
+- Plugins are async, even when the body is synchronous, so a plugin that needs to `await` doesn't force a signature change.
 - Each handler is a named arrow or function passed to the route method, not an inline lambda — easier to unit-test, easier to stack-trace.
 
 ### Server-only constants
@@ -67,16 +64,17 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - Every server constants object is frozen with `Object.freeze({...} as const)` — runtime freeze plus literal-type narrowing.
 - Naming follows the protocol/concept of the constant, not the consumer. URL-namespace constants describe the URL segment they encode, not the module that registers under it.
 - Constants compose: a base URL constant derives from the namespace and a per-resource prefix, the prefix is the only literal that file owns. A change to the namespace flows everywhere; per-resource files don't re-encode it.
-- No env-derived values until the env-loading slice lands. A port literal, a prefix literal, and a timeout literal in the bootstrap are expected today — flag only if they leak from `app/server/constants/**` into shared, or vice versa.
+- Environment-derived values do not belong in `app/server/constants/**`. Values that vary per environment (the listen port, the service identity) flow from the validated environment layer, not from a frozen constants object. A literal in the bootstrap that is not environment-derived (the route prefix, the request timeout) is expected — flag only if such a literal leaks from `app/server/constants/**` into shared, or vice versa.
 - Server-only protocol constants stay under `app/server/constants/**`. A constant consumed by both the server and a client surface belongs under the shared constants tree; relocating it is a separate refactor, not a server-plan finding.
 
-### Forward-looking — schema and logger slices
+### Environment-variable validation
 
-When reviewing today, treat the following as future-shipping rather than absent-defect:
+The bootstrap validates required environment variables against a schema and aborts the process if validation fails, before any instance construction.
 
-- Routes return plain object literals with no response schema attached. The schema slice will add Zod-backed validation and a response shape; when it lands, this section gains a "response-schema coverage" criterion.
-- The default logger is configured by setting the framework's `logger` flag to `true`. When the Pino slice lands, the logger slot in the typed instance alias is what makes that swap a one-line change in the bootstrap.
-- Handler return types are inferred. Explicit return types are deferred to the schema slice, where the response type comes from the schema rather than from hand-written annotations.
+- Validation runs **first** — before the framework instance is constructed — and a validation failure exits the process with a non-zero code rather than letting the server start in a half-configured state.
+- The validation failure path reports every offending variable, not just the first, so a contributor fixing a fresh checkout sees the full set in one run.
+- Environment values the bootstrap consumes (the listen port, the service identity) are read from the validated environment surface, not re-declared as literals. A port or service-name literal in the bootstrap is a regression.
+- The schema and its parsing wrapper live outside the server-only tree (a value-validation concern shared with other surfaces). The schema/wrapper layer and the validation invocation itself are **delegated to** [`./validation.plan.md`](./validation.plan.md) — whether the schema's conventions, the branded outputs, the issue-code vocabulary, and the failure formatting are correct is that plan's concern. This plan covers only the bootstrap-side discipline: that validation runs first, fails the process, and that the values it consumes flow from the validated surface rather than from re-read literals. Surface validation-internal observations under Out of scope; a PR touching both runs both plans.
 
 ### TypeScript discipline
 
@@ -95,7 +93,8 @@ A PR that:
 - Adds or modifies the server bootstrap, the typed instance alias, or any route plugin under `app/server/routes/**`
 - Adds, renames, or restructures any file under `app/server/constants/**`
 - Changes the framework major version or its type packages
-- Lands the schema-tooling slice, the Pino slice, the explicit-return-types slice, or the env-loading slice (each landing widens the review focus accordingly)
+- Adds route response schemas, swaps the logger, or adds explicit handler return types (each widens the review focus accordingly)
+- Changes the bootstrap's environment-variable validation, or moves a bootstrap literal (the route prefix, the request timeout) into the validated environment surface
 - Touches `tsconfig.app.json` in a way that affects the server's reachable libs, types, or target
 
 ## Output

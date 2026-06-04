@@ -3,20 +3,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite-node --config ./.configs/vite/server.config.ts --watch ./app/server/start.ts",
+    "dev": "vite-node --config ./.configs/vite/server.config.ts --mode dev --watch ./app/server/start.ts",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0 --rule \"no-console: ['error', { allow: ['error', 'info', 'warn'] }]\"",
     "lint:fix": "pnpm lint --fix",
     "obsolete": "knip",
+    "pretest:pollution": "node --input-type=module -e \"import { mkdirSync } from 'node:fs'; mkdirSync('logs/unit-tests', { recursive: true });\"",
     "test": "vitest run",
     "test:cov": "vitest run --coverage",
-    "test:cov:debug": "vitest run --coverage --reporter=verbose --mode=debug",
+    "test:pollution": "vitest run --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.log 2>&1",
     "typecheck": "tsc -b"
   },
   "dependencies": {
     "dayjs": "1.11.21",
     "fastify": "5.8.5",
-    "immutable": "5.1.5",
-    "lodash-es": "4.18.1"
+    "immutable": "5.1.6",
+    "lodash-es": "4.18.1",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
@@ -24,8 +26,8 @@
     "@types/eslint-plugin-security": "3.0.1",
     "@types/lodash-es": "4.17.12",
     "@types/node": "^25",
-    "@typescript-eslint/parser": "8.60.0",
-    "@vitest/coverage-v8": "4.1.7",
+    "@typescript-eslint/parser": "8.60.1",
+    "@vitest/coverage-v8": "4.1.8",
     "eslint": "9.39.4",
     "eslint-plugin-security": "4.0.0",
     "eslint-plugin-simple-import-sort": "13.0.0",
@@ -33,16 +35,16 @@
     "globals": "17.6.0",
     "happy-dom": "20.9.0",
     "jiti": "2.7.0",
-    "knip": "6.14.2",
-    "type-fest": "5.6.0",
+    "knip": "6.15.0",
+    "type-fest": "5.7.0",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.60.0",
-    "vite": "8.0.14",
+    "typescript-eslint": "8.60.1",
+    "vite": "8.0.16",
     "vite-node": "6.0.0",
-    "vitest": "4.1.7"
+    "vitest": "4.1.8"
   },
   "engines": {
     "node": ">=26.0.0"
   },
-  "packageManager": "pnpm@11.3.0"
+  "packageManager": "pnpm@11.5.1"
 }

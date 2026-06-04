@@ -18,8 +18,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 - `.configs/vite/shared.config.ts` (the shared base — owns keys both runtimes pay for: resolve options, the opt-in to built-in tsconfig-paths resolution, any plugin/define defaults)
 - `.configs/vite/server.config.ts` (per-runtime Node-side config layered on the shared base via `mergeConfig`)
-- `.configs/vite/<runtime>.config.ts` (any additional per-runtime config that lands later, layered on the shared base via the same composition pattern)
-- `vite.config.ts` at the repo root (forward-looking client entry — applies once the React Router framework-mode client lands; the root location is where Vite's default config discovery looks). The rest of this plan is active today against the shared base, the server config, and the runner's Vite-merge surface; only the client-config section below activates when that file lands.
+- `.configs/vite/<runtime>.config.ts` (any additional per-runtime config, layered on the shared base via the same composition pattern)
 - `vitest.config.ts` (test-runner config that merges the shared Vite base; the runner-specific surface lives in the testing plan, the Vite-merge surface is reviewed here)
 - `tsconfig.json` `paths` block (canonical alias definition — the Vite shared base consumes it via the built-in tsconfig-paths opt-in)
 - `eslint.config.ts` import-sort group definitions (the alias-prefix groups that must stay coherent with the paths block)
@@ -39,7 +38,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - The shared base exports a plain Vite config that owns the keys both runtimes pay for. Per-runtime configs import the base and layer their concern on top via `mergeConfig` from `vite`.
 - A per-runtime config never duplicates a key that already lives in the shared base — duplicate keys silently win or lose depending on `mergeConfig`'s rules per shape (objects deep-merge, arrays concatenate), making the result non-obvious from reading either file alone.
 - Each per-runtime config reads on its own. Opening one config and seeing only that runtime's concerns is the rename-test for the layout (see [`CONTEXT.md`](../../../CONTEXT.md#rename-test)).
-- Adding a third runtime is mechanical: a new `<runtime>.config.ts` next to the shared base, composing from it via `mergeConfig`. Plans that propose folding multiple runtimes into a single `mode`-branched config regress the layout — flag.
+- Adding a runtime is mechanical: a new `<runtime>.config.ts` next to the shared base, composing from it via `mergeConfig`. Plans that propose folding multiple runtimes into a single `mode`-branched config regress the layout — flag.
 
 ### `mergeConfig` arity and source-type guard
 
@@ -77,16 +76,6 @@ The alias scheme lives in **three surfaces** that must agree. A rename or additi
 
 The review test: pick one alias prefix and `grep` for it across `tsconfig.json`, the Vite shared base (implicit — via the opt-in), and the ESLint flat config. If the three pictures diverge, the surface that disagrees is the finding.
 
-### Forward-looking — the client config
-
-The repo-root `vite.config.ts` is **anticipated, not yet present**. When it lands, it plugs into this layout as another per-runtime config layered on the shared base — same composition rule, same `satisfies UserConfig` discipline, same alias-coherence requirement. Until then, plans that flag its absence regress the project's intentional posture.
-
-When the client config does land, this section gains:
-
-- Client-side `resolve.conditions` (`browser` for the client environment) layered only in the client config.
-- React Router's framework-mode Vite plugin entry in the client config's plugin array.
-- A note on the dev-time mount point (the client config is consumed by a programmatic Vite server inside the Fastify init flow, not by a separate CLI process).
-
 ### Test-runner config interaction
 
 - The test-runner config is reviewed for its **Vite-side composition** here (it merges the shared Vite base via `mergeConfig` from `vite`, not from `vitest/config`'s re-export). The runner-specific surface — coverage, isolation, sequence, setup files, helper layer — lives in the testing and test-infra plans.
@@ -97,7 +86,7 @@ When the client config does land, this section gains:
 A PR that:
 
 - Adds, modifies, or restructures any file under `.configs/vite/**`
-- Adds the repo-root `vite.config.ts` or changes how it composes on the shared base
+- Adds a new per-runtime config or changes how it composes on the shared base
 - Changes the Vite or `vite-node` major version
 - Adds, renames, or removes an entry in the TypeScript `paths` block
 - Reshapes the ESLint `simple-import-sort` groups (a finding that those groups disagree with the paths block belongs here; the broader flat-config orchestration belongs in the configuration plan)

@@ -1,12 +1,16 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { Map, Set } from "immutable";
 import { describe, expectTypeOf } from "vitest";
 
+import { VitestSetup } from "@configs/vitest/setup";
+
 import { StringHelper } from "./string.helper";
+import { TypesHelper } from "./types.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("string.helper");
+
+const { castAsType } = TypesHelper;
 
 const { isString, toCamelCase, toUpperCase } = StringHelper;
 
@@ -52,6 +56,13 @@ const TEST_DATA = {
     { name: "should return true for a populated string", value: "hello world" },
     { name: "should return true for an empty string", value: "" },
   ],
+  TYPE_TEST: {
+    CAMELCASE_EXPECTED: "helloWorld",
+    CAMELCASE_INPUT: "hello world",
+    UNKNOWN_VALUE: castAsType<unknown>("hello"),
+    UPPERCASE_EXPECTED: "AB",
+    UPPERCASE_INPUT: "ab",
+  },
   UPPER_CASES: [
     {
       expected: "HELLO WORLD",
@@ -104,6 +115,16 @@ describe("StringHelper", () => {
         expect(isString(value)).toBe(false);
       });
     });
+
+    it("should narrow the value to string when true", ({ expect }) => {
+      const { UNKNOWN_VALUE } = TEST_DATA.TYPE_TEST;
+
+      expect(isString(UNKNOWN_VALUE)).toBe(true);
+
+      if (isString(UNKNOWN_VALUE)) {
+        expectTypeOf(UNKNOWN_VALUE).toEqualTypeOf<string>();
+      }
+    });
   });
 
   describe("toCamelCase", (it) => {
@@ -113,6 +134,12 @@ describe("StringHelper", () => {
 
         expect(result).toBe(expected);
       });
+    });
+
+    it("should narrow the return type to CamelCase<TString>", () => {
+      expectTypeOf(
+        toCamelCase(TEST_DATA.TYPE_TEST.CAMELCASE_INPUT),
+      ).toEqualTypeOf<typeof TEST_DATA.TYPE_TEST.CAMELCASE_EXPECTED>();
     });
   });
 
@@ -126,7 +153,9 @@ describe("StringHelper", () => {
     });
 
     it("should narrow the return type to Uppercase<TString>", () => {
-      expectTypeOf(toUpperCase("ab" as const)).toEqualTypeOf<"AB">();
+      expectTypeOf(
+        toUpperCase(TEST_DATA.TYPE_TEST.UPPERCASE_INPUT),
+      ).toEqualTypeOf<typeof TEST_DATA.TYPE_TEST.UPPERCASE_EXPECTED>();
     });
   });
 });

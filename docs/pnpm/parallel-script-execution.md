@@ -26,7 +26,7 @@ pnpm run "/^(dev|test):/"
 
 The regex syntax is standard JavaScript regex inside the leading/trailing `/` delimiters.
 
-By itself, this runs the matched scripts **sequentially** in name order. Add `--parallel` (next section) to run them concurrently.
+By itself, this runs the matched scripts with pnpm's **default concurrency cap** (`min(4, number of CPU cores)`) — concurrently, not one at a time. Use `--sequential` to force strict one-at-a-time execution in name order, or `--parallel` (next section) to lift the cap entirely.
 
 ## Parallel execution
 
@@ -36,7 +36,7 @@ pnpm --parallel run "/^dev:/"
 
 `--parallel` removes any ordering constraint and runs all matched scripts at the same time, with no cap on concurrency. For a small set of independent dev processes (e.g. one server, one client) this is the simplest possible orchestrator: pnpm spawns each, forwards Ctrl+C to all of them, and reports their output interleaved on the terminal.
 
-pnpm's documentation pairs `--parallel` with `--recursive` for monorepos; in a single-package project, combining `--parallel` with the regex-selector form picks up the same concurrent-spawn behaviour on current pnpm v11 releases. **This single-package use is undocumented; treat it as best-effort and do not rely on it for ordered CI workflows.** The trade-off: pnpm's built-in orchestration avoids adding another dependency for a small concurrency need, at the cost of riding behaviour that could shift across pnpm majors. On every pnpm major bump, reverify that `pnpm --parallel run "/<regex>/"` still resolves the selector and spawns matched scripts concurrently in a single-package layout; if it stops, switch to an external parallel runner before the bump lands.
+pnpm's documentation pairs `--parallel` with `--recursive` for monorepos; in a single-package project, combining `--parallel` with the regex-selector form picks up the same concurrent-spawn behaviour against the installed pnpm version at the time of writing. **This single-package use is undocumented; treat it as best-effort and do not rely on it for ordered CI workflows.** The trade-off: pnpm's built-in orchestration avoids adding another dependency for a small concurrency need, at the cost of riding behaviour that could shift across pnpm majors. On every pnpm major bump, reverify that `pnpm --parallel run "/<regex>/"` still resolves the selector and spawns matched scripts concurrently in a single-package layout; if it stops, switch to an external parallel runner before the bump lands.
 
 ### Two reasons to skip `--parallel`
 
@@ -96,10 +96,6 @@ For "start two or three independent dev processes and Ctrl+C them together", pnp
 ## pnpm v11 behaviours worth knowing
 
 pnpm v11 didn't change the parallel-script syntax — `pnpm --parallel run "/<regex>/"` works the same as in v9 and v10. But several v11 defaults can surprise you.
-
-### Cleaner script output
-
-Parallel runs are easier to read in v11 — the formatting of interleaved output got a clarity pass. If you stayed on pnpm 10 and remembered the output as messy, try v11 before reaching for an external parallel runner.
 
 ### Drops legacy Node majors
 

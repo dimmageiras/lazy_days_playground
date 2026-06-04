@@ -1,16 +1,21 @@
-import { VitestSetup } from "@configs/vitest/setup";
 import { Map, Set } from "immutable";
-import { describe } from "vitest";
+import type { UnknownArray } from "type-fest";
+import { describe, expectTypeOf } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
 
 import { ArrayHelper } from "./array.helper";
+import { TypesHelper } from "./types.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("array.helper");
 
+const { castAsType } = TypesHelper;
+
 const { isArray } = ArrayHelper;
 
-function makeArguments(..._args: unknown[]): IArguments {
+function makeArguments(..._args: Array<unknown>): IArguments {
   // eslint-disable-next-line prefer-rest-params -- real `arguments` is the contract under test
   return arguments;
 }
@@ -35,6 +40,9 @@ const TEST_DATA = {
       value: makeArguments(1, 2, 3),
     },
   ],
+  TYPE_TEST: {
+    UNKNOWN_VALUE: castAsType<unknown>([1, 2, 3]),
+  },
 } as const;
 
 describe("ArrayHelper", () => {
@@ -49,6 +57,16 @@ describe("ArrayHelper", () => {
       it(name, ({ expect }) => {
         expect(isArray(value)).toBe(false);
       });
+    });
+
+    it("should narrow the value to UnknownArray when true", ({ expect }) => {
+      const { UNKNOWN_VALUE } = TEST_DATA.TYPE_TEST;
+
+      expect(isArray(UNKNOWN_VALUE)).toBe(true);
+
+      if (isArray(UNKNOWN_VALUE)) {
+        expectTypeOf(UNKNOWN_VALUE).toEqualTypeOf<UnknownArray>();
+      }
     });
   });
 });

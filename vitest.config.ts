@@ -21,6 +21,7 @@ const vitestConfig = defineConfig(({ mode }) =>
           "**/*.d.ts",
           "**/*.spec.{ts,tsx}",
           "**/*.type.ts",
+          "**/*.wrapper.ts",
           "**/index.ts",
         ],
         include: ["app/**/*.{ts,tsx}"],

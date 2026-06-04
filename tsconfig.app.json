@@ -7,7 +7,7 @@
 
     /* Language and Environment */
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": [],
+    "types": ["node"],
 
     /* Emit */
     "emitDeclarationOnly": true,

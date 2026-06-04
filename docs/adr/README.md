@@ -46,3 +46,4 @@ What follows from the decision — both the positive consequences the decision w
 
 - [`../../CONTEXT.md`](../../CONTEXT.md) — domain glossary, including **Load-bearing decision** and **Rename test**
 - [`../code-reviews/plans/documentation.plan.md`](../code-reviews/plans/documentation.plan.md) — review criteria for ADRs and other docs
+- [`../code-reviews/plans/validation.plan.md`](../code-reviews/plans/validation.plan.md) — review plan whose startup-gate criteria enforce [ADR-0009](./0009-bootstrap-environment-validation.md)

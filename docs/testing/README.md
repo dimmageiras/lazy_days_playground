@@ -103,7 +103,9 @@ Every helper module under the Vitest helpers folder follows the same contract:
 
 ### State-probe helper
 
-A debug helper diffs `globalThis` keys, `process` event listeners, active resources, and fake-timer state across each test boundary and the file boundary. Specs invoke it once at the top of the file (passing a label for log output). It is silent by default and only emits when explicitly enabled — see below.
+A debug helper diffs state across test and file boundaries. At each test boundary it compares `globalThis` keys, `process` event listeners, and fake-timer state; at the file boundary it additionally compares Node active resources (`process.getActiveResourcesInfo()`). Specs invoke it once at the top of the file (passing a label for log output). It is silent by default and only emits when explicitly enabled — see below.
+
+Active resources are file-boundary-only, increase-only, and settled: a handle is reported only if its count grows and survives a short drain of transient worker, scheduler, and environment handles (the table is sampled twice and the per-key minimum is kept) — unless a spec left fake timers installed (itself flagged as a leak), in which case the settle is skipped and the unsettled snapshot is used, because the settle awaits real timers a still-installed fake clock would never fire. The per-test window is too short and overlaps concurrent siblings too heavily for the process-global active-resource table to attribute reliably, so it is excluded from the per-test diff. Only Node libuv handles appear on this surface — environment-level timers such as happy-dom's are not Node handles and are invisible to it, so a leaked environment timer is not caught here.
 
 The probe itself is a stateless dispatcher: every per-spec snapshot lives in a closure scoped to its invocation. The cross-spec signal — flagging concurrent tests that touched the clock — is read from a setup-owned registry, keeping the helper module free of module-level state.
 
@@ -114,15 +116,15 @@ The probe itself is a stateless dispatcher: every per-spec snapshot lives in a c
 A single environment variable gates every diagnostic output:
 
 - **`DEBUG_TEST_POLLUTION` unset or `"0"`** — probes are no-ops. This is the default for `test` and `test:cov`.
-- **`DEBUG_TEST_POLLUTION="1"`** — probes emit `[WARN …]`, `[LEAK …]`, and `[RISK …]` lines on stderr at each boundary. Used by `test:cov:debug`.
+- **`DEBUG_TEST_POLLUTION="1"`** — probes emit `[WARN …]`, `[LEAK …]`, and `[RISK …]` lines on stderr at each boundary. Used by `test:pollution`.
 
 The contract: a green run with the probe enabled means no detected pollution; any `[WARN]`, `[LEAK]`, or `[RISK]` line is a real signal to investigate.
 
 Output semantics:
 
 - `[WARN <spec> <file-init>] …` — the probe could not resolve the spec's absolute path from `expect.getState().testPath`, so fake-timer attribution and registry cleanup will not run for that spec. Indicates a runtime gap rather than test-state pollution; investigate the Jest-compat surface (see the major-bump reverify checklist).
-- `[LEAK <spec> > <test>] …` — state changed between the test's start and finish (a global key added, a listener attached, a resource not released).
-- `[LEAK <spec> <file-exit>] …` — state changed across the whole file lifetime.
+- `[LEAK <spec> > <test>] …` — a per-test surface changed between the test's start and finish: a `globalThis` key added, a `process` listener attached, or fake-timer state left flipped. (Active resources are not part of the per-test diff.)
+- `[LEAK <spec> <file-exit>] …` — a per-test surface changed across the whole file lifetime, or a Node active-resource count grew (increase-only, after the settle described above).
 - `[RISK <spec> > <test>] concurrent test advanced fake timers — sibling tests share the clock` — a `.concurrent` test advanced the shared fake clock (Pattern B). Installing a fixed clock without advancing it (Pattern A) is not flagged.
 - `[RISK <spec> <file-exit>] fake timers were advanced in this spec — under concurrent execution sibling tests share the clock. Hoist the clock to beforeAll/afterAll or use a deterministic-clock pattern that does not advance the shared fake timer.` — the spec file advanced the shared clock at some point during the run. Hoist the clock to a `beforeAll`/`afterAll` pair, or refactor to Pattern A if a fixed instant is sufficient.
 
@@ -130,10 +132,11 @@ Output semantics:
 
 Every rule above exists because of a documented trade-off. Before deviating:
 
-1. Confirm the trade-off in the relevant inline comment (Vitest config) or in the architectural decision record covering the worker model.
+1. Confirm the trade-off in the relevant inline comment (Vitest config) or in [ADR-0002](../adr/0002-test-runner-contract.md).
 2. If the deviation is principled, write a follow-up to update this README — single-spec exceptions rot the convention for everyone else.
 
 ## Related
 
-- [`../../docs/code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs
+- [ADR-0002](../adr/0002-test-runner-contract.md) — the runner posture (worker model, concurrency, mock-clearing) the conventions in this README rest on
+- [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream `vitest` skill, and the precedence rule with this README

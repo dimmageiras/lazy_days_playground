@@ -1,11 +1,18 @@
-import { VitestSetup } from "@configs/vitest/setup";
+import type { KeyAsString, ValueOf } from "type-fest";
 import { describe, expectTypeOf } from "vitest";
 
+import { VitestSetup } from "@configs/vitest/setup";
+
+import type { ObjectEntries } from "@shared/types/app/utility-types";
+
 import { ObjectHelper } from "./object.helper";
+import { TypesHelper } from "./types.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("object.helper");
+
+const { castAsType } = TypesHelper;
 
 const {
   getObjectEntries,
@@ -22,11 +29,17 @@ class TaggedClass {
 }
 
 const TEST_DATA = {
+  ARRAY_WITH_ONE_KEY: ["a"],
   EMPTY_ARRAY: [],
   NARROW: {
     EXPECTED_VALUE: 42,
     KEY: "extra",
     OBJECT: { name: "John", extra: 42 },
+  },
+  NARROW_HIDDEN: {
+    EXPECTED_VALUE: 99,
+    KEY: "hidden",
+    OBJECT: castAsType<{ visible: string }>({ hidden: 99, visible: "x" }),
   },
   NON_PLAIN_OBJECTS: [
     "string",
@@ -85,10 +98,10 @@ const TEST_DATA = {
       expected: true,
       key: "runtimeOnly",
       name: "should return true when the runtime object carries a key its declared type omits",
-      object: { declared: 1, runtimeOnly: 2 } as Record<string, unknown>,
+      object: { declared: 1, runtimeOnly: 2 },
     },
   ],
-  PLAIN_OBJECTS: [{}, { name: "John" }, Object.create(null) as object],
+  PLAIN_OBJECTS: [{}, { name: "John" }, Object.create(null)],
   PROTO_OBJECT: Object.create(Object.prototype),
   STRIP_CASES: [
     {
@@ -122,6 +135,14 @@ describe("ObjectHelper", () => {
 
       expect(result).toStrictEqual(TEST_DATA.EMPTY_ARRAY);
     });
+
+    it("should infer entries narrowed to per-key tuples", () => {
+      const result = getObjectEntries(TEST_DATA.OBJECTS.SIMPLE);
+
+      expectTypeOf(result).toEqualTypeOf<
+        ObjectEntries<typeof TEST_DATA.OBJECTS.SIMPLE>
+      >();
+    });
   });
 
   describe("getObjectKeys", (it) => {
@@ -135,6 +156,14 @@ describe("ObjectHelper", () => {
       const result = getObjectKeys(TEST_DATA.OBJECTS.EMPTY);
 
       expect(result).toStrictEqual(TEST_DATA.EMPTY_ARRAY);
+    });
+
+    it("should infer keys narrowed to KeyAsString<TObject>", () => {
+      const result = getObjectKeys(TEST_DATA.OBJECTS.SIMPLE);
+
+      expectTypeOf(result).toEqualTypeOf<
+        Array<KeyAsString<typeof TEST_DATA.OBJECTS.SIMPLE>>
+      >();
     });
   });
 
@@ -150,6 +179,14 @@ describe("ObjectHelper", () => {
 
       expect(result).toStrictEqual(TEST_DATA.EMPTY_ARRAY);
     });
+
+    it("should infer values narrowed to ValueOf<TObject>", () => {
+      const result = getObjectValues(TEST_DATA.OBJECTS.SIMPLE);
+
+      expectTypeOf(result).toEqualTypeOf<
+        Array<ValueOf<typeof TEST_DATA.OBJECTS.SIMPLE>>
+      >();
+    });
   });
 
   describe("hasObjectKey", (it) => {
@@ -162,13 +199,13 @@ describe("ObjectHelper", () => {
     it("should narrow the object to include a key omitted from its type", ({
       expect,
     }) => {
-      const object = { hidden: 99, visible: "x" } as { visible: string };
+      const { EXPECTED_VALUE, KEY, OBJECT } = TEST_DATA.NARROW_HIDDEN;
 
-      expect(hasObjectKey(object, "hidden")).toBe(true);
+      expect(hasObjectKey(OBJECT, KEY)).toBe(true);
 
-      if (hasObjectKey(object, "hidden")) {
-        expectTypeOf(object.hidden).toEqualTypeOf<unknown>();
-        expect(object.hidden).toBe(99);
+      if (hasObjectKey(OBJECT, KEY)) {
+        expectTypeOf(Reflect.get(OBJECT, KEY)).toEqualTypeOf<unknown>();
+        expect(Reflect.get(OBJECT, KEY)).toBe(EXPECTED_VALUE);
       }
     });
   });
@@ -224,6 +261,17 @@ describe("ObjectHelper", () => {
 
         expect(object).toStrictEqual(expected);
       });
+    });
+
+    it("should omit stripped keys from the return type", () => {
+      const source = { ...TEST_DATA.OBJECTS.DELETABLE };
+      const keys = TEST_DATA.ARRAY_WITH_ONE_KEY;
+
+      const stripped = stripKeysInPlace(source, keys);
+
+      expectTypeOf(stripped).toEqualTypeOf<
+        Omit<typeof source, (typeof keys)[number]>
+      >();
     });
   });
 });

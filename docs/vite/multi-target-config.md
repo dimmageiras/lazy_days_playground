@@ -1,91 +1,57 @@
 # Vite multi-target config layout
 
-> **Status — pattern doc.** The server slice (shared base + server config + `vite-node --watch` dev script) is in place today. The client slice (`reactRouter()`-driven Vite config, `react-router.config.ts`, the programmatic Vite middleware mount inside Fastify, the `@fastify/static` serve-and-SSR wiring in prod) is the **target layout**, not the current state. Sections that describe the client slice are forward-looking and should be read as "what it will look like when the client lands."
+> **Scope of this doc.** This file documents the multi-target Vite layout decided in [ADR-0001](../adr/0001-vite-multi-target-config.md): one shared Vite base plus one thin config per runtime, composed via `mergeConfig`. The wired runtime is the Fastify server, run through `vite-node` in development. The shared base sets the contract any additional per-runtime config merges from; this doc describes the layout so a contributor adding a second runtime config drops it into a shape the base already supports.
 
-This project ships two runtimes from one repo:
+The layout is built around one shared base plus one thin Vite config per runtime, composed via `mergeConfig` from `vite`:
 
-- **Fastify server** — Node process. Run through `vite-node` in dev (loads TypeScript and applies the Vite plugin/transform pipeline on demand; pair with `--watch` for reload) and bundled with Vite SSR in prod, then executed with plain Node.
-- **React Router framework-mode client** — Browser bundle plus an SSR bundle, both produced by Vite via the `reactRouter()` Vite plugin. The Fastify server hosts the SSR build at runtime: in dev it proxies through Vite's middleware; in prod it serves the prebuilt assets and lazy-imports the SSR entry.
+- **Shared base** — owns the keys every runtime pays for (alias resolution, and any env / define defaults a runtime config would inherit). Kept small: every key here is one both a current and a future runtime agree on.
+- **Server config** — layers Node-side resolve on top of the base. It drives the Fastify entry through `vite-node` in development (`vite-node` loads TypeScript and applies the Vite plugin/transform pipeline on demand; pair with `--watch` for reload).
 
-Both runtimes consume Vite, but their plugin set, externals, output format, and resolve conditions diverge. The convention is **one shared base + one thin Vite config per runtime**, composed via `mergeConfig` from `vite`.
+Each runtime's concerns diverge — plugin set, externals, output format, and `resolve.conditions` differ between a Node runtime and a browser one — which is why the convention is one config per runtime rather than one config with `mode` branching.
 
-## What each runtime needs from Vite
+## What the server runtime needs from Vite
 
-| Concern              | Server (Fastify, vite-node)                                                                                                                                                                                                                                                                           | Client (RR framework mode)                                                                                            |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| Vite plugin set      | Aliases, env loading, optional TS error checker — nothing visual.                                                                                                                                                                                                                                     | `reactRouter()`, Babel (React Compiler), optional in-Vite TS / ESLint reporter (capability — package TBD), dev tools. |
-| `resolve.conditions` | `node`.                                                                                                                                                                                                                                                                                               | `browser` for client environment; `node` for SSR environment (managed by RR's plugin).                                |
-| `ssr.target`         | Defaults to `"node"` — Vite's default. Restate for clarity or rely on the default.                                                                                                                                                                                                                    | `"node"` for the SSR environment (RR sets this); client bundle is for the browser.                                    |
-| Externals            | Vite's SSR build externalises imported packages by default, except linked dependencies (kept bundled for HMR). Override via `ssr.noExternal` (force-bundle) or `ssr.external` / `rollupOptions.external` (force-extend). See the [Vite SSR externals docs](https://vite.dev/guide/ssr#ssr-externals). | RR's plugin decides what to bundle vs externalise per environment.                                                    |
-| `build.outDir`       | Single Node entry — one output directory under the project's build root.                                                                                                                                                                                                                              | `client/` (browser assets) and `server/` (SSR entry) under the configured `buildDirectory` — RR's plugin owns layout. |
-| Multi-environment    | One environment (the server). No need for the Environments API.                                                                                                                                                                                                                                       | Two environments (`client`, `ssr`) managed internally by RR's plugin.                                                 |
+| Concern              | Server (Fastify, `vite-node`)                                                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vite plugin set      | Alias resolution via the shared base; nothing visual.                                                                                               |
+| `resolve.conditions` | `node`.                                                                                                                                             |
+| Alias resolution     | Inherited from the shared base, which opts in to Vite's built-in tsconfig-paths resolution so the TypeScript `paths` block is the single alias map. |
 
-The asymmetry is the whole reason for two configs: the client config is mostly _handing off to_ RR's plugin, while the server config is a small, plain Node SSR build.
+A Node runtime layers `resolve.conditions: ["node"]` in its own config; the shared base stays free of `resolve.conditions` so a browser runtime added later does not inherit `node` (and vice versa) through `mergeConfig`'s array concatenation.
 
 ## File layout
 
-Three files, related by composition:
+Two files today, related by composition:
 
-- A **shared base** — common aliases, define, envPrefix, env-flag plugins.
-- A **client config** — RR framework mode: `reactRouter()` plugin, React tooling.
-- A **server config** — Fastify: Node-side resolve, SSR settings, server `outDir`.
+- A **shared base** — common resolve options (including the tsconfig-paths opt-in), and any define / envPrefix defaults a runtime would inherit.
+- A **server config** — Node-side resolve layered on the base.
 
-The **client config lives at the repo root as `vite.config.ts`** by convention — that is where Vite's default config discovery looks. The `react-router` CLI (`react-router dev`, `react-router build`) does accept `--config` / `-c <path>` and forwards it to Vite as `configFile`, so a non-root location is technically reachable; the project prefers the root anyway to match Vite's discovery default and save one CLI flag per command. The **shared base and the server config live together in a single tooling directory** (location is a project choice) — neither is loaded by a CLI that needs the root: `vite-node` takes an explicit `--config` flag for the server config, and the shared base is imported as a module, never loaded directly.
+Both live together in a single tooling directory (location is a project choice). Neither is loaded by a CLI that needs the repo root: `vite-node` takes an explicit `--config` flag for the server config, and the shared base is imported as a module, never loaded directly. Keep both out of source globs so application code never imports from them.
 
-The asymmetry is a project preference, not a CLI constraint. It is the smallest workable shape; the alternative (a root stub that re-exports the real client config from the tooling directory) keeps all three files together at the cost of an extra indirection file that exists only to satisfy Vite's discovery.
-
-Keep all three out of source globs so application code never imports from them.
-
-The `react-router.config.ts` file (the RR framework config — top-level keys like `appDirectory` and `ssr: true`, plus opt-in flags under the `future.*` namespace, e.g. `future.v8_viteEnvironmentApi: true` to enable RR's internal Environments API integration, which requires Vite 6+) also stays at the repo root where the `react-router` CLI expects it. It is **not** a Vite config; it configures RR itself. The client Vite config picks RR up via the `reactRouter()` plugin, which reads `react-router.config.ts` internally.
+Adding a runtime is mechanical: drop another `<name>.config.ts` next to the shared base, merge from it via `mergeConfig`, and point the runner at it. A runtime whose CLI relies on Vite's default config discovery (which looks for `vite.config.ts` at the repo root) would place its config at the root; a runner that accepts an explicit `--config` flag can keep its config in the tooling directory.
 
 ## Shape of each file
 
-The blocks below are **outlines**, not runnable snippets — comments stand in for keys a real config would set. `mergeConfig` from `vite` deep-merges; arrays (`plugins`, `resolve.conditions`, `rollupOptions.external`) are concatenated, so items unique to a runtime live in that runtime's file, not in the base.
+The blocks below are **outlines**, not runnable snippets — comments stand in for keys a real config would set. `mergeConfig` from `vite` deep-merges; arrays (`plugins`, `resolve.conditions`) are concatenated, so items unique to a runtime live in that runtime's file, not in the base.
 
 ### Shared base
 
-The base owns everything both runtimes agree on. Keep it small — every key here is a key both runtimes pay for.
+The base owns everything every runtime agrees on. Keep it small — every key here is a key every runtime pays for.
 
 ```ts
 // Outline — not runnable
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  // resolve.alias for cross-cutting aliases,
-  // define for env-flag constants both bundles read,
-  // envPrefix, optionally tsconfig-paths resolution
-  // (built-in in Vite 8+; pre-8 needs a plugin).
+  // resolve options shared by every runtime, e.g. the built-in
+  // tsconfig-paths opt-in (built into Vite 8+; pre-8 needs a plugin);
+  // any define / envPrefix defaults a runtime would inherit.
 });
-```
-
-### Client config
-
-Drives `react-router dev` and `react-router build`. Imports the base, layers RR's plugin and the React-tooling plugins on top, sets the HMR port if needed. Nothing here knows about Fastify.
-
-```ts
-// Outline — not runnable
-import { defineConfig, mergeConfig } from "vite";
-
-import sharedConfig from "./shared.config";
-
-export default mergeConfig(
-  sharedConfig,
-  defineConfig({
-    plugins: [
-      // reactRouter() from @react-router/dev/vite
-      // optional: pluginBabel, an in-Vite TS / ESLint reporter
-      // (capability — package TBD; or run `tsc -b --watch` as a sidecar),
-      // devtools plugins (gated on env). Concrete package choices belong in
-      // the ADR or the config file, not in this pattern doc.
-    ],
-    // server.hmr.clientPort if running behind a reverse proxy
-  }),
-);
 ```
 
 ### Server config
 
-Drives `vite-node` in dev and `vite build --ssr` in prod. Imports the base, adds Node-specific resolve and SSR settings, externalises runtime dependencies.
+Drives `vite-node` in development. Imports the base and adds Node-specific resolve on top.
 
 ```ts
 // Outline — not runnable
@@ -99,94 +65,37 @@ export default mergeConfig(
     resolve: {
       conditions: ["node"],
     },
-    ssr: {
-      // target defaults to "node" — restate only for clarity
-      noExternal: [
-        /* packages shipping ESM-only or untranspiled TS Node can't load */
-      ],
-    },
-    build: {
-      ssr: true, // entry passed via CLI: --ssr <server-entry>
-      outDir: "/* server out dir */",
-      rollupOptions: {
-        // Vite's SSR build externalises imported packages by default (except
-        // linked deps, which it keeps bundled for HMR). Use `ssr.noExternal` to
-        // force-bundle a package and `ssr.external` / `rollupOptions.external`
-        // to add to the externalised set. See
-        // https://vite.dev/guide/ssr#ssr-externals.
-      },
-    },
   }),
 );
 ```
 
-## Dev runtime — two Vite instances, one process
+## Dev runtime — the server through `vite-node`
 
-In development, two Vite instances are alive at the same time:
-
-1. **`vite-node`** runs the Fastify entry against the server config (passed via its `--config` flag). The server file imports Fastify, registers plugins, starts listening. `vite-node` transforms each TypeScript module on demand using that Vite config — alias resolution, env defines, and TS handling all come from there.
-2. **Programmatic Vite dev server** is created inside the Fastify init flow with the client config (passed via the `configFile` option to `createServer()`). The shape is:
-
-   ```ts
-   createServer({
-     server: { middlewareMode: true },
-     appType: "custom",
-     configFile: "/* client config path */",
-   });
-   ```
-
-   Without `appType: "custom"`, Vite still serves an `index.html` fallback for unmatched routes and intercepts requests Fastify expects to handle — see the [Vite SSR dev server setup docs](https://vite.dev/guide/ssr#setting-up-the-dev-server) for the canonical wiring. The dev server exposes a connect-style middleware stack which Fastify mounts via a connect/express adapter plugin (`@fastify/middie` is the connect-shaped one; `@fastify/express` is the Express-shaped one — both work because connect and Express middleware share the `(req, res, next)` shape; the specific package choice belongs to the ADR or PR that wires the client config in). RR exposes its SSR build as a virtual module the dev server can `ssrLoadModule()`; the RR-Fastify request handler then renders against the loaded module.
-
-Two configs, two dev servers, one Node process. The shared base ensures they agree on aliases, env, and any constants they both read.
-
-## Prod runtime — bundle separately, run with Node
-
-Three commands, two Vite builds and one Node start (example):
-
-```
-vite build --config /* client config path */
-vite build --config /* server config path */ --ssr /* server entry */
-node /* server build output */
-```
-
-RR's plugin produces a `client/` directory and a `server/` directory under whatever `buildDirectory` is configured in `react-router.config.ts`; the server entry filename defaults to `index.js`. The defaults are `build/client` and `build/server/index.js` — override via `buildDirectory` if a different root is needed.
-
-The server bundle, started with plain Node, serves the RR client output via `@fastify/static`, lazy-imports the RR server entry for SSR, and registers the RR-Fastify request handler against it. Vite is not loaded at runtime in production — both bundles are already JS.
-
-**Output-path collision warning.** The default `outDir` for a Vite SSR build is `dist/`, and the RR-default `build/server/` already exists once RR has built. Pick an `outDir` for the server config that does not nest inside RR's `buildDirectory`, and use a server entry filename that does not collide with RR's `index.js` if the two outputs share a parent.
+In development, `vite-node` runs the Fastify entry against the server config (passed via its `--config` flag). The server file imports Fastify, registers plugins, and starts listening. `vite-node` transforms each TypeScript module on demand using that Vite config — alias resolution and TS handling come from there. Pairing the runner with `--watch` reloads on source change.
 
 ## Why this layout
 
-- **Each runtime's config reads on its own.** Opening the server config shows only server concerns; no `mode === "client"` branches to filter mentally.
-- **RR's framework plugin can own its half completely.** The client config is mostly a `reactRouter()` plugin entry; the server config never sees React tooling.
-- **Tooling jumps to the right file.** `vite-node` and `vite build --ssr` each take a `--config` flag; the RR CLI also accepts `--config` but defaults to picking up `vite.config.ts` at the root via Vite's discovery — one file per command, found via the path each runner expects.
-- **Externals stay honest.** Any server-side `noExternal` / `external` overrides live in the server config alone; the client config can never accidentally inherit them.
-- **Adding a third runtime (CLI tool, worker) is mechanical.** Drop another `<name>.config.ts`, merge from the same base, point the runner at it.
+- **Each runtime's config reads on its own.** Opening the server config shows only server concerns; there are no `mode === "..."` branches to filter mentally.
+- **Tooling jumps to the right file.** `vite-node` takes a `--config` flag; one file per command, found via the path the runner expects.
+- **Externals stay honest.** Any server-side `noExternal` / `external` overrides live in the server config alone; a second runtime config cannot accidentally inherit them.
+- **Adding a runtime is mechanical.** Drop another `<name>.config.ts`, merge from the same base, point the runner at it.
 
 ## Alternatives
 
 ### Vite Environments API (single config, named environments)
 
-First-class in Vite 6+, stable in Vite 8. One config defines `environments: { client: {}, ssr: {}, server: {} }`, and a single `vite build` builds them all.
-
-Rejected on **lifecycle-isolation** grounds. The RR dev loop and the Fastify dev loop watch different file sets, restart on different signals, and have independent failure modes — a server crash should not bring down client HMR, and a client-config edit should not bounce the API process. Folding both into one `environments` map ties their startup, watch, and restart lifecycles together. Keeping the server in its own file (and its own `vite-node` process) preserves that isolation and leaves RR's internal Environments API usage free to evolve.
+First-class in Vite 6+, stable in Vite 8. One config defines `environments: { … }`, and a single `vite build` builds them all. Rejected on **lifecycle-isolation** grounds: separate runtimes watch different file sets, restart on different signals, and have independent failure modes — folding them into one `environments` map ties their startup, watch, and restart lifecycles together. Keeping each runtime in its own file (and its own runner process) preserves that isolation.
 
 ### Single `defineConfig(({ mode }) => …)` with mode branching
 
-One file, big ternary on `mode`. Plugin arrays get spliced, externals get conditionally added, the file becomes a config DSL rather than a config. Rejected for the same reason as elsewhere — it scales by adding cleverness instead of files.
+One file, big ternary on `mode`. Plugin arrays get spliced, externals get conditionally added, the file becomes a config DSL rather than a config. Rejected because it scales by adding cleverness instead of files.
 
 ### No Vite on the server — a Vite-free alternative
 
-Run the server with `node` directly in dev (Node ≥22 native TS stripping) and compile it with `tsc` in prod. Works, costs nothing, but:
+Run the server with `node` directly (Node ≥22 native TS stripping). Works, but server code can't use Vite-resolved aliases without a parallel `tsconfig.paths` mirror, and dev-time TS loading is whatever Node's stripper supports — no Vite plugins, no env defines applied to server modules. Rejected because `vite-node` collapses the dev-time toolchain to a single tool and aligns dev-time TS handling with the rest of the Vite pipeline.
 
-- Server code can't use Vite-resolved aliases without a parallel `tsconfig.paths` mirror.
-- Dev-time TS loading is whatever Node's stripper supports — no Vite plugins, no env defines applied to server modules.
-- Prod uses two different toolchains (Vite for client, `tsc` for server) instead of one.
-
-Rejected because `vite-node` collapses the toolchain to a single tool and aligns dev-time and build-time TS handling across both runtimes.
-
-**Forward note.** The upstream direction is Vite's own Module Runner (the Environments API). Vitest 4 dropped its `vite-node` dependency in favour of Vite's Module Runner; `vite-node` remains usable as a standalone package today (this project uses it for the dev server). The pattern here (one Vite config per runtime) survives that shift; only the dev-time runner swaps.
+**Forward note.** The upstream direction is Vite's own Module Runner (the Environments API). Vitest 4 dropped its `vite-node` dependency in favour of Vite's Module Runner; `vite-node` remains usable as a standalone package today, which is what this project's dev runner uses. The pattern here (one Vite config per runtime) survives that shift; only the dev-time runner swaps.
 
 ## Related
 
-- The decision to take this layout (over Environments API, mode branching, or the plain-Node server) is recorded in [ADR-0001](../adr/0001-vite-multi-target-config.md). This file documents the **pattern**; the ADR records the **decision** and the alternatives weighed.
+- The decision to take this layout (over the Environments API, mode branching, or the plain-Node server) is recorded in [ADR-0001](../adr/0001-vite-multi-target-config.md). This file documents the **pattern**; the ADR records the **decision** and the alternatives weighed.

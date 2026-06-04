@@ -1,4 +1,5 @@
 import camelCase from "lodash-es/camelCase.js";
+import type { CamelCase } from "type-fest";
 
 import { TypesHelper } from "./types.helper";
 
@@ -8,8 +9,10 @@ const isString = (value: unknown): value is string => {
   return typeof value === "string";
 };
 
-const toCamelCase = (str: string): string => {
-  return camelCase(str);
+const toCamelCase = <TString extends string>(
+  str: TString,
+): CamelCase<TString> => {
+  return castAsType<CamelCase<TString>>(camelCase(str));
 };
 
 const toUpperCase = <TString extends string>(
