@@ -2,7 +2,7 @@ import type { LoggerOptions } from "pino";
 
 import type { AppEnv } from "@shared/types/app-env.type";
 
-import { PRETTY_TRANSPORT } from "../constants/pino-logger.constant";
+import { PRETTY_TRANSPORT } from "../constants/logger.constant";
 
 const buildLoggerOptions = (appEnv: AppEnv): LoggerOptions => {
   const { isDevelopment, logLevel, serviceName } = appEnv;
@@ -14,8 +14,8 @@ const buildLoggerOptions = (appEnv: AppEnv): LoggerOptions => {
   };
 };
 
-const PinoLoggerHelper = Object.freeze({
+const LoggerHelper = Object.freeze({
   buildLoggerOptions,
 } as const);
 
-export { PinoLoggerHelper };
+export { LoggerHelper };

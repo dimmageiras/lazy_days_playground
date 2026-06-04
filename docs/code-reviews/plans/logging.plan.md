@@ -17,7 +17,7 @@ The logger is a **module** (see the **Module** term in [`CONTEXT.md`](../../../C
 
 These globs are **operational hints** — see the plans-index [`README.md`](./README.md#conventions) and [`CONTEXT.md`](../../../CONTEXT.md#operational-hint) for the canonical statement.
 
-- `app/server/modules/pino-logger/**` (the logger module — its public factory, the internal options builder, the transport constant, its types, and their specs)
+- `app/server/modules/logger/**` (the logger module — its public factory, the internal options builder, the transport constant, its types, and their specs)
 - `app/server/app.ts` (where the built logger is wired as the framework's logger instance, the request-logging toggle is paired with it, and failures are logged with structured context)
 - `app/server/start.ts` (composition-layer logging at startup/shutdown — level choice, structured shape, and flush-before-exit; the surrounding control flow is the server plan's concern)
 - `app/server/types/instance.type.ts` (the logger generic slot the instance alias names — specifically the library-extras intersection the logging code relies on; the alias as a whole is the server plan's concern)

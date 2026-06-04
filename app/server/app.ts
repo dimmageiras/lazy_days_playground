@@ -5,7 +5,7 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { BASE_URLS } from "./constants/base-urls.constant";
 import { AppEnvHelper } from "./helpers/app-env.helper";
-import { PinoLoggerModule } from "./modules/pino-logger";
+import { LoggerModule } from "./modules/logger";
 import { healthRoutes } from "./routes/app/health/health.route";
 import type { APIAppInstance } from "./types/instance.type";
 
@@ -13,13 +13,12 @@ const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
 
 const { buildAppEnv } = AppEnvHelper;
-const { buildLogger } = PinoLoggerModule;
+const { buildLogger } = LoggerModule;
 
 const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
   const appEnv = buildAppEnv(env);
 
   const instance: APIAppInstance = fastify({
-    disableRequestLogging: false,
     loggerInstance: buildLogger(appEnv),
     requestTimeout: SECONDS_TEN,
   });

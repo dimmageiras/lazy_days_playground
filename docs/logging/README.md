@@ -19,14 +19,15 @@ environment, and is settled there.
 
 ## Levels
 
-| Level   | When                                                             |
-| ------- | ---------------------------------------------------------------- |
-| `trace` | Very detailed, per-step debugging.                               |
-| `debug` | Debugging information useful while diagnosing.                   |
-| `info`  | Startup, configuration, and graceful-shutdown state transitions. |
-| `warn`  | A recoverable anomaly — degraded but continuing.                 |
-| `error` | A failure that aborted the operation in hand.                    |
-| `fatal` | A failure that terminates the process.                           |
+| Level    | When                                                                       |
+| -------- | -------------------------------------------------------------------------- |
+| `trace`  | Very detailed, per-step debugging.                                         |
+| `debug`  | Debugging information useful while diagnosing.                             |
+| `info`   | Startup, configuration, and graceful-shutdown state transitions.           |
+| `warn`   | A recoverable anomaly — degraded but continuing.                           |
+| `error`  | A failure that aborted the operation in hand.                              |
+| `fatal`  | A failure that terminates the process.                                     |
+| `silent` | Disables all output — configuration-only; never used as a call-site level. |
 
 Two rules carry most of the weight:
 
@@ -70,6 +71,7 @@ state transitions in a static prefixed string. Reserve the structured object for
 ```ts
 logger.info("✅ Service initialized");
 logger.info(`🚀 Server started at ${address}`);
+logger.info(`🤖 Log level set to ${level}`);
 logger.info(`Received ${signal}, shutting down…`);
 ```
 
@@ -117,8 +119,8 @@ which fields are sensitive.
 Pino flushes its transport on a worker thread. A direct `process.exit` can terminate
 the process before the last line is written — so a `fatal` line emitted immediately
 before exit can vanish. On any path that logs and then exits, **flush the logger and
-exit from the flush callback** rather than exiting synchronously. The logger value the
-server builds exposes Pino's flush method for this purpose.
+exit from the flush callback** rather than exiting synchronously. The logger surface
+exposes a flush method for exactly this — call it and exit from its callback.
 
 ## Related
 

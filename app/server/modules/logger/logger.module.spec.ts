@@ -5,15 +5,15 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { TypesHelper } from "@shared/helpers/types.helper";
 import type { AppEnv } from "@shared/types/app-env.type";
 
-import { PinoLoggerModule } from "./pino-logger.module";
+import { LoggerModule } from "./logger.module";
 
 const { trackLeaksInSpec } = VitestSetup();
 
-trackLeaksInSpec("pino-logger.module");
+trackLeaksInSpec("logger.module");
 
 const { castAsType } = TypesHelper;
 
-const { buildLogger } = PinoLoggerModule;
+const { buildLogger } = LoggerModule;
 
 const TEST_DATA = {
   PROD_ENV: castAsType<AppEnv>({
@@ -24,7 +24,7 @@ const TEST_DATA = {
   }),
 } as const;
 
-describe("PinoLoggerModule", () => {
+describe("LoggerModule", () => {
   describe("buildLogger", (it) => {
     it("should return a logger reporting the configured level", ({
       expect,

@@ -5,16 +5,16 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { TypesHelper } from "@shared/helpers/types.helper";
 import type { AppEnv } from "@shared/types/app-env.type";
 
-import { PRETTY_TRANSPORT } from "../constants/pino-logger.constant";
-import { PinoLoggerHelper } from "./pino-logger.helper";
+import { PRETTY_TRANSPORT } from "../constants/logger.constant";
+import { LoggerHelper } from "./logger.helper";
 
 const { trackLeaksInSpec } = VitestSetup();
 
-trackLeaksInSpec("pino-logger.helper");
+trackLeaksInSpec("logger.helper");
 
 const { castAsType } = TypesHelper;
 
-const { buildLoggerOptions } = PinoLoggerHelper;
+const { buildLoggerOptions } = LoggerHelper;
 
 const TEST_DATA = {
   DEV_ENV: castAsType<AppEnv>({
@@ -31,7 +31,7 @@ const TEST_DATA = {
   }),
 } as const;
 
-describe("PinoLoggerHelper", () => {
+describe("LoggerHelper", () => {
   describe("buildLoggerOptions", (it) => {
     it("should set the level from the env", ({ expect }) => {
       expect(buildLoggerOptions(TEST_DATA.DEV_ENV).level).toBe("debug");
