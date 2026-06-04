@@ -12,11 +12,14 @@ const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
 const isDevelopmentSchema = zStringbool({
   truthy: ["true"],
   falsy: ["false"],
+  error: "Must be 'true' or 'false'",
 })
   .default(false)
   .brand<"IsDevelopment">();
 
-const logLevelSchema = zEnum(LOG_LEVEL.toArray())
+const logLevelSchema = zEnum(LOG_LEVEL.toArray(), {
+  error: "Must be a known log level",
+})
   .default("info")
   .brand<"LogLevel">();
 
