@@ -40,6 +40,8 @@ describe("EnvVarHelper", () => {
       expect,
     }) => {
       expect(validateEnv(TEST_DATA.VALID_ENV)).toEqual({
+        VITE_APP_IS_DEVELOPMENT: false,
+        VITE_APP_LOG_LEVEL: "info",
         VITE_APP_PORT: 5173,
         VITE_APP_SERVICE_NAME: "lazy-days",
       });

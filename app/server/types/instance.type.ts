@@ -4,12 +4,13 @@ import type {
   FastifyTypeProviderDefault,
 } from "fastify";
 import type { IncomingMessage, Server, ServerResponse } from "node:http";
+import type { LoggerExtras } from "pino";
 
 type APIAppInstance = FastifyInstance<
   Server<typeof IncomingMessage, typeof ServerResponse>,
   IncomingMessage,
   ServerResponse<IncomingMessage>,
-  FastifyBaseLogger,
+  FastifyBaseLogger & LoggerExtras,
   FastifyTypeProviderDefault
 >;
 

@@ -28,7 +28,7 @@ type VitestSetupReturn = UnionToIntersection<
 
 const vitestSetupValue: VitestSetupReturn = Object.freeze({
   ...StateProbeHelper,
-});
+} as const);
 
 const VitestSetup = (): VitestSetupReturn => vitestSetupValue;
 

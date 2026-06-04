@@ -5,6 +5,8 @@ import type { ZodInfer } from "@shared/wrappers/zod.wrapper";
 
 type ViteAppEnv = ZodInfer<typeof appEnvSchema>;
 
+type IsDevelopment = ViteAppEnv["VITE_APP_IS_DEVELOPMENT"];
+type LogLevel = ViteAppEnv["VITE_APP_LOG_LEVEL"];
 type Port = ViteAppEnv["VITE_APP_PORT"];
 type ServiceName = ViteAppEnv["VITE_APP_SERVICE_NAME"];
 
@@ -14,4 +16,4 @@ type AppEnv = {
     : never]: ViteAppEnv[Key];
 };
 
-export type { AppEnv, Port, ServiceName, ViteAppEnv };
+export type { AppEnv, IsDevelopment, LogLevel, Port, ServiceName, ViteAppEnv };

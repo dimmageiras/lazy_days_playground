@@ -17,6 +17,8 @@ const { buildAppEnv } = AppEnvHelper;
 
 const TEST_DATA = {
   VALID_ENV: castAsType<ViteAppEnv>({
+    VITE_APP_IS_DEVELOPMENT: false,
+    VITE_APP_LOG_LEVEL: "info",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
   }),
@@ -28,6 +30,8 @@ describe("AppEnvHelper", () => {
       expect,
     }) => {
       expect(buildAppEnv(TEST_DATA.VALID_ENV)).toEqual({
+        isDevelopment: false,
+        logLevel: "info",
         port: 5173,
         serviceName: "lazy-days",
       });
