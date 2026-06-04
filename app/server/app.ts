@@ -34,13 +34,27 @@ const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
     await instance.ready();
 
     return instance;
-  } catch (error) {
-    instance.log.error(error);
+  } catch (rawError) {
+    const error =
+      rawError instanceof Error ? rawError : new Error(`${rawError}`);
+
+    instance.log.error(
+      { error: error.message, stack: error.stack },
+      "💥 Failed to build the app",
+    );
 
     try {
       await instance.close();
-    } catch (closeError) {
-      instance.log.error(closeError);
+    } catch (rawCloseError) {
+      const closeError =
+        rawCloseError instanceof Error
+          ? rawCloseError
+          : new Error(`${rawCloseError}`);
+
+      instance.log.error(
+        { error: closeError.message, stack: closeError.stack },
+        "💥 Failed to close the app after a build failure",
+      );
     }
 
     throw error;
