@@ -17,15 +17,16 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 
 | Area                  | Plan                                             | Triggers (high-level)                                                                               |
 | --------------------- | ------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                                               |
-| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                                             |
 | Build configs         | [build-configs.plan.md](./build-configs.plan.md) | Vite shared base and per-runtime configs, the cross-surface alias-coherence invariant               |
+| Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                                               |
+| Logging               | [logging.plan.md](./logging.plan.md)             | Logger module, logger-instance wiring, logging conventions, flush-before-exit                       |
+| Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                                             |
 | Server                | [server.plan.md](./server.plan.md)               | Server bootstrap, typed instance alias, route plugins, server-only constants                        |
 | Shared helpers        | [helpers.plan.md](./helpers.plan.md)             | Pure utility functions and their matching specs; depth complement to shared                         |
 | Shared utilities      | [shared.plan.md](./shared.plan.md)               | Cross-cutting constants, helpers, and types consumed by multiple modules                            |
-| Value validation      | [validation.plan.md](./validation.plan.md)       | Schema library wrapper, schemas, issue-code vocabulary, failure formatting, the startup env gate    |
-| Testing               | [testing.plan.md](./testing.plan.md)             | Specs and spec-author conventions; the consumer's seat                                              |
 | Test infrastructure   | [test-infra.plan.md](./test-infra.plan.md)       | Setup factory, fake-timer registry, helper layer, runner-side bindings; depth complement to testing |
+| Testing               | [testing.plan.md](./testing.plan.md)             | Specs and spec-author conventions; the consumer's seat                                              |
+| Value validation      | [validation.plan.md](./validation.plan.md)       | Schema library wrapper, schemas, issue-code vocabulary, failure formatting, the startup env gate    |
 
 ## Conventions
 
