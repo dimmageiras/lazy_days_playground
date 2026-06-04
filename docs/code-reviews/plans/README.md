@@ -20,6 +20,7 @@ Plans are not exclusive — a PR that spans multiple areas should be reviewed un
 | Build configs         | [build-configs.plan.md](./build-configs.plan.md) | Vite shared base and per-runtime configs, the cross-surface alias-coherence invariant               |
 | Documentation         | [documentation.plan.md](./documentation.plan.md) | Markdown content under `docs/**`, ADRs, CONTEXT files                                               |
 | Logging               | [logging.plan.md](./logging.plan.md)             | Logger module, logger-instance wiring, logging conventions, flush-before-exit                       |
+| Modules               | [modules.plan.md](./modules.plan.md)             | Module-tier structure: encapsulation boundary, public surface, internal layout, cross-module deps   |
 | Project configuration | [configuration.plan.md](./configuration.plan.md) | Build, runtime, and package-manager configuration files                                             |
 | Server                | [server.plan.md](./server.plan.md)               | Server bootstrap, typed instance alias, route plugins, server-only constants                        |
 | Shared helpers        | [helpers.plan.md](./helpers.plan.md)             | Pure utility functions and their matching specs; depth complement to shared                         |
