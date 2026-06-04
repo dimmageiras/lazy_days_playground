@@ -1,4 +1,4 @@
-import { LOG_LEVEL } from "@shared/constants/pino-logger.constant";
+import { LOG_LEVEL } from "@shared/constants/log-level.constant";
 import {
   zEnum,
   zNumber,
