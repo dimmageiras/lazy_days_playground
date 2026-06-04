@@ -9,7 +9,7 @@ type Port = ViteAppEnv["VITE_APP_PORT"];
 type ServiceName = ViteAppEnv["VITE_APP_SERVICE_NAME"];
 
 type AppEnv = {
-  [Key in keyof ViteAppEnv as Key extends `VITE_APP_${infer Suffix}`
+  readonly [Key in keyof ViteAppEnv as Key extends `VITE_APP_${infer Suffix}`
     ? CamelCase<Suffix>
     : never]: ViteAppEnv[Key];
 };

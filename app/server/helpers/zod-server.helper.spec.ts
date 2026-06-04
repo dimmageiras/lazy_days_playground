@@ -1,5 +1,4 @@
 import { describe } from "vitest";
-import type { $ZodIssue } from "zod/v4/core";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
@@ -7,6 +6,7 @@ import type { CustomIssueContext } from "@server/types/zod.type";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { TypesHelper } from "@shared/helpers/types.helper";
+import type { ZodIssue } from "@shared/wrappers/zod.wrapper";
 
 import { ZodServerHelper } from "./zod-server.helper";
 
@@ -73,12 +73,12 @@ const TEST_DATA = {
       expected:
         "- VITE_APP_PORT: too small\n- VITE_APP_SERVICE_NAME: empty",
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "too_small",
           message: "too small",
           path: ["VITE_APP_PORT"],
         }),
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "custom",
           message: "empty",
           params: { code: "invalid_value" },
@@ -103,7 +103,7 @@ const TEST_DATA = {
         },
       ],
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "invalid_type",
           message: "Invalid input",
           path: ["VITE_APP_PORT"],
@@ -120,7 +120,7 @@ const TEST_DATA = {
         },
       ],
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "custom",
           message: "bad value",
           params: { code: "invalid_value" },
@@ -134,7 +134,7 @@ const TEST_DATA = {
         { message: "bad value", path: "field", validationCode: "custom" },
       ],
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "custom",
           message: "bad value",
           params: { code: "not_a_real_code" },
@@ -148,7 +148,7 @@ const TEST_DATA = {
         { message: "bad value", path: "field", validationCode: "custom" },
       ],
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "custom",
           message: "bad value",
           path: ["field"],
@@ -165,7 +165,7 @@ const TEST_DATA = {
         },
       ],
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "invalid_type",
           message: "Invalid input",
           path: ["user", 0, "name"],
@@ -187,12 +187,12 @@ const TEST_DATA = {
         },
       ],
       issues: [
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "too_small",
           message: "too small",
           path: ["VITE_APP_PORT"],
         }),
-        castAsType<$ZodIssue>({
+        castAsType<ZodIssue>({
           code: "custom",
           message: "empty",
           params: { code: "invalid_value" },
