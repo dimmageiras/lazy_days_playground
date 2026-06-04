@@ -5,22 +5,26 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { BASE_URLS } from "./constants/base-urls.constant";
 import { AppEnvHelper } from "./helpers/app-env.helper";
+import { LoggerModule } from "./modules/logger";
 import { healthRoutes } from "./routes/app/health/health.route";
 import type { APIAppInstance } from "./types/instance.type";
 
 const { API_HEALTH } = BASE_URLS;
-const { buildAppEnv } = AppEnvHelper;
 const { SECONDS_TEN } = TIMING_IN_MS;
 
+const { buildAppEnv } = AppEnvHelper;
+const { buildLogger } = LoggerModule;
+
 const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
+  const appEnv = buildAppEnv(env);
+
   const instance: APIAppInstance = fastify({
-    disableRequestLogging: true,
-    logger: true,
+    loggerInstance: buildLogger(appEnv),
     requestTimeout: SECONDS_TEN,
   });
 
   try {
-    instance.decorate("appEnv", buildAppEnv(env));
+    instance.decorate("appEnv", appEnv);
 
     await instance.register(healthRoutes, {
       prefix: API_HEALTH,
@@ -29,13 +33,27 @@ const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
     await instance.ready();
 
     return instance;
-  } catch (error) {
-    instance.log.error(error);
+  } catch (rawError) {
+    const error =
+      rawError instanceof Error ? rawError : new Error(`${rawError}`);
+
+    instance.log.error(
+      { error: error.message, stack: error.stack },
+      "💥 Failed to build the app",
+    );
 
     try {
       await instance.close();
-    } catch (closeError) {
-      instance.log.error(closeError);
+    } catch (rawCloseError) {
+      const closeError =
+        rawCloseError instanceof Error
+          ? rawCloseError
+          : new Error(`${rawCloseError}`);
+
+      instance.log.error(
+        { error: closeError.message, stack: closeError.stack },
+        "💥 Failed to close the app after a build failure",
+      );
     }
 
     throw error;

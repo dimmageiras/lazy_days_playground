@@ -22,14 +22,33 @@ try {
   instance = await buildApp(validatedEnv);
 
   await instance.listen({ port: instance.appEnv.port });
-} catch (error) {
-  instance?.log.error(error);
+} catch (rawError) {
+  const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
 
-  try {
-    await instance?.close();
-  } catch (closeError) {
-    instance?.log.error(closeError);
+  if (!instance) {
+    console.error(error);
+
+    process.exit(1);
   }
 
-  process.exit(1);
+  instance.log.fatal(
+    { error: error.message, stack: error.stack },
+    "💥 Failed to start the server",
+  );
+
+  try {
+    await instance.close();
+  } catch (rawCloseError) {
+    const closeError =
+      rawCloseError instanceof Error
+        ? rawCloseError
+        : new Error(`${rawCloseError}`);
+
+    instance.log.fatal(
+      { error: closeError.message, stack: closeError.stack },
+      "💥 Failed to close the server after a startup failure",
+    );
+  }
+
+  instance.log.flush(() => process.exit(1));
 }

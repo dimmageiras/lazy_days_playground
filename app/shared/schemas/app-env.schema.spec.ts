@@ -1,10 +1,17 @@
+import type { LoggerOptions } from "pino";
 import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { TypesHelper } from "@shared/helpers/types.helper";
-import type { Port, ServiceName, ViteAppEnv } from "@shared/types/app-env.type";
+import type {
+  IsDevelopment,
+  LogLevel,
+  Port,
+  ServiceName,
+  ViteAppEnv,
+} from "@shared/types/app-env.type";
 
 import { appEnvSchema } from "./app-env.schema";
 
@@ -49,7 +56,41 @@ const TEST_DATA = {
       name: "should accept a typical service name",
     },
   ],
+  ACCEPTED_IS_DEVELOPMENT_CASES: [
+    {
+      expected: true,
+      input: "true",
+      name: "should parse 'true' to boolean true",
+    },
+    {
+      expected: false,
+      input: "false",
+      name: "should parse 'false' to boolean false",
+    },
+  ],
+  ACCEPTED_LOG_LEVEL_CASES: [
+    {
+      expected: "debug",
+      input: "debug",
+      name: "should accept the debug level",
+    },
+    {
+      expected: "silent",
+      input: "silent",
+      name: "should accept the silent level",
+    },
+  ],
+  REJECTED_IS_DEVELOPMENT_CASES: [
+    { input: "1", name: "should reject the loose truthy '1'" },
+    { input: "yes", name: "should reject the loose truthy 'yes'" },
+  ],
+  REJECTED_LOG_LEVEL_CASES: [
+    { input: "verbose", name: "should reject an unknown level" },
+    { input: "INFO", name: "should reject a wrong-case level" },
+  ],
   EXPECTED_VALID_PARSE: {
+    VITE_APP_IS_DEVELOPMENT: false,
+    VITE_APP_LOG_LEVEL: "info",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
   },
@@ -345,6 +386,118 @@ describe("appEnvSchema", () => {
         expectTypeOf<ServiceName>().not.toEqualTypeOf<string>();
         expectTypeOf<ServiceName>().toExtend<string>();
         expectTypeOf<ServiceName>().not.toEqualTypeOf<Port>();
+      }
+    });
+  });
+
+  describe("VITE_APP_IS_DEVELOPMENT", (it) => {
+    TEST_DATA.ACCEPTED_IS_DEVELOPMENT_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_IS_DEVELOPMENT: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_IS_DEVELOPMENT).toBe(expected);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_IS_DEVELOPMENT_CASES.forEach(({ name, input }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          VITE_APP_IS_DEVELOPMENT: input,
+          VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        });
+
+        expect(result.success).toBe(false);
+      });
+    });
+
+    it("should default to false when omitted", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_IS_DEVELOPMENT).toBe(false);
+      }
+    });
+
+    it("should brand the parsed development flag", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_IS_DEVELOPMENT,
+        ).toEqualTypeOf<IsDevelopment>();
+        expectTypeOf<IsDevelopment>().not.toEqualTypeOf<boolean>();
+        expectTypeOf<IsDevelopment>().toExtend<boolean>();
+      }
+    });
+  });
+
+  describe("VITE_APP_LOG_LEVEL", (it) => {
+    TEST_DATA.ACCEPTED_LOG_LEVEL_CASES.forEach(({ name, input, expected }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          VITE_APP_LOG_LEVEL: input,
+          VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        });
+
+        expect(result.success).toBe(true);
+
+        if (result.success) {
+          expect(result.data.VITE_APP_LOG_LEVEL).toBe(expected);
+        }
+      });
+    });
+
+    TEST_DATA.REJECTED_LOG_LEVEL_CASES.forEach(({ name, input }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          VITE_APP_LOG_LEVEL: input,
+          VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        });
+
+        expect(result.success).toBe(false);
+      });
+    });
+
+    it("should default to info when omitted", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_LOG_LEVEL).toBe("info");
+      }
+    });
+
+    it("should brand the parsed log level", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(result.data.VITE_APP_LOG_LEVEL).toEqualTypeOf<LogLevel>();
+        expectTypeOf<LogLevel>().not.toEqualTypeOf<
+          NonNullable<LoggerOptions["level"]>
+        >();
+        expectTypeOf<LogLevel>().toExtend<
+          NonNullable<LoggerOptions["level"]>
+        >();
       }
     });
   });

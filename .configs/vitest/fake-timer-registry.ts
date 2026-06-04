@@ -2,9 +2,9 @@ import { vi } from "vitest";
 
 import { SetHelper } from "@shared/helpers/set.helper";
 
-import { FunctionWrapHelper } from "./function-wrap.helper";
+import { FunctionWrap } from "./function-wrap";
 
-const { wrapWithCallback } = FunctionWrapHelper;
+const { wrapWithCallback } = FunctionWrap;
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
 // Pattern B (clock-advance): any call that flushes pending timers against the

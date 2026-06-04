@@ -54,5 +54,5 @@ Place the schema and its parsing entry in the process-only tree, since the serve
 
 - [`../code-reviews/plans/validation.plan.md`](../code-reviews/plans/validation.plan.md) — the value-validation review plan whose startup-gate criteria enforce this decision.
 - [`../code-reviews/plans/server.plan.md`](../code-reviews/plans/server.plan.md) — the surrounding bootstrap discipline (construction order, listen/cleanup path) this gate runs ahead of.
-- [ADR-0003](./0003-single-port-integrated-stack.md) — the single-listener reserved port this gate validates the environment ahead of binding.
+- [ADR-0003](./0003-single-port-integrated-stack.md) — the single-listener integrated stack whose env-supplied port this gate validates ahead of binding.
 - [ADR-0008](./0008-typescript-strict-stance.md) — the strict-plus TypeScript stance under which the branded validated outputs are enforced.

@@ -1,6 +1,27 @@
-import { zNumber, zObject, zString } from "@shared/wrappers/zod.wrapper";
+import { LOG_LEVEL } from "@shared/constants/log-level.constant";
+import {
+  zEnum,
+  zNumber,
+  zObject,
+  zString,
+  zStringbool,
+} from "@shared/wrappers/zod.wrapper";
 
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
+
+const isDevelopmentSchema = zStringbool({
+  truthy: ["true"],
+  falsy: ["false"],
+  error: "Must be 'true' or 'false'",
+})
+  .default(false)
+  .brand<"IsDevelopment">();
+
+const logLevelSchema = zEnum(LOG_LEVEL.toArray(), {
+  error: "Must be a known log level",
+})
+  .default("info")
+  .brand<"LogLevel">();
 
 const portSchema = zString({
   error: (issue) =>
@@ -24,6 +45,8 @@ const serviceNameSchema = zString({
   .brand<"ServiceName">();
 
 const appEnvSchema = zObject({
+  VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
+  VITE_APP_LOG_LEVEL: logLevelSchema,
   VITE_APP_PORT: portSchema,
   VITE_APP_SERVICE_NAME: serviceNameSchema,
 });

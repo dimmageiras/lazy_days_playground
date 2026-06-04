@@ -11,8 +11,8 @@ const wrapWithCallback = <TArgs extends UnknownArray, TReturn>(
   };
 };
 
-const FunctionWrapHelper = Object.freeze({
+const FunctionWrap = Object.freeze({
   wrapWithCallback,
 } as const);
 
-export { FunctionWrapHelper };
+export { FunctionWrap };

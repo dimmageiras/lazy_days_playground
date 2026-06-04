@@ -21,6 +21,10 @@ A point-in-time record of what a code review surfaced when the matching plan was
 
 A decision whose consequences propagate beyond the file it lives in — changing it would force changes elsewhere or break an unstated contract. Load-bearing decisions deserve an architectural decision record under `docs/adr/`; non-load-bearing decisions stay in code.
 
+### Module
+
+A self-contained unit that encapsulates one runtime capability and owns the internals that capability needs — its constants, helpers, types, and any routes — exposing only a curated public surface to the composition layer that wires modules together. A module hides how it works; consumers depend on what it exposes, not on how it is built. Contrast with a helper, a flat namespace of stateless utility functions that encapsulates nothing: a module may contain helpers, but a helper is never a module. Cross-cutting data contracts and environment input are composition-layer concerns, not modules.
+
 ### Module-level singleton
 
 A state store whose lifetime is the application's — declared once at module scope, instantiated on first import, and consumed by importing the store directly without any provider plumbing. Appropriate for state that is genuinely global to the running process: UI flags, app-wide selections, session, theme, and anything else that does not vary by request, tenant, or route. Contrast with **Scoped store**.

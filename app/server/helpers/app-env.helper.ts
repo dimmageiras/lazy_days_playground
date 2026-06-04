@@ -2,9 +2,11 @@ import type { AppEnv, ViteAppEnv } from "@shared/types/app-env.type";
 
 const buildAppEnv = (env: ViteAppEnv): AppEnv => {
   const appEnv = Object.freeze({
+    isDevelopment: env.VITE_APP_IS_DEVELOPMENT,
+    logLevel: env.VITE_APP_LOG_LEVEL,
     port: env.VITE_APP_PORT,
     serviceName: env.VITE_APP_SERVICE_NAME,
-  });
+  } as const);
 
   return appEnv;
 };
