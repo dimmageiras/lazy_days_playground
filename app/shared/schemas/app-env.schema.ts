@@ -26,8 +26,7 @@ const bindAllIpv4Schema = zString({
   .brand<"BindAllIpv4">();
 
 const fatalFlushTimeoutMsSchema = zString({
-  error: (issue) =>
-    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+  error: MUST_BE_STRING_MESSAGE,
 })
   .regex(/^\d+$/, { error: "Must be a string of digits" })
   .transform(Number)
