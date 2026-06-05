@@ -6,6 +6,7 @@ const buildAppEnv = (env: ViteAppEnv): AppEnv => {
     logLevel: env.VITE_APP_LOG_LEVEL,
     port: env.VITE_APP_PORT,
     serviceName: env.VITE_APP_SERVICE_NAME,
+    shutdownToken: env.VITE_APP_SHUTDOWN_TOKEN,
   } as const);
 
   return appEnv;
