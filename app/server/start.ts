@@ -2,16 +2,33 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { buildApp } from "./app";
 import { EnvVarHelper } from "./helpers/env-var.helper";
+import { LoggerModule } from "./modules/logger";
 import type { APIAppInstance } from "./types/instance.type";
 
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
+const { buildFallbackLogger } = LoggerModule;
 
 let validatedEnv: ViteAppEnv;
 
 try {
   validatedEnv = validateEnv(import.meta.env);
 } catch (error) {
-  console.error(isEnvValidationError(error) ? error.message : error);
+  const fallbackLogger = buildFallbackLogger();
+
+  if (isEnvValidationError(error)) {
+    fallbackLogger.fatal(
+      { error: error.message, stack: error.stack },
+      "💥 Failed to validate the environment",
+    );
+  } else {
+    const normalizedError =
+      error instanceof Error ? error : new Error(`${error}`);
+
+    fallbackLogger.fatal(
+      { error: normalizedError.message, stack: normalizedError.stack },
+      "💥 Unexpected error while validating the environment",
+    );
+  }
 
   process.exit(1);
 }
@@ -26,7 +43,12 @@ try {
   const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
 
   if (!instance) {
-    console.error(error);
+    const fallbackLogger = buildFallbackLogger();
+
+    fallbackLogger.fatal(
+      { error: error.message, stack: error.stack },
+      "💥 Failed to start the server",
+    );
 
     process.exit(1);
   }
