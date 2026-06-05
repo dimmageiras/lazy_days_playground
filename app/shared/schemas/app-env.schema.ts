@@ -1,4 +1,5 @@
 import { LOG_LEVEL } from "@shared/constants/log-level.constant";
+import { TIMING_IN_MS } from "@shared/constants/timing.constant";
 import {
   zEnum,
   zIpv4,
@@ -8,6 +9,8 @@ import {
   zString,
   zStringbool,
 } from "@shared/wrappers/zod.wrapper";
+
+const { SECONDS_ONE } = TIMING_IN_MS;
 
 const IP_ADDRESS_MESSAGE = "Must be a valid IPv4 or IPv6 address";
 const IS_REQUIRED_MESSAGE = "Is required";
@@ -35,7 +38,7 @@ const fatalFlushTimeoutMsSchema = zString({
       .int({ error: "Must be an integer" })
       .min(1, { error: TIMEOUT_MIN_MESSAGE }),
   )
-  .default(1000)
+  .default(SECONDS_ONE)
   .brand<"FatalFlushTimeoutMs">();
 
 const isDevelopmentSchema = zStringbool({
