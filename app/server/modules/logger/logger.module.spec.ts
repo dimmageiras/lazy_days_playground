@@ -13,7 +13,7 @@ trackLeaksInSpec("logger.module");
 
 const { castAsType } = TypesHelper;
 
-const { buildLogger } = LoggerModule;
+const { buildFallbackLogger, buildLogger } = LoggerModule;
 
 const TEST_DATA = {
   PROD_ENV: castAsType<AppEnv>({
@@ -25,6 +25,19 @@ const TEST_DATA = {
 } as const;
 
 describe("LoggerModule", () => {
+  describe("buildFallbackLogger", (it) => {
+    it("should return a logger defaulting to the info level", ({ expect }) => {
+      expect(buildFallbackLogger().level).toBe("info");
+    });
+
+    it("should expose the standard log methods", ({ expect }) => {
+      const logger = buildFallbackLogger();
+
+      expect(typeof logger.fatal).toBe("function");
+      expect(typeof logger.flush).toBe("function");
+    });
+  });
+
   describe("buildLogger", (it) => {
     it("should return a logger reporting the configured level", ({
       expect,

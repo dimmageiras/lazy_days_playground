@@ -14,7 +14,7 @@ trackLeaksInSpec("logger.helper");
 
 const { castAsType } = TypesHelper;
 
-const { buildLoggerOptions } = LoggerHelper;
+const { buildFallbackLoggerOptions, buildLoggerOptions } = LoggerHelper;
 
 const TEST_DATA = {
   DEV_ENV: castAsType<AppEnv>({
@@ -32,6 +32,16 @@ const TEST_DATA = {
 } as const;
 
 describe("LoggerHelper", () => {
+  describe("buildFallbackLoggerOptions", (it) => {
+    it("should default to the info level", ({ expect }) => {
+      expect(buildFallbackLoggerOptions().level).toBe("info");
+    });
+
+    it("should not attach a transport", ({ expect }) => {
+      expect("transport" in buildFallbackLoggerOptions()).toBe(false);
+    });
+  });
+
   describe("buildLoggerOptions", (it) => {
     it("should set the level from the env", ({ expect }) => {
       expect(buildLoggerOptions(TEST_DATA.DEV_ENV).level).toBe("debug");
