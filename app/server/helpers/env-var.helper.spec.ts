@@ -16,8 +16,12 @@ const { isEnvValidationError, validateEnv } = EnvVarHelper;
 
 const TEST_DATA = {
   EXPECTED_VALIDATED_ENV: {
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_FATAL_FLUSH_TIMEOUT_MS: 1000,
     VITE_APP_IS_DEVELOPMENT: false,
     VITE_APP_LOG_LEVEL: "info",
+    VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
+    VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
     VITE_APP_SHUTDOWN_TOKEN:
@@ -37,6 +41,9 @@ const TEST_DATA = {
     { name: "should reject a decimal port", port: "5173.0" },
   ],
   VALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
+    VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: "5173",
     VITE_APP_SERVICE_NAME: "lazy-days",
     VITE_APP_SHUTDOWN_TOKEN:
@@ -76,7 +83,7 @@ describe("EnvVarHelper", () => {
         .split("\n")
         .filter((line) => line.startsWith("- "));
 
-      expect(issueLines).toHaveLength(3);
+      expect(issueLines).toHaveLength(6);
     });
 
     TEST_DATA.REJECTED_PORT_FORMAT_CASES.forEach(({ name, port }) => {

@@ -17,16 +17,24 @@ const { buildAppEnv } = AppEnvHelper;
 
 const TEST_DATA = {
   EXPECTED_APP_ENV: {
+    bindAllIpv4: "0.0.0.0",
+    fatalFlushTimeoutMs: 1000,
     isDevelopment: false,
     logLevel: "info",
+    loopbackHostV4: "127.0.0.1",
+    loopbackHostV4Mapped: "2001:db8:130f::9c0:876a:130b",
     port: 5173,
     serviceName: "lazy-days",
     shutdownToken:
       "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
   },
   VALID_ENV: castAsType<ViteAppEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_FATAL_FLUSH_TIMEOUT_MS: 1000,
     VITE_APP_IS_DEVELOPMENT: false,
     VITE_APP_LOG_LEVEL: "info",
+    VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
+    VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
     VITE_APP_SHUTDOWN_TOKEN:
@@ -39,7 +47,9 @@ describe("AppEnvHelper", () => {
     it("should map the prefixed vite env keys to their camelCase app env keys", ({
       expect,
     }) => {
-      expect(buildAppEnv(TEST_DATA.VALID_ENV)).toEqual(TEST_DATA.EXPECTED_APP_ENV);
+      expect(buildAppEnv(TEST_DATA.VALID_ENV)).toEqual(
+        TEST_DATA.EXPECTED_APP_ENV,
+      );
     });
 
     it("should return a frozen object", ({ expect }) => {

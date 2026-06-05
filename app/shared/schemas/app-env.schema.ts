@@ -1,15 +1,43 @@
 import { LOG_LEVEL } from "@shared/constants/log-level.constant";
 import {
   zEnum,
+  zIpv4,
+  zIpv6,
   zNumber,
   zObject,
   zString,
   zStringbool,
 } from "@shared/wrappers/zod.wrapper";
 
+const IP_ADDRESS_MESSAGE = "Must be a valid IPv4 or IPv6 address";
 const IS_REQUIRED_MESSAGE = "Is required";
 const MUST_BE_STRING_MESSAGE = "Must be a string";
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
+const TIMEOUT_MIN_MESSAGE = "Must be at least 1 millisecond";
+
+const isIpAddress = (value: string): boolean =>
+  zIpv4().safeParse(value).success || zIpv6().safeParse(value).success;
+
+const bindAllIpv4Schema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .refine(isIpAddress, { error: IP_ADDRESS_MESSAGE })
+  .brand<"BindAllIpv4">();
+
+const fatalFlushTimeoutMsSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .regex(/^\d+$/, { error: "Must be a string of digits" })
+  .transform(Number)
+  .pipe(
+    zNumber({ error: "Must be a number" })
+      .int({ error: "Must be an integer" })
+      .min(1, { error: TIMEOUT_MIN_MESSAGE }),
+  )
+  .default(1000)
+  .brand<"FatalFlushTimeoutMs">();
 
 const isDevelopmentSchema = zStringbool({
   error: "Must be 'true' or 'false'",
@@ -24,6 +52,20 @@ const logLevelSchema = zEnum(LOG_LEVEL.toArray(), {
 })
   .default("info")
   .brand<"LogLevel">();
+
+const loopbackHostV4Schema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .refine(isIpAddress, { error: IP_ADDRESS_MESSAGE })
+  .brand<"LoopbackHostV4">();
+
+const loopbackHostV4MappedSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .refine(isIpAddress, { error: IP_ADDRESS_MESSAGE })
+  .brand<"LoopbackHostV4Mapped">();
 
 const portSchema = zString({
   error: (issue) =>
@@ -59,8 +101,12 @@ const shutdownTokenSchema = zString({
   .brand<"ShutdownToken">();
 
 const appEnvSchema = zObject({
+  VITE_APP_BIND_ALL_IPV4: bindAllIpv4Schema,
+  VITE_APP_FATAL_FLUSH_TIMEOUT_MS: fatalFlushTimeoutMsSchema,
   VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
   VITE_APP_LOG_LEVEL: logLevelSchema,
+  VITE_APP_LOOPBACK_HOST_V4: loopbackHostV4Schema,
+  VITE_APP_LOOPBACK_HOST_V4_MAPPED: loopbackHostV4MappedSchema,
   VITE_APP_PORT: portSchema,
   VITE_APP_SERVICE_NAME: serviceNameSchema,
   VITE_APP_SHUTDOWN_TOKEN: shutdownTokenSchema,

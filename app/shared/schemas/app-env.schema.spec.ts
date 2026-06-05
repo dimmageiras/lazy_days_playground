@@ -6,8 +6,12 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { TypesHelper } from "@shared/helpers/types.helper";
 import type {
+  BindAllIpv4,
+  FatalFlushTimeoutMs,
   IsDevelopment,
   LogLevel,
+  LoopbackHostV4,
+  LoopbackHostV4Mapped,
   Port,
   ServiceName,
   ShutdownToken,
@@ -22,10 +26,12 @@ trackLeaksInSpec("app-env.schema");
 
 const { castAsType } = TypesHelper;
 
+const IP_ADDRESS_MESSAGE = "Must be a valid IPv4 or IPv6 address";
 const PORT_FORMAT_MESSAGE = "Must be a string of digits";
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
 const REQUIRED_INPUT_MESSAGE = "Is required";
 const STRING_INPUT_MESSAGE = "Must be a string";
+const TIMEOUT_MIN_MESSAGE = "Must be at least 1 millisecond";
 
 const TEST_DATA = {
   ACCEPTED_PORT_CASES: [
@@ -81,6 +87,175 @@ const TEST_DATA = {
       name: "should accept the silent level",
     },
   ],
+  ACCEPTED_BIND_ALL_IPV4_CASES: [
+    {
+      expected: "0.0.0.0",
+      input: "0.0.0.0",
+      name: "should accept the bind-all IPv4 address",
+    },
+    {
+      expected: "127.0.0.1",
+      input: "127.0.0.1",
+      name: "should accept a loopback IPv4 address",
+    },
+    {
+      expected: "::1",
+      input: "::1",
+      name: "should accept the IPv6 loopback address",
+    },
+  ],
+  ACCEPTED_LOOPBACK_HOST_V4_MAPPED_CASES: [
+    {
+      expected: "2001:db8:130f::9c0:876a:130b",
+      input: "2001:db8:130f::9c0:876a:130b",
+      name: "should accept the IPv4-mapped IPv6 loopback",
+    },
+    {
+      expected: "::1",
+      input: "::1",
+      name: "should accept the plain IPv6 loopback",
+    },
+  ],
+  ACCEPTED_FATAL_FLUSH_TIMEOUT_MS_CASES: [
+    {
+      expected: 1,
+      input: "1",
+      name: "should accept the smallest legal timeout",
+    },
+    {
+      expected: 1000,
+      input: "1000",
+      name: "should accept a typical timeout",
+    },
+  ],
+  ACCEPTED_LOOPBACK_HOST_V4_CASES: [
+    {
+      expected: "127.0.0.1",
+      input: "127.0.0.1",
+      name: "should accept the IPv4 loopback address",
+    },
+    {
+      expected: "0.0.0.0",
+      input: "0.0.0.0",
+      name: "should accept a bind-all IPv4 address",
+    },
+    {
+      expected: "::1",
+      input: "::1",
+      name: "should accept an IPv6 loopback address",
+    },
+  ],
+  REJECTED_BIND_ALL_IPV4_CASES: [
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: REQUIRED_INPUT_MESSAGE,
+      input: undefined,
+      name: "should reject a missing bind-all address with the required-input message",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 42,
+      name: "should reject a numeric bind-all address input",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: null,
+      name: "should reject a null bind-all address input",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "",
+      name: "should reject an empty bind-all address with the ip-format message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "localhost",
+      name: "should reject a hostname with the ip-format message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "256.1.1.1",
+      name: "should reject an out-of-range IPv4 octet with the ip-format message",
+    },
+  ],
+  REJECTED_LOOPBACK_HOST_V4_MAPPED_CASES: [
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: REQUIRED_INPUT_MESSAGE,
+      input: undefined,
+      name: "should reject a missing loopback host with the required-input message",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 42,
+      name: "should reject a numeric loopback host input",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "not-an-ip",
+      name: "should reject a non-ip loopback host with the ip-format message",
+    },
+  ],
+  REJECTED_FATAL_FLUSH_TIMEOUT_MS_FORMAT_CASES: [
+    { input: "", name: "should reject an empty timeout string" },
+    { input: "abc", name: "should reject a non-numeric timeout" },
+    { input: "1_000", name: "should reject an underscore-separated timeout" },
+    { input: "10.5", name: "should reject a decimal timeout" },
+  ],
+  REJECTED_FATAL_FLUSH_TIMEOUT_MS_RANGE_CASES: [
+    { input: "0", name: "should reject a non-positive timeout" },
+  ],
+  REJECTED_FATAL_FLUSH_TIMEOUT_MS_TYPE_CASES: [
+    {
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 1000,
+      name: "should reject a numeric timeout input",
+    },
+    {
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: null,
+      name: "should reject a null timeout input",
+    },
+  ],
+  REJECTED_LOOPBACK_HOST_V4_CASES: [
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: REQUIRED_INPUT_MESSAGE,
+      input: undefined,
+      name: "should reject a missing loopback address with the required-input message",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 42,
+      name: "should reject a numeric loopback address input",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "",
+      name: "should reject an empty loopback address with the ip-format message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "localhost",
+      name: "should reject a hostname with the ip-format message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IP_ADDRESS_MESSAGE,
+      input: "999.0.0.1",
+      name: "should reject an out-of-range IPv4 octet with the ip-format message",
+    },
+  ],
   REJECTED_IS_DEVELOPMENT_CASES: [
     { input: "1", name: "should reject the loose truthy '1'" },
     { input: "yes", name: "should reject the loose truthy 'yes'" },
@@ -90,18 +265,28 @@ const TEST_DATA = {
     { input: "INFO", name: "should reject a wrong-case level" },
   ],
   EXPECTED_VALID_PARSE: {
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_FATAL_FLUSH_TIMEOUT_MS: 1000,
     VITE_APP_IS_DEVELOPMENT: false,
     VITE_APP_LOG_LEVEL: "info",
+    VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
+    VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
     VITE_APP_SHUTDOWN_TOKEN:
       "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
   },
+  FILLER_BIND_ALL_IPV4: "0.0.0.0",
+  FILLER_LOOPBACK_HOST_V4: "127.0.0.1",
+  FILLER_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
   FILLER_PORT: "5173",
   FILLER_SERVICE_NAME: "lazy-days",
   FILLER_SHUTDOWN_TOKEN:
     "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
   INVALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
+    VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: "0",
     VITE_APP_SERVICE_NAME: "",
     VITE_APP_SHUTDOWN_TOKEN:
@@ -211,7 +396,11 @@ const TEST_DATA = {
   ],
   REQUIRED_INPUT_MESSAGE,
   STRING_INPUT_MESSAGE,
+  TIMEOUT_MIN_MESSAGE,
   VALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
+    VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: "5173",
     VITE_APP_SERVICE_NAME: "lazy-days",
     VITE_APP_SHUTDOWN_TOKEN:
@@ -224,6 +413,10 @@ describe("appEnvSchema", () => {
     TEST_DATA.ACCEPTED_PORT_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
         const result = appEnvSchema.safeParse({
+          VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+          VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+          VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+            TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
           VITE_APP_PORT: input,
           VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
           VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
@@ -345,6 +538,10 @@ describe("appEnvSchema", () => {
       ({ name, input, expected }) => {
         it(name, ({ expect }) => {
           const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+            VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+              TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
             VITE_APP_PORT: TEST_DATA.FILLER_PORT,
             VITE_APP_SERVICE_NAME: input,
             VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
@@ -406,7 +603,11 @@ describe("appEnvSchema", () => {
       ({ name, input, expected }) => {
         it(name, ({ expect }) => {
           const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
             VITE_APP_IS_DEVELOPMENT: input,
+            VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+              TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
             VITE_APP_PORT: TEST_DATA.FILLER_PORT,
             VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
             VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
@@ -462,7 +663,11 @@ describe("appEnvSchema", () => {
     TEST_DATA.ACCEPTED_LOG_LEVEL_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
         const result = appEnvSchema.safeParse({
+          VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
           VITE_APP_LOG_LEVEL: input,
+          VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+          VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+            TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
           VITE_APP_PORT: TEST_DATA.FILLER_PORT,
           VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
           VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
@@ -520,6 +725,10 @@ describe("appEnvSchema", () => {
       expect,
     }) => {
       const result = appEnvSchema.safeParse({
+        VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+        VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+        VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+          TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
         VITE_APP_PORT: TEST_DATA.FILLER_PORT,
         VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
         VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
@@ -630,6 +839,320 @@ describe("appEnvSchema", () => {
     });
   });
 
+  describe("VITE_APP_BIND_ALL_IPV4", (it) => {
+    TEST_DATA.ACCEPTED_BIND_ALL_IPV4_CASES.forEach(({ name, input, expected }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          VITE_APP_BIND_ALL_IPV4: input,
+          VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+          VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+            TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
+          VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+        });
+
+        expect(result.success).toBe(true);
+
+        if (result.success) {
+          expect(result.data.VITE_APP_BIND_ALL_IPV4).toBe(expected);
+        }
+      });
+    });
+
+    TEST_DATA.REJECTED_BIND_ALL_IPV4_CASES.forEach(
+      ({ name, input, expectedCode, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const bindAllIpv4Issues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_BIND_ALL_IPV4",
+            );
+
+            expect(bindAllIpv4Issues).toHaveLength(1);
+            expect(bindAllIpv4Issues[0]?.code).toBe(expectedCode);
+            expect(bindAllIpv4Issues[0]?.message).toBe(expectedMessage);
+            expect(bindAllIpv4Issues[0]?.path).toStrictEqual([
+              "VITE_APP_BIND_ALL_IPV4",
+            ]);
+          }
+        });
+      },
+    );
+
+    it("should brand the parsed bind-all address output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(result.data.VITE_APP_BIND_ALL_IPV4).toEqualTypeOf<BindAllIpv4>();
+        expectTypeOf<BindAllIpv4>().not.toEqualTypeOf<string>();
+        expectTypeOf<BindAllIpv4>().toExtend<string>();
+      }
+    });
+  });
+
+  describe("VITE_APP_LOOPBACK_HOST_V4_MAPPED", (it) => {
+    TEST_DATA.ACCEPTED_LOOPBACK_HOST_V4_MAPPED_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+            VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_LOOPBACK_HOST_V4_MAPPED).toBe(expected);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_LOOPBACK_HOST_V4_MAPPED_CASES.forEach(
+      ({ name, input, expectedCode, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const loopbackIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_LOOPBACK_HOST_V4_MAPPED",
+            );
+
+            expect(loopbackIssues).toHaveLength(1);
+            expect(loopbackIssues[0]?.code).toBe(expectedCode);
+            expect(loopbackIssues[0]?.message).toBe(expectedMessage);
+            expect(loopbackIssues[0]?.path).toStrictEqual([
+              "VITE_APP_LOOPBACK_HOST_V4_MAPPED",
+            ]);
+          }
+        });
+      },
+    );
+
+    it("should brand the parsed loopback host output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_LOOPBACK_HOST_V4_MAPPED,
+        ).toEqualTypeOf<LoopbackHostV4Mapped>();
+        expectTypeOf<LoopbackHostV4Mapped>().not.toEqualTypeOf<string>();
+        expectTypeOf<LoopbackHostV4Mapped>().toExtend<string>();
+      }
+    });
+  });
+
+  describe("VITE_APP_LOOPBACK_HOST_V4", (it) => {
+    TEST_DATA.ACCEPTED_LOOPBACK_HOST_V4_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+            VITE_APP_LOOPBACK_HOST_V4: input,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+              TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_LOOPBACK_HOST_V4).toBe(expected);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_LOOPBACK_HOST_V4_CASES.forEach(
+      ({ name, input, expectedCode, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_LOOPBACK_HOST_V4: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const loopbackV4Issues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_LOOPBACK_HOST_V4",
+            );
+
+            expect(loopbackV4Issues).toHaveLength(1);
+            expect(loopbackV4Issues[0]?.code).toBe(expectedCode);
+            expect(loopbackV4Issues[0]?.message).toBe(expectedMessage);
+            expect(loopbackV4Issues[0]?.path).toStrictEqual([
+              "VITE_APP_LOOPBACK_HOST_V4",
+            ]);
+          }
+        });
+      },
+    );
+
+    it("should brand the parsed loopback v4 output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_LOOPBACK_HOST_V4,
+        ).toEqualTypeOf<LoopbackHostV4>();
+        expectTypeOf<LoopbackHostV4>().not.toEqualTypeOf<string>();
+        expectTypeOf<LoopbackHostV4>().toExtend<string>();
+      }
+    });
+  });
+
+  describe("VITE_APP_FATAL_FLUSH_TIMEOUT_MS", (it) => {
+    TEST_DATA.ACCEPTED_FATAL_FLUSH_TIMEOUT_MS_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
+            VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+              TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_FATAL_FLUSH_TIMEOUT_MS).toBe(expected);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_FATAL_FLUSH_TIMEOUT_MS_FORMAT_CASES.forEach(
+      ({ name, input }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const timeoutIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_FATAL_FLUSH_TIMEOUT_MS",
+            );
+
+            expect(timeoutIssues).toHaveLength(1);
+            expect(timeoutIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
+            expect(timeoutIssues[0]?.message).toBe(
+              TEST_DATA.PORT_FORMAT_MESSAGE,
+            );
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_FATAL_FLUSH_TIMEOUT_MS_RANGE_CASES.forEach(
+      ({ name, input }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const timeoutIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_FATAL_FLUSH_TIMEOUT_MS",
+            );
+
+            expect(timeoutIssues).toHaveLength(1);
+            expect(timeoutIssues[0]?.code).toBe(ISSUE_CODES.TOO_SMALL);
+            expect(timeoutIssues[0]?.message).toBe(TEST_DATA.TIMEOUT_MIN_MESSAGE);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_FATAL_FLUSH_TIMEOUT_MS_TYPE_CASES.forEach(
+      ({ name, input, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const timeoutIssues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_FATAL_FLUSH_TIMEOUT_MS",
+            );
+
+            expect(timeoutIssues).toHaveLength(1);
+            expect(timeoutIssues[0]?.code).toBe(ISSUE_CODES.INVALID_TYPE);
+            expect(timeoutIssues[0]?.message).toBe(expectedMessage);
+          }
+        });
+      },
+    );
+
+    it("should default to 1000 when omitted", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_FATAL_FLUSH_TIMEOUT_MS).toBe(1000);
+      }
+    });
+
+    it("should brand the parsed fatal-flush timeout", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_FATAL_FLUSH_TIMEOUT_MS,
+        ).toEqualTypeOf<FatalFlushTimeoutMs>();
+        expectTypeOf<FatalFlushTimeoutMs>().not.toEqualTypeOf<number>();
+        expectTypeOf<FatalFlushTimeoutMs>().toExtend<number>();
+      }
+    });
+  });
+
   describe("aggregate", (it) => {
     it("should return a discriminated-union success branch carrying the parsed record", ({
       expect,
@@ -669,7 +1192,7 @@ describe("appEnvSchema", () => {
       expect(result.success).toBe(false);
 
       if (!result.success) {
-        expect(result.error.issues).toHaveLength(3);
+        expect(result.error.issues).toHaveLength(6);
 
         result.error.issues.forEach((issue) => {
           expect(issue.code).toBe(ISSUE_CODES.INVALID_TYPE);
@@ -678,6 +1201,9 @@ describe("appEnvSchema", () => {
 
         const paths = result.error.issues.map((issue) => issue.path[0]);
 
+        expect(paths).toContain("VITE_APP_BIND_ALL_IPV4");
+        expect(paths).toContain("VITE_APP_LOOPBACK_HOST_V4");
+        expect(paths).toContain("VITE_APP_LOOPBACK_HOST_V4_MAPPED");
         expect(paths).toContain("VITE_APP_PORT");
         expect(paths).toContain("VITE_APP_SERVICE_NAME");
         expect(paths).toContain("VITE_APP_SHUTDOWN_TOKEN");
