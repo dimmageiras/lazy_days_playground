@@ -122,6 +122,14 @@ before exit can vanish. On any path that logs and then exits, **flush the logger
 exit from the flush callback** rather than exiting synchronously. The logger surface
 exposes a flush method for exactly this — call it and exit from its callback.
 
+The exception is a logger backed by a **synchronous destination**: it writes each line
+inline rather than handing it to a worker thread, so a `fatal` line is on disk before
+the call returns. Such a logger may exit directly after the `fatal` log without a flush
+callback — there is no async write to race. Reserve this for the startup-failure paths
+that must exit before the validated logger exists, where the synchronous write is worth
+the throughput cost; the long-lived request logger stays on the worker-thread transport
+and uses the flush-callback rule above.
+
 ## Related
 
 - [`../adr/0009-bootstrap-environment-validation.md`](../adr/0009-bootstrap-environment-validation.md)

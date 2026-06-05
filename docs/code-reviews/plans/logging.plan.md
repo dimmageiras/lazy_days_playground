@@ -41,7 +41,8 @@ The log level and development-flag **schema** (their validation, branding, and p
 - The logger is built by a **factory that takes the validated environment**, not a module-level singleton constructed at import. No environment value is read at import time — the factory receives it.
 - The factory's public surface is a frozen namespace; the option-assembly logic is a pure, separately-testable internal helper (it returns a plain options object, so it can be asserted without spawning a transport worker thread).
 - Level, service identity, and the development flag are read from the passed environment, never re-derived from a literal or a second source.
-- The service identity is carried as a base field on every line.
+- The service identity is carried as a base field on every line the environment-built logger emits.
+- A **startup-failure logger** for the window before validation succeeds is the deliberate exception to the rules above: it is constructed without the validated environment (which does not yet exist on that path), so it carries no service base field and falls back to a fixed default level. Its sole job is to report an environment-validation or startup failure before the real logger can be built. Check that it stays minimal — it should not grow to duplicate the environment-built logger's configuration.
 
 ### Transport and format selection
 
@@ -68,6 +69,7 @@ Adherence to [`docs/logging/README.md`](../../../docs/logging/README.md):
 ### Flush before exit
 
 - Any path that logs and then exits the process flushes the logger and exits from the flush callback — a synchronous `process.exit` after a `fatal` line can terminate before the worker-thread transport writes it. The logger surface exposes the flush method for exactly this; a fatal-then-`exit` path with no flush is a finding.
+- **Exception — a logger backed by a synchronous destination.** Such a logger writes each line inline rather than handing it to a worker thread, so a `fatal` line is on disk before the call returns and a direct `process.exit` races nothing. A direct exit is correct there; flagging it as a missing-flush finding is a false positive. Reserve this for the startup-failure logger that must report and exit before the validated environment (and the worker-thread logger) exists — confirm the destination really is synchronous before accepting a flushless exit.
 
 ### Secrets and redaction
 

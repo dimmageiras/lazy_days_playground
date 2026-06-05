@@ -18,11 +18,14 @@ try {
   if (isEnvValidationError(error)) {
     fallbackLogger.fatal(
       { error: error.message, stack: error.stack },
-      "💥 Environment validation failed",
+      "💥 Failed to validate the environment",
     );
   } else {
+    const normalizedError =
+      error instanceof Error ? error : new Error(`${error}`);
+
     fallbackLogger.fatal(
-      { error },
+      { error: normalizedError.message, stack: normalizedError.stack },
       "💥 Unexpected error while validating the environment",
     );
   }
