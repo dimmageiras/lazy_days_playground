@@ -2,10 +2,12 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { buildApp } from "./app";
 import { EnvVarHelper } from "./helpers/env-var.helper";
+import { GracefulShutdownModule } from "./modules/graceful-shutdown";
 import { LoggerModule } from "./modules/logger";
 import type { APIAppInstance } from "./types/instance.type";
 
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
+const { registerGracefulShutdown } = GracefulShutdownModule;
 const { buildFallbackLogger } = LoggerModule;
 
 let validatedEnv: ViteAppEnv;
@@ -37,6 +39,8 @@ let instance: APIAppInstance | undefined;
 
 try {
   instance = await buildApp(validatedEnv);
+
+  registerGracefulShutdown(instance);
 
   await instance.listen({ port: instance.appEnv.port });
 } catch (rawError) {
