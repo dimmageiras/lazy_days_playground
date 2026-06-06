@@ -40,9 +40,21 @@ let instance: APIAppInstance | undefined;
 try {
   instance = await buildApp(validatedEnv);
 
-  registerGracefulShutdown(instance);
+  const shutdownHandle = registerGracefulShutdown(instance);
 
   await instance.listen({ port: instance.appEnv.port });
+
+  if (import.meta.hot) {
+    const startedInstance = instance;
+
+    import.meta.hot.dispose(async () => {
+      shutdownHandle.uninstall();
+
+      await startedInstance.close();
+    });
+
+    import.meta.hot.accept();
+  }
 } catch (rawError) {
   const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
 
