@@ -17,7 +17,6 @@ const { isEnvValidationError, validateEnv } = EnvVarHelper;
 const TEST_DATA = {
   EXPECTED_VALIDATED_ENV: {
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
-    VITE_APP_FATAL_FLUSH_TIMEOUT_MS: 1000,
     VITE_APP_IS_DEVELOPMENT: false,
     VITE_APP_LOG_LEVEL: "info",
     VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",

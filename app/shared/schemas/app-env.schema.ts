@@ -1,5 +1,4 @@
 import { LOG_LEVEL } from "@shared/constants/log-level.constant";
-import { TIMING_IN_MS } from "@shared/constants/timing.constant";
 import {
   zEnum,
   zIpv4,
@@ -10,13 +9,10 @@ import {
   zStringbool,
 } from "@shared/wrappers/zod.wrapper";
 
-const { SECONDS_ONE } = TIMING_IN_MS;
-
 const IP_ADDRESS_MESSAGE = "Must be a valid IPv4 or IPv6 address";
 const IS_REQUIRED_MESSAGE = "Is required";
 const MUST_BE_STRING_MESSAGE = "Must be a string";
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
-const TIMEOUT_MIN_MESSAGE = "Must be at least 1 millisecond";
 
 const isIpAddress = (value: string): boolean =>
   zIpv4().safeParse(value).success || zIpv6().safeParse(value).success;
@@ -27,19 +23,6 @@ const bindAllIpv4Schema = zString({
 })
   .refine(isIpAddress, { error: IP_ADDRESS_MESSAGE })
   .brand<"BindAllIpv4">();
-
-const fatalFlushTimeoutMsSchema = zString({
-  error: MUST_BE_STRING_MESSAGE,
-})
-  .regex(/^\d+$/, { error: "Must be a string of digits" })
-  .transform(Number)
-  .pipe(
-    zNumber({ error: "Must be a number" })
-      .int({ error: "Must be an integer" })
-      .min(1, { error: TIMEOUT_MIN_MESSAGE }),
-  )
-  .default(SECONDS_ONE)
-  .brand<"FatalFlushTimeoutMs">();
 
 const isDevelopmentSchema = zStringbool({
   error: "Must be 'true' or 'false'",
@@ -104,7 +87,6 @@ const shutdownTokenSchema = zString({
 
 const appEnvSchema = zObject({
   VITE_APP_BIND_ALL_IPV4: bindAllIpv4Schema,
-  VITE_APP_FATAL_FLUSH_TIMEOUT_MS: fatalFlushTimeoutMsSchema,
   VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
   VITE_APP_LOG_LEVEL: logLevelSchema,
   VITE_APP_LOOPBACK_HOST_V4: loopbackHostV4Schema,

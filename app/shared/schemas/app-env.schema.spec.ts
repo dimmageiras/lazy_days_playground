@@ -7,7 +7,6 @@ import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { TypesHelper } from "@shared/helpers/types.helper";
 import type {
   BindAllIpv4,
-  FatalFlushTimeoutMs,
   IsDevelopment,
   LogLevel,
   LoopbackHostV4,
@@ -31,7 +30,6 @@ const PORT_FORMAT_MESSAGE = "Must be a string of digits";
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
 const REQUIRED_INPUT_MESSAGE = "Is required";
 const STRING_INPUT_MESSAGE = "Must be a string";
-const TIMEOUT_MIN_MESSAGE = "Must be at least 1 millisecond";
 
 const TEST_DATA = {
   ACCEPTED_PORT_CASES: [
@@ -116,18 +114,6 @@ const TEST_DATA = {
       name: "should accept the plain IPv6 loopback",
     },
   ],
-  ACCEPTED_FATAL_FLUSH_TIMEOUT_MS_CASES: [
-    {
-      expected: 1,
-      input: "1",
-      name: "should accept the smallest legal timeout",
-    },
-    {
-      expected: 1000,
-      input: "1000",
-      name: "should accept a typical timeout",
-    },
-  ],
   ACCEPTED_LOOPBACK_HOST_V4_CASES: [
     {
       expected: "127.0.0.1",
@@ -203,27 +189,6 @@ const TEST_DATA = {
       name: "should reject a non-ip loopback host with the ip-format message",
     },
   ],
-  REJECTED_FATAL_FLUSH_TIMEOUT_MS_FORMAT_CASES: [
-    { input: "", name: "should reject an empty timeout string" },
-    { input: "abc", name: "should reject a non-numeric timeout" },
-    { input: "1_000", name: "should reject an underscore-separated timeout" },
-    { input: "10.5", name: "should reject a decimal timeout" },
-  ],
-  REJECTED_FATAL_FLUSH_TIMEOUT_MS_RANGE_CASES: [
-    { input: "0", name: "should reject a non-positive timeout" },
-  ],
-  REJECTED_FATAL_FLUSH_TIMEOUT_MS_TYPE_CASES: [
-    {
-      expectedMessage: STRING_INPUT_MESSAGE,
-      input: 1000,
-      name: "should reject a numeric timeout input",
-    },
-    {
-      expectedMessage: STRING_INPUT_MESSAGE,
-      input: null,
-      name: "should reject a null timeout input",
-    },
-  ],
   REJECTED_LOOPBACK_HOST_V4_CASES: [
     {
       expectedCode: ISSUE_CODES.INVALID_TYPE,
@@ -266,7 +231,6 @@ const TEST_DATA = {
   ],
   EXPECTED_VALID_PARSE: {
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
-    VITE_APP_FATAL_FLUSH_TIMEOUT_MS: 1000,
     VITE_APP_IS_DEVELOPMENT: false,
     VITE_APP_LOG_LEVEL: "info",
     VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
@@ -396,7 +360,6 @@ const TEST_DATA = {
   ],
   REQUIRED_INPUT_MESSAGE,
   STRING_INPUT_MESSAGE,
-  TIMEOUT_MIN_MESSAGE,
   VALID_ENV: castAsType<ImportMetaEnv>({
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
@@ -1026,129 +989,6 @@ describe("appEnvSchema", () => {
         ).toEqualTypeOf<LoopbackHostV4>();
         expectTypeOf<LoopbackHostV4>().not.toEqualTypeOf<string>();
         expectTypeOf<LoopbackHostV4>().toExtend<string>();
-      }
-    });
-  });
-
-  describe("VITE_APP_FATAL_FLUSH_TIMEOUT_MS", (it) => {
-    TEST_DATA.ACCEPTED_FATAL_FLUSH_TIMEOUT_MS_CASES.forEach(
-      ({ name, input, expected }) => {
-        it(name, ({ expect }) => {
-          const result = appEnvSchema.safeParse({
-            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
-            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
-            VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
-            VITE_APP_LOOPBACK_HOST_V4_MAPPED:
-              TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
-            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
-            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
-            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
-          });
-
-          expect(result.success).toBe(true);
-
-          if (result.success) {
-            expect(result.data.VITE_APP_FATAL_FLUSH_TIMEOUT_MS).toBe(expected);
-          }
-        });
-      },
-    );
-
-    TEST_DATA.REJECTED_FATAL_FLUSH_TIMEOUT_MS_FORMAT_CASES.forEach(
-      ({ name, input }) => {
-        it(name, ({ expect }) => {
-          const result = appEnvSchema.safeParse({
-            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
-            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
-            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
-          });
-
-          expect(result.success).toBe(false);
-
-          if (!result.success) {
-            const timeoutIssues = result.error.issues.filter(
-              (issue) => issue.path[0] === "VITE_APP_FATAL_FLUSH_TIMEOUT_MS",
-            );
-
-            expect(timeoutIssues).toHaveLength(1);
-            expect(timeoutIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
-            expect(timeoutIssues[0]?.message).toBe(
-              TEST_DATA.PORT_FORMAT_MESSAGE,
-            );
-          }
-        });
-      },
-    );
-
-    TEST_DATA.REJECTED_FATAL_FLUSH_TIMEOUT_MS_RANGE_CASES.forEach(
-      ({ name, input }) => {
-        it(name, ({ expect }) => {
-          const result = appEnvSchema.safeParse({
-            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
-            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
-            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
-          });
-
-          expect(result.success).toBe(false);
-
-          if (!result.success) {
-            const timeoutIssues = result.error.issues.filter(
-              (issue) => issue.path[0] === "VITE_APP_FATAL_FLUSH_TIMEOUT_MS",
-            );
-
-            expect(timeoutIssues).toHaveLength(1);
-            expect(timeoutIssues[0]?.code).toBe(ISSUE_CODES.TOO_SMALL);
-            expect(timeoutIssues[0]?.message).toBe(TEST_DATA.TIMEOUT_MIN_MESSAGE);
-          }
-        });
-      },
-    );
-
-    TEST_DATA.REJECTED_FATAL_FLUSH_TIMEOUT_MS_TYPE_CASES.forEach(
-      ({ name, input, expectedMessage }) => {
-        it(name, ({ expect }) => {
-          const result = appEnvSchema.safeParse({
-            VITE_APP_FATAL_FLUSH_TIMEOUT_MS: input,
-            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
-            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
-          });
-
-          expect(result.success).toBe(false);
-
-          if (!result.success) {
-            const timeoutIssues = result.error.issues.filter(
-              (issue) => issue.path[0] === "VITE_APP_FATAL_FLUSH_TIMEOUT_MS",
-            );
-
-            expect(timeoutIssues).toHaveLength(1);
-            expect(timeoutIssues[0]?.code).toBe(ISSUE_CODES.INVALID_TYPE);
-            expect(timeoutIssues[0]?.message).toBe(expectedMessage);
-          }
-        });
-      },
-    );
-
-    it("should default to 1000 when omitted", ({ expect }) => {
-      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
-
-      expect(result.success).toBe(true);
-
-      if (result.success) {
-        expect(result.data.VITE_APP_FATAL_FLUSH_TIMEOUT_MS).toBe(1000);
-      }
-    });
-
-    it("should brand the parsed fatal-flush timeout", ({ expect }) => {
-      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
-
-      expect(result.success).toBe(true);
-
-      if (result.success) {
-        expectTypeOf(
-          result.data.VITE_APP_FATAL_FLUSH_TIMEOUT_MS,
-        ).toEqualTypeOf<FatalFlushTimeoutMs>();
-        expectTypeOf<FatalFlushTimeoutMs>().not.toEqualTypeOf<number>();
-        expectTypeOf<FatalFlushTimeoutMs>().toExtend<number>();
       }
     });
   });

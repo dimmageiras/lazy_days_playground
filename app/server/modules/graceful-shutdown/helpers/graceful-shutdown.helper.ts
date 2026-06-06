@@ -1,5 +1,6 @@
 import type { APIAppInstance } from "@server/types/instance.type";
 
+import { GRACEFUL_SHUTDOWN_TIMEOUT_MS } from "../constants/graceful-shutdown.constant";
 import type {
   ShutdownContext,
   ShutdownHandler,
@@ -8,7 +9,7 @@ import type {
 
 const buildShutdownOptions = (instance: APIAppInstance): ShutdownOptions => {
   return {
-    delay: instance.appEnv.fatalFlushTimeoutMs,
+    delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS,
     logger: instance.log,
   };
 };
