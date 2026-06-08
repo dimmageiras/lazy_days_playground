@@ -25,11 +25,16 @@ trackLeaksInSpec("app-env.schema");
 
 const { castAsType } = TypesHelper;
 
-const IP_ADDRESS_MESSAGE = "Must be a valid IPv4 or IPv6 address";
+const IPV4_ADDRESS_MESSAGE = "Must be a valid IPv4 address";
+const IPV6_ADDRESS_MESSAGE = "Must be a valid IPv6 address";
 const PORT_FORMAT_MESSAGE = "Must be a string of digits";
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
 const REQUIRED_INPUT_MESSAGE = "Is required";
 const STRING_INPUT_MESSAGE = "Must be a string";
+
+const VALID_SHUTDOWN_TOKEN =
+  "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
+const NON_BASE64_SHUTDOWN_TOKEN = `-${VALID_SHUTDOWN_TOKEN.slice(1)}`;
 
 const TEST_DATA = {
   ACCEPTED_PORT_CASES: [
@@ -96,22 +101,17 @@ const TEST_DATA = {
       input: "127.0.0.1",
       name: "should accept a loopback IPv4 address",
     },
-    {
-      expected: "::1",
-      input: "::1",
-      name: "should accept the IPv6 loopback address",
-    },
   ],
   ACCEPTED_LOOPBACK_HOST_V4_MAPPED_CASES: [
     {
       expected: "2001:db8:130f::9c0:876a:130b",
       input: "2001:db8:130f::9c0:876a:130b",
-      name: "should accept the IPv4-mapped IPv6 loopback",
+      name: "should accept a global IPv6 address",
     },
     {
       expected: "::1",
       input: "::1",
-      name: "should accept the plain IPv6 loopback",
+      name: "should accept the IPv6 loopback address",
     },
   ],
   ACCEPTED_LOOPBACK_HOST_V4_CASES: [
@@ -123,12 +123,7 @@ const TEST_DATA = {
     {
       expected: "0.0.0.0",
       input: "0.0.0.0",
-      name: "should accept a bind-all IPv4 address",
-    },
-    {
-      expected: "::1",
-      input: "::1",
-      name: "should accept an IPv6 loopback address",
+      name: "should accept the bind-all IPv4 address",
     },
   ],
   REJECTED_BIND_ALL_IPV4_CASES: [
@@ -152,21 +147,27 @@ const TEST_DATA = {
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
       input: "",
-      name: "should reject an empty bind-all address with the ip-format message",
+      name: "should reject an empty bind-all address with the ipv4 message",
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
       input: "localhost",
-      name: "should reject a hostname with the ip-format message",
+      name: "should reject a hostname with the ipv4 message",
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
       input: "256.1.1.1",
-      name: "should reject an out-of-range IPv4 octet with the ip-format message",
+      name: "should reject an out-of-range IPv4 octet with the ipv4 message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
+      input: "::1",
+      name: "should reject an IPv6 address with the ipv4 message",
     },
   ],
   REJECTED_LOOPBACK_HOST_V4_MAPPED_CASES: [
@@ -184,9 +185,15 @@ const TEST_DATA = {
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV6_ADDRESS_MESSAGE,
       input: "not-an-ip",
-      name: "should reject a non-ip loopback host with the ip-format message",
+      name: "should reject a non-ip loopback host with the ipv6 message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV6_ADDRESS_MESSAGE,
+      input: "127.0.0.1",
+      name: "should reject an IPv4 address with the ipv6 message",
     },
   ],
   REJECTED_LOOPBACK_HOST_V4_CASES: [
@@ -204,21 +211,27 @@ const TEST_DATA = {
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
       input: "",
-      name: "should reject an empty loopback address with the ip-format message",
+      name: "should reject an empty loopback address with the ipv4 message",
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
       input: "localhost",
-      name: "should reject a hostname with the ip-format message",
+      name: "should reject a hostname with the ipv4 message",
     },
     {
       expectedCode: ISSUE_CODES.CUSTOM,
-      expectedMessage: IP_ADDRESS_MESSAGE,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
       input: "999.0.0.1",
-      name: "should reject an out-of-range IPv4 octet with the ip-format message",
+      name: "should reject an out-of-range IPv4 octet with the ipv4 message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
+      input: "::1",
+      name: "should reject an IPv6 address with the ipv4 message",
     },
   ],
   REJECTED_IS_DEVELOPMENT_CASES: [
@@ -237,30 +250,28 @@ const TEST_DATA = {
     VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN:
-      "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   },
   FILLER_BIND_ALL_IPV4: "0.0.0.0",
   FILLER_LOOPBACK_HOST_V4: "127.0.0.1",
   FILLER_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
   FILLER_PORT: "5173",
   FILLER_SERVICE_NAME: "lazy-days",
-  FILLER_SHUTDOWN_TOKEN:
-    "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+  FILLER_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   INVALID_ENV: castAsType<ImportMetaEnv>({
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_LOOPBACK_HOST_V4: "127.0.0.1",
     VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: "0",
     VITE_APP_SERVICE_NAME: "",
-    VITE_APP_SHUTDOWN_TOKEN:
-      "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
   INVALID_PARSE_INPUT: {
     VITE_APP_PORT: "abc",
     VITE_APP_SERVICE_NAME: "",
   },
   MISSING_ENV: castAsType<ImportMetaEnv>({}),
+  NON_BASE64_SHUTDOWN_TOKEN,
   PORT_FORMAT_MESSAGE,
   PORT_RANGE_MESSAGE,
   REJECTED_PORT_FORMAT_CASES: [
@@ -366,8 +377,7 @@ const TEST_DATA = {
     VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: "5173",
     VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN:
-      "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
 } as const;
 
@@ -729,8 +739,7 @@ describe("appEnvSchema", () => {
       const result = appEnvSchema.safeParse({
         VITE_APP_PORT: TEST_DATA.FILLER_PORT,
         VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
-        VITE_APP_SHUTDOWN_TOKEN:
-          "-234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+        VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.NON_BASE64_SHUTDOWN_TOKEN,
       });
 
       expect(result.success).toBe(false);
@@ -741,6 +750,7 @@ describe("appEnvSchema", () => {
         );
 
         expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.CUSTOM);
       }
     });
 
@@ -803,25 +813,27 @@ describe("appEnvSchema", () => {
   });
 
   describe("VITE_APP_BIND_ALL_IPV4", (it) => {
-    TEST_DATA.ACCEPTED_BIND_ALL_IPV4_CASES.forEach(({ name, input, expected }) => {
-      it(name, ({ expect }) => {
-        const result = appEnvSchema.safeParse({
-          VITE_APP_BIND_ALL_IPV4: input,
-          VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
-          VITE_APP_LOOPBACK_HOST_V4_MAPPED:
-            TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
-          VITE_APP_PORT: TEST_DATA.FILLER_PORT,
-          VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
-          VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+    TEST_DATA.ACCEPTED_BIND_ALL_IPV4_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: input,
+            VITE_APP_LOOPBACK_HOST_V4: TEST_DATA.FILLER_LOOPBACK_HOST_V4,
+            VITE_APP_LOOPBACK_HOST_V4_MAPPED:
+              TEST_DATA.FILLER_LOOPBACK_HOST_V4_MAPPED,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_BIND_ALL_IPV4).toBe(expected);
+          }
         });
-
-        expect(result.success).toBe(true);
-
-        if (result.success) {
-          expect(result.data.VITE_APP_BIND_ALL_IPV4).toBe(expected);
-        }
-      });
-    });
+      },
+    );
 
     TEST_DATA.REJECTED_BIND_ALL_IPV4_CASES.forEach(
       ({ name, input, expectedCode, expectedMessage }) => {
@@ -856,7 +868,9 @@ describe("appEnvSchema", () => {
       expect(result.success).toBe(true);
 
       if (result.success) {
-        expectTypeOf(result.data.VITE_APP_BIND_ALL_IPV4).toEqualTypeOf<BindAllIpv4>();
+        expectTypeOf(
+          result.data.VITE_APP_BIND_ALL_IPV4,
+        ).toEqualTypeOf<BindAllIpv4>();
         expectTypeOf<BindAllIpv4>().not.toEqualTypeOf<string>();
         expectTypeOf<BindAllIpv4>().toExtend<string>();
       }
