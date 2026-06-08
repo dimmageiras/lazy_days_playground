@@ -7,27 +7,45 @@ import type {
   ShutdownOptions,
 } from "../types/graceful-shutdown.type";
 
-const buildShutdownOptions = (instance: APIAppInstance): ShutdownOptions => {
+const buildShutdownOptions = (
+  logger: APIAppInstance["log"],
+): ShutdownOptions => {
   return {
     delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS,
-    logger: instance.log,
+    logger,
   };
 };
 
-const buildShutdownHandler =
-  (instance: APIAppInstance): ShutdownHandler =>
-  async ({ err: error, signal }: ShutdownContext): Promise<void> => {
-    if (error) {
-      instance.log.error(
-        { error: error.message, stack: error.stack },
-        "💥 Shutting down after an unhandled error",
-      );
-    } else {
-      instance.log.info(`Received ${signal}, shutting down…`);
+const buildShutdownHandler = (instance: APIAppInstance): ShutdownHandler => {
+  return async ({
+    err: error,
+    manual,
+    signal,
+  }: ShutdownContext): Promise<void> => {
+    switch (true) {
+      case Boolean(error): {
+        instance.log.error(
+          { err: error, stack: error?.stack },
+          "💥 Shutting down after an unhandled error",
+        );
+
+        break;
+      }
+
+      case manual: {
+        instance.log.info("Manual shutdown requested, shutting down…");
+
+        break;
+      }
+
+      default: {
+        instance.log.info(`Received ${signal}, shutting down…`);
+      }
     }
 
     await instance.close();
   };
+};
 
 const GracefulShutdownHelper = Object.freeze({
   buildShutdownHandler,

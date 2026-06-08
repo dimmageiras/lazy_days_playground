@@ -35,7 +35,15 @@ const buildApp = async (
       prefix: API_HEALTH,
     });
 
-    await setupGracefulShutdown(instance, hot);
+    await setupGracefulShutdown(instance);
+
+    if (hot) {
+      hot.dispose(async () => {
+        await instance.close();
+      });
+
+      hot.accept();
+    }
 
     await instance.ready();
 

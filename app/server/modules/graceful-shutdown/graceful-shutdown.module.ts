@@ -11,24 +11,20 @@ const { buildShutdownHandler, buildShutdownOptions } = GracefulShutdownHelper;
 
 const setupGracefulShutdown = async (
   instance: APIAppInstance,
-  hot: ImportMeta["hot"],
 ): Promise<void> => {
-  await instance.register(gracefulShutdownRoutes, { prefix: API_INTERNAL });
-
   const handle = closeWithGrace(
-    buildShutdownOptions(instance),
+    buildShutdownOptions(instance.log),
     buildShutdownHandler(instance),
   );
 
-  if (hot) {
-    hot.dispose(async () => {
-      handle.uninstall();
+  instance.addHook("onClose", async () => {
+    handle.uninstall();
+  });
 
-      await instance.close();
-    });
-
-    hot.accept();
-  }
+  await instance.register(gracefulShutdownRoutes, {
+    handle,
+    prefix: API_INTERNAL,
+  });
 };
 
 const GracefulShutdownModule = Object.freeze({
