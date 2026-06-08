@@ -24,8 +24,7 @@ const TEST_DATA = {
     loopbackHostV4Mapped: "2001:db8:130f::9c0:876a:130b",
     port: 5173,
     serviceName: "lazy-days",
-    shutdownToken:
-      "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+    shutdownToken: "shutdown-token",
   },
   VALID_ENV: castAsType<ViteAppEnv>({
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
@@ -35,8 +34,7 @@ const TEST_DATA = {
     VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN:
-      "1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890",
+    VITE_APP_SHUTDOWN_TOKEN: "shutdown-token",
   }),
 } as const;
 
@@ -45,7 +43,7 @@ describe("AppEnvHelper", () => {
     it("should map the prefixed vite env keys to their camelCase app env keys", ({
       expect,
     }) => {
-      expect(buildAppEnv(TEST_DATA.VALID_ENV)).toEqual(
+      expect(buildAppEnv(TEST_DATA.VALID_ENV)).toStrictEqual(
         TEST_DATA.EXPECTED_APP_ENV,
       );
     });
