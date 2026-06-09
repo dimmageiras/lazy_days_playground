@@ -1,7 +1,13 @@
 import { ErrorHelper } from "@server/helpers/error.helper";
 import type { APIAppInstance } from "@server/types/instance.type";
 
-import { GRACEFUL_SHUTDOWN_TIMEOUT_MS } from "../constants/graceful-shutdown.constant";
+import { MapHelper } from "@shared/helpers/map.helper";
+
+import {
+  GRACEFUL_SHUTDOWN_TIMEOUT_MS,
+  SHUTTING_DOWN,
+} from "../constants/graceful-shutdown.constant";
+import { SIGNAL_MESSAGES } from "../constants/signals.constant";
 import type {
   ShutdownContext,
   ShutdownHandler,
@@ -9,6 +15,7 @@ import type {
 } from "../types/graceful-shutdown.type";
 
 const { normalizeError } = ErrorHelper;
+const { getMapValue } = MapHelper;
 
 const buildShutdownOptions = (
   logger: APIAppInstance["log"],
@@ -36,13 +43,21 @@ const buildShutdownHandler = (instance: APIAppInstance): ShutdownHandler => {
       }
 
       case manual: {
-        instance.log.info("Manual shutdown requested, shutting down…");
+        instance.log.info(`Manual shutdown requested, ${SHUTTING_DOWN}`);
 
         break;
       }
 
       default: {
-        instance.log.info(`Received ${signal}, shutting down…`);
+        const fallbackMessage = `Received a shutdown signal, ${SHUTTING_DOWN}`;
+
+        const signalMessage = getMapValue(
+          SIGNAL_MESSAGES,
+          signal ?? "",
+          fallbackMessage,
+        );
+
+        instance.log.info(signalMessage);
       }
     }
 
