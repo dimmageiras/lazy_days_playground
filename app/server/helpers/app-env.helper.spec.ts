@@ -15,6 +15,9 @@ const { castAsType } = TypesHelper;
 
 const { buildAppEnv } = AppEnvHelper;
 
+const VALID_SHUTDOWN_TOKEN =
+  "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
+
 const TEST_DATA = {
   EXPECTED_APP_ENV: {
     bindAllIpv4: "0.0.0.0",
@@ -24,7 +27,7 @@ const TEST_DATA = {
     loopbackHostV4Mapped: "2001:db8:130f::9c0:876a:130b",
     port: 5173,
     serviceName: "lazy-days",
-    shutdownToken: "shutdown-token",
+    shutdownToken: VALID_SHUTDOWN_TOKEN,
   },
   VALID_ENV: castAsType<ViteAppEnv>({
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
@@ -34,7 +37,7 @@ const TEST_DATA = {
     VITE_APP_LOOPBACK_HOST_V4_MAPPED: "2001:db8:130f::9c0:876a:130b",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN: "shutdown-token",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
 } as const;
 
