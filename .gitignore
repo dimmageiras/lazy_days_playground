@@ -1,6 +1,3 @@
-# Claude Code settings (machine-specific)
-/.claude/settings.local.json
-
 # Environment files (may contain secrets)
 .env.local
 .env.*.local
