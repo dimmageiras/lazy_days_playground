@@ -25,7 +25,7 @@ const buildShutdownHandler = (instance: APIAppInstance): ShutdownHandler => {
     switch (true) {
       case Boolean(error): {
         instance.log.error(
-          { err: error, stack: error?.stack },
+          { err: error },
           "💥 Shutting down after an unhandled error",
         );
 
