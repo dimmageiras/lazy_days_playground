@@ -85,8 +85,7 @@ const requestCooperativeShutdown = async (
   const shutdownToken = instance.appEnv.shutdownToken;
 
   try {
-    const shutdownUrl =
-      `${HTTP}://${LOOPBACK_HOST_V4}:${port}${API_INTERNAL}/${SHUTDOWN}` as const;
+    const shutdownUrl = `${HTTP}://${LOOPBACK_HOST_V4}:${port}${API_INTERNAL}/${SHUTDOWN}`;
 
     await axios.post(
       shutdownUrl,
