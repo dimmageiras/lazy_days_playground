@@ -1,3 +1,1 @@
-import { ShutdownModule } from "./shutdown.module";
-
-export { ShutdownModule };
+export { ShutdownModule } from "./shutdown.module";

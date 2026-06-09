@@ -44,23 +44,25 @@ describe("LoggerHelper", () => {
 
   describe("buildLoggerOptions", (it) => {
     it("should set the level from the env", ({ expect }) => {
-      expect(buildLoggerOptions(TEST_DATA.DEV_ENV).level).toBe("debug");
+      expect(buildLoggerOptions(TEST_DATA.DEV_ENV, []).level).toBe("debug");
     });
 
     it("should put the service name on the base", ({ expect }) => {
-      expect(buildLoggerOptions(TEST_DATA.PROD_ENV).base).toStrictEqual({
+      expect(buildLoggerOptions(TEST_DATA.PROD_ENV, []).base).toStrictEqual({
         service: "lazy-days",
       });
     });
 
     it("should attach the pretty transport in development", ({ expect }) => {
-      expect(buildLoggerOptions(TEST_DATA.DEV_ENV).transport).toBe(
+      expect(buildLoggerOptions(TEST_DATA.DEV_ENV, []).transport).toBe(
         PRETTY_TRANSPORT,
       );
     });
 
     it("should omit the transport outside development", ({ expect }) => {
-      expect("transport" in buildLoggerOptions(TEST_DATA.PROD_ENV)).toBe(false);
+      expect("transport" in buildLoggerOptions(TEST_DATA.PROD_ENV, [])).toBe(
+        false,
+      );
     });
   });
 });

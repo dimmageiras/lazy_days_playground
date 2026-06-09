@@ -17,7 +17,7 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
-const { setupShutdown } = ShutdownModule;
+const { redactPaths, setupShutdown } = ShutdownModule;
 
 const buildApp = async (
   env: ViteAppEnv,
@@ -26,7 +26,7 @@ const buildApp = async (
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
-    loggerInstance: buildLogger(appEnv),
+    loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
   });
 

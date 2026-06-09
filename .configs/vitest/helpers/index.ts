@@ -1,3 +1,1 @@
-import { StateProbeHelper } from "./state-probe.helper";
-
-export { StateProbeHelper };
+export { StateProbeHelper } from "./state-probe.helper";

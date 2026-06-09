@@ -2,11 +2,11 @@ import { Set } from "immutable";
 
 const HOSTS = Object.freeze({
   LOOPBACK_HOST_V4: "127.0.0.1",
-  get LOOPBACK_HOSTS(): Set<string> {
+  get LOOPBACK_HOSTS() {
     return Set<string>([
-      HOSTS.LOOPBACK_HOST_V4,
+      this.LOOPBACK_HOST_V4,
       "::1",
-      `::ffff:${HOSTS.LOOPBACK_HOST_V4}`,
+      `::ffff:${this.LOOPBACK_HOST_V4}`,
     ]);
   },
 } as const);
