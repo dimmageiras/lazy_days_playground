@@ -57,7 +57,7 @@ const loopbackHostV4Schema = brandedIpSchema<"LoopbackHostV4">(
   IPV4_ADDRESS_MESSAGE,
 );
 
-const loopbackHostV4MappedSchema = brandedIpSchema<"LoopbackHostV4Mapped">(
+const loopbackHostV6Schema = brandedIpSchema<"LoopbackHostV6">(
   isIpv6,
   IPV6_ADDRESS_MESSAGE,
 );
@@ -96,7 +96,7 @@ const appEnvSchema = zObject({
   VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
   VITE_APP_LOG_LEVEL: logLevelSchema,
   VITE_APP_LOOPBACK_HOST_V4: loopbackHostV4Schema,
-  VITE_APP_LOOPBACK_HOST_V4_MAPPED: loopbackHostV4MappedSchema,
+  VITE_APP_LOOPBACK_HOST_V6: loopbackHostV6Schema,
   VITE_APP_PORT: portSchema,
   VITE_APP_SERVICE_NAME: serviceNameSchema,
   VITE_APP_SHUTDOWN_TOKEN: shutdownTokenSchema,
