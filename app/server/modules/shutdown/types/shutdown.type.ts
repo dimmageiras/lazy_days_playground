@@ -5,13 +5,13 @@ type ShutdownContext = Parameters<CloseWithGraceAsyncCallback>[0];
 type ShutdownHandler = CloseWithGraceAsyncCallback;
 type ShutdownOptions = Options;
 
-interface GracefulShutdownRouteOptions {
+interface ShutdownRouteOptions {
   handle: Readonly<ReturnType<typeof closeWithGrace>>;
 }
 
 export type {
-  GracefulShutdownRouteOptions,
   ShutdownContext,
   ShutdownHandler,
   ShutdownOptions,
+  ShutdownRouteOptions,
 };

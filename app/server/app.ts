@@ -6,26 +6,26 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 import { BASE_URLS } from "./constants/base-urls.constant";
 import { AppEnvHelper } from "./helpers/app-env.helper";
 import { ErrorHelper } from "./helpers/error.helper";
-import { GracefulShutdownModule } from "./modules/graceful-shutdown";
 import { LoggerModule } from "./modules/logger";
+import { ShutdownModule } from "./modules/shutdown";
 import { healthRoutes } from "./routes/app/health/health.route";
-import type { APIAppInstance } from "./types/instance.type";
+import type { AppInstance } from "./types/instance.type";
 
 const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
 
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
-const { setupGracefulShutdown } = GracefulShutdownModule;
 const { buildLogger } = LoggerModule;
+const { setupShutdown } = ShutdownModule;
 
 const buildApp = async (
   env: ViteAppEnv,
   hot: ImportMeta["hot"],
-): Promise<APIAppInstance> => {
+): Promise<AppInstance> => {
   const appEnv = buildAppEnv(env);
 
-  const instance: APIAppInstance = fastify({
+  const instance: AppInstance = fastify({
     loggerInstance: buildLogger(appEnv),
     requestTimeout: SECONDS_TEN,
   });
@@ -37,7 +37,7 @@ const buildApp = async (
       prefix: API_HEALTH,
     });
 
-    await setupGracefulShutdown(instance);
+    await setupShutdown(instance);
 
     if (hot) {
       hot.dispose(async () => {

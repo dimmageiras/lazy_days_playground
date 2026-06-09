@@ -10,7 +10,7 @@ import { StringHelper } from "@shared/helpers/string.helper";
 
 import { ENDPOINTS } from "../constants/endpoints.constant";
 import { HEADERS } from "../constants/headers.constant";
-import type { GracefulShutdownRouteOptions } from "../types/graceful-shutdown.type";
+import type { ShutdownRouteOptions } from "../types/shutdown.type";
 
 const { SHUTDOWN } = ENDPOINTS;
 const { SHUTDOWN_TOKEN } = HEADERS;
@@ -33,9 +33,10 @@ const isAuthorizedToken = (provided: string, expected: string): boolean => {
   );
 };
 
-const gracefulShutdownRoutes: FastifyPluginAsync<
-  GracefulShutdownRouteOptions
-> = async (instance, { handle }) => {
+const shutdownRoutes: FastifyPluginAsync<ShutdownRouteOptions> = async (
+  instance,
+  { handle },
+) => {
   const shutdownRequestRoute = (
     request: FastifyRequest,
     reply: FastifyReply,
@@ -78,4 +79,4 @@ const gracefulShutdownRoutes: FastifyPluginAsync<
   instance.post(`/${SHUTDOWN}`, shutdownRequestRoute);
 };
 
-export { gracefulShutdownRoutes };
+export { shutdownRoutes };

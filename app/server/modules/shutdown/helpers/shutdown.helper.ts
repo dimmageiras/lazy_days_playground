@@ -1,32 +1,33 @@
 import { ErrorHelper } from "@server/helpers/error.helper";
-import type { APIAppInstance } from "@server/types/instance.type";
+import type { AppInstance } from "@server/types/instance.type";
 
 import { MapHelper } from "@shared/helpers/map.helper";
 
-import { MESSAGES, SIGNAL_MESSAGES } from "../constants/messages.constant";
+import {
+  SHUTDOWN_PHRASES,
+  SIGNAL_MESSAGES,
+} from "../constants/messages.constant";
 import { TIMING_IN_MS } from "../constants/timing.constant";
 import type {
   ShutdownContext,
   ShutdownHandler,
   ShutdownOptions,
-} from "../types/graceful-shutdown.type";
+} from "../types/shutdown.type";
 
-const { SHUTTING_DOWN } = MESSAGES;
-const { GRACEFUL_SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
+const { SHUTTING_DOWN } = SHUTDOWN_PHRASES;
+const { SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
 const { normalizeError } = ErrorHelper;
 const { getMapValue } = MapHelper;
 
-const buildShutdownOptions = (
-  logger: APIAppInstance["log"],
-): ShutdownOptions => {
+const buildShutdownOptions = (logger: AppInstance["log"]): ShutdownOptions => {
   return {
-    delay: GRACEFUL_SHUTDOWN_TIMEOUT,
+    delay: SHUTDOWN_TIMEOUT,
     logger,
   };
 };
 
-const buildShutdownHandler = (instance: APIAppInstance): ShutdownHandler => {
+const buildShutdownHandler = (instance: AppInstance): ShutdownHandler => {
   return async ({
     err: error,
     manual,
@@ -65,9 +66,9 @@ const buildShutdownHandler = (instance: APIAppInstance): ShutdownHandler => {
   };
 };
 
-const GracefulShutdownHelper = Object.freeze({
+const ShutdownHelper = Object.freeze({
   buildShutdownHandler,
   buildShutdownOptions,
 } as const);
 
-export { GracefulShutdownHelper };
+export { ShutdownHelper };

@@ -3,7 +3,7 @@ import type { IncomingMessage, Server, ServerResponse } from "node:http";
 
 import type { Logger } from "../modules/logger";
 
-type APIAppInstance = FastifyInstance<
+type AppInstance = FastifyInstance<
   Server<typeof IncomingMessage, typeof ServerResponse>,
   IncomingMessage,
   ServerResponse<IncomingMessage>,
@@ -11,4 +11,4 @@ type APIAppInstance = FastifyInstance<
   FastifyTypeProviderDefault
 >;
 
-export type { APIAppInstance };
+export type { AppInstance };

@@ -1,5 +1,5 @@
 const ENDPOINTS = Object.freeze({
-  SHUTDOWN: "graceful-shutdown",
+  SHUTDOWN: "shutdown",
 } as const);
 
 export { ENDPOINTS };
