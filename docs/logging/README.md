@@ -95,7 +95,7 @@ Emoji prefixes give logs a fast visual scan:
 | ✅     | Success — startup/configuration only, never routes. |
 | 🚀     | Server / service start.                             |
 | 🤖     | Configuration detail.                               |
-| ⚠️     | Warning.                                            |
+| 🚧     | Warning.                                            |
 
 Pick the error-message phrasing by call site, not by reflex:
 

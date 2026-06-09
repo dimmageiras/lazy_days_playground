@@ -1,8 +1,15 @@
+import axios from "axios";
+
+import { BASE_URLS } from "@server/constants/base-urls.constant";
+import { HOSTS } from "@server/constants/hosts.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
 import type { AppInstance } from "@server/types/instance.type";
 
+import { HTTP_SCHEMES } from "@shared/constants/http.constant";
 import { MapHelper } from "@shared/helpers/map.helper";
 
+import { ENDPOINTS } from "../constants/endpoints.constant";
+import { HEADERS } from "../constants/headers.constant";
 import {
   SHUTDOWN_PHRASES,
   SIGNAL_MESSAGES,
@@ -14,8 +21,13 @@ import type {
   ShutdownOptions,
 } from "../types/shutdown.type";
 
+const { API_INTERNAL } = BASE_URLS;
+const { SHUTDOWN } = ENDPOINTS;
+const { SHUTDOWN_TOKEN } = HEADERS;
+const { LOOPBACK_HOST_V4 } = HOSTS;
+const { HTTP } = HTTP_SCHEMES;
 const { SHUTTING_DOWN } = SHUTDOWN_PHRASES;
-const { SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
+const { SHUTDOWN_REQUEST_TIMEOUT, SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
 const { normalizeError } = ErrorHelper;
 const { getMapValue } = MapHelper;
@@ -66,9 +78,40 @@ const buildShutdownHandler = (instance: AppInstance): ShutdownHandler => {
   };
 };
 
+const requestCooperativeShutdown = async (
+  instance: AppInstance,
+): Promise<boolean> => {
+  const port = instance.appEnv.port;
+  const shutdownToken = instance.appEnv.shutdownToken;
+
+  try {
+    const shutdownUrl =
+      `${HTTP}://${LOOPBACK_HOST_V4}:${port}${API_INTERNAL}/${SHUTDOWN}` as const;
+
+    await axios.post(
+      shutdownUrl,
+      {},
+      {
+        headers: { [SHUTDOWN_TOKEN]: shutdownToken },
+        signal: AbortSignal.timeout(SHUTDOWN_REQUEST_TIMEOUT),
+      },
+    );
+
+    return true;
+  } catch (error) {
+    instance.log.warn(
+      { err: error, port },
+      "🚧 Cooperative shutdown request failed.",
+    );
+
+    return false;
+  }
+};
+
 const ShutdownHelper = Object.freeze({
   buildShutdownHandler,
   buildShutdownOptions,
+  requestCooperativeShutdown,
 } as const);
 
 export { ShutdownHelper };
