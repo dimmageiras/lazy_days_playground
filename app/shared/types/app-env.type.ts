@@ -8,8 +8,6 @@ type ViteAppEnv = ZodInfer<typeof appEnvSchema>;
 type BindAllIpv4 = ViteAppEnv["VITE_APP_BIND_ALL_IPV4"];
 type IsDevelopment = ViteAppEnv["VITE_APP_IS_DEVELOPMENT"];
 type LogLevel = ViteAppEnv["VITE_APP_LOG_LEVEL"];
-type LoopbackHostV4 = ViteAppEnv["VITE_APP_LOOPBACK_HOST_V4"];
-type LoopbackHostV6 = ViteAppEnv["VITE_APP_LOOPBACK_HOST_V6"];
 type Port = ViteAppEnv["VITE_APP_PORT"];
 type ServiceName = ViteAppEnv["VITE_APP_SERVICE_NAME"];
 type ShutdownToken = ViteAppEnv["VITE_APP_SHUTDOWN_TOKEN"];
@@ -25,8 +23,6 @@ export type {
   BindAllIpv4,
   IsDevelopment,
   LogLevel,
-  LoopbackHostV4,
-  LoopbackHostV6,
   Port,
   ServiceName,
   ShutdownToken,

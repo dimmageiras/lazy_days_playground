@@ -7,6 +7,7 @@ import { GracefulShutdownHelper } from "./helpers/graceful-shutdown.helper";
 import { gracefulShutdownRoutes } from "./routes/graceful-shutdown.route";
 
 const { API_INTERNAL } = BASE_URLS;
+
 const { buildShutdownHandler, buildShutdownOptions } = GracefulShutdownHelper;
 
 const setupGracefulShutdown = async (

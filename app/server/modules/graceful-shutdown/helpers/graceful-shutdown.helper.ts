@@ -3,16 +3,16 @@ import type { APIAppInstance } from "@server/types/instance.type";
 
 import { MapHelper } from "@shared/helpers/map.helper";
 
-import {
-  GRACEFUL_SHUTDOWN_TIMEOUT_MS,
-  SHUTTING_DOWN,
-} from "../constants/graceful-shutdown.constant";
-import { SIGNAL_MESSAGES } from "../constants/signals.constant";
+import { MESSAGES, SIGNAL_MESSAGES } from "../constants/messages.constant";
+import { TIMING_IN_MS } from "../constants/timing.constant";
 import type {
   ShutdownContext,
   ShutdownHandler,
   ShutdownOptions,
 } from "../types/graceful-shutdown.type";
+
+const { SHUTTING_DOWN } = MESSAGES;
+const { GRACEFUL_SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
 const { normalizeError } = ErrorHelper;
 const { getMapValue } = MapHelper;
@@ -21,7 +21,7 @@ const buildShutdownOptions = (
   logger: APIAppInstance["log"],
 ): ShutdownOptions => {
   return {
-    delay: GRACEFUL_SHUTDOWN_TIMEOUT_MS,
+    delay: GRACEFUL_SHUTDOWN_TIMEOUT,
     logger,
   };
 };
