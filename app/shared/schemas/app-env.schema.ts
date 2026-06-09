@@ -1,5 +1,6 @@
 import { LOG_LEVEL } from "@shared/constants/log-level.constant";
 import {
+  zBase64,
   zEnum,
   zIpv4,
   zIpv6,
@@ -87,9 +88,7 @@ const shutdownTokenSchema = zString({
     issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
 })
   .min(88, { error: "Must be at least 88 characters" })
-  .refine((val) => /^[A-Za-z0-9+/]+={0,2}$/.test(val), {
-    error: "Must be base64",
-  })
+  .pipe(zBase64({ error: "Must be base64" }))
   .brand<"ShutdownToken">();
 
 const appEnvSchema = zObject({

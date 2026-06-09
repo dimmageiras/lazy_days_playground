@@ -9,6 +9,7 @@ type ZodInfer<T extends z.ZodTypeAny> = z.infer<T>;
 type ZodInput<T extends z.ZodTypeAny> = z.input<T>;
 type ZodIssue = $ZodIssue;
 
+const zBase64 = z.base64;
 const zEnum = z.enum;
 const zIpv4 = z.ipv4;
 const zIpv6 = z.ipv6;
@@ -20,6 +21,7 @@ const zToDotPath = toDotPath;
 
 export type { ZodInfer, ZodInput, ZodIssue };
 export {
+  zBase64,
   zEnum,
   zIpv4,
   zIpv6,

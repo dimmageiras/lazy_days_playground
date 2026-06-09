@@ -35,6 +35,7 @@ const STRING_INPUT_MESSAGE = "Must be a string";
 const VALID_SHUTDOWN_TOKEN =
   "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
 const NON_BASE64_SHUTDOWN_TOKEN = `-${VALID_SHUTDOWN_TOKEN.slice(1)}`;
+const MALFORMED_BASE64_SHUTDOWN_TOKEN = `${VALID_SHUTDOWN_TOKEN}a`;
 
 const TEST_DATA = {
   ACCEPTED_PORT_CASES: [
@@ -270,6 +271,7 @@ const TEST_DATA = {
     VITE_APP_PORT: "abc",
     VITE_APP_SERVICE_NAME: "",
   },
+  MALFORMED_BASE64_SHUTDOWN_TOKEN,
   MISSING_ENV: castAsType<ImportMetaEnv>({}),
   NON_BASE64_SHUTDOWN_TOKEN,
   PORT_FORMAT_MESSAGE,
@@ -750,7 +752,28 @@ describe("appEnvSchema", () => {
         );
 
         expect(tokenIssues).toHaveLength(1);
-        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.CUSTOM);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
+      }
+    });
+
+    it("should reject a base64-alphabet token whose length is not a multiple of 4", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.MALFORMED_BASE64_SHUTDOWN_TOKEN,
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const tokenIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_SHUTDOWN_TOKEN",
+        );
+
+        expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
       }
     });
 
@@ -807,6 +830,7 @@ describe("appEnvSchema", () => {
           result.data.VITE_APP_SHUTDOWN_TOKEN,
         ).toEqualTypeOf<ShutdownToken>();
         expectTypeOf<ShutdownToken>().not.toEqualTypeOf<string>();
+        expectTypeOf<ShutdownToken>().not.toEqualTypeOf<ServiceName>();
         expectTypeOf<ShutdownToken>().toExtend<string>();
       }
     });
@@ -872,6 +896,7 @@ describe("appEnvSchema", () => {
           result.data.VITE_APP_BIND_ALL_IPV4,
         ).toEqualTypeOf<BindAllIpv4>();
         expectTypeOf<BindAllIpv4>().not.toEqualTypeOf<string>();
+        expectTypeOf<BindAllIpv4>().not.toEqualTypeOf<LoopbackHostV4>();
         expectTypeOf<BindAllIpv4>().toExtend<string>();
       }
     });
@@ -937,6 +962,7 @@ describe("appEnvSchema", () => {
           result.data.VITE_APP_LOOPBACK_HOST_V4_MAPPED,
         ).toEqualTypeOf<LoopbackHostV4Mapped>();
         expectTypeOf<LoopbackHostV4Mapped>().not.toEqualTypeOf<string>();
+        expectTypeOf<LoopbackHostV4Mapped>().not.toEqualTypeOf<LoopbackHostV4>();
         expectTypeOf<LoopbackHostV4Mapped>().toExtend<string>();
       }
     });
@@ -1002,6 +1028,7 @@ describe("appEnvSchema", () => {
           result.data.VITE_APP_LOOPBACK_HOST_V4,
         ).toEqualTypeOf<LoopbackHostV4>();
         expectTypeOf<LoopbackHostV4>().not.toEqualTypeOf<string>();
+        expectTypeOf<LoopbackHostV4>().not.toEqualTypeOf<BindAllIpv4>();
         expectTypeOf<LoopbackHostV4>().toExtend<string>();
       }
     });
