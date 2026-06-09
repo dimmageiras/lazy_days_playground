@@ -1,3 +1,4 @@
+import { ErrorHelper } from "@server/helpers/error.helper";
 import type { APIAppInstance } from "@server/types/instance.type";
 
 import { GRACEFUL_SHUTDOWN_TIMEOUT_MS } from "../constants/graceful-shutdown.constant";
@@ -6,6 +7,8 @@ import type {
   ShutdownHandler,
   ShutdownOptions,
 } from "../types/graceful-shutdown.type";
+
+const { normalizeError } = ErrorHelper;
 
 const buildShutdownOptions = (
   logger: APIAppInstance["log"],
@@ -25,7 +28,7 @@ const buildShutdownHandler = (instance: APIAppInstance): ShutdownHandler => {
     switch (true) {
       case Boolean(error): {
         instance.log.error(
-          { err: error },
+          normalizeError(error),
           "💥 Shutting down after an unhandled error",
         );
 

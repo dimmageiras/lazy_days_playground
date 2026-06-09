@@ -5,6 +5,7 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { BASE_URLS } from "./constants/base-urls.constant";
 import { AppEnvHelper } from "./helpers/app-env.helper";
+import { ErrorHelper } from "./helpers/error.helper";
 import { GracefulShutdownModule } from "./modules/graceful-shutdown";
 import { LoggerModule } from "./modules/logger";
 import { healthRoutes } from "./routes/app/health/health.route";
@@ -14,6 +15,7 @@ const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
 
 const { buildAppEnv } = AppEnvHelper;
+const { normalizeError, toError } = ErrorHelper;
 const { setupGracefulShutdown } = GracefulShutdownModule;
 const { buildLogger } = LoggerModule;
 
@@ -42,11 +44,8 @@ const buildApp = async (
         try {
           await instance.close();
         } catch (rawError) {
-          const error =
-            rawError instanceof Error ? rawError : new Error(`${rawError}`);
-
           instance.log.error(
-            { error: error.message, stack: error.stack },
+            normalizeError(rawError),
             "💥 Failed to close the instance during hot-reload dispose",
           );
         }
@@ -59,24 +58,15 @@ const buildApp = async (
 
     return instance;
   } catch (rawError) {
-    const error =
-      rawError instanceof Error ? rawError : new Error(`${rawError}`);
+    const error = toError(rawError);
 
-    instance.log.error(
-      { error: error.message, stack: error.stack },
-      "💥 Failed to build the app",
-    );
+    instance.log.error(normalizeError(error), "💥 Failed to build the app");
 
     try {
       await instance.close();
     } catch (rawCloseError) {
-      const closeError =
-        rawCloseError instanceof Error
-          ? rawCloseError
-          : new Error(`${rawCloseError}`);
-
       instance.log.error(
-        { error: closeError.message, stack: closeError.stack },
+        normalizeError(rawCloseError),
         "💥 Failed to close the app after a build failure",
       );
     }
