@@ -58,6 +58,9 @@ const { makeImmutableMap, makeLiteralMap, makeMap, ...TEST_DATA } = {
   get makeMap() {
     return () => new Map<string, number>(this.MAP_ENTRIES);
   },
+  get makeMapWithUndefined() {
+    return () => new Map<string, number | undefined>([["present", undefined]]);
+  },
 } as const;
 
 describe("MapHelper", () => {
@@ -121,6 +124,15 @@ describe("MapHelper", () => {
       expect,
     }) => {
       expect(getMapValue(makeMap(), "a", TEST_DATA.TYPE_TEST.FALLBACK)).toBe(1);
+    });
+
+    it("should return a stored undefined value, not the fallback, for a present key", ({
+      expect,
+    }) => {
+      const map = TEST_DATA.makeMapWithUndefined();
+      const { FALLBACK } = TEST_DATA.TYPE_TEST;
+
+      expect(getMapValue(map, "present", FALLBACK)).toBeUndefined();
     });
 
     it("should fold the fallback type into the return and drop undefined", ({

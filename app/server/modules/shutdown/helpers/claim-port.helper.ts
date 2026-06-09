@@ -20,6 +20,12 @@ const { requestCooperativeShutdown } = ShutdownHelper;
 const claimPort = async (instance: AppInstance): Promise<void> => {
   const port = instance.appEnv.port;
 
+  const abort = (message: string, extra?: Record<string, unknown>): never => {
+    instance.log.error({ port, ...extra }, `💥 ${message}`);
+
+    throw new Error(message);
+  };
+
   if (await tryListen(instance)) {
     return;
   }
@@ -46,7 +52,7 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
     },
     cooperative
       ? "🚧 Cooperative shutdown accepted but port not released in time — escalating to signal."
-      : "🚧 Cooperative shutdown request failed — escalating to signal.",
+      : "🚧 Escalating to signal.",
   );
 
   // Retry cooperative first: if a sibling new instance now owns the port,
@@ -54,12 +60,9 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
   const siblingClaim = await requestCooperativeShutdown(instance);
 
   if (siblingClaim) {
-    const message =
-      "Cooperative shutdown accepted by a sibling new instance — aborting to avoid stomping the handover winner.";
-
-    instance.log.error({ port }, `💥 ${message}`);
-
-    throw new Error(message);
+    abort(
+      "Cooperative shutdown accepted by a sibling new instance — aborting to avoid stomping the handover winner.",
+    );
   }
 
   const killResult = await killPortOwner(instance, SIGTERM);
@@ -70,15 +73,14 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
       return;
     }
 
-    const message = getMapValue(
-      KILL_FAILURE_MESSAGES,
-      killResult.reason,
-      `Port still in use after a failed force-kill (${killResult.reason}) — aborting.`,
+    abort(
+      getMapValue(
+        KILL_FAILURE_MESSAGES,
+        killResult.reason,
+        `Port still in use after a failed force-kill (${killResult.reason}) — aborting.`,
+      ),
+      { reason: killResult.reason },
     );
-
-    instance.log.error({ port, reason: killResult.reason }, `💥 ${message}`);
-
-    throw new Error(message);
   }
 
   if (await tryListenUntil(instance, FORCE_SHUTDOWN_TIMEOUT)) {
@@ -90,11 +92,7 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
     return;
   }
 
-  const message = "Port still in use after signal — aborting.";
-
-  instance.log.error({ port }, `💥 ${message}`);
-
-  throw new Error(message);
+  abort("Port still in use after signal — aborting.");
 };
 
 const ClaimPortHelper = Object.freeze({

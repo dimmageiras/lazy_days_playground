@@ -8,18 +8,25 @@ import { TIMING_IN_MS } from "../constants/timing.constant";
 
 const { LISTEN_POLL_INITIAL_INTERVAL, LISTEN_POLL_MAX_INTERVAL } = TIMING_IN_MS;
 
-const { isErrnoException } = ErrorHelper;
+const { isErrnoException, normalizeError } = ErrorHelper;
 const { delay } = TimingHelper;
 
 const tryListen = async (instance: AppInstance): Promise<boolean> => {
+  const { bindAllIpv4, port } = instance.appEnv;
+
   try {
-    await instance.listen({ port: instance.appEnv.port });
+    await instance.listen({ host: bindAllIpv4, port });
 
     return true;
   } catch (error) {
     if (isErrnoException(error) && error.code === "EADDRINUSE") {
       return false;
     }
+
+    instance.log.error(
+      { ...normalizeError(error), port },
+      "💥 Unexpected error while binding the port.",
+    );
 
     throw error;
   }

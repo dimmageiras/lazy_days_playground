@@ -12,7 +12,6 @@ type ZodIssue = $ZodIssue;
 const zBase64 = z.base64;
 const zEnum = z.enum;
 const zIpv4 = z.ipv4;
-const zIpv6 = z.ipv6;
 const zNumber = z.number;
 const zObject = z.object;
 const zString = z.string;
@@ -24,7 +23,6 @@ export {
   zBase64,
   zEnum,
   zIpv4,
-  zIpv6,
   zNumber,
   zObject,
   zString,

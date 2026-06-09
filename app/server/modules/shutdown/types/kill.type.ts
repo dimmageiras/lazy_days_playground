@@ -1,6 +1,6 @@
 type KillPortOwnerResult =
   | { ok: true }
-  | { ok: false; reason: "no-pid" | "kill-threw" };
+  | { ok: false; reason: "kill-threw" | "no-pid" | "self-pid" };
 
 type KillFailureReason = Exclude<KillPortOwnerResult, { ok: true }>["reason"];
 
