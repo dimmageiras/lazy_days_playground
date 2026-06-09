@@ -10,12 +10,18 @@ const buildFallbackLoggerOptions = (): LoggerOptions => {
   };
 };
 
-const buildLoggerOptions = (appEnv: AppEnv): LoggerOptions => {
+const buildLoggerOptions = (
+  appEnv: AppEnv,
+  redactPaths: ReadonlyArray<string> = [],
+): LoggerOptions => {
   const { isDevelopment, logLevel, serviceName } = appEnv;
 
   return {
     base: { service: serviceName },
     level: logLevel,
+    ...(redactPaths.length > 0
+      ? { redact: { censor: "[REDACTED]", paths: [...redactPaths] } }
+      : {}),
     ...(isDevelopment ? { transport: PRETTY_TRANSPORT } : {}),
   };
 };
