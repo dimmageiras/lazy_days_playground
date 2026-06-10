@@ -5,17 +5,17 @@ import { MapHelper } from "@shared/helpers/map.helper";
 import { KILL_FAILURE_MESSAGES } from "../constants/messages.constant";
 import { SIGNALS } from "../constants/signals.constant";
 import { TIMING_IN_MS } from "../constants/timing.constant";
+import { CooperativeShutdownHelper } from "./cooperative-shutdown.helper";
 import { KillHelper } from "./kill.helper";
 import { ListenHelper } from "./listen.helper";
-import { ShutdownHelper } from "./shutdown.helper";
 
 const { SIGTERM } = SIGNALS;
 const { COOPERATIVE_HANDOVER_TIMEOUT, FORCE_SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
+const { requestCooperativeShutdown } = CooperativeShutdownHelper;
 const { killPortOwner } = KillHelper;
 const { tryListen, tryListenUntil } = ListenHelper;
 const { getMapValue } = MapHelper;
-const { requestCooperativeShutdown } = ShutdownHelper;
 
 const claimPort = async (instance: AppInstance): Promise<void> => {
   const port = instance.appEnv.port;
