@@ -17,7 +17,7 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
-const { redactPaths, setupShutdown } = ShutdownModule;
+const { buildShutdown, redactPaths } = ShutdownModule;
 
 const buildApp = async (
   env: ViteAppEnv,
@@ -37,24 +37,7 @@ const buildApp = async (
       prefix: API_HEALTH,
     });
 
-    await setupShutdown(instance);
-
-    if (hot) {
-      hot.dispose(async () => {
-        try {
-          await instance.close();
-        } catch (rawError) {
-          instance.log.error(
-            normalizeError(rawError),
-            "💥 Failed to close the instance during hot-reload dispose",
-          );
-        }
-      });
-
-      hot.accept();
-    }
-
-    await instance.ready();
+    await buildShutdown(instance, hot);
 
     return instance;
   } catch (rawError) {
