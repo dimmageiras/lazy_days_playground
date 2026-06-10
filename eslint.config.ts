@@ -150,6 +150,7 @@ export default defineConfig([
   {
     files: ["**/*.spec.{ts,tsx}"],
     rules: {
+      "prefer-rest-params": "off",
       "sonarjs/assertions-in-tests": "off",
     },
   },
