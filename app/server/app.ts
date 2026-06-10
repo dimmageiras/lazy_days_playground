@@ -17,7 +17,7 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
-const { buildShutdown, redactPaths } = ShutdownModule;
+const {  redactPaths, setupShutdown } = ShutdownModule;
 
 const buildApp = async (
   env: ViteAppEnv,
@@ -37,7 +37,7 @@ const buildApp = async (
       prefix: API_HEALTH,
     });
 
-    await buildShutdown(instance, hot);
+    await setupShutdown(instance, hot);
 
     return instance;
   } catch (rawError) {

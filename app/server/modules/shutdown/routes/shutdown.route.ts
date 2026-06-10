@@ -24,9 +24,6 @@ const isAuthorizedToken = (provided: string, expected: string): boolean => {
   const providedBuffer = Buffer.from(provided);
   const expectedBuffer = Buffer.from(expected);
 
-  // Length-guard before timingSafeEqual (it throws on unequal lengths); the
-  // byte compare stays constant-time so the token can't be recovered through
-  // response timing.
   return (
     providedBuffer.length === expectedBuffer.length &&
     timingSafeEqual(providedBuffer, expectedBuffer)
@@ -56,9 +53,6 @@ const shutdownRoutes: FastifyPluginAsync<ShutdownRouteOptions> = async (
       return reply.code(UNAUTHORIZED).send({ accepted: false });
     }
 
-    // Arm shutdown on the first terminal event, guarded against double-fire:
-    // "finish" covers a clean flush, "close" covers a client abort that would
-    // otherwise leave the 202 acked but the process never shutting down.
     let armed = false;
 
     const arm = (): void => {

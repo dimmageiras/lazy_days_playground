@@ -43,9 +43,6 @@ const killPortOwner = async (
     return { ok: false, reason: lookup.reason };
   }
 
-  // Never signal ourselves or our parent: portToPid can resolve to this
-  // process (or a recycled/parent PID) and signalling it is a self-inflicted
-  // kill mid-startup.
   if (lookup.pid === process.pid || lookup.pid === process.ppid) {
     instance.log.warn(
       { pid: lookup.pid, port },
