@@ -25,15 +25,19 @@ const requestCooperativeShutdown = async (
   const shutdownToken = instance.appEnv.shutdownToken;
 
   try {
+    const allowedDomainAndPort =
+      `${instance.appEnv.bindAllIpv4}:${port}` as const;
     const shutdownPath = `${API_INTERNAL}/${SHUTDOWN}` as const;
-    const baseUrl = `${HTTP}://${instance.appEnv.bindAllIpv4}:${port}` as const;
+    const baseUrl = `${HTTP}://${allowedDomainAndPort}` as const;
     const shutdownUrl = `${baseUrl}${shutdownPath}` as const;
+    const parsedUrl = new URL(shutdownUrl);
 
     await axios.post(
-      shutdownUrl,
+      parsedUrl.href,
       {},
       {
         headers: { [SHUTDOWN_TOKEN]: shutdownToken },
+        maxRedirects: 0,
         signal: AbortSignal.timeout(SHUTDOWN_REQUEST_TIMEOUT),
       },
     );
