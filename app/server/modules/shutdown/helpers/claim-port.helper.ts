@@ -55,8 +55,6 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
       : "🚧 Escalating to signal.",
   );
 
-  // Retry cooperative first: if a sibling new instance now owns the port,
-  // force-killing would stomp the legitimate handover winner.
   const siblingClaim = await requestCooperativeShutdown(instance);
 
   if (siblingClaim) {
@@ -68,7 +66,6 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
   const killResult = await killPortOwner(instance, SIGTERM);
 
   if (!killResult.ok) {
-    // Port may have freed between the kill attempt and now — try one last listen.
     if (await tryListen(instance)) {
       return;
     }
