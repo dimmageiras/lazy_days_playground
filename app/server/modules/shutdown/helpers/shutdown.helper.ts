@@ -87,10 +87,14 @@ const requestCooperativeShutdown = async (
     const baseUrl = `${HTTP}://${instance.appEnv.bindAllIpv4}:${port}` as const;
     const shutdownUrl = `${baseUrl}${shutdownPath}` as const;
 
-    await axios.post(shutdownUrl, {
-      headers: { [SHUTDOWN_TOKEN]: shutdownToken },
-      signal: AbortSignal.timeout(SHUTDOWN_REQUEST_TIMEOUT),
-    });
+    await axios.post(
+      shutdownUrl,
+      {},
+      {
+        headers: { [SHUTDOWN_TOKEN]: shutdownToken },
+        signal: AbortSignal.timeout(SHUTDOWN_REQUEST_TIMEOUT),
+      },
+    );
 
     return true;
   } catch (error) {
