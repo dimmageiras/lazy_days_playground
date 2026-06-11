@@ -57,9 +57,6 @@ const shutdownRoutes: FastifyPluginAsync<ShutdownRouteOptions> = async (
         .send({ accepted: false, timestamp: getCurrentTimestamp() });
     }
 
-    // Arm shutdown on the first terminal event, guarded against double-fire:
-    // "finish" covers a clean flush, "close" covers a client abort that would
-    // otherwise leave the 202 acked but the process never shutting down.
     let armed = false;
 
     const arm = (): void => {

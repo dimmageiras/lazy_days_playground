@@ -34,20 +34,13 @@ const setupShutdown = async (
     handle,
     prefix: API_INTERNAL,
   });
-};
-
-const buildShutdown = async (
-  instance: AppInstance,
-  hot: ImportMeta["hot"],
-): Promise<void> => {
-  await setupShutdown(instance, hot);
 
   await claimPort(instance);
 };
 
 const ShutdownModule = Object.freeze({
-  buildShutdown,
   redactPaths: REDACT_PATHS,
+  setupShutdown,
 } as const);
 
 export { ShutdownModule };

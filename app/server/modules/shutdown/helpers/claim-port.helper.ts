@@ -12,9 +12,9 @@ import { ShutdownHelper } from "./shutdown.helper";
 const { SIGTERM } = SIGNALS;
 const { COOPERATIVE_HANDOVER_TIMEOUT, FORCE_SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
-const { getMapValue } = MapHelper;
 const { killPortOwner } = KillHelper;
 const { tryListen, tryListenUntil } = ListenHelper;
+const { getMapValue } = MapHelper;
 const { requestCooperativeShutdown } = ShutdownHelper;
 
 const claimPort = async (instance: AppInstance): Promise<void> => {
