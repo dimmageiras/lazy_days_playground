@@ -45,6 +45,10 @@ export default defineConfig([
       "simple-import-sort": pluginSimpleImportSort,
     },
     rules: {
+      "@typescript-eslint/consistent-type-assertions": [
+        "error",
+        { assertionStyle: "never" },
+      ],
       "@typescript-eslint/consistent-type-definitions": "error",
       "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/explicit-module-boundary-types": "error",
@@ -135,18 +139,25 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/*.spec.{ts,tsx}"],
-    rules: {
-      "sonarjs/assertions-in-tests": "off",
-    },
-  },
-  {
     files: ["**/*.config.ts"],
     rules: {
       "no-restricted-exports": [
         "error",
         { restrictDefaultExports: { direct: false } },
       ],
+    },
+  },
+  {
+    files: ["**/*.spec.{ts,tsx}"],
+    rules: {
+      "prefer-rest-params": "off",
+      "sonarjs/assertions-in-tests": "off",
+    },
+  },
+  {
+    files: ["app/shared/helpers/types.helper.ts"],
+    rules: {
+      "@typescript-eslint/consistent-type-assertions": "off",
     },
   },
 ]) satisfies Array<Linter.Config>;
