@@ -49,7 +49,7 @@ const shutdownRoutes: FastifyPluginAsync<ShutdownRouteOptions> = async (
     ) {
       request.log.warn(
         { ip: request.ip },
-        "⚠️ Rejected an unauthorized shutdown request",
+        "🚧 Rejected an unauthorized shutdown request",
       );
 
       return reply
