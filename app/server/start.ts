@@ -3,13 +3,11 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 import { buildApp } from "./app";
 import { EnvVarHelper } from "./helpers/env-var.helper";
 import { ErrorHelper } from "./helpers/error.helper";
-import { GracefulShutdownModule } from "./modules/graceful-shutdown";
 import { LoggerModule } from "./modules/logger";
 import type { AppInstance } from "./types/instance.type";
 
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
 const { normalizeError } = ErrorHelper;
-const { registerGracefulShutdown } = GracefulShutdownModule;
 const { buildFallbackLogger } = LoggerModule;
 
 let validatedEnv: ViteAppEnv;
@@ -37,23 +35,9 @@ try {
 let instance: AppInstance | undefined;
 
 try {
-  instance = await buildApp(validatedEnv);
-
-  const shutdownHandle = registerGracefulShutdown(instance);
+  instance = await buildApp(validatedEnv, import.meta.hot);
 
   await instance.listen({ port: instance.appEnv.port });
-
-  if (import.meta.hot) {
-    const startedInstance = instance;
-
-    import.meta.hot.dispose(async () => {
-      shutdownHandle.uninstall();
-
-      await startedInstance.close();
-    });
-
-    import.meta.hot.accept();
-  }
 } catch (rawError) {
   const normalizedError = normalizeError(rawError);
 

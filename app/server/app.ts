@@ -6,6 +6,7 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 import { BASE_URLS } from "./constants/base-urls.constant";
 import { AppEnvHelper } from "./helpers/app-env.helper";
 import { ErrorHelper } from "./helpers/error.helper";
+import { GracefulShutdownModule } from "./modules/graceful-shutdown";
 import { LoggerModule } from "./modules/logger";
 import { healthRoutes } from "./routes/app/health/health.route";
 import type { AppInstance } from "./types/instance.type";
@@ -15,9 +16,13 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
+const { setupGracefulShutdown } = GracefulShutdownModule;
 const { buildLogger } = LoggerModule;
 
-const buildApp = async (env: ViteAppEnv): Promise<AppInstance> => {
+const buildApp = async (
+  env: ViteAppEnv,
+  hot: ImportMeta["hot"],
+): Promise<AppInstance> => {
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
@@ -31,6 +36,8 @@ const buildApp = async (env: ViteAppEnv): Promise<AppInstance> => {
     await instance.register(healthRoutes, {
       prefix: API_HEALTH,
     });
+
+    await setupGracefulShutdown(instance, hot);
 
     await instance.ready();
 
