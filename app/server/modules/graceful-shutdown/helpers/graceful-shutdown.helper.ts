@@ -12,25 +12,41 @@ const { SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
 const { normalizeError } = ErrorHelper;
 
-const buildShutdownHandler =
-  (instance: AppInstance): ShutdownHandler =>
-  async ({ err: error, signal }: ShutdownContext): Promise<void> => {
-    if (error) {
-      instance.log.error(
-        normalizeError(error),
-        "💥 Shutting down after an unhandled error",
-      );
-    } else {
-      instance.log.info(`Received ${signal}, shutting down…`);
+const buildShutdownHandler = (instance: AppInstance): ShutdownHandler => {
+  return async ({
+    err: error,
+    manual,
+    signal,
+  }: ShutdownContext): Promise<void> => {
+    switch (true) {
+      case Boolean(error): {
+        instance.log.error(
+          normalizeError(error),
+          "💥 Shutting down after an unhandled error",
+        );
+
+        break;
+      }
+
+      case manual: {
+        instance.log.info("Manual shutdown requested, shutting down…");
+
+        break;
+      }
+
+      default: {
+        instance.log.info(`Received ${signal}, shutting down…`);
+      }
     }
 
     await instance.close();
   };
+};
 
-const buildShutdownOptions = (instance: AppInstance): ShutdownOptions => {
+const buildShutdownOptions = (logger: AppInstance["log"]): ShutdownOptions => {
   return {
     delay: SHUTDOWN_TIMEOUT,
-    logger: instance.log,
+    logger,
   };
 };
 

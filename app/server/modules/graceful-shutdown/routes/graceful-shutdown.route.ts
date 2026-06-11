@@ -1,17 +1,23 @@
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 
 import { HTTP_STATUS } from "@shared/constants/http.constant";
 import { StringHelper } from "@shared/helpers/string.helper";
 
 import { ENDPOINTS } from "../constants/endpoints.constant";
+import type { GracefulShutdownRouteOptions } from "../types/graceful-shutdown.type";
 
 const { SHUTDOWN } = ENDPOINTS;
 const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 
 const { isString } = StringHelper;
 
-const gracefulShutdownRoutes: FastifyPluginAsync = async (instance) => {
-  instance.post(`/${SHUTDOWN}`, (request, reply) => {
+const gracefulShutdownRoutes: FastifyPluginAsync<
+  GracefulShutdownRouteOptions
+> = async (instance, { handle }) => {
+  const shutdownRequestRoute = (
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ): FastifyReply => {
     const token = request.headers["x-shutdown-token"];
 
     if (!isString(token) || token !== instance.appEnv.shutdownToken) {
@@ -21,18 +27,13 @@ const gracefulShutdownRoutes: FastifyPluginAsync = async (instance) => {
     }
 
     reply.raw.once("finish", () => {
-      instance.log.info("Shutdown requested via endpoint, closing…");
-
-      instance.close().catch((error: unknown) => {
-        instance.log.error(
-          { err: error },
-          "Failed to close after shutdown request",
-        );
-      });
+      handle.close();
     });
 
     return reply.code(ACCEPTED).send({ accepted: true });
-  });
+  };
+
+  instance.post(`/${SHUTDOWN}`, shutdownRequestRoute);
 };
 
 export { gracefulShutdownRoutes };
