@@ -1,5 +1,33 @@
-import type { Set as ImmutableSet } from "immutable";
+import type { Map as ImmutableMap, Set as ImmutableSet } from "immutable";
 import type { KeyAsString, LiteralToPrimitive } from "type-fest";
+
+type AnyMap =
+  | ImmutableMap<unknown, unknown>
+  | Map<unknown, unknown>
+  | ReadonlyMap<unknown, unknown>;
+
+type MapKey<TMap extends AnyMap> =
+  TMap extends ImmutableMap<infer Key, unknown>
+    ? Key
+    : TMap extends ReadonlyMap<infer Key, unknown>
+      ? Key
+      : never;
+
+type MapValue<TMap extends AnyMap> =
+  TMap extends ImmutableMap<unknown, infer Value>
+    ? Value
+    : TMap extends ReadonlyMap<unknown, infer Value>
+      ? Value
+      : never;
+
+type MapValueAt<
+  TMap extends AnyMap,
+  TKey extends MapKey<TMap> | (string & {}) | (number & {}),
+> = [MapKey<TMap>] extends [TKey]
+  ? MapValue<TMap> | undefined
+  : TKey extends MapKey<TMap>
+    ? MapValue<TMap>
+    : undefined;
 
 type ObjectEntries<TObject extends Record<string, unknown>> = Array<
   {
@@ -20,4 +48,12 @@ type SetValueInput<
   TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
 > = SetValue<TSet> | LiteralToPrimitive<SetValue<TSet>>;
 
-export type { ObjectEntries, SetValue, SetValueInput };
+export type {
+  AnyMap,
+  MapKey,
+  MapValue,
+  MapValueAt,
+  ObjectEntries,
+  SetValue,
+  SetValueInput,
+};
