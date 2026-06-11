@@ -1,5 +1,2 @@
-import { LoggerModule } from "./logger.module";
-import type { Logger } from "./types/logger.type";
-
-export type { Logger };
-export { LoggerModule };
+export { LoggerModule } from "./logger.module";
+export type { Logger } from "./types/logger.type";

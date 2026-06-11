@@ -8,7 +8,7 @@ import { AppEnvHelper } from "./helpers/app-env.helper";
 import { ErrorHelper } from "./helpers/error.helper";
 import { LoggerModule } from "./modules/logger";
 import { healthRoutes } from "./routes/app/health/health.route";
-import type { APIAppInstance } from "./types/instance.type";
+import type { AppInstance } from "./types/instance.type";
 
 const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
@@ -17,10 +17,10 @@ const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
 
-const buildApp = async (env: ViteAppEnv): Promise<APIAppInstance> => {
+const buildApp = async (env: ViteAppEnv): Promise<AppInstance> => {
   const appEnv = buildAppEnv(env);
 
-  const instance: APIAppInstance = fastify({
+  const instance: AppInstance = fastify({
     loggerInstance: buildLogger(appEnv),
     requestTimeout: SECONDS_TEN,
   });

@@ -51,7 +51,7 @@ const TEST_DATA = {
   EXPECTED_FORMATTED_TIMESTAMP: "2025-01-03 15:00:00 UTC",
   EXPECTED_LOCAL_TIMESTAMP_SHAPE:
     /^\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}:\d{2} [AP]M$/,
-  EXPECTED_TIMESTAMP_MS: 1735916400000, // 2025-01-03T15:00:00.000Z
+  EXPECTED_TIMESTAMP_MS: 1735916400000,
   FIXED_NOW: "2025-01-03T15:00:00.000Z",
   FUTURE_DATE_CASES: [
     {
@@ -145,8 +145,6 @@ describe("DateHelper", () => {
 
   describe("toLocalTimestamp", (it) => {
     it("should format the timestamp for local display", ({ expect }) => {
-      // Shape-match (MM/DD/YYYY, hh:mm:ss A) instead of value — the helper
-      // formats in local tz, so CI machines on different zones would diverge.
       const result = toLocalTimestamp(TEST_DATA.DATE);
 
       expect(result).toMatch(TEST_DATA.EXPECTED_LOCAL_TIMESTAMP_SHAPE);
