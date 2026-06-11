@@ -1,6 +1,7 @@
 import type {
   AnyMap,
   MapKey,
+  MapValue,
   MapValueAt,
 } from "@shared/types/app/utility-types";
 
@@ -10,7 +11,7 @@ const { castAsType } = TypesHelper;
 
 const getMapValue = <
   TMap extends AnyMap,
-  TKey extends MapKey<TMap> | (string & {}),
+  TKey extends MapKey<TMap> | (number & {}) | (string & {}),
   TFallback = undefined,
 >(
   map: TMap,
@@ -18,11 +19,11 @@ const getMapValue = <
   fallback?: TFallback,
 ): TFallback extends undefined
   ? MapValueAt<TMap, TKey>
-  : Exclude<MapValueAt<TMap, TKey>, undefined> | TFallback =>
+  : MapValue<TMap> | TFallback =>
   castAsType<
     TFallback extends undefined
       ? MapValueAt<TMap, TKey>
-      : Exclude<MapValueAt<TMap, TKey>, undefined> | TFallback
+      : MapValue<TMap> | TFallback
   >(map.has(key) ? map.get(key) : fallback);
 
 const MapHelper = Object.freeze({

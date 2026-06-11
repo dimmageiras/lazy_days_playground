@@ -61,6 +61,14 @@ const { makeImmutableMap, makeLiteralMap, makeMap, ...TEST_DATA } = {
   get makeMapWithUndefined() {
     return () => new Map<string, number | undefined>([["present", undefined]]);
   },
+  get makeNumberMap() {
+    return () =>
+      new Map<1 | 2 | 3, number>([
+        [1, 10],
+        [2, 20],
+        [3, 30],
+      ]);
+  },
 } as const;
 
 describe("MapHelper", () => {
@@ -133,6 +141,10 @@ describe("MapHelper", () => {
       const { FALLBACK } = TEST_DATA.TYPE_TEST;
 
       expect(getMapValue(map, "present", FALLBACK)).toBeUndefined();
+
+      expectTypeOf(getMapValue(map, "present", FALLBACK)).toEqualTypeOf<
+        MapValue<typeof map> | typeof FALLBACK
+      >();
     });
 
     it("should fold the fallback type into the return and drop undefined", ({
@@ -144,6 +156,42 @@ describe("MapHelper", () => {
       expect(getMapValue(map, NON_KEY, FALLBACK)).toBe(FALLBACK);
 
       expectTypeOf(getMapValue(map, NON_KEY, FALLBACK)).toEqualTypeOf<
+        MapValue<typeof map> | typeof FALLBACK
+      >();
+    });
+
+    it("should support number-keyed maps and an arbitrary number key", ({
+      expect,
+    }) => {
+      const map = TEST_DATA.makeNumberMap();
+      const arbitraryKey = castAsType<number>(1);
+
+      expect(getMapValue(map, 1)).toBe(10);
+
+      expectTypeOf(getMapValue(map, 1)).toEqualTypeOf<MapValue<typeof map>>();
+
+      expect(getMapValue(map, arbitraryKey)).toBe(10);
+
+      expectTypeOf(getMapValue(map, arbitraryKey)).toEqualTypeOf<
+        MapValue<typeof map> | undefined
+      >();
+    });
+
+    it("should support symbol-keyed maps", ({ expect }) => {
+      const presentKey = Symbol("present");
+      const absentKey = castAsType<symbol>(Symbol("absent"));
+      const map = new Map<symbol, number>([[presentKey, 7]]);
+      const { FALLBACK } = TEST_DATA.TYPE_TEST;
+
+      expect(getMapValue(map, presentKey)).toBe(7);
+
+      expectTypeOf(getMapValue(map, presentKey)).toEqualTypeOf<
+        MapValue<typeof map>
+      >();
+
+      expect(getMapValue(map, absentKey, FALLBACK)).toBe(FALLBACK);
+
+      expectTypeOf(getMapValue(map, absentKey, FALLBACK)).toEqualTypeOf<
         MapValue<typeof map> | typeof FALLBACK
       >();
     });
