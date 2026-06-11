@@ -1,7 +1,7 @@
 import dayjs, { type ConfigType } from "dayjs";
 import utcPlugin from "dayjs/plugin/utc.js";
 
-import type { TIMING_IN_S } from "@shared/constants/timing.constant";
+import type { TimingInSeconds } from "@shared/types/timing.type";
 
 // Extend dayjs with UTC plugin once at module load; downstream `.utc()` calls depend on it.
 dayjs.extend(utcPlugin);
@@ -18,9 +18,7 @@ const getCurrentTimestamp = (): number => {
   return dayjs().valueOf();
 };
 
-const getFutureDate = (
-  maxAgeSeconds: (typeof TIMING_IN_S)[keyof typeof TIMING_IN_S],
-): Date => {
+const getFutureDate = (maxAgeSeconds: TimingInSeconds): Date => {
   return dayjs().add(maxAgeSeconds, "seconds").toDate();
 };
 

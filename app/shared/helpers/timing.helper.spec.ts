@@ -26,9 +26,6 @@ const TEST_DATA = {
       name: "should forward Infinity to setTimeout",
     },
   ],
-  // Disjoint markers, not durations: per-test filtering of the worker-shared
-  // setTimeout spy keys on `ms`, so these must never collide with any
-  // PASSTHROUGH_CASES value or the resolve tests would cross-match siblings.
   RESOLVE_MARKER_MS: -1001,
   RESOLVE_PENDING_MARKER_MS: -1002,
 } as const;
