@@ -1,5 +1,11 @@
-const toError = (value: unknown): Error => {
-  return value instanceof Error ? value : new Error(String(value));
+const isErrnoException = (error: unknown): error is NodeJS.ErrnoException => {
+  return error instanceof Error && "code" in error;
+};
+
+const toError = (errorToConvert: unknown): Error => {
+  return errorToConvert instanceof Error
+    ? errorToConvert
+    : new Error(String(errorToConvert));
 };
 
 const normalizeError = (
@@ -11,6 +17,7 @@ const normalizeError = (
 };
 
 const ErrorHelper = Object.freeze({
+  isErrnoException,
   normalizeError,
   toError,
 } as const);

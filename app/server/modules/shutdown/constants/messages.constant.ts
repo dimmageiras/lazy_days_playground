@@ -1,7 +1,19 @@
 import type { Signals } from "close-with-grace";
 import { Map } from "immutable";
 
+import type { KillFailureReason } from "../types/kill.type";
 import { SIGNALS } from "./signals.constant";
+
+const KILL_FAILURE_MESSAGES = Map<KillFailureReason, string>([
+  [
+    "no-pid",
+    "No listening process found owning the port and the port is still in use — aborting.",
+  ],
+  [
+    "kill-threw",
+    "Failed to signal the port owner and the port is still in use — aborting.",
+  ],
+]);
 
 const SHUTDOWN_PHRASES = Object.freeze({
   SHUTTING_DOWN: "shutting down…",
@@ -54,4 +66,4 @@ const SIGNAL_MESSAGES = Map<Signals, string>([
   ],
 ]);
 
-export { SHUTDOWN_PHRASES, SIGNAL_MESSAGES };
+export { KILL_FAILURE_MESSAGES, SHUTDOWN_PHRASES, SIGNAL_MESSAGES };

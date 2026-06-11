@@ -3,14 +3,14 @@ import closeWithGrace from "close-with-grace";
 import { BASE_URLS } from "@server/constants/base-urls.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
-import { GracefulShutdownHelper } from "./helpers/graceful-shutdown.helper";
-import { gracefulShutdownRoutes } from "./routes/graceful-shutdown.route";
+import { ShutdownHelper } from "./helpers/shutdown.helper";
+import { shutdownRoutes } from "./routes/shutdown.route";
 
 const { API_INTERNAL } = BASE_URLS;
 
-const { buildShutdownHandler, buildShutdownOptions } = GracefulShutdownHelper;
+const { buildShutdownHandler, buildShutdownOptions } = ShutdownHelper;
 
-const setupGracefulShutdown = async (instance: AppInstance): Promise<void> => {
+const setupShutdown = async (instance: AppInstance): Promise<void> => {
   const handle = closeWithGrace(
     buildShutdownOptions(instance.log),
     buildShutdownHandler(instance),
@@ -20,14 +20,14 @@ const setupGracefulShutdown = async (instance: AppInstance): Promise<void> => {
     handle.uninstall();
   });
 
-  await instance.register(gracefulShutdownRoutes, {
+  await instance.register(shutdownRoutes, {
     handle,
     prefix: API_INTERNAL,
   });
 };
 
-const GracefulShutdownModule = Object.freeze({
-  setupGracefulShutdown,
+const ShutdownModule = Object.freeze({
+  setupShutdown,
 } as const);
 
-export { GracefulShutdownModule };
+export { ShutdownModule };

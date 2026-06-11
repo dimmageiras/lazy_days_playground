@@ -12,13 +12,20 @@ import type {
   ShutdownContext,
   ShutdownHandler,
   ShutdownOptions,
-} from "../types/graceful-shutdown.type";
+} from "../types/shutdown.type";
 
 const { SHUTTING_DOWN } = SHUTDOWN_PHRASES;
 const { SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
 
 const { normalizeError } = ErrorHelper;
 const { getMapValue } = MapHelper;
+
+const buildShutdownOptions = (logger: AppInstance["log"]): ShutdownOptions => {
+  return {
+    delay: SHUTDOWN_TIMEOUT,
+    logger,
+  };
+};
 
 const buildShutdownHandler = (instance: AppInstance): ShutdownHandler => {
   return async ({
@@ -59,16 +66,9 @@ const buildShutdownHandler = (instance: AppInstance): ShutdownHandler => {
   };
 };
 
-const buildShutdownOptions = (logger: AppInstance["log"]): ShutdownOptions => {
-  return {
-    delay: SHUTDOWN_TIMEOUT,
-    logger,
-  };
-};
-
-const GracefulShutdownHelper = Object.freeze({
+const ShutdownHelper = Object.freeze({
   buildShutdownHandler,
   buildShutdownOptions,
 } as const);
 
-export { GracefulShutdownHelper };
+export { ShutdownHelper };
