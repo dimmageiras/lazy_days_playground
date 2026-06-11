@@ -12,10 +12,10 @@ const { isErrnoException, normalizeError } = ErrorHelper;
 const { delay } = TimingHelper;
 
 const tryListen = async (instance: AppInstance): Promise<boolean> => {
-  const { bindAllIpv4, port } = instance.appEnv;
+  const { bindAllIpv4: host, port } = instance.appEnv;
 
   try {
-    await instance.listen({ host: bindAllIpv4, port });
+    await instance.listen({ host, port });
 
     return true;
   } catch (error) {

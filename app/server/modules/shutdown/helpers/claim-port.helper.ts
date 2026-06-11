@@ -66,7 +66,6 @@ const claimPort = async (instance: AppInstance): Promise<void> => {
   const killResult = await killPortOwner(instance, SIGTERM);
 
   if (!killResult.ok) {
-    // Port may have freed between the kill attempt and now — try one last listen.
     if (await tryListen(instance)) {
       return;
     }
