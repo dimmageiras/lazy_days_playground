@@ -1,4 +1,6 @@
 import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
+import { Buffer } from "node:buffer";
+import { timingSafeEqual } from "node:crypto";
 
 import { HTTP_STATUS } from "@shared/constants/http.constant";
 import { StringHelper } from "@shared/helpers/string.helper";
@@ -11,6 +13,16 @@ const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 
 const { isString } = StringHelper;
 
+const isAuthorizedToken = (provided: string, expected: string): boolean => {
+  const providedBuffer = Buffer.from(provided);
+  const expectedBuffer = Buffer.from(expected);
+
+  return (
+    !Buffer.compare(providedBuffer, expectedBuffer) &&
+    timingSafeEqual(providedBuffer, expectedBuffer)
+  );
+};
+
 const gracefulShutdownRoutes: FastifyPluginAsync<
   GracefulShutdownRouteOptions
 > = async (instance, { handle }) => {
@@ -20,7 +32,10 @@ const gracefulShutdownRoutes: FastifyPluginAsync<
   ): FastifyReply => {
     const token = request.headers["x-shutdown-token"];
 
-    if (!isString(token) || token !== instance.appEnv.shutdownToken) {
+    if (
+      !isString(token) ||
+      !isAuthorizedToken(token, instance.appEnv.shutdownToken)
+    ) {
       request.log.warn("Rejected an unauthorized shutdown request");
 
       return reply.code(UNAUTHORIZED).send({ accepted: false });
