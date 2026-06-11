@@ -1,6 +1,8 @@
-import type { Set as ImmutableSet } from "immutable";
-
-import type { SetValue, SetValueInput } from "@shared/types/app/utility-types";
+import type {
+  AnySet,
+  SetValue,
+  SetValueInput,
+} from "@shared/types/app/utility-types";
 
 const addValuesInPlace = <TSet extends Set<unknown>>(
   set: TSet,
@@ -11,9 +13,7 @@ const addValuesInPlace = <TSet extends Set<unknown>>(
   }
 };
 
-const hasSetValue = <
-  TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
->(
+const hasSetValue = <TSet extends AnySet>(
   set: TSet,
   value: SetValue<TSet> | (PropertyKey & {}),
 ): value is SetValue<TSet> => set.has(value);
