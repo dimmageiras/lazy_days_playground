@@ -37,6 +37,11 @@ const TEST_DATA = {
       input: {},
       name: "should coerce a plain-object thrown value",
     },
+    {
+      expected: "Symbol(x)",
+      input: Symbol("x"),
+      name: "should coerce a symbol thrown value",
+    },
   ],
   ERRNO_CASES: [
     {

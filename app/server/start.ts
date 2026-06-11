@@ -19,7 +19,7 @@ try {
 
   if (isEnvValidationError(error)) {
     fallbackLogger.fatal(
-      { error: error.message, stack: error.stack },
+      normalizeError(error),
       "💥 Failed to validate the environment",
     );
   } else {
