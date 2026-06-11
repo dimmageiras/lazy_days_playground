@@ -1,9 +1,12 @@
 import type { Signals } from "close-with-grace";
 import { portToPid } from "pid-port";
 
+import { ErrorHelper } from "@server/helpers/error.helper";
 import type { AppInstance } from "@server/types/instance.type";
 
 import type { KillPortOwnerResult, PidLookupResult } from "../types/kill.type";
+
+const { normalizeError } = ErrorHelper;
 
 const findPidOnPort = async (
   instance: AppInstance,
@@ -20,7 +23,7 @@ const findPidOnPort = async (
     return { found: false, reason: "no-pid" };
   } catch (error) {
     instance.log.warn(
-      { err: error, port },
+      { ...normalizeError(error), port },
       "🚧 Port-owner lookup found no process.",
     );
 
@@ -38,6 +41,15 @@ const killPortOwner = async (
 
   if (!lookup.found) {
     return { ok: false, reason: lookup.reason };
+  }
+
+  if (lookup.pid === process.pid || lookup.pid === process.ppid) {
+    instance.log.warn(
+      { pid: lookup.pid, port },
+      "🚧 Port owner resolved to this process — refusing to signal it.",
+    );
+
+    return { ok: false, reason: "self-pid" };
   }
 
   instance.log.warn(

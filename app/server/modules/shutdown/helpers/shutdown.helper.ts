@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { BASE_URLS } from "@server/constants/base-urls.constant";
-import { HOSTS } from "@server/constants/hosts.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
 import type { AppInstance } from "@server/types/instance.type";
 
@@ -24,7 +23,6 @@ import type {
 const { API_INTERNAL } = BASE_URLS;
 const { SHUTDOWN } = ENDPOINTS;
 const { SHUTDOWN_TOKEN } = HEADERS;
-const { LOOPBACK_HOST_V4 } = HOSTS;
 const { HTTP } = HTTP_SCHEMES;
 const { SHUTTING_DOWN } = SHUTDOWN_PHRASES;
 const { SHUTDOWN_REQUEST_TIMEOUT, SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
@@ -85,7 +83,9 @@ const requestCooperativeShutdown = async (
   const shutdownToken = instance.appEnv.shutdownToken;
 
   try {
-    const shutdownUrl = `${HTTP}://${LOOPBACK_HOST_V4}:${port}${API_INTERNAL}/${SHUTDOWN}`;
+    const shutdownPath = `${API_INTERNAL}/${SHUTDOWN}` as const;
+    const baseUrl = `${HTTP}://${instance.appEnv.bindAllIpv4}:${port}` as const;
+    const shutdownUrl = `${baseUrl}${shutdownPath}` as const;
 
     await axios.post(
       shutdownUrl,
@@ -99,7 +99,7 @@ const requestCooperativeShutdown = async (
     return true;
   } catch (error) {
     instance.log.warn(
-      { err: error, port },
+      { ...normalizeError(error), port },
       "🚧 Cooperative shutdown request failed.",
     );
 

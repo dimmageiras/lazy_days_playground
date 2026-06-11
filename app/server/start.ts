@@ -37,7 +37,10 @@ let instance: AppInstance | undefined;
 try {
   instance = await buildApp(validatedEnv, import.meta.hot);
 
-  await instance.listen({ port: instance.appEnv.port });
+  await instance.listen({
+    host: instance.appEnv.bindAllIpv4,
+    port: instance.appEnv.port,
+  });
 } catch (rawError) {
   const normalizedError = normalizeError(rawError);
 

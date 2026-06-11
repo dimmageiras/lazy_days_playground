@@ -8,7 +8,7 @@ const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("error.helper");
 
-const { normalizeError, toError } = ErrorHelper;
+const { isErrnoException, normalizeError, toError } = ErrorHelper;
 
 const TEST_DATA = {
   COERCED_VALUE_CASES: [
@@ -43,9 +43,44 @@ const TEST_DATA = {
       name: "should coerce a symbol thrown value",
     },
   ],
+  ERRNO_CASES: [
+    {
+      expected: true,
+      input: Object.assign(new Error("x"), { code: "EADDRINUSE" }),
+      name: "should accept an Error carrying a string code",
+    },
+    {
+      expected: false,
+      input: Object.assign(new Error("x"), { code: 42 }),
+      name: "should reject an Error whose code is not a string",
+    },
+    {
+      expected: false,
+      input: new Error("x"),
+      name: "should reject a plain Error with no code",
+    },
+    {
+      expected: false,
+      input: "boom",
+      name: "should reject a non-Error value",
+    },
+    {
+      expected: false,
+      input: { code: "EADDRINUSE" },
+      name: "should reject a plain object carrying a code",
+    },
+  ],
 } as const;
 
 describe("ErrorHelper", () => {
+  describe("isErrnoException", (it) => {
+    TEST_DATA.ERRNO_CASES.forEach(({ expected, input, name }) => {
+      it(name, ({ expect }) => {
+        expect(isErrnoException(input)).toBe(expected);
+      });
+    });
+  });
+
   describe("toError", (it) => {
     it("should return the same Error instance unchanged", ({ expect }) => {
       const error = new Error("boom");
