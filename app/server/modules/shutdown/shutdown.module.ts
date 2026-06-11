@@ -5,15 +5,15 @@ import type { AppInstance } from "@server/types/instance.type";
 
 import { REDACT_PATHS } from "./constants/redact.constant";
 import { ClaimPortHelper } from "./helpers/claim-port.helper";
+import { CloseWithGraceHelper } from "./helpers/close-with-grace.helper";
 import { HotReloadHelper } from "./helpers/hot-reload.helper";
-import { ShutdownHelper } from "./helpers/shutdown.helper";
 import { shutdownRoutes } from "./routes/shutdown.route";
 
 const { API_INTERNAL } = BASE_URLS;
 
 const { claimPort } = ClaimPortHelper;
+const { buildShutdownHandler, buildShutdownOptions } = CloseWithGraceHelper;
 const { acceptHotReload } = HotReloadHelper;
-const { buildShutdownHandler, buildShutdownOptions } = ShutdownHelper;
 
 const setupShutdown = async (
   instance: AppInstance,
