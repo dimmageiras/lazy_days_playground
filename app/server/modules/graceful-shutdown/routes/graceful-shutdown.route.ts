@@ -2,17 +2,24 @@ import type { FastifyPluginAsync, FastifyReply, FastifyRequest } from "fastify";
 import { Buffer } from "node:buffer";
 import { timingSafeEqual } from "node:crypto";
 
+import { HOSTS } from "@server/constants/hosts.constant";
+
 import { HTTP_STATUS } from "@shared/constants/http.constant";
 import { DateHelper } from "@shared/helpers/date.helper";
+import { SetHelper } from "@shared/helpers/set.helper";
 import { StringHelper } from "@shared/helpers/string.helper";
 
 import { ENDPOINTS } from "../constants/endpoints.constant";
+import { HEADERS } from "../constants/headers.constant";
 import type { GracefulShutdownRouteOptions } from "../types/graceful-shutdown.type";
 
 const { SHUTDOWN } = ENDPOINTS;
+const { SHUTDOWN_TOKEN } = HEADERS;
+const { LOOPBACK_HOSTS } = HOSTS;
 const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 
 const { getCurrentTimestamp } = DateHelper;
+const { hasSetValue } = SetHelper;
 const { isString } = StringHelper;
 
 const isAuthorizedToken = (provided: string, expected: string): boolean => {
@@ -32,9 +39,10 @@ const gracefulShutdownRoutes: FastifyPluginAsync<
     request: FastifyRequest,
     reply: FastifyReply,
   ): FastifyReply => {
-    const token = request.headers["x-shutdown-token"];
+    const token = Reflect.get(request.headers, SHUTDOWN_TOKEN);
 
     if (
+      !hasSetValue(LOOPBACK_HOSTS, request.ip) ||
       !isString(token) ||
       !isAuthorizedToken(token, instance.appEnv.shutdownToken)
     ) {
