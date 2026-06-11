@@ -20,7 +20,7 @@ const isAuthorizedToken = (provided: string, expected: string): boolean => {
   const expectedBuffer = Buffer.from(expected);
 
   return (
-    !Buffer.compare(providedBuffer, expectedBuffer) &&
+    providedBuffer.length === expectedBuffer.length &&
     timingSafeEqual(providedBuffer, expectedBuffer)
   );
 };
@@ -38,16 +38,32 @@ const gracefulShutdownRoutes: FastifyPluginAsync<
       !isString(token) ||
       !isAuthorizedToken(token, instance.appEnv.shutdownToken)
     ) {
-      request.log.warn("Rejected an unauthorized shutdown request");
+      request.log.warn(
+        { ip: request.ip },
+        "⚠️ Rejected an unauthorized shutdown request",
+      );
 
       return reply
         .code(UNAUTHORIZED)
         .send({ accepted: false, timestamp: getCurrentTimestamp() });
     }
 
-    reply.raw.once("finish", () => {
+    // Arm shutdown on the first terminal event, guarded against double-fire:
+    // "finish" covers a clean flush, "close" covers a client abort that would
+    // otherwise leave the 202 acked but the process never shutting down.
+    let armed = false;
+
+    const arm = (): void => {
+      if (armed) {
+        return;
+      }
+
+      armed = true;
       handle.close();
-    });
+    };
+
+    reply.raw.once("finish", arm);
+    reply.raw.once("close", arm);
 
     return reply
       .code(ACCEPTED)
