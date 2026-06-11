@@ -2,10 +2,12 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { buildApp } from "./app";
 import { EnvVarHelper } from "./helpers/env-var.helper";
+import { ErrorHelper } from "./helpers/error.helper";
 import { LoggerModule } from "./modules/logger";
 import type { APIAppInstance } from "./types/instance.type";
 
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
+const { normalizeError } = ErrorHelper;
 const { buildFallbackLogger } = LoggerModule;
 
 let validatedEnv: ViteAppEnv;
@@ -17,15 +19,12 @@ try {
 
   if (isEnvValidationError(error)) {
     fallbackLogger.fatal(
-      { error: error.message, stack: error.stack },
+      normalizeError(error),
       "💥 Failed to validate the environment",
     );
   } else {
-    const normalizedError =
-      error instanceof Error ? error : new Error(`${error}`);
-
     fallbackLogger.fatal(
-      { error: normalizedError.message, stack: normalizedError.stack },
+      normalizeError(error),
       "💥 Unexpected error while validating the environment",
     );
   }
@@ -40,34 +39,23 @@ try {
 
   await instance.listen({ port: instance.appEnv.port });
 } catch (rawError) {
-  const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
+  const normalizedError = normalizeError(rawError);
 
   if (!instance) {
     const fallbackLogger = buildFallbackLogger();
 
-    fallbackLogger.fatal(
-      { error: error.message, stack: error.stack },
-      "💥 Failed to start the server",
-    );
+    fallbackLogger.fatal(normalizedError, "💥 Failed to start the server");
 
     process.exit(1);
   }
 
-  instance.log.fatal(
-    { error: error.message, stack: error.stack },
-    "💥 Failed to start the server",
-  );
+  instance.log.fatal(normalizedError, "💥 Failed to start the server");
 
   try {
     await instance.close();
   } catch (rawCloseError) {
-    const closeError =
-      rawCloseError instanceof Error
-        ? rawCloseError
-        : new Error(`${rawCloseError}`);
-
     instance.log.fatal(
-      { error: closeError.message, stack: closeError.stack },
+      normalizeError(rawCloseError),
       "💥 Failed to close the server after a startup failure",
     );
   }
