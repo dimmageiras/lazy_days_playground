@@ -6,6 +6,8 @@ type AnyMap =
   | Map<unknown, unknown>
   | ReadonlyMap<unknown, unknown>;
 
+type AnySet = ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>;
+
 type MapKey<TMap extends AnyMap> =
   TMap extends ImmutableMap<infer Key, unknown>
     ? Key
@@ -35,21 +37,20 @@ type ObjectEntries<TObject extends Record<string, unknown>> = Array<
   }[KeyAsString<TObject>]
 >;
 
-type SetValue<
-  TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
-> =
+type SetValue<TSet extends AnySet> =
   TSet extends ImmutableSet<infer Value>
     ? Value
     : TSet extends ReadonlySet<infer Value>
       ? Value
       : never;
 
-type SetValueInput<
-  TSet extends ImmutableSet<unknown> | Set<unknown> | ReadonlySet<unknown>,
-> = SetValue<TSet> | LiteralToPrimitive<SetValue<TSet>>;
+type SetValueInput<TSet extends AnySet> =
+  | SetValue<TSet>
+  | LiteralToPrimitive<SetValue<TSet>>;
 
 export type {
   AnyMap,
+  AnySet,
   MapKey,
   MapValue,
   MapValueAt,

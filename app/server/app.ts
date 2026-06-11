@@ -17,7 +17,7 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
-const {  redactPaths, setupShutdown } = ShutdownModule;
+const { redactPaths, setupShutdown } = ShutdownModule;
 
 const buildApp = async (
   env: ViteAppEnv,
