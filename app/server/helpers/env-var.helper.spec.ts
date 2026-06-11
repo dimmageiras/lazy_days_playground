@@ -14,7 +14,18 @@ const { castAsType } = TypesHelper;
 
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
 
+const VALID_SHUTDOWN_TOKEN =
+  "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
+
 const TEST_DATA = {
+  EXPECTED_VALIDATED_ENV: {
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
+    VITE_APP_IS_DEVELOPMENT: false,
+    VITE_APP_LOG_LEVEL: "info",
+    VITE_APP_PORT: 5173,
+    VITE_APP_SERVICE_NAME: "lazy-days",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
+  },
   INVALID_ENV: castAsType<ImportMetaEnv>({
     VITE_APP_PORT: "0",
     VITE_APP_SERVICE_NAME: "",
@@ -26,11 +37,14 @@ const TEST_DATA = {
     { name: "should reject a hex literal port", port: "0x100" },
     { name: "should reject a scientific-notation port", port: "1e3" },
     { name: "should reject a signed port", port: "+5173" },
+    { name: "should reject a negative-signed port", port: "-5173" },
     { name: "should reject a decimal port", port: "5173.0" },
   ],
   VALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_PORT: "5173",
     VITE_APP_SERVICE_NAME: "lazy-days",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
 } as const;
 
@@ -39,12 +53,9 @@ describe("EnvVarHelper", () => {
     it("should return the validated branded record for a valid env", ({
       expect,
     }) => {
-      expect(validateEnv(TEST_DATA.VALID_ENV)).toEqual({
-        VITE_APP_IS_DEVELOPMENT: false,
-        VITE_APP_LOG_LEVEL: "info",
-        VITE_APP_PORT: 5173,
-        VITE_APP_SERVICE_NAME: "lazy-days",
-      });
+      expect(validateEnv(TEST_DATA.VALID_ENV)).toStrictEqual(
+        TEST_DATA.EXPECTED_VALIDATED_ENV,
+      );
     });
 
     it("should throw a message naming both the invalid port and the empty service name", ({
@@ -69,7 +80,7 @@ describe("EnvVarHelper", () => {
         .split("\n")
         .filter((line) => line.startsWith("- "));
 
-      expect(issueLines).toHaveLength(2);
+      expect(issueLines).toHaveLength(4);
     });
 
     TEST_DATA.REJECTED_PORT_FORMAT_CASES.forEach(({ name, port }) => {
