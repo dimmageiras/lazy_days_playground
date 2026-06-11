@@ -41,7 +41,14 @@ const buildApp = async (
 
     if (hot) {
       hot.dispose(async () => {
-        await instance.close();
+        try {
+          await instance.close();
+        } catch (rawError) {
+          instance.log.error(
+            normalizeError(rawError),
+            "💥 Failed to close the instance during hot-reload dispose",
+          );
+        }
       });
 
       hot.accept();
