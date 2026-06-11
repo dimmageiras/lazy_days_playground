@@ -12,7 +12,7 @@ const buildFallbackLoggerOptions = (): LoggerOptions => {
 
 const buildLoggerOptions = (
   appEnv: AppEnv,
-  redactPaths: ReadonlyArray<string> = [],
+  redactPaths: ReadonlyArray<string>,
 ): LoggerOptions => {
   const { isDevelopment, logLevel, serviceName } = appEnv;
 
