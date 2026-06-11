@@ -3,6 +3,7 @@ import { Buffer } from "node:buffer";
 import { timingSafeEqual } from "node:crypto";
 
 import { HTTP_STATUS } from "@shared/constants/http.constant";
+import { DateHelper } from "@shared/helpers/date.helper";
 import { StringHelper } from "@shared/helpers/string.helper";
 
 import { ENDPOINTS } from "../constants/endpoints.constant";
@@ -11,6 +12,7 @@ import type { GracefulShutdownRouteOptions } from "../types/graceful-shutdown.ty
 const { SHUTDOWN } = ENDPOINTS;
 const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 
+const { getCurrentTimestamp } = DateHelper;
 const { isString } = StringHelper;
 
 const isAuthorizedToken = (provided: string, expected: string): boolean => {
@@ -38,14 +40,18 @@ const gracefulShutdownRoutes: FastifyPluginAsync<
     ) {
       request.log.warn("Rejected an unauthorized shutdown request");
 
-      return reply.code(UNAUTHORIZED).send({ accepted: false });
+      return reply
+        .code(UNAUTHORIZED)
+        .send({ accepted: false, timestamp: getCurrentTimestamp() });
     }
 
     reply.raw.once("finish", () => {
       handle.close();
     });
 
-    return reply.code(ACCEPTED).send({ accepted: true });
+    return reply
+      .code(ACCEPTED)
+      .send({ accepted: true, timestamp: getCurrentTimestamp() });
   };
 
   instance.post(`/${SHUTDOWN}`, shutdownRequestRoute);
