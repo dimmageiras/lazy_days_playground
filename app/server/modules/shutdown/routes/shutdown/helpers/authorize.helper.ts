@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify";
 
+import { HEADERS } from "@server/constants/headers.constant";
 import { HOSTS } from "@server/constants/hosts.constant";
-import { HEADERS } from "@server/modules/shutdown/constants/headers.constant";
 
 import { SetHelper } from "@shared/helpers/set.helper";
 import { StringHelper } from "@shared/helpers/string.helper";

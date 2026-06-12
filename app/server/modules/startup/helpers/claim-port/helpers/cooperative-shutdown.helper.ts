@@ -1,16 +1,16 @@
 import axios from "axios";
 
 import { BASE_URLS } from "@server/constants/base-urls.constant";
+import { API_INTERNAL_ENDPOINTS } from "@server/constants/endpoints.constant";
+import { HEADERS } from "@server/constants/headers.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
-import { ENDPOINTS } from "@server/modules/shutdown/constants/endpoints.constant";
-import { HEADERS } from "@server/modules/shutdown/constants/headers.constant";
-import { TIMING_IN_MS } from "@server/modules/shutdown/constants/timing.constant";
+import { TIMING_IN_MS } from "@server/modules/startup/constants/timing.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { HTTP_SCHEMES } from "@shared/constants/http.constant";
 
 const { API_INTERNAL } = BASE_URLS;
-const { SHUTDOWN } = ENDPOINTS;
+const { SHUTDOWN } = API_INTERNAL_ENDPOINTS;
 const { SHUTDOWN_TOKEN } = HEADERS;
 const { HTTP } = HTTP_SCHEMES;
 const { SHUTDOWN_REQUEST_TIMEOUT } = TIMING_IN_MS;
@@ -29,10 +29,10 @@ const requestCooperativeShutdown = async (
     const shutdownPath = `${API_INTERNAL}/${SHUTDOWN}` as const;
     const baseUrl = `${HTTP}://${allowedDomainAndPort}` as const;
     const shutdownUrl = `${baseUrl}${shutdownPath}` as const;
-    const parsedInternalUrl = new URL(shutdownUrl);
+    const parsedUrl = new URL(shutdownUrl);
 
     await axios.post(
-      parsedInternalUrl.href,
+      parsedUrl.href,
       {},
       {
         headers: { [SHUTDOWN_TOKEN]: shutdownToken },

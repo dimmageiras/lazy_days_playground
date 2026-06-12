@@ -1,5 +1,5 @@
 import { ErrorHelper } from "@server/helpers/error.helper";
-import { TIMING_IN_MS } from "@server/modules/shutdown/constants/timing.constant";
+import { TIMING_IN_MS } from "@server/modules/startup/constants/timing.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { TimingHelper } from "@shared/helpers/timing.helper";

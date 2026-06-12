@@ -1,4 +1,4 @@
-import { HEADERS } from "./headers.constant";
+import { HEADERS } from "@server/constants/headers.constant";
 
 const { SHUTDOWN_TOKEN } = HEADERS;
 

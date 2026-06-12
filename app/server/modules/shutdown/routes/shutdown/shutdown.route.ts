@@ -1,4 +1,4 @@
-import { ENDPOINTS } from "@server/modules/shutdown/constants/endpoints.constant";
+import { API_INTERNAL_ENDPOINTS } from "@server/constants/endpoints.constant";
 import type { ShutdownRouteOptions } from "@server/modules/shutdown/types/shutdown.type";
 import type { AppInstance } from "@server/types/instance.type";
 
@@ -8,7 +8,7 @@ import { DateHelper } from "@shared/helpers/date.helper";
 import { ArmHelper } from "./helpers/arm.helper";
 import { AuthorizeHelper } from "./helpers/authorize.helper";
 
-const { SHUTDOWN } = ENDPOINTS;
+const { SHUTDOWN } = API_INTERNAL_ENDPOINTS;
 const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 
 const { armShutdownOnResponse } = ArmHelper;

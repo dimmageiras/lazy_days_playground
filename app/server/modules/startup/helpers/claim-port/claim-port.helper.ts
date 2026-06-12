@@ -1,6 +1,6 @@
-import { KILL_FAILURE_MESSAGES } from "@server/modules/shutdown/constants/messages.constant";
-import { SIGNALS } from "@server/modules/shutdown/constants/signals.constant";
-import { TIMING_IN_MS } from "@server/modules/shutdown/constants/timing.constant";
+import { SIGNALS } from "@server/constants/signals.constant";
+import { KILL_FAILURE_MESSAGES } from "@server/modules/startup/constants/messages.constant";
+import { TIMING_IN_MS } from "@server/modules/startup/constants/timing.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { MapHelper } from "@shared/helpers/map.helper";

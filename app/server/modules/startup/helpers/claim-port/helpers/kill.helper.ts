@@ -5,7 +5,7 @@ import { ErrorHelper } from "@server/helpers/error.helper";
 import type {
   KillPortOwnerResult,
   PidLookupResult,
-} from "@server/modules/shutdown/types/kill.type";
+} from "@server/modules/startup/types/kill.type";
 import type { AppInstance } from "@server/types/instance.type";
 
 const { normalizeError } = ErrorHelper;
