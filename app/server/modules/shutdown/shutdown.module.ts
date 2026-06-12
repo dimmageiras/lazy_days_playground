@@ -4,7 +4,7 @@ import { BASE_URLS } from "@server/constants/base-urls.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { REDACT_PATHS } from "./constants/redact.constant";
-import { ClaimPortHelper } from "./helpers/claim-port.helper";
+import { ClaimPortHelper } from "./helpers/claim-port";
 import { CloseWithGraceHelper } from "./helpers/close-with-grace.helper";
 import { HotReloadHelper } from "./helpers/hot-reload.helper";
 import { routes } from "./routes";

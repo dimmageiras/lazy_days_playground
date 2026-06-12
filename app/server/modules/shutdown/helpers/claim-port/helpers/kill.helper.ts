@@ -2,9 +2,11 @@ import type { Signals } from "close-with-grace";
 import { portToPid } from "pid-port";
 
 import { ErrorHelper } from "@server/helpers/error.helper";
+import type {
+  KillPortOwnerResult,
+  PidLookupResult,
+} from "@server/modules/shutdown/types/kill.type";
 import type { AppInstance } from "@server/types/instance.type";
-
-import type { KillPortOwnerResult, PidLookupResult } from "../types/kill.type";
 
 const { normalizeError } = ErrorHelper;
 

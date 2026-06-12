@@ -2,13 +2,12 @@ import axios from "axios";
 
 import { BASE_URLS } from "@server/constants/base-urls.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
+import { ENDPOINTS } from "@server/modules/shutdown/constants/endpoints.constant";
+import { HEADERS } from "@server/modules/shutdown/constants/headers.constant";
+import { TIMING_IN_MS } from "@server/modules/shutdown/constants/timing.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { HTTP_SCHEMES } from "@shared/constants/http.constant";
-
-import { ENDPOINTS } from "../constants/endpoints.constant";
-import { HEADERS } from "../constants/headers.constant";
-import { TIMING_IN_MS } from "../constants/timing.constant";
 
 const { API_INTERNAL } = BASE_URLS;
 const { SHUTDOWN } = ENDPOINTS;
@@ -30,10 +29,10 @@ const requestCooperativeShutdown = async (
     const shutdownPath = `${API_INTERNAL}/${SHUTDOWN}` as const;
     const baseUrl = `${HTTP}://${allowedDomainAndPort}` as const;
     const shutdownUrl = `${baseUrl}${shutdownPath}` as const;
-    const parsedUrl = new URL(shutdownUrl);
+    const parsedInternalUrl = new URL(shutdownUrl);
 
     await axios.post(
-      parsedUrl.href,
+      parsedInternalUrl.href,
       {},
       {
         headers: { [SHUTDOWN_TOKEN]: shutdownToken },

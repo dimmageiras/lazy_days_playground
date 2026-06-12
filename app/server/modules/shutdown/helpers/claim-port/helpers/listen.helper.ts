@@ -1,10 +1,9 @@
 import { ErrorHelper } from "@server/helpers/error.helper";
+import { TIMING_IN_MS } from "@server/modules/shutdown/constants/timing.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { TimingHelper } from "@shared/helpers/timing.helper";
 import type { TimingInMilliseconds } from "@shared/types/timing.type";
-
-import { TIMING_IN_MS } from "../constants/timing.constant";
 
 const { LISTEN_POLL_INITIAL_INTERVAL, LISTEN_POLL_MAX_INTERVAL } = TIMING_IN_MS;
 

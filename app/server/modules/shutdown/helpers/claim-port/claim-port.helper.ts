@@ -1,13 +1,13 @@
+import { KILL_FAILURE_MESSAGES } from "@server/modules/shutdown/constants/messages.constant";
+import { SIGNALS } from "@server/modules/shutdown/constants/signals.constant";
+import { TIMING_IN_MS } from "@server/modules/shutdown/constants/timing.constant";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { MapHelper } from "@shared/helpers/map.helper";
 
-import { KILL_FAILURE_MESSAGES } from "../constants/messages.constant";
-import { SIGNALS } from "../constants/signals.constant";
-import { TIMING_IN_MS } from "../constants/timing.constant";
-import { CooperativeShutdownHelper } from "./cooperative-shutdown.helper";
-import { KillHelper } from "./kill.helper";
-import { ListenHelper } from "./listen.helper";
+import { CooperativeShutdownHelper } from "./helpers/cooperative-shutdown.helper";
+import { KillHelper } from "./helpers/kill.helper";
+import { ListenHelper } from "./helpers/listen.helper";
 
 const { SIGTERM } = SIGNALS;
 const { COOPERATIVE_HANDOVER_TIMEOUT, FORCE_SHUTDOWN_TIMEOUT } = TIMING_IN_MS;
