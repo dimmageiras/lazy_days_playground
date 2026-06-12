@@ -7,7 +7,7 @@ import { REDACT_PATHS } from "./constants/redact.constant";
 import { ClaimPortHelper } from "./helpers/claim-port.helper";
 import { CloseWithGraceHelper } from "./helpers/close-with-grace.helper";
 import { HotReloadHelper } from "./helpers/hot-reload.helper";
-import { shutdownRoutes } from "./routes/shutdown.route";
+import { routes } from "./routes";
 
 const { API_INTERNAL } = BASE_URLS;
 
@@ -30,7 +30,7 @@ const setupShutdown = async (
 
   await acceptHotReload(instance, hot);
 
-  await instance.register(shutdownRoutes, {
+  await instance.register(routes, {
     handle,
     prefix: API_INTERNAL,
   });
