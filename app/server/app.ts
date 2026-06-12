@@ -8,7 +8,7 @@ import { AppEnvHelper } from "./helpers/app-env.helper";
 import { ErrorHelper } from "./helpers/error.helper";
 import { LoggerModule } from "./modules/logger";
 import { ShutdownModule } from "./modules/shutdown";
-import { healthRoutes } from "./routes/app/health/health.route";
+import { apiHealthRoutes } from "./routes/api/health";
 import type { AppInstance } from "./types/instance.type";
 
 const { API_HEALTH } = BASE_URLS;
@@ -33,7 +33,7 @@ const buildApp = async (
   try {
     instance.decorate("appEnv", appEnv);
 
-    await instance.register(healthRoutes, {
+    await instance.register(apiHealthRoutes, {
       prefix: API_HEALTH,
     });
 
