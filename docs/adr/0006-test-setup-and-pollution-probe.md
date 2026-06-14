@@ -1,0 +1,77 @@
+# 0006. Test setup factory and the gated pollution probe
+
+- **Status:** Proposed
+- **Date:** 2026-06-14
+
+## Context
+
+The test runner reuses a single non-isolated worker across every spec file, runs tests concurrently inside a file, and shuffles ordering (see [ADR-0005](./0005-test-runner-worker-model.md)). That posture buys startup speed but removes the per-file sandbox that would otherwise erase leaked state between files. Two consequences fall out of it, and this ADR resolves both as one decision.
+
+First, anything declared at a module's top level is evaluated once and persists for the worker's whole lifetime. The project's answer is the **stateless-dispatcher** contract: a shared helper holds no module-level state; per-call state lives in the closure of the function it exports. But some infrastructure genuinely needs state that outlives a single invocation — a registry of which spec files advanced a shared fake clock, read back at file exit; and a monkey-patch that must install exactly once per worker. That state has nowhere legal to live under the dispatcher contract. There is also an ergonomic force: if specs imported each helper directly, every spec would carry a churning import list and there would be no single choke point guaranteeing the runner's required side-effects ran before collection.
+
+Second, a spec that adds a global key, attaches a process listener, leaves a fake clock installed, or never releases a Node handle silently pollutes whatever runs next in the same worker — and because ordering is shuffled, the failure surfaces elsewhere, intermittently, with no obvious culprit. A sharper hazard rides on top: fake timers are global to the worker, so a concurrent sibling that *advances* the shared clock breaks every other test waiting on a timer. Off-the-shelf leak detectors do not understand this concurrency contract — they would miss the shared-clock risk or drown it in handle-table noise.
+
+## Decision
+
+Specs reach shared infrastructure through a single **zero-argument setup factory**, and the setup module is the **sole home for cross-spec infrastructure state**. On top of that state, ship a **bespoke pollution probe**, gated off by default, that diffs state across test and file boundaries and flags only the genuinely unsafe flavour of fake-timer use.
+
+**The setup factory.** Specs never import helpers directly; they call the factory and destructure from a frozen namespace bundle (`const { someHelper } = ProjectSetup();`). The factory's return type is **derived, not hand-written** — a union-to-intersection transform over the helpers barrel's exported namespaces — so adding a helper widens the bundle automatically and no existing spec is touched. The factory carries three responsibilities beyond destructuring sugar: it **forces side-effect order** (matcher registration, environment shims, and the once-per-worker hijack all evaluate before collection); it **hosts the once-per-worker install** behind a re-entrancy guard; and it **makes helper additions transparent** to consumers. As belt-and-suspenders, the setup module is *also* registered as a runner `setupFiles` entry — the factory is the belt, the registration the suspenders — so the side-effects run even for a spec that skipped the factory call.
+
+**State ownership is asymmetric.** Setup files evaluate once per worker under non-isolated execution, so module-level state there is intentional and correct — it is exactly where the fake-timer registry and the install-once flag belong. The same state in a helper would be a leak. This is the load-bearing complement to the stateless-dispatcher contract: **state is permitted in the setup module, forbidden in helper modules** — a binary rule that is trivial to enforce in review.
+
+**The probe and the Pattern-A/B line.** At each boundary the probe captures an immutable snapshot — the set of `globalThis` keys, a count of process listeners per event, whether a fake clock is installed (covering both the install flavour and the set-the-system-time flavour, since the latter does not flip the "is fake timers" signal), and, at the file boundary only, a count of Node active resources — then diffs consecutive snapshots and writes a tagged stderr line when a surface changed: a leak tag, a fake-timer-risk tag, and a runtime-gap tag. Fixing the clock to a fixed instant and restoring real timers in cleanup (**Pattern A**) is concurrency-safe — siblings converge on the same instant — and is deliberately *not* tracked. Advancing the shared clock (**Pattern B**) breaks siblings and is the only fake-timer use treated as a risk. A worker-global registry enforces the line by wrapping each clock-advancing entry point so any call records the offending file path; each method is wrapped by an explicit, individually written assignment rather than dynamic iteration, keeping the intercepted set auditable.
+
+**False-positive guards on active resources.** The handle table churns constantly under concurrency, so it is fenced four ways: **file-boundary only** (the per-test window overlaps siblings too heavily to attribute a handle); **increase-only** (only net growth is a leak; a release or net-zero churn is noise); **settled via per-key minimum** (sampled twice across a short drain of macrotask and real-timer ticks, keeping the lower count, so a transient in flight during one sample collapses away); and **settle skipped when a fake clock is installed** (the drain awaits real timers a fake clock would never fire — and the still-installed clock is itself reported as a leak).
+
+**Off by default; toggled portably.** Both the probe and the registry wrapping are gated on a single binary environment variable, read at runtime; when off — the default for the ordinary and coverage runs — the probe is a no-op and the wrapping is never installed, so the everyday run pays nothing. The gate is set through the runner's `--mode` flag, **mapped to the environment variable inside the runner config**, never via an inline shell env-var prefix. The development platform runs package scripts under cmd.exe / PowerShell, neither of which honours a leading `VAR=1` POSIX prefix; mapping the mode in the config resolves it in JavaScript, so the toggle behaves identically across shells. The dedicated diagnostic run passes the mode flag (and redirects output to a log file); the default and coverage runs omit it and resolve to off. The contract is simple: a green run with the probe enabled means no detected pollution, and any emitted line is a real signal.
+
+**Per-file attribution depends, knowingly, on a Jest-compat surface.** Both the setup hijack and the probe need the current spec's absolute path as the registry key, read inside lifecycle hooks. The runner exposes it only through a Jest-parity field on the assertion-state accessor; no first-class, context-scoped equivalent exists in hooks. Three mitigations make the fragile dependency acceptable: an **inline pin** at every read naming it a Jest-compat surface to re-verify on a major runner bump; a **type-guarded runtime fallback** that, on a missing or non-string field, emits a distinct warning line naming the spec and stating attribution and registry cleanup will be skipped for it, then continues — degrading to a visible no-op, never a crash or silent mis-attribution; and a **major-bump reverify checklist** in the testing doc requiring the field to still be populated inside the relevant hooks and to still hold the absolute path before any breaking upgrade ships, or attribution must move to a runner-native source first.
+
+## Alternatives considered
+
+- **Specs import helpers directly from the barrel.** Rejected: loses the single choke point guaranteeing side-effect order before collection, spreads a churning import list across every spec, and offers no home for the install-once hijack.
+- **A hand-maintained return type for the factory.** Rejected: it rots. A literal type listing each namespace must be edited on every helper change, and a stale entry compiles fine while silently dropping a key. Deriving the type from the barrel makes the barrel the single source of truth.
+- **Pass arguments to the factory.** Rejected to keep the call site uniform and diffable. Per-spec variation belongs in the destructured helper's own call (closure-captured); a zero-arg signature also lets the return be one frozen singleton rather than rebuilt per call.
+- **Allow infrastructure state in helpers, relax the dispatcher contract.** Rejected: under non-isolated execution, unrestricted module-level state in a helper is indistinguishable from a leak. Confining state to the setup module — which is expected to persist — preserves the invariant that any state found in a helper is a bug.
+- **Rely solely on the `setupFiles` registration, drop the factory.** Rejected: registration runs the side-effects but gives specs no typed handle and no compile-time widening when helpers are added. The two are complementary, not redundant.
+- **Re-enable runner isolation instead of probing.** Rejected: isolation *hides* leaks rather than exposing them, and forfeits the startup speed the shared-worker model was chosen for.
+- **A generic off-the-shelf leak detector.** Rejected: no general tool understands the Pattern-A/B distinction, so it would miss the shared-clock risk or flood the output with active-resource false positives the guards exist to suppress.
+- **Always-on probing.** Rejected: the per-boundary snapshots and clock-method wrapping add cost the routine run should not pay. Diagnostics belong behind a flag.
+- **Per-test active-resource diffing.** Rejected: the per-test window overlaps concurrent siblings so heavily that a handle cannot be attributed to the test that opened it — noise, not signal.
+- **Track Pattern A as well, for symmetry.** Rejected: Pattern A is concurrency-safe, so flagging it would punish a correct pattern and erode trust in the risk tag.
+- **Inline env-var prefix in the package script.** The naive "simpler" option a future maintainer will reach for. Rejected: the POSIX prefix sets nothing on the Windows development platform, so the diagnostic run would silently pass with the probe disabled. A toggle that fails open and stays quiet is worse than none.
+- **A cross-platform env-setting shim.** Rejected as unnecessary surface — a dependency and wrapper layer purely to set one variable when the runner already exposes a mode switch and a config seam.
+- **A separate runner config per mode.** Rejected as duplication: forking the whole config to flip one variable means every other setting must be kept in sync across two files.
+- **A tri-state or richer gate.** Rejected as premature: the diagnostics are uniformly on or off, so one binary gate suffices.
+- **Derive the file path from a stack trace or `import.meta`.** Rejected: attribution runs inside hooks registered by the probe, so `import.meta` resolves to the helper module, not the spec; stack-trace parsing is more fragile than the field it would replace.
+- **Pass the spec's path in explicitly per spec.** Rejected: pushes boilerplate into every spec and makes the key author-supplied, so a copy-paste slip mis-attributes pollution to the wrong file — the exact failure the probe exists to catch.
+- **Block on a first-class runner API, or wrap the field in a shim that throws on absence.** Rejected: no documented context-scoped equivalent exists today, so blocking forfeits a present-tense diagnostic; and a hard throw would abort an otherwise-green run, which opt-in tooling must never do. The pins-plus-loud-fallback-plus-checklist posture is the deliberate middle ground.
+
+## Consequences
+
+### Positive
+
+- Adding a helper is a one-line barrel change; no spec is edited and the bundle's type widens automatically.
+- Every spec evaluates the runner-required side-effects in a guaranteed order through one choke point, and the once-per-worker install is provably once because it sits behind a single guarded call in the setup module.
+- The state-ownership rule is binary and easy to enforce: module-level state in a helper is always wrong, in the setup module always expected.
+- Silent cross-file leaks become loud and triageable on demand without the everyday run paying for it, and a green probed run is a meaningful all-clear rather than a wall of noise.
+- The Pattern-A/B line is enforced mechanically, so the one fake-timer operation that breaks concurrent siblings is caught while the safe pattern is left alone; the explicit per-method wraps keep the intercepted surface auditable.
+- The toggle behaves identically across cmd.exe, PowerShell, and POSIX shells; the safe (off) state requires no action, and the mode-to-env mapping lives in one place.
+- Per-file attribution works with no per-spec boilerplate and no author-supplied key to get wrong, and is self-documenting at the point of use.
+
+### Accepted negatives
+
+- One layer of indirection sits between a spec and the helper it uses, and the derived return type leans on a structural type-level transform; a reader unfamiliar with union-to-intersection inference may find it harder than an explicit interface, and a helper export shaped to collide under intersection surfaces as a type error rather than an obvious runtime one.
+- The setup module carries two distinct jobs — exposing the bundle and owning infrastructure state — and the belt-and-suspenders registration duplicates the side-effect guarantee; both are intentional but are extra things to keep in sync if the module moves.
+- The probe is an instrument, not a gate: a leak is only caught if someone runs with the flag on and reads the output, so a leak can still merge unnoticed.
+- The active-resource surface sees only Node libuv handles; environment-level timers (for example a test-DOM environment's own) are invisible, so a leaked environment timer is not caught here.
+- The clock-method wrapping is coupled to the runner's set of advance methods; a renamed or newly added method silently escapes attribution until the explicit wrap list is updated.
+- The diagnostic rests on a semi-documented Jest-compat field the runner could change or drop on a major version; a breaking upgrade carries a mandatory manual step — walk the reverify checklist and, if it fails, port attribution to a runner-native source before merging.
+- The mode-to-env mapping lives in config, not at the call site, so a package-script reader sees `--mode=<diagnostic>`, not the variable name, and must open the config to learn which gate it sets — and the arrangement is easy to "simplify" incorrectly back into a silently-broken inline prefix, which is exactly why it is recorded here as a review-time check.
+
+## Related
+
+- [ADR-0005](./0005-test-runner-worker-model.md) — the single-worker, non-isolated, concurrent, shuffled pool (and the `clearMocks: false` posture) whose persistence rule makes both the state-ownership asymmetry and the probe necessary.
+- [`../testing/README.md`](../testing/README.md) — the canonical testing conventions: the setup-factory consumption pattern, the stateless-dispatcher and state-ownership rules, the probe's output semantics, the Pattern-A/B rule, and the major-bump reverify checklist.
+- [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs.
+- [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream test-runner skill and its precedence rule with the project testing doc.
