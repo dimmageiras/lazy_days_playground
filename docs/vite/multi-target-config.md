@@ -1,6 +1,6 @@
 # Vite multi-target config layout
 
-> **Scope of this doc.** This file documents the multi-target Vite layout decided in [ADR-0001](../adr/0001-vite-multi-target-config.md): one shared Vite base plus one thin config per runtime, composed via `mergeConfig`. The wired runtime is the Fastify server, run through `vite-node` in development. The shared base sets the contract any additional per-runtime config merges from; this doc describes the layout so a contributor adding a second runtime config drops it into a shape the base already supports.
+> **Scope of this doc.** This file documents the multi-target Vite layout decided in [ADR-0001](../adr/0001-vite-multi-target-and-dev-runtime.md): one shared Vite base plus one thin config per runtime, composed via `mergeConfig`. The wired runtime is the Fastify server, run through `vite-node` in development. The shared base sets the contract any additional per-runtime config merges from; this doc describes the layout so a contributor adding a second runtime config drops it into a shape the base already supports.
 
 The layout is built around one shared base plus one thin Vite config per runtime, composed via `mergeConfig` from `vite`:
 
@@ -98,4 +98,4 @@ Run the server with `node` directly (Node ≥22 native TS stripping). Works, but
 
 ## Related
 
-- The decision to take this layout (over the Environments API, mode branching, or the plain-Node server) is recorded in [ADR-0001](../adr/0001-vite-multi-target-config.md). This file documents the **pattern**; the ADR records the **decision** and the alternatives weighed.
+- The decision to take this layout (over the Environments API, mode branching, or the plain-Node server) is recorded in [ADR-0001](../adr/0001-vite-multi-target-and-dev-runtime.md). This file documents the **pattern**; the ADR records the **decision** and the alternatives weighed.

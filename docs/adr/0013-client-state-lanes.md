@@ -1,4 +1,4 @@
-# 0013. Client state lanes (forward-looking)
+# 0013. Client state lanes
 
 - **Status:** Proposed
 - **Date:** 2026-06-14

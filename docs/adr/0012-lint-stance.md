@@ -25,7 +25,7 @@ One flat config owns quality, security, and formatting, tuned so that every unsa
 
 ## Alternatives considered
 
-- **Allow assertions where the checker would otherwise complain (`as-needed`).** The setting a future engineer reaches for under friction. Rejected: it re-admits ambient, ungreppable inline assertions — the exact cost the ban exists to remove. The value of the ban is that there is *no* inline assertion anywhere, so review attention stays finite and focused.
+- **Allow assertions where the checker would otherwise complain (`as-needed`).** The setting a future engineer reaches for under friction. Rejected: it re-admits ambient, ungreppable inline assertions — the exact cost the ban exists to remove. The value of the ban is that there is _no_ inline assertion anywhere, so review attention stays finite and focused.
 - **Ban assertions outright with no escape hatch.** Rejected: some casts are genuinely unavoidable, and with no sanctioned outlet authors would disable the rule inline at scattered sites — recreating the scatter problem with worse ergonomics.
 - **Per-call rule-disable comments at each cast site.** Rejected: this spreads the opt-out across the tree, which is exactly as hard to audit as the assertions themselves, and the directives rot when the surrounding code moves.
 - **A typed assertion-function (`asserts value is T`) instead of a returning cast.** Reads as sound but performs no runtime check here; it would need the same opt-out and adds throw-on-failure control flow the call sites do not want. Rejected as more machinery for the same unverifiable operation — the plain returning helper is the minimal seam.
@@ -57,5 +57,8 @@ Accepted negatives:
 - [`./0003-path-alias-scheme.md`](./0003-path-alias-scheme.md) — owns the alias depth cap and the import-sort grouping; those rules live in the same config but are not decided here.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — a sibling lint rule that funnels a different unsafe operation (raw custom-issue codes) through one sanctioned call, the same one-reviewable-seam shape.
 - [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the frozen-namespace helper convention the cast helper is packaged under and the curated module surface the default-export ban protects.
+- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the install-time supply-chain gates this static-analysis stance sits beside as a sibling control surface.
+- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the validation gate that relies on the assertion ban and single sanctioned cast this stance owns.
+- [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the logger type surface that relies on the assertion ban ruling out per-call-site casts.
 - [`../../.claude/rules/code-comments.md`](../../.claude/rules/code-comments.md) — the comment and JSDoc conventions reviewed alongside lint output.
 - [`../../.claude/rules/invocations/code-review.md`](../../.claude/rules/invocations/code-review.md) — review rule pairing `typescript-magician` with cross-cutting review when assertions or `any` removal appear in a diff.

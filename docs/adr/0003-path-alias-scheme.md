@@ -30,7 +30,7 @@ These aliases are the only sanctioned way to reference another tree. There is de
 - the **bundler/dev runtime** resolves the aliases by reading the TypeScript path config directly — a single built-in "resolve via tsconfig paths" switch on the shared bundler base, inherited by every per-runtime config, with no parallel hand-maintained alias map to drift;
 - the **linter's import-ordering rule** lists the same aliases as ordered groups, so import blocks sort into a predictable shape.
 
-**A depth cap with structural teeth.** A lint rule caps relative-import depth at a single `../`: any specifier that climbs two or more levels is an error whose message points the author at the aliases. Cross-tree references therefore *must* go through an alias; they cannot be written as deep relative paths. The boundary is enforced at build time, not by reviewer memory.
+**A depth cap with structural teeth.** A lint rule caps relative-import depth at a single `../`: any specifier that climbs two or more levels is an error whose message points the author at the aliases. Cross-tree references therefore _must_ go through an alias; they cannot be written as deep relative paths. The boundary is enforced at build time, not by reviewer memory.
 
 ```ts
 // rejected: a deep relative climb out of the current tree
@@ -70,6 +70,8 @@ import { thing } from "@shared/helpers/thing";
 
 - [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the shared bundler base carrying the "resolve via tsconfig paths" switch, inherited by every per-runtime config and the dev runtime.
 - [`./0002-typescript-compiler-stance.md`](./0002-typescript-compiler-stance.md) — the solution-project-references setup whose root config carries the canonical path-mapping block, and the bundler module-resolution mode the aliases rely on.
-- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module-vs-helper and helper-namespace architecture that lives *inside* each lane; this ADR draws the lane boundary, that one shapes what sits within it.
+- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module-vs-helper and helper-namespace architecture that lives _inside_ each lane; this ADR draws the lane boundary, that one shapes what sits within it.
 - [`./0012-lint-stance.md`](./0012-lint-stance.md) — the broader lint stack that hosts the import-ordering and relative-depth rules enforcing this scheme.
+- [`./0005-test-runner-worker-model.md`](./0005-test-runner-worker-model.md) — the test runner whose test project mirrors this alias scheme so specs resolve identically under test and at runtime.
+- [`./0013-client-state-lanes.md`](./0013-client-state-lanes.md) — the forward-looking client lane this split does not yet carry; that ADR is its client-tier doctrine.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — domain glossary, including the **Rename test** the alias scheme is designed to satisfy.

@@ -1,4 +1,4 @@
-# 0011. Single integrated listener and the buildApp readiness boundary
+# 0011. Single integrated listener and the build-step readiness boundary
 
 - **Status:** Proposed
 - **Date:** 2026-06-14
