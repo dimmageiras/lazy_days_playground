@@ -111,6 +111,6 @@ Apply the standard review delivery: if reviewing a GitHub PR, post findings via 
 ## Related
 
 - [`../../../CONTEXT.md`](../../../CONTEXT.md) — the **Module** term the logger is an instance of
-- [`../../adr/0009-bootstrap-environment-validation.md`](../../adr/0009-bootstrap-environment-validation.md) — the startup gate that produces the validated environment the logger is built from
+- [`../../adr/0009-environment-validation-gate.md`](../../adr/0009-environment-validation-gate.md) — the startup gate that produces the validated environment the logger is built from
 - [`../../logging/README.md`](../../logging/README.md) — the canonical logging conventions this plan checks adherence to
 - [`./server.plan.md`](./server.plan.md), [`./validation.plan.md`](./validation.plan.md), [`./testing.plan.md`](./testing.plan.md) — the sister plans this one delegates to

@@ -94,8 +94,8 @@ A PR that:
 
 ## Related
 
-- [ADR-0001](../../adr/0001-vite-multi-target-config.md) — the decision behind the shared-base + per-runtime layout and the alternatives weighed.
-- [ADR-0004](../../adr/0004-path-alias-scheme.md) — the alias-prefix scheme this plan enforces as a cross-surface invariant (TypeScript paths ↔ Vite resolver ↔ ESLint import-sort groups).
+- [ADR-0001](../../adr/0001-vite-multi-target-and-dev-runtime.md) — the decision behind the shared-base + per-runtime layout and the alternatives weighed.
+- [ADR-0003](../../adr/0003-path-alias-scheme.md) — the alias-prefix scheme this plan enforces as a cross-surface invariant (TypeScript paths ↔ Vite resolver ↔ ESLint import-sort groups).
 - The Vite pattern doc next to the ADR — describes the layout, what each runtime needs from Vite, dev vs prod runtime flow, and the externals/output-collision footguns.
 - [`./configuration.plan.md`](./configuration.plan.md) — package manifest, pnpm-workspace, TypeScript compiler options, ESLint flat-config orchestration (this plan owns only the alias-coherence slice of the ESLint config).
 - [`./testing.plan.md`](./testing.plan.md) and [`./test-infra.plan.md`](./test-infra.plan.md) — the runner-specific concerns this plan defers to.

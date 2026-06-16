@@ -132,11 +132,11 @@ Output semantics:
 
 Every rule above exists because of a documented trade-off. Before deviating:
 
-1. Confirm the trade-off in the relevant inline comment (Vitest config) or in [ADR-0002](../adr/0002-test-runner-contract.md).
+1. Confirm the trade-off in the relevant inline comment (Vitest config) or in [ADR-0005](../adr/0005-test-runner-worker-model.md).
 2. If the deviation is principled, write a follow-up to update this README — single-spec exceptions rot the convention for everyone else.
 
 ## Related
 
-- [ADR-0002](../adr/0002-test-runner-contract.md) — the runner posture (worker model, concurrency, mock-clearing) the conventions in this README rest on
+- [ADR-0005](../adr/0005-test-runner-worker-model.md) — the runner posture (worker model, concurrency, mock-clearing) the conventions in this README rest on
 - [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream `vitest` skill, and the precedence rule with this README
