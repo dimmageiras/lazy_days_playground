@@ -99,7 +99,7 @@ A PR that:
 - [`./shared.plan.md`](./shared.plan.md) — the broader shared-utilities rules; the wrapper, schemas, and issue-code constant live under the shared tree, but their validation-specific criteria are delegated here.
 - [`./helpers.plan.md`](./helpers.plan.md) — the namespace and purity rules the runtime-side validation helpers also satisfy; this plan sharpens the validation-specific criteria on top.
 - [`./server.plan.md`](./server.plan.md) — the bootstrap discipline that surrounds the startup gate; that plan delegates the schema/wrapper layer and the validation invocation here.
-- [`../../adr/0009-bootstrap-environment-validation.md`](../../adr/0009-bootstrap-environment-validation.md) — the decision to validate the environment against a schema at startup and fail fast, which the startup-gate criteria enforce.
+- [`../../adr/0009-environment-validation-gate.md`](../../adr/0009-environment-validation-gate.md) — the decision to validate the environment against a schema at startup and fail fast, which the startup-gate criteria enforce.
 
 ## Output
 

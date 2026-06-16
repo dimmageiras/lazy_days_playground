@@ -132,7 +132,7 @@ and uses the flush-callback rule above.
 
 ## Related
 
-- [`../adr/0009-bootstrap-environment-validation.md`](../adr/0009-bootstrap-environment-validation.md)
+- [`../adr/0009-environment-validation-gate.md`](../adr/0009-environment-validation-gate.md)
   — the startup validation gate that produces the validated environment the logger is
   built from.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — the **Module** term; the logger is a module

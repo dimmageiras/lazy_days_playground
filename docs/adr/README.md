@@ -40,10 +40,13 @@ For each alternative, name it, then state in one or two sentences why it was rej
 ## Consequences
 
 What follows from the decision — both the positive consequences the decision was made for, and the negative ones the team accepts. Future readers need to see the trade-off, not just the upside.
+
+## Related
+
+The ADRs this one builds on or supersedes, plus the rules, plans, or docs that enforce or elaborate it. Use relative paths so the links survive a repo move; a superseding ADR links back to the one it replaces.
 ```
 
 ## Related
 
 - [`../../CONTEXT.md`](../../CONTEXT.md) — domain glossary, including **Load-bearing decision** and **Rename test**
 - [`../code-reviews/plans/documentation.plan.md`](../code-reviews/plans/documentation.plan.md) — review criteria for ADRs and other docs
-- [`../code-reviews/plans/validation.plan.md`](../code-reviews/plans/validation.plan.md) — review plan whose startup-gate criteria enforce [ADR-0009](./0009-bootstrap-environment-validation.md)

@@ -4,7 +4,7 @@
 
 The **module tier** — the units under the server modules tree, each an encapsulated runtime capability. This plan reviews the **structural and encapsulation properties common to every module**, independent of what any one module does. The defining property: the **encapsulation boundary**. A module owns a capability and the internals that capability needs — constants, helpers, types, and any routes — and exposes only a curated public surface to the composition layer that wires modules together. What a given module _does_ — its domain correctness — is delegated to that module's own plan.
 
-The canonical definition of a module, and the line that separates it from a helper, live in the **Module** term in [`CONTEXT.md`](../../../CONTEXT.md) and in [ADR-0010](../../adr/0010-module-vs-helper-boundary.md). This plan checks adherence to that boundary. Concerns include:
+The canonical definition of a module, and the line that separates it from a helper, live in the **Module** term in [`CONTEXT.md`](../../../CONTEXT.md) and in [ADR-0008](../../adr/0008-module-and-helper-organization.md). This plan checks adherence to that boundary. Concerns include:
 
 - The public surface — what a module exports through its barrel, and whether consumers depend only on that surface
 - Internal layout — the per-module subfolders (constants, helpers, types, routes) and their barrels, and the aggregator that composes internals into the capability
@@ -50,7 +50,7 @@ The **domain** of a specific module (what its capability must do and how it must
 
 ### Helpers within a module
 
-- Helpers inside a module follow the helper namespace pattern ([ADR-0007](../../adr/0007-helper-namespace-pattern.md)): one frozen namespace per file, named for the concept, no loose or default exports.
+- Helpers inside a module follow the helper namespace pattern ([ADR-0008](../../adr/0008-module-and-helper-organization.md)): one frozen namespace per file, named for the concept, no loose or default exports.
 - A module-internal helper that the test runner loads also honours the stateless-dispatcher contract (delegated to the testing and helpers plans for the spec-side detail).
 
 ### Cohesion — one capability per module
@@ -90,7 +90,6 @@ Apply the standard review delivery: if reviewing a GitHub PR, post findings via 
 
 ## Related
 
-- [`../../adr/0010-module-vs-helper-boundary.md`](../../adr/0010-module-vs-helper-boundary.md) — the boundary this plan enforces
-- [`../../adr/0007-helper-namespace-pattern.md`](../../adr/0007-helper-namespace-pattern.md) — the helper shape modules contain
+- [`../../adr/0008-module-and-helper-organization.md`](../../adr/0008-module-and-helper-organization.md) — the module-vs-helper boundary this plan enforces and the helper namespace shape modules contain
 - [`../../../CONTEXT.md`](../../../CONTEXT.md) — the **Module** term
 - [`./logging.plan.md`](./logging.plan.md), [`./server.plan.md`](./server.plan.md), [`./helpers.plan.md`](./helpers.plan.md), [`./testing.plan.md`](./testing.plan.md) — sister plans this one delegates to
