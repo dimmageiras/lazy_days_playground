@@ -1,7 +1,7 @@
 # 0004. pnpm dependency and supply-chain stance
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

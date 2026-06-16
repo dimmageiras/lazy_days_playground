@@ -1,7 +1,7 @@
 # 0009. Fail-fast environment validation: the `VITE_APP_` contract, branded outputs, and the startup gate
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

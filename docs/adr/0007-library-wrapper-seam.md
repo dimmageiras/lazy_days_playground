@@ -1,7 +1,7 @@
 # 0007. Library wrapper seam: the jitless zod shim and the issue-code system
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

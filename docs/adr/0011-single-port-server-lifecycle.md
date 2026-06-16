@@ -1,7 +1,7 @@
 # 0011. Single integrated listener and the build-step readiness boundary
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

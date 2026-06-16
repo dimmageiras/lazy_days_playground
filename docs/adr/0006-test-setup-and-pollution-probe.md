@@ -1,7 +1,7 @@
 # 0006. Test setup factory and the gated pollution probe
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 
