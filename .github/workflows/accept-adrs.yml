@@ -21,9 +21,8 @@ concurrency:
   group: accept-adrs-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
-permissions:
-  contents: write
-  pull-requests: write
+# No workflow-wide access; the single job opts into exactly the scopes it needs.
+permissions: {}
 
 jobs:
   accept-adrs:
@@ -32,6 +31,9 @@ jobs:
       github.event.pull_request.merged == true &&
       !startsWith(github.event.pull_request.head.ref, 'adr/accept-pr-')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # push the follow-up branch
+      pull-requests: write # open the follow-up PR
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BASE_REF: ${{ github.event.pull_request.base.ref }}
@@ -51,9 +53,12 @@ jobs:
 
           : > /tmp/accepted-adrs.txt
 
-          # Materialise the PR's file list first so a `gh` failure fails the job —
-          # a process substitution would let it pass silently under `set -e`.
-          gh pr view "$PR_NUMBER" --json files --jq '.files[].path' > /tmp/pr-files.txt
+          # Materialise the PR's file list first so a `gh` failure fails the job
+          # (a process substitution would let it pass silently under `set -e`).
+          # Use the paginating REST endpoint: `gh pr view --json files` caps at the
+          # first 100 files and would silently skip an ADR that sorts past it.
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" \
+            --jq '.[].filename' > /tmp/pr-files.txt
 
           # Keep only numbered ADRs the PR touched that still exist and are still Proposed.
           while IFS= read -r file; do
@@ -61,7 +66,12 @@ jobs:
             [[ "$file" == docs/adr/*.md ]] || continue
             [[ "$file" == "docs/adr/README.md" ]] && continue
             [[ -f "$file" ]] || continue
-            grep -qE '^- \*\*Status:\*\* Proposed' "$file" || continue
+            # Skip on "no match" (grep exit 1); let a real grep error (exit 2+)
+            # fail the job instead of being swallowed by `|| continue`.
+            rc=0
+            grep -qE '^- \*\*Status:\*\* Proposed' "$file" || rc=$?
+            [[ "$rc" -eq 1 ]] && continue
+            [[ "$rc" -eq 0 ]] || exit "$rc"
 
             sed -i -E \
               -e 's/^- \*\*Status:\*\* Proposed/- **Status:** Accepted/' \
