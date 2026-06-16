@@ -71,7 +71,7 @@ Specs reach shared infrastructure through a single **zero-argument setup factory
 
 ## Related
 
-- [ADR-0005](./0005-test-runner-worker-model.md) — the single-worker, non-isolated, concurrent, shuffled pool (and the `clearMocks: false` posture) whose persistence rule makes both the state-ownership asymmetry and the probe necessary.
+- [`./0005-test-runner-worker-model.md`](./0005-test-runner-worker-model.md) — the single-worker, non-isolated, concurrent, shuffled pool (and the `clearMocks: false` posture) whose persistence rule makes both the state-ownership asymmetry and the probe necessary.
 - [`../testing/README.md`](../testing/README.md) — the canonical testing conventions: the setup-factory consumption pattern, the stateless-dispatcher and state-ownership rules, the probe's output semantics, the Pattern-A/B rule, and the major-bump reverify checklist.
 - [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs.
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream test-runner skill and its precedence rule with the project testing doc.

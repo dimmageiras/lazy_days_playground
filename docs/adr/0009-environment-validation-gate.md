@@ -1,11 +1,11 @@
-# 0009. Fail-fast environment validation: the VITE*APP* contract, branded outputs, and the startup gate
+# 0009. Fail-fast environment validation: the `VITE_APP_` contract, branded outputs, and the startup gate
 
 - **Status:** Proposed
 - **Date:** 2026-06-14
 
 ## Context
 
-The server runs under a bundler-injected runtime, so its configuration surface is the bundler-populated env object rather than the raw process environment. The bundler only copies a variable onto that object when its name carries a configured prefix (the default is `VITE_`, which this project does not override). Everything off that surface — database credentials, signing and cookie secrets, third-party keys — is read, if at all, by the tools that own those concerns straight from the process environment.
+The server runs under a bundler-injected runtime, so its configuration surface is the bundler-populated env object rather than the raw process environment. The bundler only copies a variable onto that object when its name carries a configured prefix (the default is `VITE_`, which this project does not override); the variables this server consumes are named under a `VITE_APP_` sub-prefix within it. Everything off that surface — database credentials, signing and cookie secrets, third-party keys — is read, if at all, by the tools that own those concerns straight from the process environment.
 
 This leaves the same configuration in two shapes that must stay honest about which one each consumer holds. On the bundler surface every value is an unparsed string keyed by its prefixed name — a port is the digit string `"5173"`, a flag the word `"true"`. The rest of the application wants the opposite: parsed, range-checked values keyed by short internal names. Two further forces apply. First, once a value is parsed it is structurally indistinguishable from any same-typed primitive, so the validation guarantee evaporates the moment the value crosses an assignment. Second, many parts of the running process — the listener's port, the logger's level and service name, request handlers — depend on configuration being present and well-formed; if each validated on its own, the checks would drift, a malformed value would surface deep in a request rather than at boot, and the process could bind a port and serve traffic while misconfigured.
 
