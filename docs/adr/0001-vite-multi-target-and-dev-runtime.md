@@ -1,7 +1,7 @@
 # 0001. Multi-target Vite config and the vite-node dev runtime
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

@@ -1,7 +1,7 @@
 # 0002. TypeScript compiler stance: solution project references, strict-superset flags, and the bundler/erasable module mode
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

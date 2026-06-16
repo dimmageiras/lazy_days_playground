@@ -1,7 +1,7 @@
 # 0010. Logging architecture and error normalization
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 

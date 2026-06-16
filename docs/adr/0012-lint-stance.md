@@ -1,7 +1,7 @@
 # 0012. Lint stance: the assertion ban and the SonarJS/security stack
 
-- **Status:** Proposed
-- **Date:** 2026-06-14
+- **Status:** Accepted
+- **Date:** 2026-06-16
 
 ## Context
 
