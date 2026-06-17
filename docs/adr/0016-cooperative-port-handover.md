@@ -1,6 +1,6 @@
 # 0016. Cooperative port handover: the startup claim ladder, signal escalation, and its safety guardrails
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-17
 
 ## Context

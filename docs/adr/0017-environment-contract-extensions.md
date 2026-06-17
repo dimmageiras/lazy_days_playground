@@ -1,6 +1,6 @@
 # 0017. Extending the environment contract: a prefixed cryptographic secret and a configurable bind address, premised on the server-only runtime
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-17
 
 ## Context

@@ -1,6 +1,6 @@
 # 0015. The remote shutdown channel: a loopback-only, token-gated, single-shot route that arms after the response flushes
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-17
 
 ## Context
