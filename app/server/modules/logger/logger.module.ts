@@ -11,8 +11,11 @@ const buildFallbackLogger = (): Logger => {
   return pino(buildFallbackLoggerOptions(), destination({ sync: true }));
 };
 
-const buildLogger = (appEnv: AppEnv): Logger => {
-  return pino(buildLoggerOptions(appEnv));
+const buildLogger = (
+  appEnv: AppEnv,
+  redactPaths: ReadonlyArray<string> = [],
+): Logger => {
+  return pino(buildLoggerOptions(appEnv, redactPaths));
 };
 
 const LoggerModule = Object.freeze({

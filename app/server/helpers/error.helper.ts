@@ -1,3 +1,11 @@
+import { StringHelper } from "@shared/helpers/string.helper";
+
+const { isString } = StringHelper;
+
+const isErrnoException = (error: unknown): error is NodeJS.ErrnoException => {
+  return error instanceof Error && "code" in error && isString(error.code);
+};
+
 const toError = (value: unknown): Error => {
   return value instanceof Error ? value : new Error(String(value));
 };
@@ -11,6 +19,7 @@ const normalizeError = (
 };
 
 const ErrorHelper = Object.freeze({
+  isErrnoException,
   normalizeError,
   toError,
 } as const);

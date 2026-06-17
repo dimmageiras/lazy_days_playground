@@ -6,10 +6,12 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { TypesHelper } from "@shared/helpers/types.helper";
 import type {
+  BindAllIpv4,
   IsDevelopment,
   LogLevel,
   Port,
   ServiceName,
+  ShutdownToken,
   ViteAppEnv,
 } from "@shared/types/app-env.type";
 
@@ -21,10 +23,16 @@ trackLeaksInSpec("app-env.schema");
 
 const { castAsType } = TypesHelper;
 
+const IPV4_ADDRESS_MESSAGE = "Must be a valid IPv4 address";
 const PORT_FORMAT_MESSAGE = "Must be a string of digits";
 const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
 const REQUIRED_INPUT_MESSAGE = "Is required";
 const STRING_INPUT_MESSAGE = "Must be a string";
+
+const VALID_SHUTDOWN_TOKEN =
+  "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
+const NON_BASE64_SHUTDOWN_TOKEN = `-${VALID_SHUTDOWN_TOKEN.slice(1)}`;
+const MALFORMED_BASE64_SHUTDOWN_TOKEN = `${VALID_SHUTDOWN_TOKEN}a`;
 
 const TEST_DATA = {
   ACCEPTED_PORT_CASES: [
@@ -80,6 +88,62 @@ const TEST_DATA = {
       name: "should accept the silent level",
     },
   ],
+  ACCEPTED_BIND_ALL_IPV4_CASES: [
+    {
+      expected: "0.0.0.0",
+      input: "0.0.0.0",
+      name: "should accept the bind-all IPv4 address",
+    },
+    {
+      expected: "127.0.0.1",
+      input: "127.0.0.1",
+      name: "should accept a loopback IPv4 address",
+    },
+  ],
+  REJECTED_BIND_ALL_IPV4_CASES: [
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: REQUIRED_INPUT_MESSAGE,
+      input: undefined,
+      name: "should reject a missing bind-all address with the required-input message",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: 42,
+      name: "should reject a numeric bind-all address input",
+    },
+    {
+      expectedCode: ISSUE_CODES.INVALID_TYPE,
+      expectedMessage: STRING_INPUT_MESSAGE,
+      input: null,
+      name: "should reject a null bind-all address input",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
+      input: "",
+      name: "should reject an empty bind-all address with the ipv4 message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
+      input: "localhost",
+      name: "should reject a hostname with the ipv4 message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
+      input: "256.1.1.1",
+      name: "should reject an out-of-range IPv4 octet with the ipv4 message",
+    },
+    {
+      expectedCode: ISSUE_CODES.CUSTOM,
+      expectedMessage: IPV4_ADDRESS_MESSAGE,
+      input: "::1",
+      name: "should reject an IPv6 address with the ipv4 message",
+    },
+  ],
   REJECTED_IS_DEVELOPMENT_CASES: [
     { input: "1", name: "should reject the loose truthy '1'" },
     { input: "yes", name: "should reject the loose truthy 'yes'" },
@@ -89,22 +153,30 @@ const TEST_DATA = {
     { input: "INFO", name: "should reject a wrong-case level" },
   ],
   EXPECTED_VALID_PARSE: {
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_IS_DEVELOPMENT: false,
     VITE_APP_LOG_LEVEL: "info",
     VITE_APP_PORT: 5173,
     VITE_APP_SERVICE_NAME: "lazy-days",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   },
+  FILLER_BIND_ALL_IPV4: "0.0.0.0",
   FILLER_PORT: "5173",
   FILLER_SERVICE_NAME: "lazy-days",
+  FILLER_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   INVALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_PORT: "0",
     VITE_APP_SERVICE_NAME: "",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
   INVALID_PARSE_INPUT: {
     VITE_APP_PORT: "abc",
     VITE_APP_SERVICE_NAME: "",
   },
+  MALFORMED_BASE64_SHUTDOWN_TOKEN,
   MISSING_ENV: castAsType<ImportMetaEnv>({}),
+  NON_BASE64_SHUTDOWN_TOKEN,
   PORT_FORMAT_MESSAGE,
   PORT_RANGE_MESSAGE,
   REJECTED_PORT_FORMAT_CASES: [
@@ -205,8 +277,10 @@ const TEST_DATA = {
   REQUIRED_INPUT_MESSAGE,
   STRING_INPUT_MESSAGE,
   VALID_ENV: castAsType<ImportMetaEnv>({
+    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_PORT: "5173",
     VITE_APP_SERVICE_NAME: "lazy-days",
+    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
 } as const;
 
@@ -215,8 +289,10 @@ describe("appEnvSchema", () => {
     TEST_DATA.ACCEPTED_PORT_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
         const result = appEnvSchema.safeParse({
+          VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
           VITE_APP_PORT: input,
           VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
         });
 
         expect(result.success).toBe(true);
@@ -335,8 +411,10 @@ describe("appEnvSchema", () => {
       ({ name, input, expected }) => {
         it(name, ({ expect }) => {
           const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
             VITE_APP_PORT: TEST_DATA.FILLER_PORT,
             VITE_APP_SERVICE_NAME: input,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
           });
 
           expect(result.success).toBe(true);
@@ -395,9 +473,11 @@ describe("appEnvSchema", () => {
       ({ name, input, expected }) => {
         it(name, ({ expect }) => {
           const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
             VITE_APP_IS_DEVELOPMENT: input,
             VITE_APP_PORT: TEST_DATA.FILLER_PORT,
             VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
           });
 
           expect(result.success).toBe(true);
@@ -450,9 +530,11 @@ describe("appEnvSchema", () => {
     TEST_DATA.ACCEPTED_LOG_LEVEL_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
         const result = appEnvSchema.safeParse({
+          VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
           VITE_APP_LOG_LEVEL: input,
           VITE_APP_PORT: TEST_DATA.FILLER_PORT,
           VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
         });
 
         expect(result.success).toBe(true);
@@ -502,6 +584,206 @@ describe("appEnvSchema", () => {
     });
   });
 
+  describe("VITE_APP_SHUTDOWN_TOKEN", (it) => {
+    it("should accept a base64 token of at least 88 characters", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_BIND_ALL_IPV4: TEST_DATA.FILLER_BIND_ALL_IPV4,
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+      });
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_SHUTDOWN_TOKEN).toBe(
+          TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+        );
+      }
+    });
+
+    it("should reject a token shorter than 88 characters", ({ expect }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        VITE_APP_SHUTDOWN_TOKEN: "tooShort",
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const tokenIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_SHUTDOWN_TOKEN",
+        );
+
+        expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.TOO_SMALL);
+      }
+    });
+
+    it("should reject a non-base64 token", ({ expect }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.NON_BASE64_SHUTDOWN_TOKEN,
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const tokenIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_SHUTDOWN_TOKEN",
+        );
+
+        expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
+      }
+    });
+
+    it("should reject a base64-alphabet token whose length is not a multiple of 4", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.MALFORMED_BASE64_SHUTDOWN_TOKEN,
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const tokenIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_SHUTDOWN_TOKEN",
+        );
+
+        expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
+      }
+    });
+
+    it("should reject a missing token with the required-input message", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const tokenIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_SHUTDOWN_TOKEN",
+        );
+
+        expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.INVALID_TYPE);
+        expect(tokenIssues[0]?.message).toBe(TEST_DATA.REQUIRED_INPUT_MESSAGE);
+      }
+    });
+
+    it("should reject a non-string token with the string-type message", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+        VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+        VITE_APP_SHUTDOWN_TOKEN: 42,
+      });
+
+      expect(result.success).toBe(false);
+
+      if (!result.success) {
+        const tokenIssues = result.error.issues.filter(
+          (issue) => issue.path[0] === "VITE_APP_SHUTDOWN_TOKEN",
+        );
+
+        expect(tokenIssues).toHaveLength(1);
+        expect(tokenIssues[0]?.code).toBe(ISSUE_CODES.INVALID_TYPE);
+        expect(tokenIssues[0]?.message).toBe(TEST_DATA.STRING_INPUT_MESSAGE);
+      }
+    });
+
+    it("should brand the parsed shutdown token output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_SHUTDOWN_TOKEN,
+        ).toEqualTypeOf<ShutdownToken>();
+        expectTypeOf<ShutdownToken>().not.toEqualTypeOf<string>();
+        expectTypeOf<ShutdownToken>().not.toEqualTypeOf<ServiceName>();
+        expectTypeOf<ShutdownToken>().toExtend<string>();
+      }
+    });
+  });
+
+  describe("VITE_APP_BIND_ALL_IPV4", (it) => {
+    TEST_DATA.ACCEPTED_BIND_ALL_IPV4_CASES.forEach(
+      ({ name, input, expected }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+            VITE_APP_SHUTDOWN_TOKEN: TEST_DATA.FILLER_SHUTDOWN_TOKEN,
+          });
+
+          expect(result.success).toBe(true);
+
+          if (result.success) {
+            expect(result.data.VITE_APP_BIND_ALL_IPV4).toBe(expected);
+          }
+        });
+      },
+    );
+
+    TEST_DATA.REJECTED_BIND_ALL_IPV4_CASES.forEach(
+      ({ name, input, expectedCode, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            VITE_APP_BIND_ALL_IPV4: input,
+            VITE_APP_PORT: TEST_DATA.FILLER_PORT,
+            VITE_APP_SERVICE_NAME: TEST_DATA.FILLER_SERVICE_NAME,
+          });
+
+          expect(result.success).toBe(false);
+
+          if (!result.success) {
+            const bindAllIpv4Issues = result.error.issues.filter(
+              (issue) => issue.path[0] === "VITE_APP_BIND_ALL_IPV4",
+            );
+
+            expect(bindAllIpv4Issues).toHaveLength(1);
+            expect(bindAllIpv4Issues[0]?.code).toBe(expectedCode);
+            expect(bindAllIpv4Issues[0]?.message).toBe(expectedMessage);
+            expect(bindAllIpv4Issues[0]?.path).toStrictEqual([
+              "VITE_APP_BIND_ALL_IPV4",
+            ]);
+          }
+        });
+      },
+    );
+
+    it("should brand the parsed bind-all address output", ({ expect }) => {
+      const result = appEnvSchema.safeParse(TEST_DATA.VALID_ENV);
+
+      expect(result.success).toBe(true);
+
+      if (result.success) {
+        expectTypeOf(
+          result.data.VITE_APP_BIND_ALL_IPV4,
+        ).toEqualTypeOf<BindAllIpv4>();
+        expectTypeOf<BindAllIpv4>().not.toEqualTypeOf<string>();
+        expectTypeOf<BindAllIpv4>().toExtend<string>();
+      }
+    });
+  });
+
   describe("aggregate", (it) => {
     it("should return a discriminated-union success branch carrying the parsed record", ({
       expect,
@@ -541,7 +823,7 @@ describe("appEnvSchema", () => {
       expect(result.success).toBe(false);
 
       if (!result.success) {
-        expect(result.error.issues).toHaveLength(2);
+        expect(result.error.issues).toHaveLength(4);
 
         result.error.issues.forEach((issue) => {
           expect(issue.code).toBe(ISSUE_CODES.INVALID_TYPE);
@@ -550,8 +832,10 @@ describe("appEnvSchema", () => {
 
         const paths = result.error.issues.map((issue) => issue.path[0]);
 
+        expect(paths).toContain("VITE_APP_BIND_ALL_IPV4");
         expect(paths).toContain("VITE_APP_PORT");
         expect(paths).toContain("VITE_APP_SERVICE_NAME");
+        expect(paths).toContain("VITE_APP_SHUTDOWN_TOKEN");
       }
     });
 

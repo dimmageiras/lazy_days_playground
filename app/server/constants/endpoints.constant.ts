@@ -2,4 +2,8 @@ const API_HEALTH_ENDPOINTS = Object.freeze({
   SERVER: "server",
 } as const);
 
-export { API_HEALTH_ENDPOINTS };
+const API_INTERNAL_ENDPOINTS = Object.freeze({
+  SHUTDOWN: "shutdown",
+} as const);
+
+export { API_HEALTH_ENDPOINTS, API_INTERNAL_ENDPOINTS };

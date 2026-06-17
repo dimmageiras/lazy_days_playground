@@ -7,7 +7,8 @@ import { BASE_URLS } from "./constants/base-urls.constant";
 import { AppEnvHelper } from "./helpers/app-env.helper";
 import { ErrorHelper } from "./helpers/error.helper";
 import { LoggerModule } from "./modules/logger";
-import { healthRoutes } from "./routes/app/health/health.route";
+import { ShutdownModule } from "./modules/shutdown";
+import { apiHealthRoutes } from "./routes/api/health";
 import type { AppInstance } from "./types/instance.type";
 
 const { API_HEALTH } = BASE_URLS;
@@ -16,23 +17,27 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
+const { redactPaths, setupShutdown } = ShutdownModule;
 
-const buildApp = async (env: ViteAppEnv): Promise<AppInstance> => {
+const buildApp = async (
+  env: ViteAppEnv,
+  hot: ImportMeta["hot"],
+): Promise<AppInstance> => {
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
-    loggerInstance: buildLogger(appEnv),
+    loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
   });
 
   try {
     instance.decorate("appEnv", appEnv);
 
-    await instance.register(healthRoutes, {
+    await instance.register(apiHealthRoutes, {
       prefix: API_HEALTH,
     });
 
-    await instance.ready();
+    await setupShutdown(instance, hot);
 
     return instance;
   } catch (rawError) {
