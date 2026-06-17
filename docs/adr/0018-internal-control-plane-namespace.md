@@ -1,6 +1,6 @@
 # 0018. The internal control-plane namespace: separating privileged routes from observable ones on the one listener
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-17
 
 ## Context

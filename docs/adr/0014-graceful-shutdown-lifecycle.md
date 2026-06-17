@@ -1,6 +1,6 @@
 # 0014. Signal-driven graceful shutdown: the single teardown funnel, the grace budget, and dev hot-reload handover
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-06-17
 
 ## Context
