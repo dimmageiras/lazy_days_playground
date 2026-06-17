@@ -8,6 +8,10 @@ Do not run `git commit` directly — the skill generates the Conventional Commit
 
 Suggest a **single-line** subject only — `<type>(<scope>): <description>` — and nothing else. Do not add a body, bullet list, or footer unless the user explicitly asks for one in their current message. The one-line subject is the standing default for every commit-message suggestion; an extended body is opt-in and never volunteered.
 
+## Review-resolution commits
+
+When the staged changes apply code-review feedback, follow the established subject `chore: apply <branch-slug> review findings`. The `<branch-slug>` is the working branch name with its leading `type/` segment dropped — branch `feat/graceful-shutdown-module` → `graceful-shutdown-module`. Use `finding` for a single resolved item and `findings` for more than one. This keeps review-resolution commits uniform and greppable across PRs.
+
 ## Pre-commit checks
 
 Before invoking the skill, verify:
