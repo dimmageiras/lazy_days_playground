@@ -28,7 +28,7 @@ const buildShutdownHandler = (instance: AppInstance): ShutdownHandler => {
   }: ShutdownContext): Promise<void> => {
     switch (true) {
       case Boolean(error): {
-        instance.log.error(
+        instance.log.fatal(
           normalizeError(error),
           "💥 Shutting down after an unhandled error",
         );

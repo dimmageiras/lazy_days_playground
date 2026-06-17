@@ -14,7 +14,7 @@ Several forces constrain the answer:
 - The process that launched this one, and this process itself, can plausibly resolve as the port owner under a stale or confused lookup. Signalling either would take down the runtime hosting the reclaim.
 - Two new instances can race to claim the same port at the same moment, each capable of stomping the other's just-won handover.
 
-The reclaim composes against the authenticated remote-shutdown route, the validated branded credential and bind address from the environment contract, and the fail-fast-then-abort ethos the gate established — it does not restate those; it builds on them.
+The reclaim composes against the authenticated remote-shutdown route, the validated branded credential from the environment contract, a loopback dial to the locally-bound instance, and the fail-fast-then-abort ethos the gate established — it does not restate those; it builds on them.
 
 ## Decision
 
@@ -69,7 +69,7 @@ The reclaim composes against the authenticated remote-shutdown route, the valida
 
 - [`./0014-graceful-shutdown-lifecycle.md`](./0014-graceful-shutdown-lifecycle.md) — the shutdown lifecycle whose cooperative-close contract the incumbent honours when it steps down for the handover.
 - [`./0015-remote-shutdown-channel.md`](./0015-remote-shutdown-channel.md) — the authenticated route the cooperative rung calls and whose acceptance contract the protocol depends on.
-- [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the validated, branded credential and bind address this protocol composes its dial target from.
+- [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the validated, branded credential this protocol presents; its dial target is loopback, not the bind address that contract adds.
 - [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the internal control-plane namespace the cooperative shutdown route lives under, separating it from product routes.
 - [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the single-validated-port topology that leaves no failover port, so reclaiming the exact port is the only option; this protocol replaces the bare listen between build and a successful bind.
 - [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast-then-abort ethos the protocol's unrecoverable rungs follow.
