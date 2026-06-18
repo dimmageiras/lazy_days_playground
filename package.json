@@ -10,9 +10,15 @@
     "lint:fix": "pnpm lint --fix",
     "obsolete": "knip",
     "pretest:pollution": "node --input-type=module -e \"import { mkdirSync } from 'node:fs'; mkdirSync('logs/unit-tests', { recursive: true });\"",
-    "test": "vitest run",
-    "test:cov": "vitest run --coverage",
-    "test:pollution": "vitest run --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.log 2>&1",
+    "test": "pnpm --parallel --aggregate-output run \"/^test:(server|shared)$/\"",
+    "test:cov": "pnpm --parallel run \"/^test:cov:(server|shared)$/\" && vitest run --merge-reports=logs/unit-tests-blob --coverage",
+    "test:cov:server": "pnpm test:server --coverage --coverage.reportsDirectory=logs/unit-tests-coverage-server --reporter=blob --outputFile=logs/unit-tests-blob/server.json",
+    "test:cov:shared": "pnpm test:shared --coverage --coverage.reportsDirectory=logs/unit-tests-coverage-shared --reporter=blob --outputFile=logs/unit-tests-blob/shared.json",
+    "test:pollution": "pnpm --parallel run \"/^test:pollution:(server|shared)$/\"",
+    "test:pollution:server": "pnpm test:server --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.server.log 2>&1",
+    "test:pollution:shared": "pnpm test:shared --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.shared.log 2>&1",
+    "test:server": "vitest run --project server",
+    "test:shared": "vitest run --project shared",
     "typecheck": "tsc -b"
   },
   "dependencies": {
