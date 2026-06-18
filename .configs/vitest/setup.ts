@@ -1,8 +1,6 @@
 import type { UnionToIntersection } from "type-fest";
 import { expect } from "vitest";
 
-import "@testing-library/jest-dom/vitest";
-
 import { FakeTimerRegistry } from "./fake-timer-registry";
 import type * as VitestHelpers from "./helpers";
 import { StateProbeHelper } from "./helpers";

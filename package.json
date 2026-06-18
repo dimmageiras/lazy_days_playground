@@ -34,7 +34,6 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
-    "@testing-library/jest-dom": "6.9.1",
     "@types/eslint-plugin-security": "3.0.1",
     "@types/lodash-es": "4.17.12",
     "@types/node": "^25",
@@ -45,7 +44,6 @@
     "eslint-plugin-simple-import-sort": "13.0.0",
     "eslint-plugin-sonarjs": "4.0.3",
     "globals": "17.6.0",
-    "happy-dom": "20.10.4",
     "jiti": "2.7.0",
     "knip": "6.17.1",
     "pino-pretty": "13.1.3",
