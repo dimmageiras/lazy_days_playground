@@ -20,7 +20,7 @@ import { appEnvSchema } from "./app-env.schema";
 const {
   sharedTestData: { EMPTY_OBJECT, EMPTY_STRING },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("app-env.schema");
 

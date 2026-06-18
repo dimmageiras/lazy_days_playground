@@ -8,7 +8,8 @@ import type { MapValue } from "@shared/types/app/utility-types";
 import { MapHelper } from "./map.helper";
 import { TypesHelper } from "./types.helper";
 
-const { trackLeaksInSpec } = await VitestSetup();
+const { trackLeaksInSpec }: Awaited<ReturnType<typeof VitestSetup>> =
+  await VitestSetup();
 
 trackLeaksInSpec("map.helper");
 

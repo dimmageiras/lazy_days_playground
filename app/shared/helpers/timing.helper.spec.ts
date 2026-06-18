@@ -7,7 +7,8 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { TimingHelper } from "./timing.helper";
 import { TypesHelper } from "./types.helper";
 
-const { trackLeaksInSpec } = await VitestSetup();
+const { trackLeaksInSpec }: Awaited<ReturnType<typeof VitestSetup>> =
+  await VitestSetup();
 
 trackLeaksInSpec("timing.helper");
 

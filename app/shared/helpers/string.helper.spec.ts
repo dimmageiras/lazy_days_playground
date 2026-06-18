@@ -9,7 +9,7 @@ import { TypesHelper } from "./types.helper";
 const {
   sharedTestData: { EMPTY_ARRAY, EMPTY_OBJECT, EMPTY_STRING },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("string.helper");
 

@@ -9,7 +9,7 @@ import { EnvVarHelper } from "./env-var.helper";
 const {
   sharedTestData: { EMPTY_OBJECT, EMPTY_STRING },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("env-var.helper");
 

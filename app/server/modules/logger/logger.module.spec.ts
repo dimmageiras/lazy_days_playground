@@ -7,7 +7,8 @@ import type { AppEnv } from "@shared/types/app-env.type";
 
 import { LoggerModule } from "./logger.module";
 
-const { trackLeaksInSpec } = await VitestSetup();
+const { trackLeaksInSpec }: Awaited<ReturnType<typeof VitestSetup>> =
+  await VitestSetup();
 
 trackLeaksInSpec("logger.module");
 

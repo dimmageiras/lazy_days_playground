@@ -7,7 +7,7 @@ import { ErrorHelper } from "./error.helper";
 const {
   sharedTestData: { EMPTY_OBJECT },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("error.helper");
 

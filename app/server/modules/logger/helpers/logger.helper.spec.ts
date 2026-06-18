@@ -11,7 +11,7 @@ import { LoggerHelper } from "./logger.helper";
 const {
   sharedTestData: { EMPTY_ARRAY },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("logger.helper");
 

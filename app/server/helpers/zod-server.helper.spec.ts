@@ -13,7 +13,7 @@ import { ZodServerHelper } from "./zod-server.helper";
 const {
   sharedTestData: { EMPTY_ARRAY, EMPTY_STRING },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("zod-server.helper");
 

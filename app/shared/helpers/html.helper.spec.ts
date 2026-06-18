@@ -7,7 +7,7 @@ import { HtmlHelper } from "./html.helper";
 const {
   sharedTestData: { EMPTY_STRING },
   trackLeaksInSpec,
-} = await VitestSetup();
+}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
 trackLeaksInSpec("html.helper");
 
