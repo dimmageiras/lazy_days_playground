@@ -10,7 +10,10 @@ import type { ZodIssue } from "@shared/wrappers/zod.wrapper";
 
 import { ZodServerHelper } from "./zod-server.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_ARRAY, EMPTY_STRING },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("zod-server.helper");
 
@@ -25,7 +28,7 @@ const createIssueContext = (): {
   captured: Array<CapturedIssue>;
   context: CustomIssueContext;
 } => {
-  const captured: Array<CapturedIssue> = [];
+  const captured: Array<CapturedIssue> = [...EMPTY_ARRAY];
 
   const context: CustomIssueContext = {
     addIssue: (issue): void => {
@@ -65,13 +68,12 @@ const TEST_DATA = {
   ],
   FORMAT_LINES_CASES: [
     {
-      expected: "",
-      issues: [],
+      expected: EMPTY_STRING,
+      issues: EMPTY_ARRAY,
       name: "should render an empty string for no issues",
     },
     {
-      expected:
-        "- VITE_APP_PORT: too small\n- VITE_APP_SERVICE_NAME: empty",
+      expected: "- VITE_APP_PORT: too small\n- VITE_APP_SERVICE_NAME: empty",
       issues: [
         castAsType<ZodIssue>({
           code: "too_small",
@@ -90,8 +92,8 @@ const TEST_DATA = {
   ],
   FORMAT_CASES: [
     {
-      expected: [],
-      issues: [],
+      expected: EMPTY_ARRAY,
+      issues: EMPTY_ARRAY,
       name: "should return an empty array for no issues",
     },
     {

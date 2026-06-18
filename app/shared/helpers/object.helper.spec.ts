@@ -8,7 +8,10 @@ import type { ObjectEntries } from "@shared/types/app/utility-types";
 import { ObjectHelper } from "./object.helper";
 import { TypesHelper } from "./types.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_ARRAY, EMPTY_OBJECT },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("object.helper");
 
@@ -30,7 +33,7 @@ class TaggedClass {
 
 const TEST_DATA = {
   ARRAY_WITH_ONE_KEY: ["a"],
-  EMPTY_ARRAY: [],
+  EMPTY_ARRAY: EMPTY_ARRAY,
   NARROW: {
     EXPECTED_VALUE: 42,
     KEY: "extra",
@@ -43,8 +46,8 @@ const TEST_DATA = {
   },
   NON_PLAIN_OBJECTS: [
     "string",
-    () => {},
-    [],
+    () => EMPTY_OBJECT,
+    EMPTY_ARRAY,
     /regex/,
     42,
     new Date(),
@@ -56,7 +59,7 @@ const TEST_DATA = {
   ],
   OBJECTS: {
     DELETABLE: { a: 1, b: 2, c: 3 },
-    EMPTY: {},
+    EMPTY: EMPTY_OBJECT,
     NESTED: {
       settings: { notifications: true, theme: "dark" },
       user: { age: 25, name: "Jane" },
@@ -68,7 +71,7 @@ const TEST_DATA = {
       expected: false,
       key: "name",
       name: "should return false for an empty-object lookup",
-      object: {},
+      object: EMPTY_OBJECT,
     },
     {
       expected: false,
@@ -86,7 +89,7 @@ const TEST_DATA = {
       expected: true,
       key: "length",
       name: "should return true for an array's own `length` property",
-      object: [],
+      object: EMPTY_ARRAY,
     },
     {
       expected: true,
@@ -101,7 +104,7 @@ const TEST_DATA = {
       object: { declared: 1, runtimeOnly: 2 },
     },
   ],
-  PLAIN_OBJECTS: [{}, { name: "John" }, Object.create(null)],
+  PLAIN_OBJECTS: [EMPTY_OBJECT, { name: "John" }, Object.create(null)],
   PROTO_OBJECT: Object.create(Object.prototype),
   STRIP_CASES: [
     {

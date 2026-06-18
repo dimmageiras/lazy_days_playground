@@ -4,7 +4,10 @@ import { VitestSetup } from "@configs/vitest/setup";
 
 import { ErrorHelper } from "./error.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_OBJECT },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("error.helper");
 
@@ -34,7 +37,7 @@ const TEST_DATA = {
     },
     {
       expected: "[object Object]",
-      input: {},
+      input: EMPTY_OBJECT,
       name: "should coerce a plain-object thrown value",
     },
     {

@@ -6,7 +6,10 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { StringHelper } from "./string.helper";
 import { TypesHelper } from "./types.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_ARRAY, EMPTY_OBJECT, EMPTY_STRING },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("string.helper");
 
@@ -32,8 +35,8 @@ const TEST_DATA = {
       name: "should convert kebab case to camelCase",
     },
     {
-      expected: "",
-      input: "",
+      expected: EMPTY_STRING,
+      input: EMPTY_STRING,
       name: "should return an empty string for an empty input",
     },
     {
@@ -46,15 +49,15 @@ const TEST_DATA = {
     { name: "should return false for a boolean", value: true },
     { name: "should return false for a Map", value: Map() },
     { name: "should return false for a number", value: 42 },
-    { name: "should return false for a plain object", value: {} },
+    { name: "should return false for a plain object", value: EMPTY_OBJECT },
     { name: "should return false for a Set", value: Set() },
-    { name: "should return false for an array", value: [] },
+    { name: "should return false for an array", value: EMPTY_ARRAY },
     { name: "should return false for null", value: null },
     { name: "should return false for undefined", value: undefined },
   ],
   STRING_CASES: [
     { name: "should return true for a populated string", value: "hello world" },
-    { name: "should return true for an empty string", value: "" },
+    { name: "should return true for an empty string", value: EMPTY_STRING },
   ],
   TYPE_TEST: {
     CAMELCASE_EXPECTED: "helloWorld",
@@ -70,8 +73,8 @@ const TEST_DATA = {
       name: "should uppercase basic lowercase ASCII",
     },
     {
-      expected: "",
-      input: "",
+      expected: EMPTY_STRING,
+      input: EMPTY_STRING,
       name: "should return an empty string for empty input",
     },
     {

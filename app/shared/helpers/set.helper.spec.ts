@@ -8,7 +8,10 @@ import type { SetValue } from "@shared/types/app/utility-types";
 import { SetHelper } from "./set.helper";
 import { TypesHelper } from "./types.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_ARRAY },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("set.helper");
 
@@ -36,7 +39,7 @@ const { makeImmutableSet, makeSet, ...TEST_DATA } = {
     {
       expectedSize: 3,
       name: "should be a no-op for an empty values array",
-      values: [],
+      values: EMPTY_ARRAY,
     },
   ],
   DELETE_CASES: [
@@ -58,7 +61,7 @@ const { makeImmutableSet, makeSet, ...TEST_DATA } = {
     {
       expectedSize: 3,
       name: "should be a no-op for an empty values array",
-      values: [],
+      values: EMPTY_ARRAY,
     },
   ],
   MEMBERSHIP_CASES: [

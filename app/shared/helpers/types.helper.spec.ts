@@ -4,7 +4,7 @@ import { VitestSetup } from "@configs/vitest/setup";
 
 import { TypesHelper } from "./types.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const { trackLeaksInSpec } = await VitestSetup();
 
 trackLeaksInSpec("types.helper");
 

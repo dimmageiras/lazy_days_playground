@@ -7,7 +7,7 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { AppEnvHelper } from "./app-env.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const { trackLeaksInSpec } = await VitestSetup();
 
 trackLeaksInSpec("app-env.helper");
 

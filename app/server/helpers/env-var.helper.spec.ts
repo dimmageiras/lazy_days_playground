@@ -6,7 +6,10 @@ import { TypesHelper } from "@shared/helpers/types.helper";
 
 import { EnvVarHelper } from "./env-var.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_OBJECT, EMPTY_STRING },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("env-var.helper");
 
@@ -28,11 +31,11 @@ const TEST_DATA = {
   },
   INVALID_ENV: castAsType<ImportMetaEnv>({
     VITE_APP_PORT: "0",
-    VITE_APP_SERVICE_NAME: "",
+    VITE_APP_SERVICE_NAME: EMPTY_STRING,
   }),
-  MISSING_ENV: castAsType<ImportMetaEnv>({}),
+  MISSING_ENV: castAsType<ImportMetaEnv>(EMPTY_OBJECT),
   REJECTED_PORT_FORMAT_CASES: [
-    { name: "should reject an empty port string", port: "" },
+    { name: "should reject an empty port string", port: EMPTY_STRING },
     { name: "should reject a whitespace-padded port", port: " 5173 " },
     { name: "should reject a hex literal port", port: "0x100" },
     { name: "should reject a scientific-notation port", port: "1e3" },
@@ -68,7 +71,7 @@ describe("EnvVarHelper", () => {
     });
 
     it("should join one line per missing variable", ({ expect }) => {
-      let message = "";
+      let message: string = EMPTY_STRING;
 
       try {
         validateEnv(TEST_DATA.MISSING_ENV);

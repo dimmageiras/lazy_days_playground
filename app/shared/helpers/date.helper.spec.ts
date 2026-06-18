@@ -6,7 +6,7 @@ import { TIMING_IN_S } from "@shared/constants/timing.constant";
 
 import { DateHelper } from "./date.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const { trackLeaksInSpec } = await VitestSetup();
 
 trackLeaksInSpec("date.helper");
 

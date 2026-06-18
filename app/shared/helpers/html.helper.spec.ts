@@ -4,7 +4,10 @@ import { VitestSetup } from "@configs/vitest/setup";
 
 import { HtmlHelper } from "./html.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_STRING },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("html.helper");
 
@@ -49,8 +52,8 @@ const TEST_DATA = {
       name: "should return the same string when no special characters exist",
     },
     {
-      expected: "",
-      input: "",
+      expected: EMPTY_STRING,
+      input: EMPTY_STRING,
       name: "should return an empty string for empty input",
     },
     {

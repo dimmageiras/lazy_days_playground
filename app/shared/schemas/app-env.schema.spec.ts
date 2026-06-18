@@ -17,7 +17,10 @@ import type {
 
 import { appEnvSchema } from "./app-env.schema";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: { EMPTY_OBJECT, EMPTY_STRING },
+  trackLeaksInSpec,
+} = await VitestSetup();
 
 trackLeaksInSpec("app-env.schema");
 
@@ -122,7 +125,7 @@ const TEST_DATA = {
     {
       expectedCode: ISSUE_CODES.CUSTOM,
       expectedMessage: IPV4_ADDRESS_MESSAGE,
-      input: "",
+      input: EMPTY_STRING,
       name: "should reject an empty bind-all address with the ipv4 message",
     },
     {
@@ -167,21 +170,21 @@ const TEST_DATA = {
   INVALID_ENV: castAsType<ImportMetaEnv>({
     VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
     VITE_APP_PORT: "0",
-    VITE_APP_SERVICE_NAME: "",
+    VITE_APP_SERVICE_NAME: EMPTY_STRING,
     VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
   }),
   INVALID_PARSE_INPUT: {
     VITE_APP_PORT: "abc",
-    VITE_APP_SERVICE_NAME: "",
+    VITE_APP_SERVICE_NAME: EMPTY_STRING,
   },
   MALFORMED_BASE64_SHUTDOWN_TOKEN,
-  MISSING_ENV: castAsType<ImportMetaEnv>({}),
+  MISSING_ENV: castAsType<ImportMetaEnv>(EMPTY_OBJECT),
   NON_BASE64_SHUTDOWN_TOKEN,
   PORT_FORMAT_MESSAGE,
   PORT_RANGE_MESSAGE,
   REJECTED_PORT_FORMAT_CASES: [
     {
-      input: "",
+      input: EMPTY_STRING,
       name: "should reject an empty port string",
     },
     {
@@ -270,7 +273,7 @@ const TEST_DATA = {
     {
       expectedCode: ISSUE_CODES.TOO_SMALL,
       expectedMessage: "Must not be empty",
-      input: "",
+      input: EMPTY_STRING,
       name: "should reject an empty service name with the min-length message",
     },
   ],
@@ -845,7 +848,7 @@ describe("appEnvSchema", () => {
       const firstResult = appEnvSchema.safeParse(TEST_DATA.INVALID_PARSE_INPUT);
 
       const secondResult = appEnvSchema.safeParse({
-        VITE_APP_SERVICE_NAME: "",
+        VITE_APP_SERVICE_NAME: EMPTY_STRING,
         VITE_APP_PORT: "abc",
       });
 
@@ -862,7 +865,9 @@ describe("appEnvSchema", () => {
           issues
             .map((issue) => ({ code: issue.code, path: [...issue.path] }))
             .sort((a, b) =>
-              String(a.path[0] ?? "").localeCompare(String(b.path[0] ?? "")),
+              String(a.path[0] ?? EMPTY_STRING).localeCompare(
+                String(b.path[0] ?? EMPTY_STRING),
+              ),
             );
 
         expect(project(firstResult.error.issues)).toStrictEqual(
