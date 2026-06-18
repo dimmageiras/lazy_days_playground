@@ -1,4 +1,3 @@
-import { Map, Set } from "immutable";
 import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
@@ -7,7 +6,13 @@ import { StringHelper } from "./string.helper";
 import { TypesHelper } from "./types.helper";
 
 const {
-  sharedTestData: { EMPTY_ARRAY, EMPTY_OBJECT, EMPTY_STRING },
+  sharedTestData: {
+    EMPTY_ARRAY,
+    EMPTY_IMMUTABLE_MAP,
+    EMPTY_IMMUTABLE_SET,
+    EMPTY_OBJECT,
+    EMPTY_STRING,
+  },
   trackLeaksInSpec,
 }: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
 
@@ -47,10 +52,10 @@ const TEST_DATA = {
   ],
   NON_STRING_CASES: [
     { name: "should return false for a boolean", value: true },
-    { name: "should return false for a Map", value: Map() },
+    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
     { name: "should return false for a number", value: 42 },
     { name: "should return false for a plain object", value: EMPTY_OBJECT },
-    { name: "should return false for a Set", value: Set() },
+    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
     { name: "should return false for an array", value: EMPTY_ARRAY },
     { name: "should return false for null", value: null },
     { name: "should return false for undefined", value: undefined },
