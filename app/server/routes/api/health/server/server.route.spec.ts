@@ -30,8 +30,6 @@ describe("serverRoute", (it) => {
   }) => {
     const app = createTestApp(onTestFinished);
 
-    app.decorate("appEnv", VALID_DEV_APP_ENV);
-
     await app.register(serverRoute);
     await app.ready();
 

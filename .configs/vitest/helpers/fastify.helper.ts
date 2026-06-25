@@ -5,7 +5,11 @@ import type { AppInstance } from "@server/types/instance.type";
 
 import { TypeHelper } from "@shared/helpers/type.helper";
 
+import { SHARED_TEST_DATA } from "../constants/shared-test-data.constant";
+
 const { castAsType } = TypeHelper;
+
+const { VALID_DEV_APP_ENV } = SHARED_TEST_DATA;
 
 interface CreateTestAppOptions {
   mocksToReset?: Array<Mock>;
@@ -17,6 +21,8 @@ const createTestApp = (
   options?: CreateTestAppOptions,
 ): AppInstance => {
   const app = Fastify({ logger: false });
+
+  app.decorate("appEnv", VALID_DEV_APP_ENV);
 
   const { mocksToReset, resetFn } = options ?? {};
 
