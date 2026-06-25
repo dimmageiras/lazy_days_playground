@@ -46,10 +46,19 @@ Implications you must internalise:
 
 Every spec that uses inputs, fixtures, or table-driven cases collects them into a single `TEST_DATA` object frozen with `as const`. Conventions:
 
-- Specs open in this order: imports → setup-helper destructure (the project setup factory) → leak-tracker call (the state-probe helper, scoped by label) → unit-under-test destructure → frozen `TEST_DATA` → `describe`. The current identifiers live in `.configs/vitest/setup.ts` and the helpers folder it loads (operational hint).
+- Specs open in this order: imports → setup-factory destructure (shared fixtures plus the helpers/leak-tracker the spec needs, from one **synchronous** `<Project>Setup()` call — no `await`, and the annotation is the factory's plain return type, not an awaited form) → leak-tracker call (the state-probe helper, scoped by label) → unit-under-test destructure → frozen `TEST_DATA` → `describe`. The current identifiers live in `.configs/vitest/setup.ts` and the helpers folder it loads (operational hint).
 - Keys are `SCREAMING_SNAKE_CASE` and describe the case group (`DELAY_CASES`, `ESCAPE_HTML_CASES`) or the named value (`PENDING_DELAY_MS`).
 - Table-driven cases are arrays of objects shaped `{ name, …case-specific inputs, expected? }`. The `name` is what `it` receives. Per-case input keys are named after the parameter under test (`value` for predicates, `input` for transforms, `ms` for durations, etc.). An `expected` key is included whenever the spec asserts an exact value; predicates that assert `true`/`false` may omit it.
-- No mutation, no computed values that close over module state — everything inside `TEST_DATA` must be inspectable at glance.
+- No mutation, and no computed values that close over module state — the inert data inside `TEST_DATA` must be inspectable at a glance. The one sanctioned computed member is a **fresh-instance builder**: a zero-arg getter returning a new value per call, for a unit that mutates its argument in place (a shared frozen fixture would be mutated across concurrent siblings). Declare it as a getter inside the literal and split it from the frozen data with a rest-spread destructure — `const { makeThing, ...TEST_DATA } = { …, get makeThing() { return () => ({ … }); } } as const;` — so the builder and the inert data become separate bindings. The builder must still close over no mutable module state.
+
+### Shared fixtures
+
+Common, domain-neutral values — booleans, representative strings and numbers, small common collections, empty collections, the `null` / `undefined` / `NaN` sentinels, a valid-configuration fixture, and the sanctioned unknown-cast helper — live once in a single frozen fixture bundle exposed through the setup factory's return value (the same call that yields the helpers and the leak-tracker). A spec destructures the fixtures it needs and references them by name inside its own `TEST_DATA` rather than re-declaring literals.
+
+- **The dividing line.** A reusable, behaviour-neutral primitive or sentinel that several specs would otherwise re-type belongs in the shared bundle; a case table, a behaviour-specific expectation, or a fixture meaningful to one unit only stays in that spec's `TEST_DATA`. Both a hand-rolled primitive the bundle already provides and a one-off value pushed into the bundle are smells.
+- **Derived fixtures belong in the bundle, never in a spec.** The shared bundle may compose a fixture from its own primitives — including running a real schema or transform so the fixture cannot drift from the production contract it mirrors. That composition is confined to the bundle; per-spec `TEST_DATA` stays inert.
+- **Literal types must survive.** Shared primitives are declared so their literal type — not the widened type — reaches the specs, because the type-level assertions that consume them assert against the literal (a template-literal or mapped type derived from the input). Widening a shared primitive silently degrades those assertions into tautologies.
+- **Assert against the shared constant**, not a re-typed inline literal: it keeps the literal type flowing and the assertion greppable.
 
 ### Assertion style
 
@@ -69,13 +78,13 @@ Every spec that uses inputs, fixtures, or table-driven cases collects them into 
 
 ### Setup file
 
-A single setup file is loaded by the runner before each spec. Its primary job is to expose the helpers the spec needs, as a namespaced bundle the spec destructures.
+A single setup file is loaded by the runner before each spec. Its primary job is to expose, as a namespaced bundle the spec destructures, both the helpers the spec needs and the shared test-data fixtures.
 
 The setup file is also the **only** place infrastructure-level state may live — for example, a registry that records which spec files have installed a fake clock, used at file-exit by the state probe to flag concurrent-test + fake-timer risk. State that must outlive a single helper invocation goes here, not in a helper module. Setup files run before specs and are evaluated once per worker under `isolate: false`, so any module-level state they hold persists for the worker's lifetime — that is deliberate; helpers do not get the same allowance.
 
 ### Setup-factory consumption pattern
 
-Specs do not import helpers directly from the helpers folder. They go through a zero-arg factory exposed by the setup module — `const { someHelper } = <Project>Setup();` — and destructure the helper bundle from its return value. Both the factory identifier (`<Project>Setup`) and the per-helper names are placeholders; their actual identifiers live in the setup module and the helpers folder, and the factory's return type widens automatically as helpers are added. Three roles justify the indirection:
+Specs do not import helpers — or the shared fixtures — directly from their source modules. They go through a **synchronous**, zero-arg factory exposed by the setup module — `const { someHelper } = <Project>Setup();`, with no `await` — and destructure both the helper bundle and the shared-fixture namespace from its return value. Both the factory identifier (`<Project>Setup`) and the per-helper names are placeholders; their actual identifiers live in the setup module and the helpers folder, and the factory's return type widens automatically as helpers — or shared fixtures — are added. Three roles justify the indirection:
 
 1. **Force the side-effect import.** Routing every spec through the setup module guarantees the runner-required side-effects (matcher extensions, hijack installation, environment shims) are evaluated before the spec's collection begins. Setup is also registered as a `setupFiles` entry for the same reason — the factory is the belt to that suspenders.
 2. **Host the cross-spec hijack installation.** Any monkey-patch the probe needs (e.g. intercepting the fake-timer install site to attribute it to a file path) lives next to the factory so it installs exactly once per worker.

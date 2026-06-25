@@ -79,4 +79,4 @@ The contract every shared test helper follows: the helper module holds no state 
 
 ### Test data
 
-The single `TEST_DATA` constant at the top of every spec. See [`docs/testing/README.md`](./docs/testing/README.md#test-data--the-test_data-constant) for the canonical shape and conventions.
+The single `TEST_DATA` constant at the top of every spec. A per-spec `TEST_DATA` may reuse and compose from a shared, frozen cross-spec fixture bundle of common primitive values exposed through the setup factory. See [`docs/testing/README.md`](./docs/testing/README.md#test-data--the-test_data-constant) for the canonical shape, the shared-vs-per-spec dividing line, and the conventions.

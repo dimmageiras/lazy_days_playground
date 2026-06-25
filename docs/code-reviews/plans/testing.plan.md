@@ -51,8 +51,8 @@ The first criterion the reviewer applies: where the upstream `vitest` skill and 
 - Every spec that uses inputs, fixtures, or table-driven cases collects them into a **single** `TEST_DATA` object frozen with `as const`.
 - Keys are `SCREAMING_SNAKE_CASE` and describe the case group (`<GROUP>_CASES`) or the named value (`<NAME>_<UNIT>`).
 - Table-driven cases are arrays of objects shaped `{ name, …case-specific inputs, expected? }`. The `name` is what the runner's `it` receives. Per-case input keys are named after the parameter under test (`value` for predicates, `input` for transforms, `ms` for durations, etc.). An `expected` key is included whenever the spec asserts an exact value; predicates that assert `true`/`false` may omit it.
-- No mutation, no computed values that close over module state — everything inside `TEST_DATA` must be inspectable at a glance.
-- `TEST_DATA` is scoped to **one** spec. No cross-spec sharing; a fixture two specs need belongs in a fixture helper, not in a shared `TEST_DATA`.
+- No mutation, and no computed values that close over module state — inert `TEST_DATA` data must be inspectable at a glance. The one sanctioned computed member is a **fresh-instance builder** (a zero-arg getter returning a new value per call, split from the frozen data with a rest-spread destructure) for a unit that mutates its argument in place; it must still close over no mutable module state.
+- Common, reusable primitive values live in a **single frozen cross-spec fixture bundle** exposed through the setup factory's return; per-spec `TEST_DATA` reuses and composes from that bundle rather than hand-rolling its own primitives. A primitive a spec hand-rolls that the bundle already provides is a finding; a one-off, spec-specific value pushed into the bundle is a finding. Case tables and any value meaningful to a single spec stay in that spec's `TEST_DATA`.
 
 ### Suite shape and assertion style
 
