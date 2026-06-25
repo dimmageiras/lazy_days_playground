@@ -1,0 +1,179 @@
+import type { Signals } from "close-with-grace";
+import type { MockInstance } from "vitest";
+import { describe, vi } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
+
+import type { KillFailureReason } from "@server/modules/startup/types/kill.type";
+
+import { TypeHelper } from "@shared/helpers/type.helper";
+import type { Port } from "@shared/types/app-env.type";
+
+import { KillHelper } from "./kill.helper";
+
+const {
+  createMockInstance,
+  sharedMock: { mockPortToPid },
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    NAN_VALUE,
+    NUMBER_1,
+    VALID_PORT,
+  },
+  trackLeaksInSpec,
+}: ReturnType<typeof VitestSetup> = VitestSetup();
+
+trackLeaksInSpec("kill.helper");
+
+const { castAsType } = TypeHelper;
+
+const { killPortOwner } = KillHelper;
+
+const TEST_DATA = {
+  FOREIGN_PID: Math.max(process.pid, process.ppid) + NUMBER_1,
+  KILL_FAILED: new Error("kill failed"),
+  KILL_THROW_PID: Math.max(process.pid, process.ppid) + NUMBER_1 + NUMBER_1,
+  LOOKUP_FAILED: new Error("lookup failed"),
+  PORT_KILL_THREW: castAsType<Port>(VALID_PORT + NUMBER_1),
+  PORT_LOOKUP_THREW: castAsType<Port>(VALID_PORT + 4),
+  PORT_NAN_PID: castAsType<Port>(VALID_PORT + 2),
+  PORT_NEGATIVE_PID: castAsType<Port>(VALID_PORT + 3),
+  PORT_OK: castAsType<Port>(VALID_PORT),
+  PORT_SELF_PID: castAsType<Port>(VALID_PORT + 5),
+  PORT_SELF_PPID: castAsType<Port>(VALID_PORT + 6),
+  SIGTERM: castAsType<Signals>("SIGTERM"),
+  get failureCases() {
+    return castAsType<
+      Array<{ name: string; port: Port; reason: KillFailureReason }>
+    >([
+      {
+        name: "should fail with self-pid when the owner is this process",
+        port: this.PORT_SELF_PID,
+        reason: "self-pid",
+      },
+      {
+        name: "should fail with self-pid when the owner is the parent process",
+        port: this.PORT_SELF_PPID,
+        reason: "self-pid",
+      },
+      {
+        name: "should fail with no-pid when the lookup yields a non-integer pid",
+        port: this.PORT_NAN_PID,
+        reason: "no-pid",
+      },
+      {
+        name: "should fail with no-pid when the lookup yields a pid below one",
+        port: this.PORT_NEGATIVE_PID,
+        reason: "no-pid",
+      },
+      {
+        name: "should fail with no-pid when the lookup throws",
+        port: this.PORT_LOOKUP_THREW,
+        reason: "no-pid",
+      },
+      {
+        name: "should fail with kill-threw when signalling the owner throws",
+        port: this.PORT_KILL_THREW,
+        reason: "kill-threw",
+      },
+    ]);
+  },
+  get lookupPort() {
+    return async (port: Port): Promise<number> => {
+      if (port === this.PORT_LOOKUP_THREW) {
+        throw this.LOOKUP_FAILED;
+      }
+
+      return this.pidByPort.get(port) ?? NAN_VALUE;
+    };
+  },
+  get pidByPort() {
+    return new Map<Port, number>([
+      [this.PORT_OK, this.FOREIGN_PID],
+      [this.PORT_KILL_THREW, this.KILL_THROW_PID],
+      [this.PORT_NAN_PID, NAN_VALUE],
+      [this.PORT_NEGATIVE_PID, -NUMBER_1],
+      [this.PORT_SELF_PID, process.pid],
+      [this.PORT_SELF_PPID, process.ppid],
+    ]);
+  },
+} as const;
+
+describe("KillHelper", () => {
+  describe("killPortOwner", (it) => {
+    const { beforeAll, afterAll } = it;
+
+    let killSpy: MockInstance<typeof process.kill>;
+
+    beforeAll(() => {
+      mockPortToPid.mockImplementation(TEST_DATA.lookupPort);
+
+      killSpy = vi
+        .spyOn(process, "kill")
+        .mockImplementation((pid: number): true => {
+          if (pid === TEST_DATA.KILL_THROW_PID) {
+            throw TEST_DATA.KILL_FAILED;
+          }
+
+          return true;
+        });
+    });
+
+    afterAll(() => {
+      mockPortToPid.mockReset();
+      killSpy.mockRestore();
+    });
+
+    it("should resolve ok when a foreign port owner is signalled", async ({
+      expect,
+    }) => {
+      const result = await killPortOwner(
+        createMockInstance({ appEnv: { port: TEST_DATA.PORT_OK } }),
+        TEST_DATA.SIGTERM,
+      );
+
+      expect(result).toStrictEqual({ ok: BOOLEAN_TRUE });
+    });
+
+    it("should signal the foreign pid with the given signal", async ({
+      expect,
+    }) => {
+      await killPortOwner(
+        createMockInstance({ appEnv: { port: TEST_DATA.PORT_OK } }),
+        TEST_DATA.SIGTERM,
+      );
+
+      expect(killSpy).toHaveBeenCalledWith(
+        TEST_DATA.FOREIGN_PID,
+        TEST_DATA.SIGTERM,
+      );
+    });
+
+    it("should never signal this process when it owns the port", async ({
+      expect,
+    }) => {
+      await killPortOwner(
+        createMockInstance({ appEnv: { port: TEST_DATA.PORT_SELF_PID } }),
+        TEST_DATA.SIGTERM,
+      );
+
+      const signalledSelf = killSpy.mock.calls.some(
+        ([pid]) => pid === process.pid,
+      );
+
+      expect(signalledSelf).toBe(BOOLEAN_FALSE);
+    });
+
+    TEST_DATA.failureCases.forEach(({ name, port, reason }) => {
+      it(name, async ({ expect }) => {
+        const result = await killPortOwner(
+          createMockInstance({ appEnv: { port } }),
+          TEST_DATA.SIGTERM,
+        );
+
+        expect(result).toStrictEqual({ ok: BOOLEAN_FALSE, reason });
+      });
+    });
+  });
+});
