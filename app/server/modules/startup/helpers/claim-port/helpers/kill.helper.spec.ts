@@ -33,7 +33,7 @@ const { killPortOwner } = KillHelper;
 const TEST_DATA = {
   FOREIGN_PID: Math.max(process.pid, process.ppid) + NUMBER_1,
   KILL_FAILED: new Error("kill failed"),
-  KILL_THROW_PID: Math.max(process.pid, process.ppid) + NUMBER_1 + NUMBER_1,
+  KILL_THROW_PID: Math.max(process.pid, process.ppid) + 2,
   LOOKUP_FAILED: new Error("lookup failed"),
   PORT_KILL_THREW: castAsType<Port>(VALID_PORT + NUMBER_1),
   PORT_LOOKUP_THREW: castAsType<Port>(VALID_PORT + 4),
@@ -85,18 +85,17 @@ const TEST_DATA = {
         throw this.LOOKUP_FAILED;
       }
 
-      return this.pidByPort.get(port) ?? NAN_VALUE;
+      return (
+        new Map<Port, number>([
+          [this.PORT_OK, this.FOREIGN_PID],
+          [this.PORT_KILL_THREW, this.KILL_THROW_PID],
+          [this.PORT_NAN_PID, NAN_VALUE],
+          [this.PORT_NEGATIVE_PID, -NUMBER_1],
+          [this.PORT_SELF_PID, process.pid],
+          [this.PORT_SELF_PPID, process.ppid],
+        ]).get(port) ?? NAN_VALUE
+      );
     };
-  },
-  get pidByPort() {
-    return new Map<Port, number>([
-      [this.PORT_OK, this.FOREIGN_PID],
-      [this.PORT_KILL_THREW, this.KILL_THROW_PID],
-      [this.PORT_NAN_PID, NAN_VALUE],
-      [this.PORT_NEGATIVE_PID, -NUMBER_1],
-      [this.PORT_SELF_PID, process.pid],
-      [this.PORT_SELF_PPID, process.ppid],
-    ]);
   },
 } as const;
 

@@ -39,6 +39,7 @@ const VALID_RAW_DEV_ENV = castAsType<ImportMetaEnv>({
   VITE_APP_SERVICE_NAME: COMMON_STRING,
   VITE_APP_SHUTDOWN_TOKEN: VALID_BASE64_TOKEN,
 });
+const VALID_VITE_APP_ENV = appEnvSchema.parse(VALID_RAW_DEV_ENV);
 
 const SHARED_TEST_DATA = Object.freeze({
   BOOLEAN_FALSE,
@@ -70,18 +71,20 @@ const SHARED_TEST_DATA = Object.freeze({
   STRING_TRUE,
   UNDEFINED_VALUE: undefined,
   VALID_BASE64_TOKEN,
-  VALID_DEV_APP_ENV: getObjectEntries(
-    appEnvSchema.parse(VALID_RAW_DEV_ENV),
-  ).reduce<AppEnv>((appEnv, [key, value]) => {
-    const camelCaseKey = toCamelCase(replace(key, /^VITE_APP_/, ""));
+  VALID_DEV_APP_ENV: getObjectEntries(VALID_VITE_APP_ENV).reduce<AppEnv>(
+    (appEnv, [key, value]) => {
+      const camelCaseKey = toCamelCase(replace(key, /^VITE_APP_/, ""));
 
-    return {
-      ...appEnv,
-      [camelCaseKey]: value,
-    };
-  }, castAsType<AppEnv>({})),
+      return {
+        ...appEnv,
+        [camelCaseKey]: value,
+      };
+    },
+    castAsType<AppEnv>({}),
+  ),
   VALID_PORT,
   VALID_RAW_DEV_ENV,
+  VALID_VITE_APP_ENV,
   get toUnknown() {
     return (value: unknown): unknown => castAsType<unknown>(value);
   },

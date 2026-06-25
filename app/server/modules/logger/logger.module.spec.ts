@@ -9,6 +9,7 @@ import { LoggerModule } from "./logger.module";
 
 const {
   sharedTestData: {
+    BOOLEAN_FALSE,
     COMMON_LOG_LEVEL,
     COMMON_STRING_ARRAY,
     VALID_DEV_APP_ENV,
@@ -25,7 +26,7 @@ const { buildFallbackLogger, buildLogger } = LoggerModule;
 const TEST_DATA = {
   PROD_APP_ENV: castAsType<AppEnv>({
     ...VALID_DEV_APP_ENV,
-    isDevelopment: false,
+    isDevelopment: BOOLEAN_FALSE,
     logLevel: "warn",
   }),
   REDACT_PATHS: COMMON_STRING_ARRAY,

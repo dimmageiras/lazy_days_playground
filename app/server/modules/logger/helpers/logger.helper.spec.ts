@@ -69,14 +69,11 @@ const TEST_DATA = {
       withRedaction: BOOLEAN_TRUE,
     },
   ],
+  PROD_APP_ENV: castAsType<AppEnv>({
+    ...VALID_DEV_APP_ENV,
+    isDevelopment: BOOLEAN_FALSE,
+  }),
   REDACT_PATHS: COMMON_STRING_ARRAY,
-  get prodAppEnv() {
-    return () =>
-      castAsType<AppEnv>({
-        ...VALID_DEV_APP_ENV,
-        isDevelopment: BOOLEAN_FALSE,
-      });
-  },
 } as const;
 
 describe("LoggerHelper", () => {
@@ -94,7 +91,7 @@ describe("LoggerHelper", () => {
         it(name, ({ expect }) => {
           const appEnv = isDevelopment
             ? VALID_DEV_APP_ENV
-            : TEST_DATA.prodAppEnv();
+            : TEST_DATA.PROD_APP_ENV;
           const redactPaths = withRedaction
             ? TEST_DATA.REDACT_PATHS
             : TEST_DATA.EMPTY_REDACT_PATHS;

@@ -3,7 +3,6 @@ import { describe, expectTypeOf } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { TypeHelper } from "@shared/helpers/type.helper";
-import { appEnvSchema } from "@shared/schemas/app-env.schema";
 
 import { EnvVarHelper } from "./env-var.helper";
 
@@ -18,6 +17,7 @@ const {
     NUMBER_1,
     VALID_PORT,
     VALID_RAW_DEV_ENV,
+    VALID_VITE_APP_ENV,
   },
   trackLeaksInSpec,
 }: ReturnType<typeof VitestSetup> = VitestSetup();
@@ -29,7 +29,7 @@ const { castAsType } = TypeHelper;
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
 
 const TEST_DATA = {
-  EXPECTED_VALIDATED_ENV: appEnvSchema.parse(VALID_RAW_DEV_ENV),
+  EXPECTED_VALIDATED_ENV: VALID_VITE_APP_ENV,
   INVALID_ENV: {
     ...VALID_RAW_DEV_ENV,
     VITE_APP_PORT: `${MIN_PORT - NUMBER_1}`,

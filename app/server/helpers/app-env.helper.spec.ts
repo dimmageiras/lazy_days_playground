@@ -2,12 +2,10 @@ import { describe } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { appEnvSchema } from "@shared/schemas/app-env.schema";
-
 import { AppEnvHelper } from "./app-env.helper";
 
 const {
-  sharedTestData: { BOOLEAN_TRUE, VALID_DEV_APP_ENV, VALID_RAW_DEV_ENV },
+  sharedTestData: { BOOLEAN_TRUE, VALID_DEV_APP_ENV, VALID_VITE_APP_ENV },
   trackLeaksInSpec,
 }: ReturnType<typeof VitestSetup> = VitestSetup();
 
@@ -16,7 +14,7 @@ trackLeaksInSpec("app-env.helper");
 const { buildAppEnv } = AppEnvHelper;
 
 const TEST_DATA = {
-  VITE_APP_ENV: appEnvSchema.parse(VALID_RAW_DEV_ENV),
+  VITE_APP_ENV: VALID_VITE_APP_ENV,
 } as const;
 
 describe("AppEnvHelper", () => {
