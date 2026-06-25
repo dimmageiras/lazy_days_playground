@@ -13,9 +13,9 @@ const {
 
 trackLeaksInSpec("timing.helper");
 
-const { delay } = TimingHelper;
-
 const { SECONDS_ONE_TENTH } = TIMING_IN_MS;
+
+const { delay } = TimingHelper;
 
 const TEST_DATA = {
   PENDING_DELAY_MS: SECONDS_ONE_TENTH,

@@ -23,11 +23,11 @@ const {
 
 trackLeaksInSpec("listen.helper");
 
+const { LISTEN_POLL_INITIAL_INTERVAL } = TIMING_IN_MS;
+
 const { castAsType } = TypeHelper;
 
 const { tryListen, tryListenUntil } = ListenHelper;
-
-const { LISTEN_POLL_INITIAL_INTERVAL } = TIMING_IN_MS;
 
 const TEST_DATA = {
   TRY_LISTEN_CASES: [
