@@ -26,7 +26,7 @@ const {
 
 trackLeaksInSpec("app-env.schema");
 
-const TEST_DATA = {
+const { validParsedEnv, ...TEST_DATA } = {
   IS_REQUIRED_MESSAGE: "Is required",
   MUST_BE_STRING_MESSAGE: "Must be a string",
   PORT_BOUNDARY_CASES: [
@@ -163,7 +163,7 @@ describe("appEnvSchema", () => {
       expect(result.success).toBe(BOOLEAN_TRUE);
 
       if (result.success) {
-        expect(result.data).toStrictEqual(TEST_DATA.validParsedEnv());
+        expect(result.data).toStrictEqual(validParsedEnv());
         expectTypeOf(result.data).toEqualTypeOf<ViteAppEnv>();
       }
     });

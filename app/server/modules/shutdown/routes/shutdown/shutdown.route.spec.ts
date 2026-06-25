@@ -70,39 +70,41 @@ const TEST_DATA = {
   SHUTDOWN_PATH: `/${SHUTDOWN}`,
 } as const;
 
-describe("shutdownRoute", (it) => {
-  TEST_DATA.RESPONSE_CASES.forEach(
-    ({
-      expectedAccepted,
-      expectedStatus,
-      expectsClose,
-      headers,
-      name,
-      remoteAddress,
-    }) => {
-      it(name, async ({ expect, onTestFinished }) => {
-        const app = createTestApp(onTestFinished);
-        const handle = { close: vi.fn(), uninstall: vi.fn() };
+describe("shutdownRoute", () => {
+  describe(`POST ${TEST_DATA.SHUTDOWN_PATH}`, (it) => {
+    TEST_DATA.RESPONSE_CASES.forEach(
+      ({
+        expectedAccepted,
+        expectedStatus,
+        expectsClose,
+        headers,
+        name,
+        remoteAddress,
+      }) => {
+        it(name, async ({ expect, onTestFinished }) => {
+          const app = createTestApp(onTestFinished);
+          const handle = { close: vi.fn(), uninstall: vi.fn() };
 
-        await app.register(shutdownRoute, {
-          handle: castAsType<ShutdownRouteOptions["handle"]>(handle),
-        });
-        await app.ready();
+          await app.register(shutdownRoute, {
+            handle: castAsType<ShutdownRouteOptions["handle"]>(handle),
+          });
+          await app.ready();
 
-        const response = await app.inject({
-          headers,
-          method: "POST",
-          remoteAddress,
-          url: TEST_DATA.SHUTDOWN_PATH,
-        });
+          const response = await app.inject({
+            headers,
+            method: "POST",
+            remoteAddress,
+            url: TEST_DATA.SHUTDOWN_PATH,
+          });
 
-        expect(response.statusCode).toBe(expectedStatus);
-        expect(response.json()).toStrictEqual({
-          accepted: expectedAccepted,
-          timestamp: expect.any(String),
+          expect(response.statusCode).toBe(expectedStatus);
+          expect(response.json()).toStrictEqual({
+            accepted: expectedAccepted,
+            timestamp: expect.any(String),
+          });
+          expect(handle.close).toHaveBeenCalledTimes(expectsClose ? 1 : 0);
         });
-        expect(handle.close).toHaveBeenCalledTimes(expectsClose ? 1 : 0);
-      });
-    },
-  );
+      },
+    );
+  });
 });

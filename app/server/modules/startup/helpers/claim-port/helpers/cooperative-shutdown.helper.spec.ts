@@ -42,7 +42,7 @@ const { castAsType } = TypeHelper;
 
 const { requestCooperativeShutdown } = CooperativeShutdownHelper;
 
-const TEST_DATA = {
+const { respondToPost, ...TEST_DATA } = {
   CONNECTION_REFUSED: new Error("connection refused"),
   REQUEST_CASES: castAsType<
     Array<{
@@ -51,11 +51,6 @@ const TEST_DATA = {
       port: Port;
     }>
   >([
-    {
-      expected: BOOLEAN_TRUE,
-      name: "should resolve true when the shutdown request succeeds",
-      port: VALID_PORT,
-    },
     {
       expected: BOOLEAN_FALSE,
       name: "should resolve false when the shutdown request fails",
@@ -89,7 +84,7 @@ describe("CooperativeShutdownHelper", () => {
     const { beforeAll, afterAll } = it;
 
     beforeAll(() => {
-      mockAxiosPost.mockImplementation(TEST_DATA.respondToPost);
+      mockAxiosPost.mockImplementation(respondToPost);
     });
 
     afterAll(() => {
@@ -106,10 +101,10 @@ describe("CooperativeShutdownHelper", () => {
       });
     });
 
-    it("should post to the loopback shutdown url with the token header", async ({
+    it("should post to the loopback shutdown url with the token header and resolve true", async ({
       expect,
     }) => {
-      await requestCooperativeShutdown(
+      const result = await requestCooperativeShutdown(
         createMockInstance({ appEnv: { port: castAsType<Port>(VALID_PORT) } }),
       );
 
@@ -120,6 +115,7 @@ describe("CooperativeShutdownHelper", () => {
           headers: { [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken },
         }),
       );
+      expect(result).toBe(BOOLEAN_TRUE);
     });
   });
 });

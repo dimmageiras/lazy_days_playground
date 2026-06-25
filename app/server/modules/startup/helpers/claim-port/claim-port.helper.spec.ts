@@ -58,7 +58,7 @@ const { castAsType } = TypeHelper;
 
 const { claimPort } = ClaimPortHelper;
 
-const TEST_DATA = {
+const { makeInstance, scenarioOf, ...TEST_DATA } = {
   FORCE_KILLED: { ok: BOOLEAN_TRUE },
   NO_PID: { ok: BOOLEAN_FALSE, reason: "no-pid" },
   SCENARIO_KEY: "__claimPortScenario",
@@ -189,14 +189,14 @@ describe("ClaimPortHelper", () => {
     beforeAll(() => {
       mockTryListen.mockImplementation((instance: AppInstance) =>
         Promise.resolve(
-          TEST_DATA.scenarioOf(instance).tryListen.shift() ?? BOOLEAN_FALSE,
+          scenarioOf(instance).tryListen.shift() ?? BOOLEAN_FALSE,
         ),
       );
 
       mockRequestCooperativeShutdown.mockImplementation(
         (instance: AppInstance) =>
           Promise.resolve(
-            TEST_DATA.scenarioOf(instance).requestCooperativeShutdown.shift() ??
+            scenarioOf(instance).requestCooperativeShutdown.shift() ??
               BOOLEAN_FALSE,
           ),
       );
@@ -205,16 +205,16 @@ describe("ClaimPortHelper", () => {
         (instance: AppInstance, timeout: number) =>
           Promise.resolve(
             timeout === COOPERATIVE_HANDOVER_TIMEOUT
-              ? (TEST_DATA.scenarioOf(instance).tryListenUntil.cooperative ??
+              ? (scenarioOf(instance).tryListenUntil.cooperative ??
                   BOOLEAN_FALSE)
-              : (TEST_DATA.scenarioOf(instance).tryListenUntil.force ??
+              : (scenarioOf(instance).tryListenUntil.force ??
                   BOOLEAN_FALSE),
           ),
       );
 
       mockKillPortOwner.mockImplementation((instance: AppInstance) =>
         Promise.resolve(
-          TEST_DATA.scenarioOf(instance).killPortOwner ?? TEST_DATA.NO_PID,
+          scenarioOf(instance).killPortOwner ?? TEST_DATA.NO_PID,
         ),
       );
     });
@@ -229,7 +229,7 @@ describe("ClaimPortHelper", () => {
     TEST_DATA.RESOLVE_CASES.forEach(({ name, scenario }) => {
       it(name, async ({ expect }) => {
         await expect(
-          claimPort(TEST_DATA.makeInstance(scenario)),
+          claimPort(makeInstance(scenario)),
         ).resolves.toBeUndefined();
       });
     });
@@ -237,13 +237,13 @@ describe("ClaimPortHelper", () => {
     TEST_DATA.ABORT_CASES.forEach(({ name, rejectsWith, scenario }) => {
       it(name, async ({ expect }) => {
         await expect(
-          claimPort(TEST_DATA.makeInstance(scenario)),
+          claimPort(makeInstance(scenario)),
         ).rejects.toThrow(rejectsWith);
       });
     });
 
     it("should signal the port owner with SIGTERM", async ({ expect }) => {
-      const instance = TEST_DATA.makeInstance(TEST_DATA.SIGNAL_SCENARIO);
+      const instance = makeInstance(TEST_DATA.SIGNAL_SCENARIO);
 
       await expect(claimPort(instance)).rejects.toThrow();
 

@@ -23,25 +23,27 @@ const TEST_DATA = {
   SERVER_PATH: `/${SERVER}`,
 } as const;
 
-describe("serverRoute", (it) => {
-  it("should report the service name and an ISO timestamp", async ({
-    expect,
-    onTestFinished,
-  }) => {
-    const app = createTestApp(onTestFinished);
+describe("serverRoute", () => {
+  describe(`GET ${TEST_DATA.SERVER_PATH}`, (it) => {
+    it("should report the service name and an ISO timestamp", async ({
+      expect,
+      onTestFinished,
+    }) => {
+      const app = createTestApp(onTestFinished);
 
-    await app.register(serverRoute);
-    await app.ready();
+      await app.register(serverRoute);
+      await app.ready();
 
-    const response = await app.inject({
-      method: "GET",
-      url: TEST_DATA.SERVER_PATH,
-    });
+      const response = await app.inject({
+        method: "GET",
+        url: TEST_DATA.SERVER_PATH,
+      });
 
-    expect(response.statusCode).toBe(OK);
-    expect(response.json()).toStrictEqual({
-      service: VALID_DEV_APP_ENV.serviceName,
-      timestamp: expect.any(String),
+      expect(response.statusCode).toBe(OK);
+      expect(response.json()).toStrictEqual({
+        service: VALID_DEV_APP_ENV.serviceName,
+        timestamp: expect.any(String),
+      });
     });
   });
 });

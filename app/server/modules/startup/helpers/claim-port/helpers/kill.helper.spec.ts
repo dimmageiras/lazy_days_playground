@@ -29,7 +29,7 @@ const { castAsType } = TypeHelper;
 
 const { killPortOwner } = KillHelper;
 
-const TEST_DATA = {
+const { lookupPort, ...TEST_DATA } = {
   FOREIGN_PID: Math.max(process.pid, process.ppid) + NUMBER_1,
   KILL_FAILED: new Error("kill failed"),
   KILL_THROW_PID: Math.max(process.pid, process.ppid) + 2,
@@ -107,7 +107,7 @@ describe("KillHelper", () => {
     let killSpy: MockInstance<typeof process.kill>;
 
     beforeAll(() => {
-      mockPortToPid.mockImplementation(TEST_DATA.lookupPort);
+      mockPortToPid.mockImplementation(lookupPort);
 
       killSpy = vi
         .spyOn(process, "kill")
@@ -125,21 +125,10 @@ describe("KillHelper", () => {
       killSpy.mockRestore();
     });
 
-    it("should resolve ok when a foreign port owner is signalled", async ({
+    it("should signal the foreign port owner with the given signal and resolve ok", async ({
       expect,
     }) => {
       const result = await killPortOwner(
-        createMockInstance({ appEnv: { port: TEST_DATA.PORT_OK } }),
-        TEST_DATA.SIGTERM,
-      );
-
-      expect(result).toStrictEqual({ ok: BOOLEAN_TRUE });
-    });
-
-    it("should signal the foreign pid with the given signal", async ({
-      expect,
-    }) => {
-      await killPortOwner(
         createMockInstance({ appEnv: { port: TEST_DATA.PORT_OK } }),
         TEST_DATA.SIGTERM,
       );
@@ -148,6 +137,7 @@ describe("KillHelper", () => {
         TEST_DATA.FOREIGN_PID,
         TEST_DATA.SIGTERM,
       );
+      expect(result).toStrictEqual({ ok: BOOLEAN_TRUE });
     });
 
     it("should never signal this process when it owns the port", async ({

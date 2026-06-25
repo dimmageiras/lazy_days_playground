@@ -36,31 +36,26 @@ const TEST_DATA = {
     },
     { name: "should return true for an empty array", value: EMPTY_ARRAY },
   ],
+  NON_ARRAY_CASES: [
+    { name: "should return false for a boolean", value: BOOLEAN_TRUE },
+    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
+    { name: "should return false for a number", value: COMMON_NUMBER },
+    { name: "should return false for a plain object", value: EMPTY_OBJECT },
+    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
+    { name: "should return false for a string", value: COMMON_STRING },
+    { name: "should return false for a Uint8Array", value: new Uint8Array() },
+    { name: "should return false for NaN", value: NAN_VALUE },
+    { name: "should return false for null", value: NULL_VALUE },
+    { name: "should return false for undefined", value: UNDEFINED_VALUE },
+    {
+      name: "should return false for an arguments object",
+      value: (function () {
+        return arguments;
+      })(),
+    },
+  ],
   TYPE_TEST: {
     UNKNOWN_VALUE: toUnknown(COMMON_NUMBER_ARRAY),
-  },
-  get NON_ARRAY_CASES() {
-    return [
-      { name: "should return false for a boolean", value: BOOLEAN_TRUE },
-      { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
-      { name: "should return false for a number", value: COMMON_NUMBER },
-      { name: "should return false for a plain object", value: EMPTY_OBJECT },
-      { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
-      { name: "should return false for a string", value: COMMON_STRING },
-      { name: "should return false for a Uint8Array", value: new Uint8Array() },
-      { name: "should return false for NaN", value: NAN_VALUE },
-      { name: "should return false for null", value: NULL_VALUE },
-      { name: "should return false for undefined", value: UNDEFINED_VALUE },
-      {
-        name: "should return false for an arguments object",
-        value: this.makeArguments(COMMON_NUMBER_ARRAY.entries()),
-      },
-    ];
-  },
-  get makeArguments() {
-    return (..._args: Array<unknown>) => {
-      return arguments;
-    };
   },
 } as const;
 

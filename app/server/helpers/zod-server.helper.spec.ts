@@ -22,7 +22,7 @@ const { castAsType } = TypeHelper;
 const { addCustomIssue, getFormattedZodIssueLines, getFormattedZodIssues } =
   ZodServerHelper;
 
-const TEST_DATA = {
+const { createdIssueContext, ...TEST_DATA } = {
   BAD_VALUE: "bad value",
   EMPTY: "empty",
   FIELD: "field",
@@ -232,7 +232,7 @@ describe("ZodServerHelper", () => {
     TEST_DATA.ADD_CUSTOM_ISSUE_CASES.forEach(
       ({ code, expected, message, name }) => {
         it(name, ({ expect }) => {
-          const { captured, context } = TEST_DATA.createdIssueContext();
+          const { captured, context } = createdIssueContext();
 
           addCustomIssue(context, message, code);
 
