@@ -41,98 +41,110 @@ const TEST_DATA = {
       port: `${MAX_PORT}`,
     },
   ],
-  REJECTED_TYPE_CASES: [
-    {
-      key: "VITE_APP_BIND_ALL_IPV4",
-      name: "should reject a non-string bind-all address",
-    },
-    {
-      key: "VITE_APP_PORT",
-      name: "should reject a non-string port",
-    },
-    {
-      key: "VITE_APP_SERVICE_NAME",
-      name: "should reject a non-string service name",
-    },
-    {
-      key: "VITE_APP_SHUTDOWN_TOKEN",
-      name: "should reject a non-string shutdown token",
-    },
-  ],
-  REJECTION_CASES: [
-    {
-      expectedMessage: "Must be a valid IPv4 address",
-      input: COMMON_STRING,
-      key: "VITE_APP_BIND_ALL_IPV4",
-      name: "should reject a bind address that is not IPv4",
-    },
-    {
-      expectedMessage: "Must be 'true' or 'false'",
-      input: COMMON_STRING,
-      key: "VITE_APP_IS_DEVELOPMENT",
-      name: "should reject an unrecognised development flag",
-    },
-    {
-      expectedMessage: "Must be a known log level",
-      input: COMMON_STRING,
-      key: "VITE_APP_LOG_LEVEL",
-      name: "should reject an unknown log level",
-    },
-    {
-      expectedMessage: "Must be a string of digits",
-      input: COMMON_STRING,
-      key: "VITE_APP_PORT",
-      name: "should reject a non-numeric port",
-    },
-    {
-      expectedMessage: `Must be between ${MIN_PORT} and ${MAX_PORT}`,
-      input: `${MIN_PORT - NUMBER_1}`,
-      key: "VITE_APP_PORT",
-      name: "should reject a port below the valid range",
-    },
-    {
-      expectedMessage: `Must be between ${MIN_PORT} and ${MAX_PORT}`,
-      input: `${MAX_PORT + NUMBER_1}`,
-      key: "VITE_APP_PORT",
-      name: "should reject a port above the valid range",
-    },
-    {
-      expectedMessage: "Must not be empty",
-      input: EMPTY_STRING,
-      key: "VITE_APP_SERVICE_NAME",
-      name: "should reject an empty service name",
-    },
-    {
-      expectedMessage: "Must be at least 88 characters",
-      input: COMMON_STRING,
-      key: "VITE_APP_SHUTDOWN_TOKEN",
-      name: "should reject a shutdown token shorter than 88 characters",
-    },
-    {
-      expectedMessage: "Must be base64",
-      input: `${VALID_BASE64_TOKEN}!`,
-      key: "VITE_APP_SHUTDOWN_TOKEN",
-      name: "should reject a shutdown token that is not base64",
-    },
-  ],
-  REQUIRED_CASES: [
-    {
-      key: "VITE_APP_BIND_ALL_IPV4",
-      name: "should reject a missing bind-all address",
-    },
-    {
-      key: "VITE_APP_PORT",
-      name: "should reject a missing port",
-    },
-    {
-      key: "VITE_APP_SERVICE_NAME",
-      name: "should reject a missing service name",
-    },
-    {
-      key: "VITE_APP_SHUTDOWN_TOKEN",
-      name: "should reject a missing shutdown token",
-    },
-  ],
+  VITE_APP_BIND_ALL_IPV4: "VITE_APP_BIND_ALL_IPV4",
+  VITE_APP_IS_DEVELOPMENT: "VITE_APP_IS_DEVELOPMENT",
+  VITE_APP_LOG_LEVEL: "VITE_APP_LOG_LEVEL",
+  VITE_APP_PORT: "VITE_APP_PORT",
+  VITE_APP_SERVICE_NAME: "VITE_APP_SERVICE_NAME",
+  VITE_APP_SHUTDOWN_TOKEN: "VITE_APP_SHUTDOWN_TOKEN",
+  get REJECTED_TYPE_CASES() {
+    return [
+      {
+        key: this.VITE_APP_BIND_ALL_IPV4,
+        name: "should reject a non-string bind-all address",
+      },
+      {
+        key: this.VITE_APP_PORT,
+        name: "should reject a non-string port",
+      },
+      {
+        key: this.VITE_APP_SERVICE_NAME,
+        name: "should reject a non-string service name",
+      },
+      {
+        key: this.VITE_APP_SHUTDOWN_TOKEN,
+        name: "should reject a non-string shutdown token",
+      },
+    ];
+  },
+  get REJECTION_CASES() {
+    return [
+      {
+        expectedMessage: "Must be a valid IPv4 address",
+        input: COMMON_STRING,
+        key: this.VITE_APP_BIND_ALL_IPV4,
+        name: "should reject a bind address that is not IPv4",
+      },
+      {
+        expectedMessage: "Must be 'true' or 'false'",
+        input: COMMON_STRING,
+        key: this.VITE_APP_IS_DEVELOPMENT,
+        name: "should reject an unrecognised development flag",
+      },
+      {
+        expectedMessage: "Must be a known log level",
+        input: COMMON_STRING,
+        key: this.VITE_APP_LOG_LEVEL,
+        name: "should reject an unknown log level",
+      },
+      {
+        expectedMessage: "Must be a string of digits",
+        input: COMMON_STRING,
+        key: this.VITE_APP_PORT,
+        name: "should reject a non-numeric port",
+      },
+      {
+        expectedMessage: `Must be between ${MIN_PORT} and ${MAX_PORT}`,
+        input: `${MIN_PORT - NUMBER_1}`,
+        key: this.VITE_APP_PORT,
+        name: "should reject a port below the valid range",
+      },
+      {
+        expectedMessage: `Must be between ${MIN_PORT} and ${MAX_PORT}`,
+        input: `${MAX_PORT + NUMBER_1}`,
+        key: this.VITE_APP_PORT,
+        name: "should reject a port above the valid range",
+      },
+      {
+        expectedMessage: "Must not be empty",
+        input: EMPTY_STRING,
+        key: this.VITE_APP_SERVICE_NAME,
+        name: "should reject an empty service name",
+      },
+      {
+        expectedMessage: "Must be at least 88 characters",
+        input: COMMON_STRING,
+        key: this.VITE_APP_SHUTDOWN_TOKEN,
+        name: "should reject a shutdown token shorter than 88 characters",
+      },
+      {
+        expectedMessage: "Must be base64",
+        input: `${VALID_BASE64_TOKEN}!`,
+        key: this.VITE_APP_SHUTDOWN_TOKEN,
+        name: "should reject a shutdown token that is not base64",
+      },
+    ];
+  },
+  get REQUIRED_CASES() {
+    return [
+      {
+        key: this.VITE_APP_BIND_ALL_IPV4,
+        name: "should reject a missing bind-all address",
+      },
+      {
+        key: this.VITE_APP_PORT,
+        name: "should reject a missing port",
+      },
+      {
+        key: this.VITE_APP_SERVICE_NAME,
+        name: "should reject a missing service name",
+      },
+      {
+        key: this.VITE_APP_SHUTDOWN_TOKEN,
+        name: "should reject a missing shutdown token",
+      },
+    ];
+  },
   get validParsedEnv() {
     return () =>
       ({

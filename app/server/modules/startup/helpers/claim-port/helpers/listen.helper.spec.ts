@@ -30,37 +30,40 @@ const { castAsType } = TypeHelper;
 const { tryListen, tryListenUntil } = ListenHelper;
 
 const TEST_DATA = {
-  TRY_LISTEN_CASES: [
-    {
-      expected: BOOLEAN_TRUE,
-      name: "should resolve true when the port binds",
-      rejection: UNDEFINED_VALUE,
-    },
-    {
-      expected: BOOLEAN_FALSE,
-      name: "should resolve false when the address is already in use",
-      rejection: Object.assign(new Error("address already in use"), {
-        code: "EADDRINUSE",
-      }),
-    },
-  ],
-  TRY_LISTEN_UNTIL_CASES: [
-    {
-      expected: BOOLEAN_TRUE,
-      name: "should resolve true as soon as the port binds",
-      rejection: UNDEFINED_VALUE,
-      timeout: LISTEN_POLL_INITIAL_INTERVAL,
-    },
-    {
-      expected: BOOLEAN_FALSE,
-      name: "should resolve false when the port never frees before the timeout",
-      rejection: Object.assign(new Error("address already in use"), {
-        code: "EADDRINUSE",
-      }),
-      timeout: 1,
-    },
-  ],
+  EADDRINUSE_ERROR: Object.assign(new Error("address already in use"), {
+    code: "EADDRINUSE",
+  }),
   UNEXPECTED_ERROR: new Error("an unexpected bind error"),
+  get TRY_LISTEN_CASES() {
+    return [
+      {
+        expected: BOOLEAN_TRUE,
+        name: "should resolve true when the port binds",
+        rejection: UNDEFINED_VALUE,
+      },
+      {
+        expected: BOOLEAN_FALSE,
+        name: "should resolve false when the address is already in use",
+        rejection: this.EADDRINUSE_ERROR,
+      },
+    ];
+  },
+  get TRY_LISTEN_UNTIL_CASES() {
+    return [
+      {
+        expected: BOOLEAN_TRUE,
+        name: "should resolve true as soon as the port binds",
+        rejection: UNDEFINED_VALUE,
+        timeout: LISTEN_POLL_INITIAL_INTERVAL,
+      },
+      {
+        expected: BOOLEAN_FALSE,
+        name: "should resolve false when the port never frees before the timeout",
+        rejection: this.EADDRINUSE_ERROR,
+        timeout: 1,
+      },
+    ];
+  },
   get makeInstance() {
     return (listen: Mock): AppInstance =>
       castAsType<AppInstance>({

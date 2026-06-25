@@ -1,4 +1,3 @@
-import type { Signals } from "close-with-grace";
 import type { MockInstance } from "vitest";
 import { describe, vi } from "vitest";
 
@@ -35,6 +34,7 @@ const TEST_DATA = {
   KILL_FAILED: new Error("kill failed"),
   KILL_THROW_PID: Math.max(process.pid, process.ppid) + 2,
   LOOKUP_FAILED: new Error("lookup failed"),
+  NO_PID: "no-pid",
   PORT_KILL_THREW: castAsType<Port>(VALID_PORT + NUMBER_1),
   PORT_LOOKUP_THREW: castAsType<Port>(VALID_PORT + 4),
   PORT_NAN_PID: castAsType<Port>(VALID_PORT + 2),
@@ -43,8 +43,8 @@ const TEST_DATA = {
   PORT_SELF_PID: castAsType<Port>(VALID_PORT + 5),
   PORT_SELF_PPID: castAsType<Port>(VALID_PORT + 6),
   SELF_PID: "self-pid",
-  SIGTERM: castAsType<Signals>("SIGTERM"),
-  get failureCases() {
+  SIGTERM: "SIGTERM",
+  get FAILURE_CASES() {
     return castAsType<
       Array<{ name: string; port: Port; reason: KillFailureReason }>
     >([
@@ -61,17 +61,17 @@ const TEST_DATA = {
       {
         name: "should fail with no-pid when the lookup yields a non-integer pid",
         port: this.PORT_NAN_PID,
-        reason: "no-pid",
+        reason: this.NO_PID,
       },
       {
         name: "should fail with no-pid when the lookup yields a pid below one",
         port: this.PORT_NEGATIVE_PID,
-        reason: "no-pid",
+        reason: this.NO_PID,
       },
       {
         name: "should fail with no-pid when the lookup throws",
         port: this.PORT_LOOKUP_THREW,
-        reason: "no-pid",
+        reason: this.NO_PID,
       },
       {
         name: "should fail with kill-threw when signalling the owner throws",
@@ -164,7 +164,7 @@ describe("KillHelper", () => {
       });
     });
 
-    TEST_DATA.failureCases.forEach(({ name, port, reason }) => {
+    TEST_DATA.FAILURE_CASES.forEach(({ name, port, reason }) => {
       it(name, async ({ expect }) => {
         const result = await killPortOwner(
           createMockInstance({ appEnv: { port } }),
