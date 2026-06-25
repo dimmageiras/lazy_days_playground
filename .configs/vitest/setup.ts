@@ -6,7 +6,7 @@ import { StringHelper } from "@shared/helpers/string.helper";
 import { SHARED_TEST_DATA } from "./constants/shared-test-data.constant";
 import { FakeTimerRegistry } from "./fake-timer-registry";
 import type * as VitestHelpers from "./helpers";
-import { StateProbeHelper } from "./helpers";
+import { FastifyHelper, StateProbeHelper } from "./helpers";
 
 const { isString } = StringHelper;
 
@@ -32,6 +32,7 @@ type VitestSetupReturn = UnionToIntersection<
 > & { sharedTestData: typeof SHARED_TEST_DATA };
 
 const vitestSetupValue: VitestSetupReturn = Object.freeze({
+  ...FastifyHelper,
   ...StateProbeHelper,
   sharedTestData: SHARED_TEST_DATA,
 } as const);
