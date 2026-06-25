@@ -23,9 +23,11 @@ const {
   sharedTestData: {
     BOOLEAN_FALSE,
     BOOLEAN_TRUE,
+    EMPTY_OBJECT,
     MAX_PORT,
     MIN_PORT,
     NUMBER_1,
+    UNDEFINED_VALUE,
     VALID_DEV_APP_ENV,
     VALID_PORT,
   },
@@ -49,7 +51,7 @@ const mockAxiosPost = vi.mocked(axios.post);
 const makeInstance = (port: number): AppInstance =>
   castAsType<AppInstance>({
     appEnv: { port, shutdownToken: VALID_DEV_APP_ENV.shutdownToken },
-    log: { warn: () => undefined },
+    log: { warn: () => UNDEFINED_VALUE },
   });
 
 const TEST_DATA = {
@@ -86,7 +88,7 @@ describe("CooperativeShutdownHelper", () => {
         throw TEST_DATA.CONNECTION_REFUSED;
       }
 
-      return castAsType<AxiosResponse>({});
+      return castAsType<AxiosResponse>(EMPTY_OBJECT);
     });
   });
 
@@ -106,7 +108,7 @@ describe("CooperativeShutdownHelper", () => {
 
       expect(mockAxiosPost).toHaveBeenCalledWith(
         TEST_DATA.URL,
-        {},
+        EMPTY_OBJECT,
         expect.objectContaining({
           headers: { [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken },
         }),
