@@ -42,6 +42,7 @@ const TEST_DATA = {
   PORT_OK: castAsType<Port>(VALID_PORT),
   PORT_SELF_PID: castAsType<Port>(VALID_PORT + 5),
   PORT_SELF_PPID: castAsType<Port>(VALID_PORT + 6),
+  SELF_PID: "self-pid",
   SIGTERM: castAsType<Signals>("SIGTERM"),
   get failureCases() {
     return castAsType<
@@ -50,12 +51,12 @@ const TEST_DATA = {
       {
         name: "should fail with self-pid when the owner is this process",
         port: this.PORT_SELF_PID,
-        reason: "self-pid",
+        reason: this.SELF_PID,
       },
       {
         name: "should fail with self-pid when the owner is the parent process",
         port: this.PORT_SELF_PPID,
-        reason: "self-pid",
+        reason: this.SELF_PID,
       },
       {
         name: "should fail with no-pid when the lookup yields a non-integer pid",
@@ -152,16 +153,15 @@ describe("KillHelper", () => {
     it("should never signal this process when it owns the port", async ({
       expect,
     }) => {
-      await killPortOwner(
+      const result = await killPortOwner(
         createMockInstance({ appEnv: { port: TEST_DATA.PORT_SELF_PID } }),
         TEST_DATA.SIGTERM,
       );
 
-      const signalledSelf = killSpy.mock.calls.some(
-        ([pid]) => pid === process.pid,
-      );
-
-      expect(signalledSelf).toBe(BOOLEAN_FALSE);
+      expect(result).toStrictEqual({
+        ok: BOOLEAN_FALSE,
+        reason: TEST_DATA.SELF_PID,
+      });
     });
 
     TEST_DATA.failureCases.forEach(({ name, port, reason }) => {

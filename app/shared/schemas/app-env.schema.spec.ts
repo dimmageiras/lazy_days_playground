@@ -143,96 +143,102 @@ const TEST_DATA = {
   },
 } as const;
 
-describe("appEnvSchema", (it) => {
-  it("should parse a valid env into the branded record", ({ expect }) => {
-    const result = appEnvSchema.safeParse(VALID_RAW_DEV_ENV);
+describe("appEnvSchema", () => {
+  describe("valid input", (it) => {
+    it("should parse a valid env into the branded record", ({ expect }) => {
+      const result = appEnvSchema.safeParse(VALID_RAW_DEV_ENV);
 
-    expect(result.success).toBe(BOOLEAN_TRUE);
+      expect(result.success).toBe(BOOLEAN_TRUE);
 
-    if (result.success) {
-      expect(result.data).toStrictEqual(TEST_DATA.validParsedEnv());
-      expectTypeOf(result.data).toEqualTypeOf<ViteAppEnv>();
-    }
-  });
-
-  it("should coerce the development flag's true string to a boolean", ({
-    expect,
-  }) => {
-    const result = appEnvSchema.safeParse({
-      ...VALID_RAW_DEV_ENV,
-      VITE_APP_IS_DEVELOPMENT: STRING_TRUE,
+      if (result.success) {
+        expect(result.data).toStrictEqual(TEST_DATA.validParsedEnv());
+        expectTypeOf(result.data).toEqualTypeOf<ViteAppEnv>();
+      }
     });
 
-    expect(result.success).toBe(BOOLEAN_TRUE);
-
-    if (result.success) {
-      expect(result.data.VITE_APP_IS_DEVELOPMENT).toBe(BOOLEAN_TRUE);
-    }
-  });
-
-  TEST_DATA.PORT_BOUNDARY_CASES.forEach(({ name, port, expected }) => {
-    it(name, ({ expect }) => {
+    it("should coerce the development flag's true string to a boolean", ({
+      expect,
+    }) => {
       const result = appEnvSchema.safeParse({
         ...VALID_RAW_DEV_ENV,
-        VITE_APP_PORT: port,
+        VITE_APP_IS_DEVELOPMENT: STRING_TRUE,
       });
 
       expect(result.success).toBe(BOOLEAN_TRUE);
 
       if (result.success) {
-        expect(result.data.VITE_APP_PORT).toBe(expected);
+        expect(result.data.VITE_APP_IS_DEVELOPMENT).toBe(BOOLEAN_TRUE);
       }
+    });
+
+    TEST_DATA.PORT_BOUNDARY_CASES.forEach(({ name, port, expected }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          ...VALID_RAW_DEV_ENV,
+          VITE_APP_PORT: port,
+        });
+
+        expect(result.success).toBe(BOOLEAN_TRUE);
+
+        if (result.success) {
+          expect(result.data.VITE_APP_PORT).toBe(expected);
+        }
+      });
     });
   });
 
-  TEST_DATA.REJECTED_TYPE_CASES.forEach(({ key, name }) => {
-    it(name, ({ expect }) => {
-      const result = appEnvSchema.safeParse({
-        ...VALID_RAW_DEV_ENV,
-        [key]: NAN_VALUE,
+  describe("rejections", (it) => {
+    TEST_DATA.REJECTED_TYPE_CASES.forEach(({ key, name }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          ...VALID_RAW_DEV_ENV,
+          [key]: NAN_VALUE,
+        });
+
+        expect(result.success).toBe(BOOLEAN_FALSE);
+
+        if (!result.success) {
+          const [issue] = result.error.issues;
+
+          expect(issue?.message).toBe(TEST_DATA.MUST_BE_STRING_MESSAGE);
+        }
       });
-
-      expect(result.success).toBe(BOOLEAN_FALSE);
-
-      if (!result.success) {
-        const [issue] = result.error.issues;
-
-        expect(issue?.message).toBe(TEST_DATA.MUST_BE_STRING_MESSAGE);
-      }
     });
-  });
 
-  TEST_DATA.REQUIRED_CASES.forEach(({ key, name }) => {
-    it(name, ({ expect }) => {
-      const result = appEnvSchema.safeParse({
-        ...VALID_RAW_DEV_ENV,
-        [key]: UNDEFINED_VALUE,
+    TEST_DATA.REQUIRED_CASES.forEach(({ key, name }) => {
+      it(name, ({ expect }) => {
+        const result = appEnvSchema.safeParse({
+          ...VALID_RAW_DEV_ENV,
+          [key]: UNDEFINED_VALUE,
+        });
+
+        expect(result.success).toBe(BOOLEAN_FALSE);
+
+        if (!result.success) {
+          const [issue] = result.error.issues;
+
+          expect(issue?.message).toBe(TEST_DATA.IS_REQUIRED_MESSAGE);
+        }
       });
-
-      expect(result.success).toBe(BOOLEAN_FALSE);
-
-      if (!result.success) {
-        const [issue] = result.error.issues;
-
-        expect(issue?.message).toBe(TEST_DATA.IS_REQUIRED_MESSAGE);
-      }
     });
-  });
 
-  TEST_DATA.REJECTION_CASES.forEach(({ name, key, input, expectedMessage }) => {
-    it(name, ({ expect }) => {
-      const result = appEnvSchema.safeParse({
-        ...VALID_RAW_DEV_ENV,
-        [key]: input,
-      });
+    TEST_DATA.REJECTION_CASES.forEach(
+      ({ name, key, input, expectedMessage }) => {
+        it(name, ({ expect }) => {
+          const result = appEnvSchema.safeParse({
+            ...VALID_RAW_DEV_ENV,
+            [key]: input,
+          });
 
-      expect(result.success).toBe(BOOLEAN_FALSE);
+          expect(result.success).toBe(BOOLEAN_FALSE);
 
-      if (!result.success) {
-        const [issue] = result.error.issues;
+          if (!result.success) {
+            const [issue] = result.error.issues;
 
-        expect(issue?.message).toBe(expectedMessage);
-      }
-    });
+            expect(issue?.message).toBe(expectedMessage);
+          }
+        });
+      },
+    );
   });
 });

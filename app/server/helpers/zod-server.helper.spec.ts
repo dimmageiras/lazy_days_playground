@@ -22,23 +22,6 @@ const { castAsType } = TypeHelper;
 const { addCustomIssue, getFormattedZodIssueLines, getFormattedZodIssues } =
   ZodServerHelper;
 
-type CapturedIssue = Parameters<CustomIssueContext["addIssue"]>[0];
-
-const createIssueContext = (): {
-  captured: Array<CapturedIssue>;
-  context: CustomIssueContext;
-} => {
-  const captured: Array<CapturedIssue> = [...EMPTY_ARRAY];
-
-  const context: CustomIssueContext = {
-    addIssue: (issue): void => {
-      captured.push(issue);
-    },
-  };
-
-  return { captured, context };
-};
-
 const TEST_DATA = {
   ADD_CUSTOM_ISSUE_CASES: [
     {
@@ -212,6 +195,21 @@ const TEST_DATA = {
       name: "should render one dash-prefixed line per issue joined by newlines",
     },
   ],
+  get createdIssueContext() {
+    return () => {
+      const captured: Array<Parameters<CustomIssueContext["addIssue"]>[0]> = [
+        ...EMPTY_ARRAY,
+      ];
+
+      const context: CustomIssueContext = {
+        addIssue: (issue): void => {
+          captured.push(issue);
+        },
+      };
+
+      return { captured, context };
+    };
+  },
 } as const;
 
 describe("ZodServerHelper", () => {
@@ -219,7 +217,7 @@ describe("ZodServerHelper", () => {
     TEST_DATA.ADD_CUSTOM_ISSUE_CASES.forEach(
       ({ code, expected, message, name }) => {
         it(name, ({ expect }) => {
-          const { captured, context } = createIssueContext();
+          const { captured, context } = TEST_DATA.createdIssueContext();
 
           addCustomIssue(context, message, code);
 
