@@ -1,6 +1,5 @@
 import type { AxiosResponse } from "axios";
-import axios from "axios";
-import { beforeAll, describe, vi } from "vitest";
+import { describe } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
@@ -8,18 +7,16 @@ import { BASE_URLS } from "@server/constants/base-urls.constant";
 import { API_INTERNAL_ENDPOINTS } from "@server/constants/endpoints.constant";
 import { HEADERS } from "@server/constants/headers.constant";
 import { HOSTS } from "@server/constants/hosts.constant";
-import type { AppInstance } from "@server/types/instance.type";
 
 import { HTTP_SCHEMES } from "@shared/constants/http.constant";
 import { TypeHelper } from "@shared/helpers/type.helper";
+import type { Port } from "@shared/types/app-env.type";
 
 import { CooperativeShutdownHelper } from "./cooperative-shutdown.helper";
 
-vi.mock("axios", () => ({
-  default: { post: vi.fn() },
-}));
-
 const {
+  createMockInstance,
+  sharedMock: { mockAxiosPost },
   sharedTestData: {
     BOOLEAN_FALSE,
     BOOLEAN_TRUE,
@@ -27,7 +24,6 @@ const {
     MAX_PORT,
     MIN_PORT,
     NUMBER_1,
-    UNDEFINED_VALUE,
     VALID_DEV_APP_ENV,
     VALID_PORT,
   },
@@ -36,27 +32,25 @@ const {
 
 trackLeaksInSpec("cooperative-shutdown.helper");
 
-const { castAsType } = TypeHelper;
-
 const { SHUTDOWN } = API_INTERNAL_ENDPOINTS;
 const { API_INTERNAL } = BASE_URLS;
 const { SHUTDOWN_TOKEN } = HEADERS;
 const { LOOPBACK_HOST_V4 } = HOSTS;
 const { HTTP } = HTTP_SCHEMES;
 
+const { castAsType } = TypeHelper;
+
 const { requestCooperativeShutdown } = CooperativeShutdownHelper;
-
-const mockAxiosPost = vi.mocked(axios.post);
-
-const makeInstance = (port: number): AppInstance =>
-  castAsType<AppInstance>({
-    appEnv: { port, shutdownToken: VALID_DEV_APP_ENV.shutdownToken },
-    log: { warn: () => UNDEFINED_VALUE },
-  });
 
 const TEST_DATA = {
   CONNECTION_REFUSED: new Error("connection refused"),
-  REQUEST_CASES: [
+  REQUEST_CASES: castAsType<
+    Array<{
+      expected: boolean;
+      name: string;
+      port: Port;
+    }>
+  >([
     {
       expected: BOOLEAN_TRUE,
       name: "should resolve true when the shutdown request succeeds",
@@ -77,34 +71,47 @@ const TEST_DATA = {
       name: "should reject a port above the valid range",
       port: MAX_PORT + NUMBER_1,
     },
-  ],
+  ]),
   URL: `${HTTP}://${LOOPBACK_HOST_V4}:${VALID_PORT}${API_INTERNAL}/${SHUTDOWN}`,
-} as const;
-
-describe("CooperativeShutdownHelper", () => {
-  beforeAll(() => {
-    mockAxiosPost.mockImplementation(async (url) => {
-      if (castAsType<string>(url).includes(`:${VALID_PORT + NUMBER_1}`)) {
+  get respondToPost() {
+    return async (url: string) => {
+      if (url.includes(`:${VALID_PORT + NUMBER_1}`)) {
         throw TEST_DATA.CONNECTION_REFUSED;
       }
 
-      return castAsType<AxiosResponse>(EMPTY_OBJECT);
-    });
-  });
+      return castAsType<AxiosResponse>({});
+    };
+  },
+} as const;
 
+describe("CooperativeShutdownHelper", () => {
   describe("requestCooperativeShutdown", (it) => {
+    const { beforeAll, afterAll } = it;
+
+    beforeAll(() => {
+      mockAxiosPost.mockImplementation(TEST_DATA.respondToPost);
+    });
+
+    afterAll(() => {
+      mockAxiosPost.mockReset();
+    });
+
     TEST_DATA.REQUEST_CASES.forEach(({ expected, name, port }) => {
       it(name, async ({ expect }) => {
-        expect(await requestCooperativeShutdown(makeInstance(port))).toBe(
-          expected,
-        );
+        expect(
+          await requestCooperativeShutdown(
+            createMockInstance({ appEnv: { port } }),
+          ),
+        ).toBe(expected);
       });
     });
 
     it("should post to the loopback shutdown url with the token header", async ({
       expect,
     }) => {
-      await requestCooperativeShutdown(makeInstance(VALID_PORT));
+      await requestCooperativeShutdown(
+        createMockInstance({ appEnv: { port: castAsType<Port>(VALID_PORT) } }),
+      );
 
       expect(mockAxiosPost).toHaveBeenCalledWith(
         TEST_DATA.URL,

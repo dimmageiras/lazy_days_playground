@@ -4,17 +4,42 @@ import { afterAll, beforeAll, beforeEach, expect, vi } from "vitest";
 import { SetHelper } from "@shared/helpers/set.helper";
 
 import { FakeTimerRegistry } from "../fake-timer-registry";
+import { SHARED_MOCK } from "../mocks/shared.mock";
+import { SpyRegistry } from "../spy-registry";
 
 const { hasSetValue } = SetHelper;
 
 const { clearFakeTimerFile, didFileAdvanceFakeTimers } = FakeTimerRegistry;
 
+const { clearSpiesForFile, collectLeakedSpies } = SpyRegistry;
+
 interface StateSnapshot {
   activeResources: Map<string, number>;
   fakeTimers: boolean;
   globalKeys: Set<string | symbol>;
+  mockImpls: Map<string, unknown>;
   processListeners: Map<string | symbol, number>;
 }
+
+// Shared mocks (the `SHARED_MOCK` bundle) are worker-global under
+// `isolate: false`, so an implementation left installed on one outlives the
+// file that set it. Snapshot each mock's implementation *reference*:
+// `getMockImplementation()` returns a stable reference — truthy for a permanent
+// implementation or an unconsumed `...Once` queue, `undefined` after
+// `mockReset()` — reverify this return contract on Vitest major bumps.
+// Comparing references across the file boundary (rather than a has-an-impl
+// boolean) catches both a freshly installed implementation and one swapped over
+// an implementation an earlier file already leaked in, and keeps the verdict
+// independent of file order under `shuffle`. Ephemeral per-test `vi.fn()`s are
+// not tracked: they cannot cross files.
+const snapshotMockImpls = (): Map<string, unknown> =>
+  Object.entries(SHARED_MOCK).reduce(
+    (impls, [name, mock]) =>
+      vi.isMockFunction(mock)
+        ? impls.set(name, mock.getMockImplementation())
+        : impls,
+    Map<string, unknown>(),
+  );
 
 const snapshotState = (): StateSnapshot => {
   const globalKeys = Set<string | symbol>(Reflect.ownKeys(globalThis));
@@ -38,6 +63,7 @@ const snapshotState = (): StateSnapshot => {
     // covers both flavours.
     fakeTimers: vi.isFakeTimers() || vi.getMockedSystemTime() !== null,
     globalKeys,
+    mockImpls: snapshotMockImpls(),
     processListeners,
   };
 };
@@ -139,11 +165,35 @@ const settle = async (): Promise<void> => {
   });
 };
 
+// A shared mock whose implementation reference at file exit differs from the
+// one it had at file entry — and is not `undefined` — leaked it: the next file
+// inherits that behaviour. Clearing an implementation (reference -> `undefined`)
+// is the intended teardown and is not flagged; an unchanged reference means this
+// file did not touch it (whoever installed it is blamed at their own file exit);
+// call accumulation is excluded by design (specs filter `mock.calls` by per-test
+// identity). File-boundary only, like active resources: concurrent siblings
+// mutate the shared mock, so the per-test window cannot attribute a mid-flight
+// implementation change.
+const diffMockImpls = (
+  before: Map<string, unknown>,
+  after: Map<string, unknown>,
+): Array<string> => {
+  const lines: Array<string> = [];
+
+  for (const [name, afterImpl] of after) {
+    if (afterImpl !== undefined && afterImpl !== before.get(name)) {
+      lines.push(`mock.${name}=impl-leaked`);
+    }
+  }
+
+  return lines;
+};
+
 // Per-test scope tracks only the surfaces a single test realistically pollutes
 // and that stay stable under concurrent execution: global keys, process
-// listeners, and whether fake timers were left installed. Active resources are
-// deliberately excluded here — the per-test window is too short and overlaps
-// siblings too heavily to attribute reliably.
+// listeners, and whether fake timers were left installed. Active resources and
+// shared-mock implementations are deliberately excluded here — the per-test
+// window is too short and overlaps siblings too heavily to attribute reliably.
 const diffPerTestSurfaces = (
   before: StateSnapshot,
   after: StateSnapshot,
@@ -169,6 +219,7 @@ const diffFileSurfaces = (
     ...diffKeys("globalThis", before.globalKeys, after.globalKeys),
     ...diffCounts("process", before.processListeners, after.processListeners),
     ...diffActiveIncrease(before.activeResources, settledActive),
+    ...diffMockImpls(before.mockImpls, after.mockImpls),
   ];
 
   if (before.fakeTimers !== after.fakeTimers) {
@@ -246,7 +297,10 @@ const trackLeaksInSpec = (specName: string): void => {
       settledActive = minCounts(firstActive, secondActive);
     }
 
-    const diffs = diffFileSurfaces(fileBaseline, preSettle, settledActive);
+    const diffs = [
+      ...diffFileSurfaces(fileBaseline, preSettle, settledActive),
+      ...(filePath === null ? [] : collectLeakedSpies(filePath)),
+    ];
 
     if (diffs.length > 0) {
       process.stderr.write(
@@ -265,6 +319,7 @@ const trackLeaksInSpec = (specName: string): void => {
 
     if (filePath !== null) {
       clearFakeTimerFile(filePath);
+      clearSpiesForFile(filePath);
     }
   });
 };

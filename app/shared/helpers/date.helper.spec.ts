@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, vi } from "vitest";
+import { describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
@@ -35,7 +35,7 @@ const TEST_DATA = {
   FUTURE_DATE: `${COMMON_DATE}T15:05:00.000Z`,
 } as const;
 
-describe("DateHelper", () => {
+describe("DateHelper", ({ afterAll, beforeAll }) => {
   const testDate = new Date(TEST_DATA.DATE_AS_ISO);
 
   beforeAll(() => {

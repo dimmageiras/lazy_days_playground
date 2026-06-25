@@ -69,6 +69,7 @@ The runner trades isolation and determinism for startup speed, and every piece o
 ## Related
 
 - [`./0006-test-setup-and-pollution-probe.md`](./0006-test-setup-and-pollution-probe.md) — the setup factory that owns the cross-spec state helpers may not hold, plus the gated state-diff probe and fake-timer registry that detect the leakage this posture permits.
+- [`./0019-mock-state-leak-detection.md`](./0019-mock-state-leak-detection.md) — the mock-state leak surfaces the probe gained to detect another flavour of leakage this posture permits.
 - [`./0002-typescript-compiler-stance.md`](./0002-typescript-compiler-stance.md) — the composite project-reference mechanism this contract uses to partition the spec-plus-infrastructure surface from the runtime surface.
 - [`./0003-path-alias-scheme.md`](./0003-path-alias-scheme.md) — the alias scheme the test project mirrors so specs resolve the quarantined infrastructure identically under test and at runtime.
 - [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the shared Vite base the test config composes onto.

@@ -38,9 +38,9 @@ Implications you must internalise:
 ### Suite shape
 
 - Top-level `describe` block per public surface (one per exported namespace, helper, or component).
-- Nested `describe` per method or behaviour. Pull the runner's `it` from the parent `describe` callback rather than importing it at module scope — that pattern is what the runner exposes; reaching past it loses the per-block context.
+- Nested `describe` per method or behaviour. The `describe` callback receives a **suite collector**: it _is_ the suite's `it`, and it also carries the suite's lifecycle hooks (`beforeAll`, `beforeEach`, `afterAll`, `afterEach`) as properties. Pull `it` and whichever hooks the suite needs from that collector — either name it `it` and read the hooks off it (`const { beforeAll } = it;`), or destructure them straight from the parameter (`({ beforeAll }) => …`) — rather than importing them at module scope. Reaching past the collector loses the per-block scoping the runner provides.
 - Pull `expect` from the test context (`async ({ expect }) => …`) rather than the module-level import. The context-local `expect` carries per-test identity, which is required because `clearMocks: false` (see below). The same rule applies to anything else the test context exposes (e.g. `task`, `onTestFinished`, `annotate`).
-- **Module-level imports are reserved for symbols the test context does not expose.** Lifecycle hooks (`beforeAll`, `beforeEach`, `afterAll`, `afterEach`) and the `vi` utility object have no context-scoped form by design — they configure the surrounding suite, not a single test. Import them from the runner module. Treat any other module-level pull from the runner as a smell — it usually means the context-scoped path was overlooked.
+- **Module-level imports from the runner are reserved for what neither the suite collector nor the test context exposes:** `describe` itself (the entry point), and the `vi` utility object (worker-global, not suite-scoped). Treat any other module-level pull from the runner — an `it`, a lifecycle hook, `expect`, `onTestFinished` — as a smell: the scoped form was overlooked.
 
 ### Test data — the `TEST_DATA` constant
 
@@ -62,6 +62,8 @@ Every spec that uses inputs, fixtures, or table-driven cases collects them into 
 - **`clearMocks: false` is deliberate.** Mocks accumulate calls across the whole worker. Specs must filter `mock.calls` by per-test identity (the `expect` context object, or another per-test reference) instead of assuming a clean state.
 - Use `vi.mock` at module scope to substitute a dependency for the whole file.
 - Avoid `vi.spyOn` on shared modules unless the spy is restored in `afterEach` — the absence of automatic clearing turns a forgotten restore into a cross-test leak.
+- **Reset shared-mock implementations, in the suite that installed them.** A mock that persists across files (its substitution outlives every file under `isolate: false`) leaks any implementation left installed into the next file. Tear it down — `mockReset` / `restoreAllMocks` — in the `describe` that set it, **not** in a file/root-level `afterAll`: the pollution probe takes its file-exit snapshot from a root-level hook, child-suite hooks drain before it, but a sibling root-level teardown runs in parallel and can fire _after_ the snapshot, producing a spurious leak report.
+- **The pollution probe tracks shared mocks and installed spies.** At the file boundary it compares the implementation each shared mock carries, and flags any `vi.spyOn` on a shared or global object that was not restored. Still outside it: a per-file `vi.mock` factory whose module another spec can import — restore or unmock it in-file, or promote the mock into the shared-mock surface so the probe covers it.
 
 ## Shared infrastructure
 
@@ -83,13 +85,15 @@ When proposing to drop or replace the factory, account for all three roles, not 
 
 ### Jest-compatibility surface
 
-Some Vitest APIs ship for Jest parity rather than as first-class documented surface. The most-used example: `expect.getState().testPath` returns the current spec's absolute path. The probe and the setup hijack both depend on it.
+Some Vitest APIs ship for Jest parity rather than as first-class documented surface. The most-used example: `expect.getState().testPath` returns the current spec's absolute path. The probe and both setup hijacks (fake-timer attribution and spy attribution) depend on it.
 
 Major-bump reverify checklist for this surface:
 
 1. Confirm `expect.getState().testPath` is still populated when called inside `beforeAll` / `beforeEach` / `afterAll`.
 2. Confirm the field still holds the **absolute** path (not a relative or fragment form).
 3. If either check fails, the probe must move to a runner-native equivalent before the bump lands — the cross-spec fake-timer attribution relies on a stable per-file key.
+4. Confirm `getMockImplementation()` still returns `undefined` for a pristine or freshly-reset mock and a **stable reference** otherwise (truthy for a permanent implementation and for an unconsumed one-shot queue). The shared-mock leak diff compares these references across the file boundary; if the return contract changes, the diff inverts or dies silently and must be re-derived before the bump lands.
+5. Confirm `vi.spyOn` can still be wrapped, and that a spy keeps occupying its target slot until `mockRestore` / `restoreAllMocks` puts the original back (`mockReset` / `mockClear` must leave it installed). The spy-leak diff reads the slot at file exit; if the slot or restore semantics change, it must be re-derived before the bump lands.
 
 The general rule: when reaching past the documented context-scoped API into a Jest-compat shape, pin the assumption in an inline comment at the call site and treat the dependency as a major-bump checklist item.
 
@@ -103,9 +107,13 @@ Every helper module under the Vitest helpers folder follows the same contract:
 
 ### State-probe helper
 
-A debug helper diffs state across test and file boundaries. At each test boundary it compares `globalThis` keys, `process` event listeners, and fake-timer state; at the file boundary it additionally compares Node active resources (`process.getActiveResourcesInfo()`). Specs invoke it once at the top of the file (passing a label for log output). It is silent by default and only emits when explicitly enabled — see below.
+A debug helper diffs state across test and file boundaries. At each test boundary it compares `globalThis` keys, `process` event listeners, and fake-timer state; at the file boundary it additionally compares Node active resources (`process.getActiveResourcesInfo()`), the implementation each shared mock carries, and whether any spy was left installed on a shared or global object. Specs invoke it once at the top of the file (passing a label for log output). It is silent by default and only emits when explicitly enabled — see below.
 
 Active resources are file-boundary-only, increase-only, and settled: a handle is reported only if its count grows and survives a short drain of transient worker, scheduler, and environment handles (the table is sampled twice and the per-key minimum is kept) — unless a spec left fake timers installed (itself flagged as a leak), in which case the settle is skipped and the unsettled snapshot is used, because the settle awaits real timers a still-installed fake clock would never fire. The per-test window is too short and overlaps concurrent siblings too heavily for the process-global active-resource table to attribute reliably, so it is excluded from the per-test diff. Only Node libuv handles appear on this surface — environment-level timers such as happy-dom's are not Node handles and are invisible to it, so a leaked environment timer is not caught here.
+
+Shared-mock implementations are file-boundary-only and directional. A mock that persists across the worker (its module substitution survives every file under `isolate: false`) is snapshotted by its implementation _reference_ at file entry and exit; a reference that both changed and is non-empty at exit is flagged, because the next file in the worker inherits that behaviour. Installing an implementation, and swapping one over an implementation an earlier file already leaked in, are both caught — and comparing references rather than a has-an-implementation flag keeps each file's verdict independent of run order under shuffle. Clearing an implementation (the intended teardown) is not flagged; an unchanged reference means the file never touched the mock; and accumulated calls are excluded by design, since specs isolate their own calls by per-test identity. As with active resources, the per-test window overlaps concurrent siblings too heavily to attribute a mid-flight implementation change, so this surface is excluded from the per-test diff.
+
+Installed spies are file-boundary-only as well. A spy on a shared or global object replaces a slot that, under `isolate: false`, outlives the file; each spy is recorded against the file that created it (so it is judged at its own exit), and is flagged if its target slot still holds the spy at file exit — the signal that it was never restored. Restoring the original (`mockRestore` / `restoreAllMocks`) clears the signal; resetting or clearing the spy does not, because those leave it installed. Restoring anywhere before file exit suffices. Like the other file-boundary surfaces it is excluded from the per-test diff, since concurrent siblings share the object.
 
 The probe itself is a stateless dispatcher: every per-spec snapshot lives in a closure scoped to its invocation. The cross-spec signal — flagging concurrent tests that touched the clock — is read from a setup-owned registry, keeping the helper module free of module-level state.
 
@@ -124,7 +132,7 @@ Output semantics:
 
 - `[WARN <spec> <file-init>] …` — the probe could not resolve the spec's absolute path from `expect.getState().testPath`, so fake-timer attribution and registry cleanup will not run for that spec. Indicates a runtime gap rather than test-state pollution; investigate the Jest-compat surface (see the major-bump reverify checklist).
 - `[LEAK <spec> > <test>] …` — a per-test surface changed between the test's start and finish: a `globalThis` key added, a `process` listener attached, or fake-timer state left flipped. (Active resources are not part of the per-test diff.)
-- `[LEAK <spec> <file-exit>] …` — a per-test surface changed across the whole file lifetime, or a Node active-resource count grew (increase-only, after the settle described above).
+- `[LEAK <spec> <file-exit>] …` — a per-test surface changed across the whole file lifetime, a Node active-resource count grew (increase-only, after the settle described above), a shared mock carried an implementation at file exit it did not carry at file entry (emitted as `mock.<name>=impl-leaked`), or a spy was left installed on a shared or global object (emitted as `spy.<name>=not-restored`).
 - `[RISK <spec> > <test>] concurrent test advanced fake timers — sibling tests share the clock` — a `.concurrent` test advanced the shared fake clock (Pattern B). Installing a fixed clock without advancing it (Pattern A) is not flagged.
 - `[RISK <spec> <file-exit>] fake timers were advanced in this spec — under concurrent execution sibling tests share the clock. Hoist the clock to beforeAll/afterAll or use a deterministic-clock pattern that does not advance the shared fake timer.` — the spec file advanced the shared clock at some point during the run. Hoist the clock to a `beforeAll`/`afterAll` pair, or refactor to Pattern A if a fixed instant is sufficient.
 
@@ -138,5 +146,7 @@ Every rule above exists because of a documented trade-off. Before deviating:
 ## Related
 
 - [ADR-0005](../adr/0005-test-runner-worker-model.md) — the runner posture (worker model, concurrency, mock-clearing) the conventions in this README rest on
+- [ADR-0006](../adr/0006-test-setup-and-pollution-probe.md) — the setup factory and gated pollution probe whose consumption pattern, output semantics, and reverify checklist this README elaborates
+- [ADR-0019](../adr/0019-mock-state-leak-detection.md) — the mock-state leak surfaces (shared-mock implementations, installed spies) and the teardown-placement and reset-not-clear conventions they impose
 - [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream `vitest` skill, and the precedence rule with this README

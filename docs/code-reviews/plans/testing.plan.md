@@ -43,7 +43,7 @@ The first criterion the reviewer applies: where the upstream `vitest` skill and 
 - Specs live next to source, not under a separate top-level test tree.
 - The spec suffix is `.spec.ts(x)`; the runner glob targets only that suffix.
 - Specs open in this fixed order: **imports → setup-helper destructure → leak-tracker call → unit-under-test destructure → frozen `TEST_DATA` → `describe`**. Reordering these lines is a finding even when the spec still runs — the order is what makes a spec readable cold.
-- Module-level imports are reserved for symbols the test context does not expose. Lifecycle hooks (`beforeAll`, `beforeEach`, `afterAll`, `afterEach`) and the runner utility object have no context-scoped form by design — import them from the runner module. Any other module-level pull from the runner is usually a sign the context-scoped path was overlooked.
+- Module-level imports from the runner are reserved for what neither the suite collector nor the test context exposes: `describe` itself and the runner utility object (worker-global, not suite-scoped). The `describe` callback's suite collector _is_ the suite's `it` and carries its lifecycle hooks (`beforeAll`, `beforeEach`, `afterAll`, `afterEach`) — pull `it` and the hooks from it; the test context yields `expect` and the rest. A module-level `it`, lifecycle hook, or `expect` is a finding — the scoped form was overlooked.
 - Specs do **not** import helpers directly from the helpers folder — they go through the project setup factory's zero-arg call and destructure the helper bundle from its return value. The factory's identifier is a placeholder in this plan; the project setup module owns the actual identifier.
 
 ### `TEST_DATA` shape
