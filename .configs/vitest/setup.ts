@@ -1,13 +1,14 @@
 import type { UnionToIntersection } from "type-fest";
 import { expect } from "vitest";
 
-import type { SHARED_TEST_DATA } from "./constants/shared-test-data.constant";
+import { StringHelper } from "@shared/helpers/string.helper";
+
+import { SHARED_TEST_DATA } from "./constants/shared-test-data.constant";
 import { FakeTimerRegistry } from "./fake-timer-registry";
 import type * as VitestHelpers from "./helpers";
 import { StateProbeHelper } from "./helpers";
 
-const importSharedTestData = async () =>
-  await import("./constants/shared-test-data.constant");
+const { isString } = StringHelper;
 
 const { installHijack, recordFakeTimerFile } = FakeTimerRegistry;
 
@@ -20,28 +21,23 @@ if (process.env.DEBUG_TEST_POLLUTION === "1") {
     // `testPath` is a Jest-compat surface on `expect.getState()`; reverify presence on Vitest major bumps.
     const { testPath } = expect.getState();
 
-    if (typeof testPath === "string") {
+    if (isString(testPath)) {
       recordFakeTimerFile(testPath);
     }
   });
 }
 
-type VitestSetupValue = UnionToIntersection<
+type VitestSetupReturn = UnionToIntersection<
   (typeof VitestHelpers)[keyof typeof VitestHelpers]
->;
+> & { sharedTestData: typeof SHARED_TEST_DATA };
 
-type VitestSetupReturn = VitestSetupValue & {
-  sharedTestData: typeof SHARED_TEST_DATA;
-};
-
-const vitestSetupValue: VitestSetupValue = Object.freeze({
+const vitestSetupValue: VitestSetupReturn = Object.freeze({
   ...StateProbeHelper,
+  sharedTestData: SHARED_TEST_DATA,
 } as const);
 
-const VitestSetup = async (): Promise<VitestSetupReturn> => {
-  const { SHARED_TEST_DATA } = await importSharedTestData();
-
-  return { ...vitestSetupValue, sharedTestData: SHARED_TEST_DATA };
+const VitestSetup = (): VitestSetupReturn => {
+  return vitestSetupValue;
 };
 
 export { VitestSetup };

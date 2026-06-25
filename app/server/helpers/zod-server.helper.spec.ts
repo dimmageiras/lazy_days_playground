@@ -5,7 +5,7 @@ import { VitestSetup } from "@configs/vitest/setup";
 import type { CustomIssueContext } from "@server/types/zod.type";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
-import { TypesHelper } from "@shared/helpers/types.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 import type { ZodIssue } from "@shared/wrappers/zod.wrapper";
 
 import { ZodServerHelper } from "./zod-server.helper";
@@ -13,13 +13,13 @@ import { ZodServerHelper } from "./zod-server.helper";
 const {
   sharedTestData: { EMPTY_ARRAY, EMPTY_STRING },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("zod-server.helper");
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
-const { addCustomIssue, getFormattedZodIssues, getFormattedZodIssueLines } =
+const { addCustomIssue, getFormattedZodIssueLines, getFormattedZodIssues } =
   ZodServerHelper;
 
 type CapturedIssue = Parameters<CustomIssueContext["addIssue"]>[0];
@@ -63,31 +63,7 @@ const TEST_DATA = {
         },
       ],
       message: "must be smaller",
-      name: "should raise a custom issue for a different code",
-    },
-  ],
-  FORMAT_LINES_CASES: [
-    {
-      expected: EMPTY_STRING,
-      issues: EMPTY_ARRAY,
-      name: "should render an empty string for no issues",
-    },
-    {
-      expected: "- VITE_APP_PORT: too small\n- VITE_APP_SERVICE_NAME: empty",
-      issues: [
-        castAsType<ZodIssue>({
-          code: "too_small",
-          message: "too small",
-          path: ["VITE_APP_PORT"],
-        }),
-        castAsType<ZodIssue>({
-          code: "custom",
-          message: "empty",
-          params: { code: "invalid_value" },
-          path: ["VITE_APP_SERVICE_NAME"],
-        }),
-      ],
-      name: "should render one dash-prefixed line per issue joined by newlines",
+      name: "should carry a different code through to params",
     },
   ],
   FORMAT_CASES: [
@@ -100,15 +76,15 @@ const TEST_DATA = {
       expected: [
         {
           message: "Invalid input",
-          path: "VITE_APP_PORT",
-          validationCode: "invalid_type",
+          path: "port",
+          validationCode: ISSUE_CODES.INVALID_TYPE,
         },
       ],
       issues: [
         castAsType<ZodIssue>({
-          code: "invalid_type",
+          code: ISSUE_CODES.INVALID_TYPE,
           message: "Invalid input",
-          path: ["VITE_APP_PORT"],
+          path: ["port"],
         }),
       ],
       name: "should pass a non-custom code straight through",
@@ -118,40 +94,48 @@ const TEST_DATA = {
         {
           message: "bad value",
           path: "field",
-          validationCode: "invalid_value",
+          validationCode: ISSUE_CODES.INVALID_VALUE,
         },
       ],
       issues: [
         castAsType<ZodIssue>({
-          code: "custom",
+          code: ISSUE_CODES.CUSTOM,
           message: "bad value",
-          params: { code: "invalid_value" },
+          params: { code: ISSUE_CODES.INVALID_VALUE },
           path: ["field"],
         }),
       ],
-      name: "should surface a known params.code from a custom issue",
+      name: "should surface a known params code from a custom issue",
     },
     {
       expected: [
-        { message: "bad value", path: "field", validationCode: "custom" },
+        {
+          message: "bad value",
+          path: "field",
+          validationCode: ISSUE_CODES.CUSTOM,
+        },
       ],
       issues: [
         castAsType<ZodIssue>({
-          code: "custom",
+          code: ISSUE_CODES.CUSTOM,
           message: "bad value",
           params: { code: "not_a_real_code" },
           path: ["field"],
         }),
       ],
-      name: "should fall back to custom for an unknown params.code",
+      name: "should fall back to custom for an unknown params code",
     },
     {
       expected: [
-        { message: "bad value", path: "field", validationCode: "custom" },
+        {
+          message: "bad value",
+          path: "field",
+          validationCode: ISSUE_CODES.CUSTOM,
+        },
       ],
       issues: [
         castAsType<ZodIssue>({
-          code: "custom",
+          code: ISSUE_CODES.CUSTOM,
           message: "bad value",
           path: ["field"],
         }),
@@ -163,45 +147,69 @@ const TEST_DATA = {
         {
           message: "Invalid input",
           path: "user[0].name",
-          validationCode: "invalid_type",
+          validationCode: ISSUE_CODES.INVALID_TYPE,
         },
       ],
       issues: [
         castAsType<ZodIssue>({
-          code: "invalid_type",
+          code: ISSUE_CODES.INVALID_TYPE,
           message: "Invalid input",
           path: ["user", 0, "name"],
         }),
       ],
-      name: "should format a nested path with dot/bracket notation",
+      name: "should format a nested path with dot and bracket notation",
     },
     {
       expected: [
         {
           message: "too small",
-          path: "VITE_APP_PORT",
-          validationCode: "too_small",
+          path: "port",
+          validationCode: ISSUE_CODES.TOO_SMALL,
         },
         {
           message: "empty",
-          path: "VITE_APP_SERVICE_NAME",
-          validationCode: "invalid_value",
+          path: "service",
+          validationCode: ISSUE_CODES.INVALID_VALUE,
         },
       ],
       issues: [
         castAsType<ZodIssue>({
-          code: "too_small",
+          code: ISSUE_CODES.TOO_SMALL,
           message: "too small",
-          path: ["VITE_APP_PORT"],
+          path: ["port"],
         }),
         castAsType<ZodIssue>({
-          code: "custom",
+          code: ISSUE_CODES.CUSTOM,
           message: "empty",
-          params: { code: "invalid_value" },
-          path: ["VITE_APP_SERVICE_NAME"],
+          params: { code: ISSUE_CODES.INVALID_VALUE },
+          path: ["service"],
         }),
       ],
       name: "should format every issue in the list",
+    },
+  ],
+  FORMAT_LINES_CASES: [
+    {
+      expected: EMPTY_STRING,
+      issues: EMPTY_ARRAY,
+      name: "should render an empty string for no issues",
+    },
+    {
+      expected: "- port: too small\n- service: empty",
+      issues: [
+        castAsType<ZodIssue>({
+          code: ISSUE_CODES.TOO_SMALL,
+          message: "too small",
+          path: ["port"],
+        }),
+        castAsType<ZodIssue>({
+          code: ISSUE_CODES.CUSTOM,
+          message: "empty",
+          params: { code: ISSUE_CODES.INVALID_VALUE },
+          path: ["service"],
+        }),
+      ],
+      name: "should render one dash-prefixed line per issue joined by newlines",
     },
   ],
 } as const;
@@ -209,7 +217,7 @@ const TEST_DATA = {
 describe("ZodServerHelper", () => {
   describe("addCustomIssue", (it) => {
     TEST_DATA.ADD_CUSTOM_ISSUE_CASES.forEach(
-      ({ name, code, expected, message }) => {
+      ({ code, expected, message, name }) => {
         it(name, ({ expect }) => {
           const { captured, context } = createIssueContext();
 
@@ -222,7 +230,7 @@ describe("ZodServerHelper", () => {
   });
 
   describe("getFormattedZodIssues", (it) => {
-    TEST_DATA.FORMAT_CASES.forEach(({ name, issues, expected }) => {
+    TEST_DATA.FORMAT_CASES.forEach(({ expected, issues, name }) => {
       it(name, ({ expect }) => {
         expect(getFormattedZodIssues(issues)).toStrictEqual(expected);
       });
@@ -230,7 +238,7 @@ describe("ZodServerHelper", () => {
   });
 
   describe("getFormattedZodIssueLines", (it) => {
-    TEST_DATA.FORMAT_LINES_CASES.forEach(({ name, issues, expected }) => {
+    TEST_DATA.FORMAT_LINES_CASES.forEach(({ expected, issues, name }) => {
       it(name, ({ expect }) => {
         expect(getFormattedZodIssueLines(issues)).toBe(expected);
       });

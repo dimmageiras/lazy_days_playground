@@ -1,75 +1,79 @@
-import { describe } from "vitest";
+import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { ErrorHelper } from "./error.helper";
 
 const {
-  sharedTestData: { EMPTY_OBJECT },
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    COMMON_NUMBER,
+    COMMON_STRING,
+    EMPTY_OBJECT,
+    NULL_VALUE,
+    UNDEFINED_VALUE,
+    toUnknown,
+  },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("error.helper");
 
 const { isErrnoException, normalizeError, toError } = ErrorHelper;
 
 const TEST_DATA = {
-  COERCED_VALUE_CASES: [
+  COERCION_CASES: [
     {
-      expected: "boom",
-      input: "boom",
-      name: "should coerce a string thrown value",
+      expected: COMMON_STRING,
+      input: COMMON_STRING,
+      name: "should coerce a string",
     },
     {
-      expected: "null",
-      input: null,
-      name: "should coerce a null thrown value",
+      expected: `${COMMON_NUMBER}`,
+      input: COMMON_NUMBER,
+      name: "should coerce a number",
     },
     {
-      expected: "undefined",
-      input: undefined,
-      name: "should coerce an undefined thrown value",
+      expected: `${NULL_VALUE}`,
+      input: NULL_VALUE,
+      name: "should coerce null",
     },
     {
-      expected: "42",
-      input: 42,
-      name: "should coerce a numeric thrown value",
+      expected: `${UNDEFINED_VALUE}`,
+      input: UNDEFINED_VALUE,
+      name: "should coerce undefined",
     },
     {
       expected: "[object Object]",
       input: EMPTY_OBJECT,
-      name: "should coerce a plain-object thrown value",
-    },
-    {
-      expected: "Symbol(x)",
-      input: Symbol("x"),
-      name: "should coerce a symbol thrown value",
+      name: "should coerce a plain object",
     },
   ],
   ERRNO_CASES: [
     {
-      expected: true,
-      input: Object.assign(new Error("x"), { code: "EADDRINUSE" }),
+      expected: BOOLEAN_TRUE,
+      input: Object.assign(new Error(COMMON_STRING), { code: COMMON_STRING }),
       name: "should accept an Error carrying a string code",
     },
     {
-      expected: false,
-      input: Object.assign(new Error("x"), { code: 42 }),
+      expected: BOOLEAN_FALSE,
+      input: Object.assign(new Error(COMMON_STRING), { code: COMMON_NUMBER }),
       name: "should reject an Error whose code is not a string",
     },
     {
-      expected: false,
-      input: new Error("x"),
-      name: "should reject a plain Error with no code",
+      expected: BOOLEAN_FALSE,
+      input: new Error(COMMON_STRING),
+      name: "should reject an Error with no code",
     },
     {
-      expected: false,
-      input: "boom",
+      expected: BOOLEAN_FALSE,
+      input: COMMON_STRING,
       name: "should reject a non-Error value",
     },
     {
-      expected: false,
-      input: { code: "EADDRINUSE" },
+      expected: BOOLEAN_FALSE,
+      input: { code: COMMON_STRING },
       name: "should reject a plain object carrying a code",
     },
   ],
@@ -82,17 +86,31 @@ describe("ErrorHelper", () => {
         expect(isErrnoException(input)).toBe(expected);
       });
     });
+
+    it("should narrow the value to an ErrnoException when true", ({
+      expect,
+    }) => {
+      const error = toUnknown(
+        Object.assign(new Error(COMMON_STRING), { code: COMMON_STRING }),
+      );
+
+      expect(isErrnoException(error)).toBe(BOOLEAN_TRUE);
+
+      if (isErrnoException(error)) {
+        expectTypeOf(error).toEqualTypeOf<NodeJS.ErrnoException>();
+      }
+    });
   });
 
   describe("toError", (it) => {
     it("should return the same Error instance unchanged", ({ expect }) => {
-      const error = new Error("boom");
+      const error = new Error(COMMON_STRING);
 
       expect(toError(error)).toBe(error);
     });
 
     it("should preserve an Error subclass instance", ({ expect }) => {
-      const error = new TypeError("wrong type");
+      const error = new TypeError(COMMON_STRING);
 
       const result = toError(error);
 
@@ -100,7 +118,14 @@ describe("ErrorHelper", () => {
       expect(result).toBeInstanceOf(TypeError);
     });
 
-    TEST_DATA.COERCED_VALUE_CASES.forEach(({ expected, input, name }) => {
+    it("should coerce a symbol thrown value", ({ expect }) => {
+      const result = toError(Symbol(COMMON_STRING));
+
+      expect(result).toBeInstanceOf(Error);
+      expect(result.message).toBe(`Symbol(${COMMON_STRING})`);
+    });
+
+    TEST_DATA.COERCION_CASES.forEach(({ expected, input, name }) => {
       it(name, ({ expect }) => {
         const result = toError(input);
 
@@ -112,7 +137,7 @@ describe("ErrorHelper", () => {
 
   describe("normalizeError", (it) => {
     it("should map an Error to its message and stack", ({ expect }) => {
-      const error = new Error("boom");
+      const error = new Error(COMMON_STRING);
 
       expect(normalizeError(error)).toStrictEqual({
         error: error.message,
@@ -121,23 +146,21 @@ describe("ErrorHelper", () => {
     });
 
     it("should pass through an undefined stack", ({ expect }) => {
-      const error = new Error("boom");
+      const error = new Error(COMMON_STRING);
 
-      Object.defineProperty(error, "stack", { value: undefined });
+      Object.defineProperty(error, "stack", { value: UNDEFINED_VALUE });
 
       expect(normalizeError(error)).toStrictEqual({
-        error: "boom",
-        stack: undefined,
+        error: COMMON_STRING,
+        stack: UNDEFINED_VALUE,
       });
     });
 
-    it("should carry a synthesized stack for a non-Error value", ({
-      expect,
-    }) => {
-      expect(typeof normalizeError("boom").stack).toBe("string");
+    it("should synthesize a stack for a non-Error value", ({ expect }) => {
+      expect(typeof normalizeError(COMMON_STRING).stack).toBe("string");
     });
 
-    TEST_DATA.COERCED_VALUE_CASES.forEach(({ expected, input, name }) => {
+    TEST_DATA.COERCION_CASES.forEach(({ expected, input, name }) => {
       it(name, ({ expect }) => {
         expect(normalizeError(input).error).toBe(expected);
       });

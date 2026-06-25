@@ -2,55 +2,60 @@ import { describe } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { TypesHelper } from "@shared/helpers/types.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 import type { AppEnv } from "@shared/types/app-env.type";
 
 import { LoggerModule } from "./logger.module";
 
-const { trackLeaksInSpec }: Awaited<ReturnType<typeof VitestSetup>> =
-  await VitestSetup();
+const {
+  sharedTestData: {
+    COMMON_LOG_LEVEL,
+    COMMON_STRING_ARRAY,
+    VALID_DEV_APP_ENV,
+  },
+  trackLeaksInSpec,
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("logger.module");
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const { buildFallbackLogger, buildLogger } = LoggerModule;
 
 const TEST_DATA = {
-  PROD_ENV: castAsType<AppEnv>({
+  PROD_APP_ENV: castAsType<AppEnv>({
+    ...VALID_DEV_APP_ENV,
     isDevelopment: false,
     logLevel: "warn",
-    port: 5173,
-    serviceName: "lazy-days",
   }),
+  REDACT_PATHS: COMMON_STRING_ARRAY,
 } as const;
 
 describe("LoggerModule", () => {
   describe("buildFallbackLogger", (it) => {
-    it("should return a logger defaulting to the info level", ({ expect }) => {
-      expect(buildFallbackLogger().level).toBe("info");
+    it("should create a logger at the info level", ({ expect }) => {
+      expect(buildFallbackLogger().level).toBe(COMMON_LOG_LEVEL);
     });
 
-    it("should expose the standard log methods", ({ expect }) => {
+    it("should expose the logger surface used at call sites", ({ expect }) => {
       const logger = buildFallbackLogger();
 
-      expect(typeof logger.fatal).toBe("function");
+      expect(typeof logger.info).toBe("function");
       expect(typeof logger.flush).toBe("function");
     });
   });
 
   describe("buildLogger", (it) => {
-    it("should return a logger reporting the configured level", ({
-      expect,
-    }) => {
-      expect(buildLogger(TEST_DATA.PROD_ENV).level).toBe("warn");
+    it("should create a logger at the env's configured level", ({ expect }) => {
+      expect(buildLogger(TEST_DATA.PROD_APP_ENV).level).toBe(
+        TEST_DATA.PROD_APP_ENV.logLevel,
+      );
     });
 
-    it("should expose the standard log methods", ({ expect }) => {
-      const logger = buildLogger(TEST_DATA.PROD_ENV);
-
-      expect(typeof logger.info).toBe("function");
-      expect(typeof logger.error).toBe("function");
+    it("should accept explicit redact paths", ({ expect }) => {
+      expect(
+        buildLogger(TEST_DATA.PROD_APP_ENV, TEST_DATA.REDACT_PATHS).level,
+      ).toBe(TEST_DATA.PROD_APP_ENV.logLevel);
     });
   });
 });

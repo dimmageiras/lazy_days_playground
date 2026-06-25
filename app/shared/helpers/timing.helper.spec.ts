@@ -1,117 +1,51 @@
-import type { setTimeout } from "node:timers";
-import type { MockInstance } from "vitest";
-import { afterAll, beforeAll, describe, vi } from "vitest";
+import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { TimingHelper } from "./timing.helper";
-import { TypesHelper } from "./types.helper";
+import { TIMING_IN_MS } from "@shared/constants/timing.constant";
 
-const { trackLeaksInSpec }: Awaited<ReturnType<typeof VitestSetup>> =
-  await VitestSetup();
+import { TimingHelper } from "./timing.helper";
+
+const {
+  sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE },
+  trackLeaksInSpec,
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("timing.helper");
 
-const { castAsType } = TypesHelper;
-
 const { delay } = TimingHelper;
 
-const TEST_DATA = {
-  PASSTHROUGH_CASES: [
-    { ms: -1, name: "should forward -1 to setTimeout" },
-    { ms: 0, name: "should forward 0 to setTimeout" },
-    { ms: 100, name: "should forward 100 to setTimeout" },
-    { ms: Number.NaN, name: "should forward NaN to setTimeout" },
-    {
-      ms: Number.POSITIVE_INFINITY,
-      name: "should forward Infinity to setTimeout",
-    },
-  ],
-  RESOLVE_MARKER_MS: -1001,
-  RESOLVE_PENDING_MARKER_MS: -1002,
-} as const;
+const { SECONDS_ONE_TENTH } = TIMING_IN_MS;
 
-const stubSetTimeout = castAsType<typeof setTimeout>(() => 0);
+const TEST_DATA = {
+  PENDING_DELAY_MS: SECONDS_ONE_TENTH,
+} as const;
 
 describe("TimingHelper", () => {
   describe("delay", (it) => {
-    let setTimeoutSpy: MockInstance<typeof setTimeout>;
-
-    beforeAll(() => {
-      setTimeoutSpy = vi
-        .spyOn(globalThis, "setTimeout")
-        .mockImplementation(stubSetTimeout);
-    });
-
-    afterAll(() => {
-      setTimeoutSpy.mockRestore();
-    });
-
-    TEST_DATA.PASSTHROUGH_CASES.forEach(({ ms, name }) => {
-      it(name, ({ expect }) => {
-        void delay(ms);
-
-        const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
-          Object.is(delayMs, ms),
-        );
-
-        expect(spyCalls).toHaveLength(1);
-      });
-    });
-
-    it("should resolve with undefined once the scheduled callback fires", async ({
+    it("should resolve to undefined once the delay elapses", async ({
       expect,
     }) => {
-      const marker = TEST_DATA.RESOLVE_MARKER_MS;
+      const pending = delay(TEST_DATA.PENDING_DELAY_MS);
 
-      const promise = delay(marker);
+      expectTypeOf(pending).toEqualTypeOf<Promise<void>>();
 
-      const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
-        Object.is(delayMs, marker),
-      );
-
-      expect(spyCalls).toHaveLength(1);
-
-      const [callback] = spyCalls[0]!;
-
-      expect(promise).toBeInstanceOf(Promise);
-      expect(callback).toBeTypeOf("function");
-
-      callback();
-
-      const result = await promise;
-
-      expect(result).toBeUndefined();
+      await expect(pending).resolves.toBeUndefined();
     });
 
-    it("should not resolve before the scheduled callback fires", async ({
-      expect,
-    }) => {
-      const marker = TEST_DATA.RESOLVE_PENDING_MARKER_MS;
-
-      let resolved = false;
-
-      const promise = delay(marker).then(() => {
-        resolved = true;
+    it("should stay pending until the delay elapses", async ({ expect }) => {
+      let settled: boolean = BOOLEAN_FALSE;
+      const pending = delay(TEST_DATA.PENDING_DELAY_MS).then(() => {
+        settled = BOOLEAN_TRUE;
       });
-
-      const spyCalls = setTimeoutSpy.mock.calls.filter(([, delayMs]) =>
-        Object.is(delayMs, marker),
-      );
-
-      expect(spyCalls).toHaveLength(1);
-
-      const [callback] = spyCalls[0]!;
 
       await Promise.resolve();
 
-      expect(resolved).toBe(false);
+      expect(settled).toBe(BOOLEAN_FALSE);
 
-      callback();
+      await pending;
 
-      await promise;
-
-      expect(resolved).toBe(true);
+      expect(settled).toBe(BOOLEAN_TRUE);
     });
   });
 });

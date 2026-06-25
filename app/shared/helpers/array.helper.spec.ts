@@ -16,12 +16,13 @@ const {
     EMPTY_IMMUTABLE_MAP,
     EMPTY_IMMUTABLE_SET,
     EMPTY_OBJECT,
+    NAN_VALUE,
     NULL_VALUE,
     UNDEFINED_VALUE,
-    castAsUnknown,
+    toUnknown,
   },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("array.helper");
 
@@ -47,6 +48,7 @@ const TEST_DATA = {
     { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
     { name: "should return false for a string", value: COMMON_STRING },
     { name: "should return false for a Uint8Array", value: new Uint8Array() },
+    { name: "should return false for NaN", value: NAN_VALUE },
     { name: "should return false for null", value: NULL_VALUE },
     { name: "should return false for undefined", value: UNDEFINED_VALUE },
     {
@@ -55,7 +57,7 @@ const TEST_DATA = {
     },
   ],
   TYPE_TEST: {
-    UNKNOWN_VALUE: castAsUnknown(COMMON_NUMBER_ARRAY),
+    UNKNOWN_VALUE: toUnknown(COMMON_NUMBER_ARRAY),
   },
 } as const;
 

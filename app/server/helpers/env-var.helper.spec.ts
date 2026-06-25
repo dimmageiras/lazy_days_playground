@@ -1,54 +1,51 @@
-import { describe } from "vitest";
+import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { TypesHelper } from "@shared/helpers/types.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
+import { appEnvSchema } from "@shared/schemas/app-env.schema";
 
 import { EnvVarHelper } from "./env-var.helper";
 
 const {
-  sharedTestData: { EMPTY_OBJECT, EMPTY_STRING },
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    COMMON_STRING,
+    EMPTY_OBJECT,
+    EMPTY_STRING,
+    MIN_PORT,
+    NUMBER_1,
+    VALID_PORT,
+    VALID_RAW_DEV_ENV,
+  },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("env-var.helper");
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
 
-const VALID_SHUTDOWN_TOKEN =
-  "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
-
 const TEST_DATA = {
-  EXPECTED_VALIDATED_ENV: {
-    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
-    VITE_APP_IS_DEVELOPMENT: false,
-    VITE_APP_LOG_LEVEL: "info",
-    VITE_APP_PORT: 5173,
-    VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
-  },
-  INVALID_ENV: castAsType<ImportMetaEnv>({
-    VITE_APP_PORT: "0",
+  EXPECTED_VALIDATED_ENV: appEnvSchema.parse(VALID_RAW_DEV_ENV),
+  INVALID_ENV: {
+    ...VALID_RAW_DEV_ENV,
+    VITE_APP_PORT: `${MIN_PORT - NUMBER_1}`,
     VITE_APP_SERVICE_NAME: EMPTY_STRING,
-  }),
+  },
   MISSING_ENV: castAsType<ImportMetaEnv>(EMPTY_OBJECT),
   REJECTED_PORT_FORMAT_CASES: [
     { name: "should reject an empty port string", port: EMPTY_STRING },
-    { name: "should reject a whitespace-padded port", port: " 5173 " },
+    { name: "should reject a whitespace-padded port", port: ` ${VALID_PORT} ` },
     { name: "should reject a hex literal port", port: "0x100" },
     { name: "should reject a scientific-notation port", port: "1e3" },
-    { name: "should reject a signed port", port: "+5173" },
-    { name: "should reject a negative-signed port", port: "-5173" },
-    { name: "should reject a decimal port", port: "5173.0" },
+    { name: "should reject a signed port", port: `+${VALID_PORT}` },
+    { name: "should reject a negative-signed port", port: `-${VALID_PORT}` },
+    { name: "should reject a decimal port", port: `${VALID_PORT}.0` },
   ],
-  VALID_ENV: castAsType<ImportMetaEnv>({
-    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
-    VITE_APP_PORT: "5173",
-    VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
-  }),
+  VALID_ENV: VALID_RAW_DEV_ENV,
 } as const;
 
 describe("EnvVarHelper", () => {
@@ -70,7 +67,7 @@ describe("EnvVarHelper", () => {
       );
     });
 
-    it("should join one line per missing variable", ({ expect }) => {
+    it("should join one line per missing required variable", ({ expect }) => {
       let message: string = EMPTY_STRING;
 
       try {
@@ -91,8 +88,8 @@ describe("EnvVarHelper", () => {
         expect(() =>
           validateEnv(
             castAsType<ImportMetaEnv>({
+              ...VALID_RAW_DEV_ENV,
               VITE_APP_PORT: port,
-              VITE_APP_SERVICE_NAME: "lazy-days",
             }),
           ),
         ).toThrow(/VITE_APP_PORT/);
@@ -112,11 +109,21 @@ describe("EnvVarHelper", () => {
         thrown = error;
       }
 
-      expect(isEnvValidationError(thrown)).toBe(true);
+      expect(isEnvValidationError(thrown)).toBe(BOOLEAN_TRUE);
+
+      if (isEnvValidationError(thrown)) {
+        expectTypeOf(thrown).toEqualTypeOf<Error>();
+      }
     });
 
     it("should reject an unrelated error", ({ expect }) => {
-      expect(isEnvValidationError(new Error("boom"))).toBe(false);
+      expect(isEnvValidationError(new Error(COMMON_STRING))).toBe(
+        BOOLEAN_FALSE,
+      );
+    });
+
+    it("should reject a non-error value", ({ expect }) => {
+      expect(isEnvValidationError(COMMON_STRING)).toBe(BOOLEAN_FALSE);
     });
   });
 });

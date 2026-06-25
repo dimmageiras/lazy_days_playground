@@ -4,8 +4,9 @@ import { SetHelper } from "@shared/helpers/set.helper";
 
 import { FunctionWrap } from "./function-wrap";
 
-const { wrapWithCallback } = FunctionWrap;
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
+
+const { wrapWithCallback } = FunctionWrap;
 
 // Pattern B (clock-advance): any call that flushes pending timers against the
 // shared fake clock. Pattern A (`setSystemTime` + `useRealTimers()` cleanup)

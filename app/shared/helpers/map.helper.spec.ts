@@ -6,24 +6,24 @@ import { VitestSetup } from "@configs/vitest/setup";
 import type { MapValue } from "@shared/types/app/utility-types";
 
 import { MapHelper } from "./map.helper";
-import { TypesHelper } from "./types.helper";
+import { TypeHelper } from "./type.helper";
 
 const {
   sharedTestData: {
     COMMON_NUMBER_PAIRS_ARRAY,
-    COMMON_STRING_NUMBER_PAIRS_ARRAY,
     COMMON_STRING,
+    COMMON_STRING_NUMBER_PAIRS_ARRAY,
     NUMBER_1,
     STRING_A,
     STRING_B,
     UNDEFINED_VALUE,
   },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("map.helper");
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const { getMapValue } = MapHelper;
 

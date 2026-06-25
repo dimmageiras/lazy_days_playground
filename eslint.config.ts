@@ -155,7 +155,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["app/shared/helpers/types.helper.ts"],
+    files: ["app/shared/helpers/type.helper.ts"],
     rules: {
       "@typescript-eslint/consistent-type-assertions": "off",
     },

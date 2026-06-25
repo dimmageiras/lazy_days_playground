@@ -1,9 +1,9 @@
 import camelCase from "lodash-es/camelCase.js";
 import type { CamelCase } from "type-fest";
 
-import { TypesHelper } from "./types.helper";
+import { TypeHelper } from "./type.helper";
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const isString = (value: unknown): value is string => {
   return typeof value === "string";

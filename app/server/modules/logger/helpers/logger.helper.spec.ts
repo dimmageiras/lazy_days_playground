@@ -2,74 +2,108 @@ import { describe } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { TypesHelper } from "@shared/helpers/types.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 import type { AppEnv } from "@shared/types/app-env.type";
 
 import { PRETTY_TRANSPORT } from "../constants/logger.constant";
 import { LoggerHelper } from "./logger.helper";
 
 const {
-  sharedTestData: { EMPTY_ARRAY },
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    COMMON_LOG_LEVEL,
+    COMMON_STRING,
+    COMMON_STRING_ARRAY,
+    EMPTY_ARRAY,
+    VALID_DEV_APP_ENV,
+  },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("logger.helper");
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const { buildFallbackLoggerOptions, buildLoggerOptions } = LoggerHelper;
 
 const TEST_DATA = {
-  DEV_ENV: castAsType<AppEnv>({
-    isDevelopment: true,
-    logLevel: "debug",
-    port: 5173,
-    serviceName: "lazy-days",
-  }),
-  PROD_ENV: castAsType<AppEnv>({
-    isDevelopment: false,
-    logLevel: "info",
-    port: 5173,
-    serviceName: "lazy-days",
-  }),
+  EMPTY_REDACT_PATHS: EMPTY_ARRAY,
+  FALLBACK_OPTIONS: { level: COMMON_LOG_LEVEL },
+  OPTIONS_CASES: [
+    {
+      expected: { base: { service: COMMON_STRING }, level: COMMON_LOG_LEVEL },
+      isDevelopment: BOOLEAN_FALSE,
+      name: "should build minimal options for production without redact paths",
+      withRedaction: BOOLEAN_FALSE,
+    },
+    {
+      expected: {
+        base: { service: COMMON_STRING },
+        level: COMMON_LOG_LEVEL,
+        transport: PRETTY_TRANSPORT,
+      },
+      isDevelopment: BOOLEAN_TRUE,
+      name: "should add the pretty transport in development",
+      withRedaction: BOOLEAN_FALSE,
+    },
+    {
+      expected: {
+        base: { service: COMMON_STRING },
+        level: COMMON_LOG_LEVEL,
+        redact: { censor: "[REDACTED]", paths: [...COMMON_STRING_ARRAY] },
+      },
+      isDevelopment: BOOLEAN_FALSE,
+      name: "should censor the given redact paths",
+      withRedaction: BOOLEAN_TRUE,
+    },
+    {
+      expected: {
+        base: { service: COMMON_STRING },
+        level: COMMON_LOG_LEVEL,
+        redact: { censor: "[REDACTED]", paths: [...COMMON_STRING_ARRAY] },
+        transport: PRETTY_TRANSPORT,
+      },
+      isDevelopment: BOOLEAN_TRUE,
+      name: "should combine the transport and redaction in development",
+      withRedaction: BOOLEAN_TRUE,
+    },
+  ],
+  REDACT_PATHS: COMMON_STRING_ARRAY,
+  get prodAppEnv() {
+    return () =>
+      castAsType<AppEnv>({
+        ...VALID_DEV_APP_ENV,
+        isDevelopment: BOOLEAN_FALSE,
+      });
+  },
 } as const;
 
 describe("LoggerHelper", () => {
   describe("buildFallbackLoggerOptions", (it) => {
-    it("should default to the info level", ({ expect }) => {
-      expect(buildFallbackLoggerOptions().level).toBe("info");
-    });
-
-    it("should not attach a transport", ({ expect }) => {
-      expect("transport" in buildFallbackLoggerOptions()).toBe(false);
+    it("should return options with only the info level", ({ expect }) => {
+      expect(buildFallbackLoggerOptions()).toStrictEqual(
+        TEST_DATA.FALLBACK_OPTIONS,
+      );
     });
   });
 
   describe("buildLoggerOptions", (it) => {
-    it("should set the level from the env", ({ expect }) => {
-      expect(buildLoggerOptions(TEST_DATA.DEV_ENV, EMPTY_ARRAY).level).toBe(
-        "debug",
-      );
-    });
+    TEST_DATA.OPTIONS_CASES.forEach(
+      ({ expected, isDevelopment, name, withRedaction }) => {
+        it(name, ({ expect }) => {
+          const appEnv = isDevelopment
+            ? VALID_DEV_APP_ENV
+            : TEST_DATA.prodAppEnv();
+          const redactPaths = withRedaction
+            ? TEST_DATA.REDACT_PATHS
+            : TEST_DATA.EMPTY_REDACT_PATHS;
 
-    it("should put the service name on the base", ({ expect }) => {
-      expect(
-        buildLoggerOptions(TEST_DATA.PROD_ENV, EMPTY_ARRAY).base,
-      ).toStrictEqual({
-        service: "lazy-days",
-      });
-    });
-
-    it("should attach the pretty transport in development", ({ expect }) => {
-      expect(buildLoggerOptions(TEST_DATA.DEV_ENV, EMPTY_ARRAY).transport).toBe(
-        PRETTY_TRANSPORT,
-      );
-    });
-
-    it("should omit the transport outside development", ({ expect }) => {
-      expect(
-        "transport" in buildLoggerOptions(TEST_DATA.PROD_ENV, EMPTY_ARRAY),
-      ).toBe(false);
-    });
+          expect(buildLoggerOptions(appEnv, redactPaths)).toStrictEqual(
+            expected,
+          );
+        });
+      },
+    );
   });
 });

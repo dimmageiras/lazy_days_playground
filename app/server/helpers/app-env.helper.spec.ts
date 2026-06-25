@@ -2,40 +2,21 @@ import { describe } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { TypesHelper } from "@shared/helpers/types.helper";
-import type { ViteAppEnv } from "@shared/types/app-env.type";
+import { appEnvSchema } from "@shared/schemas/app-env.schema";
 
 import { AppEnvHelper } from "./app-env.helper";
 
-const { trackLeaksInSpec }: Awaited<ReturnType<typeof VitestSetup>> =
-  await VitestSetup();
+const {
+  sharedTestData: { BOOLEAN_TRUE, VALID_DEV_APP_ENV, VALID_RAW_DEV_ENV },
+  trackLeaksInSpec,
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("app-env.helper");
 
-const { castAsType } = TypesHelper;
-
 const { buildAppEnv } = AppEnvHelper;
 
-const VALID_SHUTDOWN_TOKEN =
-  "ThisIsAFakeTokenghijklmnop1234567890abcdefghijklmnop1234567890abcdefghijklmnop1234567890";
-
 const TEST_DATA = {
-  EXPECTED_APP_ENV: {
-    bindAllIpv4: "0.0.0.0",
-    isDevelopment: false,
-    logLevel: "info",
-    port: 5173,
-    serviceName: "lazy-days",
-    shutdownToken: VALID_SHUTDOWN_TOKEN,
-  },
-  VALID_ENV: castAsType<ViteAppEnv>({
-    VITE_APP_BIND_ALL_IPV4: "0.0.0.0",
-    VITE_APP_IS_DEVELOPMENT: false,
-    VITE_APP_LOG_LEVEL: "info",
-    VITE_APP_PORT: 5173,
-    VITE_APP_SERVICE_NAME: "lazy-days",
-    VITE_APP_SHUTDOWN_TOKEN: VALID_SHUTDOWN_TOKEN,
-  }),
+  VITE_APP_ENV: appEnvSchema.parse(VALID_RAW_DEV_ENV),
 } as const;
 
 describe("AppEnvHelper", () => {
@@ -43,13 +24,15 @@ describe("AppEnvHelper", () => {
     it("should map the prefixed vite env keys to their camelCase app env keys", ({
       expect,
     }) => {
-      expect(buildAppEnv(TEST_DATA.VALID_ENV)).toStrictEqual(
-        TEST_DATA.EXPECTED_APP_ENV,
+      expect(buildAppEnv(TEST_DATA.VITE_APP_ENV)).toStrictEqual(
+        VALID_DEV_APP_ENV,
       );
     });
 
     it("should return a frozen object", ({ expect }) => {
-      expect(Object.isFrozen(buildAppEnv(TEST_DATA.VALID_ENV))).toBe(true);
+      expect(Object.isFrozen(buildAppEnv(TEST_DATA.VITE_APP_ENV))).toBe(
+        BOOLEAN_TRUE,
+      );
     });
   });
 });

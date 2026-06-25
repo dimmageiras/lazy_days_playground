@@ -1,24 +1,30 @@
+import type { CamelCase } from "type-fest";
 import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { StringHelper } from "./string.helper";
-import { TypesHelper } from "./types.helper";
 
 const {
   sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    COMMON_NUMBER,
+    COMMON_STRING,
     EMPTY_ARRAY,
     EMPTY_IMMUTABLE_MAP,
     EMPTY_IMMUTABLE_SET,
     EMPTY_OBJECT,
     EMPTY_STRING,
+    NAN_VALUE,
+    NULL_VALUE,
+    UNDEFINED_VALUE,
+    toUnknown,
   },
   trackLeaksInSpec,
-}: Awaited<ReturnType<typeof VitestSetup>> = await VitestSetup();
+}: ReturnType<typeof VitestSetup> = VitestSetup();
 
 trackLeaksInSpec("string.helper");
-
-const { castAsType } = TypesHelper;
 
 const { isString, toCamelCase, toUpperCase } = StringHelper;
 
@@ -27,85 +33,77 @@ const TEST_DATA = {
     {
       expected: "helloWorld",
       input: "hello world",
-      name: "should convert a string to camelCase",
+      name: "should convert space-separated words to camelCase",
     },
     {
       expected: "userId",
       input: "user_id",
-      name: "should convert snake case to camelCase",
+      name: "should convert snake_case to camelCase",
     },
     {
       expected: "userId",
       input: "user-id",
-      name: "should convert kebab case to camelCase",
-    },
-    {
-      expected: EMPTY_STRING,
-      input: EMPTY_STRING,
-      name: "should return an empty string for an empty input",
+      name: "should convert kebab-case to camelCase",
     },
     {
       expected: "alreadyCamel",
       input: "alreadyCamel",
-      name: "should return a camelCase input unchanged",
+      name: "should leave an already-camelCased string unchanged",
     },
-  ],
-  NON_STRING_CASES: [
-    { name: "should return false for a boolean", value: true },
-    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
-    { name: "should return false for a number", value: 42 },
-    { name: "should return false for a plain object", value: EMPTY_OBJECT },
-    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
-    { name: "should return false for an array", value: EMPTY_ARRAY },
-    { name: "should return false for null", value: null },
-    { name: "should return false for undefined", value: undefined },
-  ],
-  STRING_CASES: [
-    { name: "should return true for a populated string", value: "hello world" },
-    { name: "should return true for an empty string", value: EMPTY_STRING },
-  ],
-  TYPE_TEST: {
-    CAMELCASE_EXPECTED: "helloWorld",
-    CAMELCASE_INPUT: "hello world",
-    UNKNOWN_VALUE: castAsType<unknown>("hello"),
-    UPPERCASE_EXPECTED: "AB",
-    UPPERCASE_INPUT: "ab",
-  },
-  UPPER_CASES: [
     {
-      expected: "HELLO WORLD",
-      input: "hello world",
-      name: "should uppercase basic lowercase ASCII",
+      expected: COMMON_STRING,
+      input: COMMON_STRING,
+      name: "should leave a single lowercase word unchanged",
     },
     {
       expected: EMPTY_STRING,
       input: EMPTY_STRING,
       name: "should return an empty string for empty input",
     },
+  ],
+  NON_STRING_CASES: [
+    { name: "should return false for a boolean", value: BOOLEAN_TRUE },
+    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
+    { name: "should return false for a number", value: COMMON_NUMBER },
+    { name: "should return false for a plain object", value: EMPTY_OBJECT },
+    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
+    { name: "should return false for an array", value: EMPTY_ARRAY },
+    { name: "should return false for NaN", value: NAN_VALUE },
+    { name: "should return false for null", value: NULL_VALUE },
+    { name: "should return false for undefined", value: UNDEFINED_VALUE },
+  ],
+  STRING_CASES: [
+    { name: "should return true for a populated string", value: COMMON_STRING },
+    { name: "should return true for an empty string", value: EMPTY_STRING },
+  ],
+  TYPE_TEST: {
+    UNKNOWN_STRING: toUnknown(COMMON_STRING),
+  },
+  UPPER_CASES: [
     {
-      expected: "ALREADY UPPER",
-      input: "ALREADY UPPER",
-      name: "should leave already-uppercase ASCII unchanged",
+      expected: "HELLO WORLD",
+      input: "hello world",
+      name: "should uppercase space-separated words",
     },
     {
-      expected: "MIXED CASE",
-      input: "mIxEd CaSe",
-      name: "should uppercase mixed-case ASCII",
+      expected: "HELLO",
+      input: COMMON_STRING,
+      name: "should uppercase a lowercase word",
     },
     {
-      expected: "SS",
-      input: "ß",
-      name: "should expand the German sharp s to SS (Unicode case mapping)",
+      expected: "MIXED",
+      input: "MiXeD",
+      name: "should uppercase a mixed-case word",
     },
     {
-      expected: "Σ",
-      input: "σ",
-      name: "should uppercase Greek sigma",
+      expected: "STRASSE",
+      input: "straße",
+      name: "should expand the German sharp s when uppercasing",
     },
     {
-      expected: "I",
-      input: "i",
-      name: "should uppercase Latin i to ASCII I (locale-insensitive)",
+      expected: EMPTY_STRING,
+      input: EMPTY_STRING,
+      name: "should return an empty string for empty input",
     },
   ],
 } as const;
@@ -114,23 +112,23 @@ describe("StringHelper", () => {
   describe("isString", (it) => {
     TEST_DATA.STRING_CASES.forEach(({ name, value }) => {
       it(name, ({ expect }) => {
-        expect(isString(value)).toBe(true);
+        expect(isString(value)).toBe(BOOLEAN_TRUE);
       });
     });
 
     TEST_DATA.NON_STRING_CASES.forEach(({ name, value }) => {
       it(name, ({ expect }) => {
-        expect(isString(value)).toBe(false);
+        expect(isString(value)).toBe(BOOLEAN_FALSE);
       });
     });
 
     it("should narrow the value to string when true", ({ expect }) => {
-      const { UNKNOWN_VALUE } = TEST_DATA.TYPE_TEST;
+      const { UNKNOWN_STRING } = TEST_DATA.TYPE_TEST;
 
-      expect(isString(UNKNOWN_VALUE)).toBe(true);
+      expect(isString(UNKNOWN_STRING)).toBe(BOOLEAN_TRUE);
 
-      if (isString(UNKNOWN_VALUE)) {
-        expectTypeOf(UNKNOWN_VALUE).toEqualTypeOf<string>();
+      if (isString(UNKNOWN_STRING)) {
+        expectTypeOf(UNKNOWN_STRING).toEqualTypeOf<string>();
       }
     });
   });
@@ -138,32 +136,32 @@ describe("StringHelper", () => {
   describe("toCamelCase", (it) => {
     TEST_DATA.CAMEL_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
-        const result = toCamelCase(input);
-
-        expect(result).toBe(expected);
+        expect(toCamelCase(input)).toBe(expected);
       });
     });
 
-    it("should narrow the return type to CamelCase<TString>", () => {
-      expectTypeOf(
-        toCamelCase(TEST_DATA.TYPE_TEST.CAMELCASE_INPUT),
-      ).toEqualTypeOf<typeof TEST_DATA.TYPE_TEST.CAMELCASE_EXPECTED>();
+    it("should type the result as CamelCase of the input", ({ expect }) => {
+      expect(toCamelCase(COMMON_STRING)).toBe(COMMON_STRING);
+
+      expectTypeOf(toCamelCase(COMMON_STRING)).toEqualTypeOf<
+        CamelCase<typeof COMMON_STRING>
+      >();
     });
   });
 
   describe("toUpperCase", (it) => {
     TEST_DATA.UPPER_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
-        const result = toUpperCase(input);
-
-        expect(result).toBe(expected);
+        expect(toUpperCase(input)).toBe(expected);
       });
     });
 
-    it("should narrow the return type to Uppercase<TString>", () => {
-      expectTypeOf(
-        toUpperCase(TEST_DATA.TYPE_TEST.UPPERCASE_INPUT),
-      ).toEqualTypeOf<typeof TEST_DATA.TYPE_TEST.UPPERCASE_EXPECTED>();
+    it("should type the result as Uppercase of the input", ({ expect }) => {
+      expect(toUpperCase(COMMON_STRING)).toBe("HELLO");
+
+      expectTypeOf(toUpperCase(COMMON_STRING)).toEqualTypeOf<
+        Uppercase<typeof COMMON_STRING>
+      >();
     });
   });
 });
