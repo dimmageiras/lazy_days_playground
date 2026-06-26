@@ -44,7 +44,13 @@ vi.mock("./helpers/listen.helper", () => ({
 
 const {
   createMockInstance,
-  sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE },
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    EMPTY_ARRAY,
+    EMPTY_OBJECT,
+    EMPTY_STRING,
+  },
   trackLeaksInSpec,
 } = VitestSetup();
 
@@ -89,12 +95,12 @@ const { makeInstance, scenarioOf, ...TEST_DATA } = {
         scenario: {
           requestCooperativeShutdown: [BOOLEAN_FALSE, BOOLEAN_TRUE],
           tryListen: [BOOLEAN_FALSE],
-          tryListenUntil: {},
+          tryListenUntil: EMPTY_OBJECT,
         },
       },
       {
         name: "should abort with the kill-failure reason when the port stays in use after a failed force-kill",
-        rejectsWith: getMapValue(KILL_FAILURE_MESSAGES, "no-pid", ""),
+        rejectsWith: getMapValue(KILL_FAILURE_MESSAGES, "no-pid", EMPTY_STRING),
         scenario: {
           killPortOwner: this.NO_PID,
           requestCooperativeShutdown: [BOOLEAN_TRUE, BOOLEAN_FALSE],
@@ -119,9 +125,9 @@ const { makeInstance, scenarioOf, ...TEST_DATA } = {
       {
         name: "should return when the port binds on the first attempt",
         scenario: {
-          requestCooperativeShutdown: [],
+          requestCooperativeShutdown: EMPTY_ARRAY,
           tryListen: [BOOLEAN_TRUE],
-          tryListenUntil: {},
+          tryListenUntil: EMPTY_OBJECT,
         },
       },
       {
