@@ -15,7 +15,6 @@ const {
     MAX_PORT,
     MIN_PORT,
     NAN_VALUE,
-    NUMBER_1,
     STRING_TRUE,
     UNDEFINED_VALUE,
     VALID_BASE64_TOKEN,
@@ -95,13 +94,13 @@ const { validParsedEnv, ...TEST_DATA } = {
       },
       {
         expectedMessage: `Must be between ${MIN_PORT} and ${MAX_PORT}`,
-        input: `${MIN_PORT - NUMBER_1}`,
+        input: `${MIN_PORT - 1}`,
         key: this.VITE_APP_PORT,
         name: "should reject a port below the valid range",
       },
       {
         expectedMessage: `Must be between ${MIN_PORT} and ${MAX_PORT}`,
-        input: `${MAX_PORT + NUMBER_1}`,
+        input: `${MAX_PORT + 1}`,
         key: this.VITE_APP_PORT,
         name: "should reject a port above the valid range",
       },

@@ -23,7 +23,6 @@ const {
     EMPTY_OBJECT,
     MAX_PORT,
     MIN_PORT,
-    NUMBER_1,
     VALID_DEV_APP_ENV,
     VALID_PORT,
   },
@@ -54,23 +53,23 @@ const { respondToPost, ...TEST_DATA } = {
     {
       expected: BOOLEAN_FALSE,
       name: "should resolve false when the shutdown request fails",
-      port: VALID_PORT + NUMBER_1,
+      port: VALID_PORT + 1,
     },
     {
       expected: BOOLEAN_FALSE,
       name: "should reject a port below the valid range",
-      port: MIN_PORT - NUMBER_1,
+      port: MIN_PORT - 1,
     },
     {
       expected: BOOLEAN_FALSE,
       name: "should reject a port above the valid range",
-      port: MAX_PORT + NUMBER_1,
+      port: MAX_PORT + 1,
     },
   ]),
   URL: `${HTTP}://${LOOPBACK_HOST_V4}:${VALID_PORT}${API_INTERNAL}/${SHUTDOWN}`,
   get respondToPost() {
     return async (url: string) => {
-      if (url.includes(`:${VALID_PORT + NUMBER_1}`)) {
+      if (url.includes(`:${VALID_PORT + 1}`)) {
         throw TEST_DATA.CONNECTION_REFUSED;
       }
 
