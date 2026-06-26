@@ -1,12 +1,13 @@
 import type { ViteAppEnv } from "@shared/types/app-env.type";
 
-import { buildApp } from "./app";
+import { AppHelper } from "./helpers/app.helper";
 import { EnvVarHelper } from "./helpers/env-var.helper";
 import { ErrorHelper } from "./helpers/error.helper";
 import { LoggerModule } from "./modules/logger";
 import { StartupModule } from "./modules/startup";
 import type { AppInstance } from "./types/instance.type";
 
+const { build } = AppHelper;
 const { isEnvValidationError, validateEnv } = EnvVarHelper;
 const { normalizeError } = ErrorHelper;
 const { buildFallbackLogger } = LoggerModule;
@@ -37,7 +38,7 @@ try {
 let instance: AppInstance | undefined;
 
 try {
-  instance = await buildApp(validatedEnv, import.meta.hot);
+  instance = await build(validatedEnv, import.meta.hot);
 
   await claimPort(instance);
 } catch (rawError) {

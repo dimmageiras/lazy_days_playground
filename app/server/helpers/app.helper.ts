@@ -1,15 +1,16 @@
 import fastify from "fastify";
 
+import { BASE_URLS } from "@server/constants/base-urls.constant";
+import { LoggerModule } from "@server/modules/logger";
+import { ShutdownModule } from "@server/modules/shutdown";
+import { apiHealthRoutes } from "@server/routes/api/health";
+import type { AppInstance } from "@server/types/instance.type";
+
 import { TIMING_IN_MS } from "@shared/constants/timing.constant";
 import type { ViteAppEnv } from "@shared/types/app-env.type";
 
-import { BASE_URLS } from "./constants/base-urls.constant";
-import { AppEnvHelper } from "./helpers/app-env.helper";
-import { ErrorHelper } from "./helpers/error.helper";
-import { LoggerModule } from "./modules/logger";
-import { ShutdownModule } from "./modules/shutdown";
-import { apiHealthRoutes } from "./routes/api/health";
-import type { AppInstance } from "./types/instance.type";
+import { AppEnvHelper } from "./app-env.helper";
+import { ErrorHelper } from "./error.helper";
 
 const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
@@ -19,7 +20,7 @@ const { normalizeError, toError } = ErrorHelper;
 const { buildLogger } = LoggerModule;
 const { redactPaths, setupShutdown } = ShutdownModule;
 
-const buildApp = async (
+const build = async (
   env: ViteAppEnv,
   hot: ImportMeta["hot"],
 ): Promise<AppInstance> => {
@@ -58,4 +59,8 @@ const buildApp = async (
   }
 };
 
-export { buildApp };
+const AppHelper = Object.freeze({
+  build,
+} as const);
+
+export { AppHelper };
