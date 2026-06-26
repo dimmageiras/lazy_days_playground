@@ -13,14 +13,12 @@ import type { ViteAppEnv } from "@shared/types/app-env.type";
 import { AppHelper } from "./app.helper";
 
 const {
-  REDACT_PATHS,
   mockApiHealthRoutes,
   mockBuildAppEnv,
   mockBuildLogger,
   mockFastify,
   mockSetupShutdown,
 } = vi.hoisted(() => ({
-  REDACT_PATHS: ["password", "token"],
   mockApiHealthRoutes: vi.fn(),
   mockBuildAppEnv: vi.fn(),
   mockBuildLogger: vi.fn(),
@@ -29,17 +27,6 @@ const {
 }));
 
 vi.mock("fastify", () => ({ default: mockFastify }));
-
-vi.mock("@server/modules/logger", () => ({
-  LoggerModule: { buildLogger: mockBuildLogger },
-}));
-
-vi.mock("@server/modules/shutdown", () => ({
-  ShutdownModule: {
-    redactPaths: REDACT_PATHS,
-    setupShutdown: mockSetupShutdown,
-  },
-}));
 
 vi.mock("@server/routes/api/health", () => ({
   apiHealthRoutes: mockApiHealthRoutes,
@@ -73,6 +60,16 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
   HOT: castAsType<ImportMeta["hot"]>({}),
   INSTANCE_KEY: "__appHelperInstance",
   SCENARIO_KEY: "__appHelperScenario",
+  REDACT_PATHS: ["password", "token"],
+  get MODULES() {
+    return {
+      logger: { buildLogger: mockBuildLogger },
+      shutdown: {
+        redactPaths: this.REDACT_PATHS,
+        setupShutdown: mockSetupShutdown,
+      },
+    };
+  },
   get instanceOf() {
     return (carrier: ViteAppEnv): AppInstance =>
       castAsType<AppInstance>(Reflect.get(carrier, this.INSTANCE_KEY));
@@ -162,7 +159,7 @@ describe("AppHelper", () => {
     }) => {
       const env = makeEnv({});
 
-      const instance = await build(env, TEST_DATA.HOT);
+      const instance = await build(env, TEST_DATA.HOT, TEST_DATA.MODULES);
 
       expect(instance).toBe(instanceOf(env));
       expect(
@@ -170,7 +167,7 @@ describe("AppHelper", () => {
       ).toStrictEqual([[env]]);
       expect(
         mockBuildLogger.mock.calls.filter(([calledWith]) => calledWith === env),
-      ).toStrictEqual([[env, [...REDACT_PATHS]]]);
+      ).toStrictEqual([[env, [...TEST_DATA.REDACT_PATHS]]]);
       const fastifyCallIndex = mockFastify.mock.results.findIndex(
         ({ value }) => value === instance,
       );
@@ -200,7 +197,9 @@ describe("AppHelper", () => {
     }) => {
       const env = makeEnv({ registerError: TEST_DATA.ERROR });
 
-      await expect(build(env, TEST_DATA.HOT)).rejects.toBe(TEST_DATA.ERROR);
+      await expect(build(env, TEST_DATA.HOT, TEST_DATA.MODULES)).rejects.toBe(
+        TEST_DATA.ERROR,
+      );
 
       const instance = instanceOf(env);
 
@@ -220,7 +219,9 @@ describe("AppHelper", () => {
         registerError: TEST_DATA.ERROR,
       });
 
-      await expect(build(env, TEST_DATA.HOT)).rejects.toBe(TEST_DATA.ERROR);
+      await expect(build(env, TEST_DATA.HOT, TEST_DATA.MODULES)).rejects.toBe(
+        TEST_DATA.ERROR,
+      );
 
       const instance = instanceOf(env);
 
