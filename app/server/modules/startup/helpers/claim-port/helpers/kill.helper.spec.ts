@@ -13,13 +13,7 @@ import { KillHelper } from "./kill.helper";
 const {
   createMockInstance,
   sharedMock: { mockPortToPid },
-  sharedTestData: {
-    BOOLEAN_FALSE,
-    BOOLEAN_TRUE,
-    NAN_VALUE,
-    NUMBER_1,
-    VALID_PORT,
-  },
+  sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE, NAN_VALUE, VALID_PORT },
   trackLeaksInSpec,
 }: ReturnType<typeof VitestSetup> = VitestSetup();
 
@@ -30,12 +24,12 @@ const { castAsType } = TypeHelper;
 const { killPortOwner } = KillHelper;
 
 const { lookupPort, ...TEST_DATA } = {
-  FOREIGN_PID: Math.max(process.pid, process.ppid) + NUMBER_1,
+  FOREIGN_PID: Math.max(process.pid, process.ppid) + 1,
   KILL_FAILED: new Error("kill failed"),
   KILL_THROW_PID: Math.max(process.pid, process.ppid) + 2,
   LOOKUP_FAILED: new Error("lookup failed"),
   NO_PID: "no-pid",
-  PORT_KILL_THREW: castAsType<Port>(VALID_PORT + NUMBER_1),
+  PORT_KILL_THREW: castAsType<Port>(VALID_PORT + 1),
   PORT_LOOKUP_THREW: castAsType<Port>(VALID_PORT + 4),
   PORT_NAN_PID: castAsType<Port>(VALID_PORT + 2),
   PORT_NEGATIVE_PID: castAsType<Port>(VALID_PORT + 3),
@@ -91,7 +85,7 @@ const { lookupPort, ...TEST_DATA } = {
           [this.PORT_OK, this.FOREIGN_PID],
           [this.PORT_KILL_THREW, this.KILL_THROW_PID],
           [this.PORT_NAN_PID, NAN_VALUE],
-          [this.PORT_NEGATIVE_PID, -NUMBER_1],
+          [this.PORT_NEGATIVE_PID, -1],
           [this.PORT_SELF_PID, process.pid],
           [this.PORT_SELF_PPID, process.ppid],
         ]).get(port) ?? NAN_VALUE
@@ -133,10 +127,15 @@ describe("KillHelper", () => {
         TEST_DATA.SIGTERM,
       );
 
-      expect(killSpy).toHaveBeenCalledWith(
+      const killCalls = killSpy.mock.calls.filter(
+        ([pid]) => pid === TEST_DATA.FOREIGN_PID,
+      );
+
+      expect(killCalls).toHaveLength(1);
+      expect(killCalls[0]).toStrictEqual([
         TEST_DATA.FOREIGN_PID,
         TEST_DATA.SIGTERM,
-      );
+      ]);
       expect(result).toStrictEqual({ ok: BOOLEAN_TRUE });
     });
 

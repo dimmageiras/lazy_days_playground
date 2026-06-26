@@ -7,7 +7,7 @@ import { HEADERS } from "@server/constants/headers.constant";
 import { HOSTS } from "@server/constants/hosts.constant";
 import type { ShutdownRouteOptions } from "@server/modules/shutdown/types/shutdown.type";
 
-import { HTTP_STATUS } from "@shared/constants/http.constant";
+import { HTTP_METHODS, HTTP_STATUS } from "@shared/constants/http.constant";
 import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { shutdownRoute } from "./shutdown.route";
@@ -30,6 +30,9 @@ const { castAsType } = TypeHelper;
 const { SHUTDOWN } = API_INTERNAL_ENDPOINTS;
 const { SHUTDOWN_TOKEN } = HEADERS;
 const { LOOPBACK_HOST_V4 } = HOSTS;
+const {
+  UNSAFE: { POST },
+} = HTTP_METHODS;
 const { ACCEPTED, UNAUTHORIZED } = HTTP_STATUS;
 
 const TEST_DATA = {
@@ -71,7 +74,7 @@ const TEST_DATA = {
 } as const;
 
 describe("shutdownRoute", () => {
-  describe(`POST ${TEST_DATA.SHUTDOWN_PATH}`, (it) => {
+  describe(`${POST} ${TEST_DATA.SHUTDOWN_PATH}`, (it) => {
     TEST_DATA.RESPONSE_CASES.forEach(
       ({
         expectedAccepted,
@@ -92,7 +95,7 @@ describe("shutdownRoute", () => {
 
           const response = await app.inject({
             headers,
-            method: "POST",
+            method: POST,
             remoteAddress,
             url: TEST_DATA.SHUTDOWN_PATH,
           });
@@ -102,7 +105,12 @@ describe("shutdownRoute", () => {
             accepted: expectedAccepted,
             timestamp: expect.any(String),
           });
-          expect(handle.close).toHaveBeenCalledTimes(expectsClose ? 1 : 0);
+
+          if (expectsClose) {
+            expect(handle.close).toHaveBeenCalledTimes(1);
+          } else {
+            expect(handle.close).not.toHaveBeenCalled();
+          }
         });
       },
     );

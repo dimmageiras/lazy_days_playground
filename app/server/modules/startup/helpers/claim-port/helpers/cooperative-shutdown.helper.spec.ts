@@ -108,13 +108,18 @@ describe("CooperativeShutdownHelper", () => {
         createMockInstance({ appEnv: { port: castAsType<Port>(VALID_PORT) } }),
       );
 
-      expect(mockAxiosPost).toHaveBeenCalledWith(
+      const shutdownCalls = mockAxiosPost.mock.calls.filter(
+        ([url]) => url === TEST_DATA.URL,
+      );
+
+      expect(shutdownCalls).toHaveLength(1);
+      expect(shutdownCalls[0]).toStrictEqual([
         TEST_DATA.URL,
         EMPTY_OBJECT,
         expect.objectContaining({
           headers: { [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken },
         }),
-      );
+      ]);
       expect(result).toBe(BOOLEAN_TRUE);
     });
   });
