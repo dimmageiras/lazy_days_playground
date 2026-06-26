@@ -3,7 +3,7 @@ import { ZOD } from "@server/constants/zod.constant";
 import { appEnvSchema } from "@shared/schemas/app-env.schema";
 import type { ViteAppEnv } from "@shared/types/app-env.type";
 
-import { ZodServerHelper } from "./zod-server.helper";
+import { ZodServerHelper } from "../zod-server.helper";
 
 const { ENV_VALIDATION_ERROR_NAME } = ZOD;
 

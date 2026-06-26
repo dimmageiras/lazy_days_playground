@@ -10,7 +10,7 @@ import { TIMING_IN_MS } from "@shared/constants/timing.constant";
 import { TypeHelper } from "@shared/helpers/type.helper";
 import type { ViteAppEnv } from "@shared/types/app-env.type";
 
-import { AppHelper } from "./app.helper";
+import { AppBuildHelper } from "./app-build.helper";
 
 const {
   mockApiHealthRoutes,
@@ -42,7 +42,7 @@ const {
   trackLeaksInSpec,
 } = VitestSetup();
 
-trackLeaksInSpec("app.helper");
+trackLeaksInSpec("app-build.helper");
 
 const { API_HEALTH } = BASE_URLS;
 const { SECONDS_TEN } = TIMING_IN_MS;
@@ -50,7 +50,7 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 const { normalizeError } = ErrorHelper;
 const { castAsType } = TypeHelper;
 
-const { build } = AppHelper;
+const { build } = AppBuildHelper;
 
 const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
   CLOSE_ERROR: new Error("Failed to close"),
@@ -128,7 +128,7 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
   },
 } as const;
 
-describe("AppHelper", () => {
+describe("AppBuildHelper", () => {
   describe("build", (it) => {
     const { afterAll, beforeAll } = it;
 
