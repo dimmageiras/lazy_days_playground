@@ -1,8 +1,9 @@
 import fastify from "fastify";
 
 import { BASE_URLS } from "@server/constants/base-urls.constant";
-import { LoggerModule } from "@server/modules/logger";
-import { ShutdownModule } from "@server/modules/shutdown";
+import type { BuildLoggerFunction } from "@server/modules/logger/types/logger.type";
+import type { SetupShutdownFunction } from "@server/modules/shutdown";
+import type { RedactPaths } from "@server/modules/shutdown/types/shutdown.type";
 import { apiHealthRoutes } from "@server/routes/api/health";
 import type { AppInstance } from "@server/types/instance.type";
 
@@ -17,13 +18,24 @@ const { SECONDS_TEN } = TIMING_IN_MS;
 
 const { buildAppEnv } = AppEnvHelper;
 const { normalizeError, toError } = ErrorHelper;
-const { buildLogger } = LoggerModule;
-const { redactPaths, setupShutdown } = ShutdownModule;
 
 const build = async (
   env: ViteAppEnv,
   hot: ImportMeta["hot"],
+  modules: {
+    logger: {
+      buildLogger: BuildLoggerFunction;
+    };
+    shutdown: {
+      redactPaths: RedactPaths;
+      setupShutdown: SetupShutdownFunction;
+    };
+  },
 ): Promise<AppInstance> => {
+  const {
+    logger: { buildLogger },
+    shutdown: { redactPaths, setupShutdown },
+  } = modules;
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
