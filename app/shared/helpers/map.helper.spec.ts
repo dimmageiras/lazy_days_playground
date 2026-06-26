@@ -19,7 +19,7 @@ const {
     UNDEFINED_VALUE,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("map.helper");
 

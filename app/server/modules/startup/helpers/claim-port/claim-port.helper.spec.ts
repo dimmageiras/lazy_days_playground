@@ -46,7 +46,7 @@ const {
   createMockInstance,
   sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("claim-port.helper");
 
@@ -207,15 +207,12 @@ describe("ClaimPortHelper", () => {
             timeout === COOPERATIVE_HANDOVER_TIMEOUT
               ? (scenarioOf(instance).tryListenUntil.cooperative ??
                   BOOLEAN_FALSE)
-              : (scenarioOf(instance).tryListenUntil.force ??
-                  BOOLEAN_FALSE),
+              : (scenarioOf(instance).tryListenUntil.force ?? BOOLEAN_FALSE),
           ),
       );
 
       mockKillPortOwner.mockImplementation((instance: AppInstance) =>
-        Promise.resolve(
-          scenarioOf(instance).killPortOwner ?? TEST_DATA.NO_PID,
-        ),
+        Promise.resolve(scenarioOf(instance).killPortOwner ?? TEST_DATA.NO_PID),
       );
     });
 
@@ -236,9 +233,9 @@ describe("ClaimPortHelper", () => {
 
     TEST_DATA.ABORT_CASES.forEach(({ name, rejectsWith, scenario }) => {
       it(name, async ({ expect }) => {
-        await expect(
-          claimPort(makeInstance(scenario)),
-        ).rejects.toThrow(rejectsWith);
+        await expect(claimPort(makeInstance(scenario))).rejects.toThrow(
+          rejectsWith,
+        );
       });
     });
 

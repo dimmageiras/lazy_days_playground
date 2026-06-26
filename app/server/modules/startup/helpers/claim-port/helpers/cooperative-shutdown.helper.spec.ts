@@ -27,7 +27,7 @@ const {
     VALID_PORT,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("cooperative-shutdown.helper");
 

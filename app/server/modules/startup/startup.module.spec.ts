@@ -5,7 +5,7 @@ import { VitestSetup } from "@configs/vitest/setup";
 import { ClaimPortHelper } from "./helpers/claim-port";
 import { StartupModule } from "./startup.module";
 
-const { trackLeaksInSpec }: ReturnType<typeof VitestSetup> = VitestSetup();
+const { trackLeaksInSpec } = VitestSetup();
 
 trackLeaksInSpec("startup.module");
 
@@ -21,6 +21,8 @@ describe("StartupModule", (it) => {
   });
 
   it("should expose only the claim-port entry point", ({ expect }) => {
-    expect(Object.keys(StartupModule)).toStrictEqual(TEST_DATA.ENTRY_POINT_KEYS);
+    expect(Object.keys(StartupModule)).toStrictEqual(
+      TEST_DATA.ENTRY_POINT_KEYS,
+    );
   });
 });

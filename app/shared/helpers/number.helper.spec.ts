@@ -20,7 +20,7 @@ const {
     toUnknown,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("number.helper");
 

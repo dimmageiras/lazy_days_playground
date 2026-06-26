@@ -27,7 +27,7 @@ const {
     toUnknown,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("object.helper");
 

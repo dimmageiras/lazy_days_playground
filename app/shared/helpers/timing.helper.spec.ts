@@ -9,7 +9,7 @@ import { TimingHelper } from "./timing.helper";
 const {
   sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("timing.helper");
 

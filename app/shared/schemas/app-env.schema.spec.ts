@@ -21,7 +21,7 @@ const {
     VALID_RAW_DEV_ENV,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("app-env.schema");
 

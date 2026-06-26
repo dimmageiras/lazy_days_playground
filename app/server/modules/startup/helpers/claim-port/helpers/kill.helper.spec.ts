@@ -15,7 +15,7 @@ const {
   sharedMock: { mockPortToPid },
   sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE, NAN_VALUE, VALID_PORT },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("kill.helper");
 

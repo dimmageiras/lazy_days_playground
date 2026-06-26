@@ -19,7 +19,7 @@ const {
     VALID_PORT,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("listen.helper");
 
@@ -84,18 +84,14 @@ describe("ListenHelper", () => {
   describe("tryListen", (it) => {
     TEST_DATA.TRY_LISTEN_CASES.forEach(({ expected, name, rejection }) => {
       it(name, async ({ expect }) => {
-        const instance = makeInstance(
-          makeListen(rejection),
-        );
+        const instance = makeInstance(makeListen(rejection));
 
         expect(await tryListen(instance)).toBe(expected);
       });
     });
 
     it("should rethrow an unexpected bind error", async ({ expect }) => {
-      const instance = makeInstance(
-        makeListen(TEST_DATA.UNEXPECTED_ERROR),
-      );
+      const instance = makeInstance(makeListen(TEST_DATA.UNEXPECTED_ERROR));
 
       await expect(tryListen(instance)).rejects.toBe(
         TEST_DATA.UNEXPECTED_ERROR,
@@ -107,9 +103,7 @@ describe("ListenHelper", () => {
     TEST_DATA.TRY_LISTEN_UNTIL_CASES.forEach(
       ({ expected, name, rejection, timeout }) => {
         it(name, async ({ expect }) => {
-          const instance = makeInstance(
-            makeListen(rejection),
-          );
+          const instance = makeInstance(makeListen(rejection));
 
           expect(await tryListenUntil(instance, timeout)).toBe(expected);
         });

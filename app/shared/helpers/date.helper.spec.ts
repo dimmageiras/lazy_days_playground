@@ -9,7 +9,7 @@ import { DateHelper } from "./date.helper";
 const {
   sharedTestData: { COMMON_DATE },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("date.helper");
 

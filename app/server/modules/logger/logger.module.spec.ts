@@ -15,7 +15,7 @@ const {
     VALID_DEV_APP_ENV,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("logger.module");
 

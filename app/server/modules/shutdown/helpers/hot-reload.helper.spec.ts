@@ -14,7 +14,7 @@ const {
   createMockInstance,
   sharedTestData: { UNDEFINED_VALUE },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("hot-reload.helper");
 

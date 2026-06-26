@@ -19,7 +19,7 @@ const {
     VALID_VITE_APP_ENV,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("env-var.helper");
 

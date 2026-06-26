@@ -7,7 +7,7 @@ import { AppEnvHelper } from "./app-env.helper";
 const {
   sharedTestData: { BOOLEAN_TRUE, VALID_DEV_APP_ENV, VALID_VITE_APP_ENV },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("app-env.helper");
 

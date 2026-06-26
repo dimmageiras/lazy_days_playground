@@ -22,7 +22,7 @@ const {
     STRING_B,
   },
   trackLeaksInSpec,
-}: ReturnType<typeof VitestSetup> = VitestSetup();
+} = VitestSetup();
 
 trackLeaksInSpec("set.helper");
 
