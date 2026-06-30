@@ -1,7 +1,7 @@
 # 0019. Mock-state leak detection in the pollution probe
 
-- **Status:** Proposed
-- **Date:** 2026-06-25
+- **Status:** Accepted
+- **Date:** 2026-06-30
 
 ## Context
 
