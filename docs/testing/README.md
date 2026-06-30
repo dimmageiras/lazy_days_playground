@@ -33,6 +33,17 @@ Implications you must internalise:
 - **Advancing the shared fake clock from a `.concurrent` test is forbidden.** Fake clocks are global to the worker; sibling tests in the same file share them. Installing a fixed clock with `vi.setSystemTime` and restoring real timers in cleanup (Pattern A) is permitted under concurrent execution — sibling tests converge on the same fixed instant. Calling `vi.useFakeTimers()` and then advancing the clock (Pattern B) breaks siblings' pending timers; hoist the clock to `beforeAll`/`afterAll` or use a deterministic-clock pattern that does not advance the shared fake timer.
 - **No reliance on test order.** Inside a file, between files, or between runs.
 
+## Coverage
+
+Coverage runs over `app/**` through the V8 provider. The exclude list is convention-driven, not ad hoc — a path is excluded only when it carries no behaviour a test could meaningfully cover:
+
+- `**/index.ts` — re-export barrels. A barrel only forwards symbols and holds no logic of its own, so coverage over it would measure nothing but whether something downstream imported through it. Should a barrel ever grow executable logic, that file — or this convention — needs revisiting.
+- `**/*.type.ts`, `**/*.d.ts`, `**/*.constant.ts` — type-only, declaration, and frozen-data modules, with no runtime branches to exercise.
+- `**/*.wrapper.ts` — library wrapper seams: thin pass-throughs to a third-party library ([ADR-0007](../adr/0007-library-wrapper-seam.md)); the wrapped library owns the behaviour.
+- `**/*.spec.{ts,tsx}` — the specs themselves.
+
+Beyond the file-type globs above, the exclude list may also name an individual file that carries no logic of its own — for instance a bare process entrypoint that only wires the modules together and hands off to the composition layer, leaving the startup logic and the composition root it assembles in helpers that are covered ([ADR-0020](../adr/0020-composition-root-is-a-helper.md)). Such a file is excluded by name and noted here so a future reader does not mistake it for an oversight and remove it.
+
 ## Spec conventions
 
 ### Suite shape

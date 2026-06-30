@@ -83,7 +83,7 @@ const SHARED_TEST_DATA = deepFreeze({
   EMPTY_OBJECT: {},
   EMPTY_STRING: "",
   MAX_PORT: 65535,
-  MIN_PORT: 1,
+  MIN_PORT: NUMBER_1,
   NAN_VALUE: Number.NaN,
   NULL_VALUE: null,
   NUMBER_1,

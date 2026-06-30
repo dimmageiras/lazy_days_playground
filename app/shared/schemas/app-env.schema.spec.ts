@@ -20,14 +20,17 @@ const {
   sharedTestData: {
     BOOLEAN_FALSE,
     BOOLEAN_TRUE,
+    COMMON_LOG_LEVEL,
     COMMON_STRING,
     EMPTY_STRING,
     MAX_PORT,
     MIN_PORT,
     NAN_VALUE,
+    NUMBER_1,
     STRING_TRUE,
     UNDEFINED_VALUE,
     VALID_BASE64_TOKEN,
+    VALID_PORT,
     VALID_RAW_DEV_ENV,
     VALID_VITE_APP_ENV,
   },
@@ -38,7 +41,10 @@ trackLeaksInSpec("app-env.schema");
 
 const TEST_DATA = {
   ALPHABETIC_PORT: COMMON_STRING,
+  DECIMAL_PORT: `${VALID_PORT}.0`,
+  IPV6_ADDRESS: "::1",
   IS_REQUIRED_MESSAGE: "Is required",
+  LOOSE_TRUTHY_FLAG: `${NUMBER_1}`,
   MUST_BE_STRING_MESSAGE: "Must be a string",
   PORT_FORMAT_MESSAGE: "Must be a string of digits",
   PORT_BOUNDARY_CASES: [
@@ -53,12 +59,14 @@ const TEST_DATA = {
       port: `${MAX_PORT}`,
     },
   ],
+  UNKNOWN_KEY: "VITE_APP_EXTRA",
   VITE_APP_BIND_ALL_IPV4: "VITE_APP_BIND_ALL_IPV4",
   VITE_APP_IS_DEVELOPMENT: "VITE_APP_IS_DEVELOPMENT",
   VITE_APP_LOG_LEVEL: "VITE_APP_LOG_LEVEL",
   VITE_APP_PORT: "VITE_APP_PORT",
   VITE_APP_SERVICE_NAME: "VITE_APP_SERVICE_NAME",
   VITE_APP_SHUTDOWN_TOKEN: "VITE_APP_SHUTDOWN_TOKEN",
+  WRONG_CASE_LOG_LEVEL: "INFO",
   get REJECTED_TYPE_CASES() {
     return [
       {
@@ -89,10 +97,23 @@ const TEST_DATA = {
         name: "should reject a bind address that is not IPv4",
       },
       {
+        expectedCode: ISSUE_CODES.CUSTOM,
+        expectedMessage: "Must be a valid IPv4 address",
+        input: this.IPV6_ADDRESS,
+        key: this.VITE_APP_BIND_ALL_IPV4,
+        name: "should reject an IPv6 bind address",
+      },
+      {
         expectedMessage: "Must be 'true' or 'false'",
         input: COMMON_STRING,
         key: this.VITE_APP_IS_DEVELOPMENT,
         name: "should reject an unrecognised development flag",
+      },
+      {
+        expectedMessage: "Must be 'true' or 'false'",
+        input: this.LOOSE_TRUTHY_FLAG,
+        key: this.VITE_APP_IS_DEVELOPMENT,
+        name: "should reject a loose-truthy development flag",
       },
       {
         expectedMessage: "Must be a known log level",
@@ -101,10 +122,22 @@ const TEST_DATA = {
         name: "should reject an unknown log level",
       },
       {
+        expectedMessage: "Must be a known log level",
+        input: this.WRONG_CASE_LOG_LEVEL,
+        key: this.VITE_APP_LOG_LEVEL,
+        name: "should reject a wrong-case log level",
+      },
+      {
         expectedMessage: "Must be a string of digits",
         input: COMMON_STRING,
         key: this.VITE_APP_PORT,
         name: "should reject a non-numeric port",
+      },
+      {
+        expectedMessage: this.PORT_FORMAT_MESSAGE,
+        input: this.DECIMAL_PORT,
+        key: this.VITE_APP_PORT,
+        name: "should reject a decimal port",
       },
       {
         expectedCode: ISSUE_CODES.TOO_SMALL,
@@ -245,6 +278,48 @@ describe("appEnvSchema", () => {
         }
       });
     });
+
+    it("should default the development flag to false when omitted", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        ...VALID_RAW_DEV_ENV,
+        VITE_APP_IS_DEVELOPMENT: UNDEFINED_VALUE,
+      });
+
+      expect(result.success).toBe(BOOLEAN_TRUE);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_IS_DEVELOPMENT).toBe(BOOLEAN_FALSE);
+      }
+    });
+
+    it("should default the log level to info when omitted", ({ expect }) => {
+      const result = appEnvSchema.safeParse({
+        ...VALID_RAW_DEV_ENV,
+        VITE_APP_LOG_LEVEL: UNDEFINED_VALUE,
+      });
+
+      expect(result.success).toBe(BOOLEAN_TRUE);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_LOG_LEVEL).toBe(COMMON_LOG_LEVEL);
+      }
+    });
+
+    it("should strip unknown keys from the parsed output", ({ expect }) => {
+      const result = appEnvSchema.safeParse({
+        ...VALID_RAW_DEV_ENV,
+        [TEST_DATA.UNKNOWN_KEY]: COMMON_STRING,
+      });
+
+      expect(result.success).toBe(BOOLEAN_TRUE);
+
+      if (result.success) {
+        expect(result.data).toStrictEqual(VALID_VITE_APP_ENV);
+        expect(TEST_DATA.UNKNOWN_KEY in result.data).toBe(BOOLEAN_FALSE);
+      }
+    });
   });
 
   describe("rejections", (it) => {
@@ -323,6 +398,26 @@ describe("appEnvSchema", () => {
         expect(portIssues).toHaveLength(1);
         expect(portIssues[0]?.code).toBe(ISSUE_CODES.INVALID_FORMAT);
         expect(portIssues[0]?.message).toBe(TEST_DATA.PORT_FORMAT_MESSAGE);
+      }
+    });
+
+    it("should aggregate one issue per failing field rather than short-circuit", ({
+      expect,
+    }) => {
+      const result = appEnvSchema.safeParse({
+        ...VALID_RAW_DEV_ENV,
+        [TEST_DATA.VITE_APP_PORT]: TEST_DATA.ALPHABETIC_PORT,
+        [TEST_DATA.VITE_APP_SERVICE_NAME]: EMPTY_STRING,
+      });
+
+      expect(result.success).toBe(BOOLEAN_FALSE);
+
+      if (!result.success) {
+        const paths = result.error.issues.map((issue) => issue.path[0]);
+
+        expect(result.error.issues).toHaveLength(2);
+        expect(paths).toContain(TEST_DATA.VITE_APP_PORT);
+        expect(paths).toContain(TEST_DATA.VITE_APP_SERVICE_NAME);
       }
     });
   });
