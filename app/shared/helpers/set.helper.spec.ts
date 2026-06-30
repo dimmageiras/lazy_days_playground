@@ -30,7 +30,13 @@ const { castAsType } = TypeHelper;
 
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
-const { makeImmutableSet, makeSet, ...TEST_DATA } = {
+const {
+  makeImmutableSet,
+  makeMultiSet,
+  makeNumberSet,
+  makeSet,
+  ...TEST_DATA
+} = {
   ADD_CASES: [
     {
       expectedSize: 2,
@@ -125,7 +131,7 @@ describe("SetHelper", () => {
     it("should add the new value and leave existing members intact", ({
       expect,
     }) => {
-      const set = TEST_DATA.makeMultiSet();
+      const set = makeMultiSet();
 
       addValuesInPlace(set, [COMMON_STRING]);
 
@@ -157,7 +163,7 @@ describe("SetHelper", () => {
     });
 
     it("should resolve membership for a number-element Set", ({ expect }) => {
-      const numberSet = TEST_DATA.makeNumberSet();
+      const numberSet = makeNumberSet();
 
       expect(hasSetValue(numberSet, NUMBER_1)).toBe(BOOLEAN_TRUE);
     });
@@ -201,7 +207,7 @@ describe("SetHelper", () => {
     it("should remove only the targeted values and leave the rest", ({
       expect,
     }) => {
-      const set = TEST_DATA.makeMultiSet();
+      const set = makeMultiSet();
 
       stripValuesInPlace(set, [STRING_A]);
 

@@ -27,7 +27,13 @@ const { castAsType } = TypeHelper;
 
 const { getMapValue } = MapHelper;
 
-const { makeImmutableMap, makeMap, ...TEST_DATA } = {
+const {
+  makeImmutableMap,
+  makeMap,
+  makeMapWithUndefined,
+  makeNumberMap,
+  ...TEST_DATA
+} = {
   GET_CASES: [
     {
       expected: NUMBER_1,
@@ -131,7 +137,7 @@ describe("MapHelper", () => {
     it("should return a stored undefined value, not the fallback, for a present key", ({
       expect,
     }) => {
-      const map = TEST_DATA.makeMapWithUndefined();
+      const map = makeMapWithUndefined();
       const { FALLBACK } = TEST_DATA.TYPE_TEST;
 
       expect(getMapValue(map, COMMON_STRING, FALLBACK)).toBeUndefined();
@@ -157,7 +163,7 @@ describe("MapHelper", () => {
     it("should support number-keyed maps and an arbitrary number key", ({
       expect,
     }) => {
-      const map = TEST_DATA.makeNumberMap();
+      const map = makeNumberMap();
       const arbitraryKey: number = NUMBER_1;
 
       expect(getMapValue(map, NUMBER_1)).toBe(NUMBER_1);

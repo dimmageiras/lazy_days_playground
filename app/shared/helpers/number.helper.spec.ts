@@ -50,7 +50,7 @@ const TEST_DATA = {
 
 describe("NumberHelper", () => {
   describe("isInteger", (it) => {
-    it("should return true for a finite number", ({ expect }) => {
+    it("should return true for an integer", ({ expect }) => {
       const result = isInteger(COMMON_NUMBER);
 
       expect(result).toBe(BOOLEAN_TRUE);

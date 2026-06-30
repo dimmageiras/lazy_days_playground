@@ -4,19 +4,16 @@ import { describe, vi } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { TIMING_IN_MS } from "@server/modules/startup/constants/timing.constant";
-import type { AppInstance } from "@server/types/instance.type";
-
-import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { ListenHelper } from "./listen.helper";
 
 const {
+  createMockInstance,
   sharedTestData: {
     BOOLEAN_FALSE,
     BOOLEAN_TRUE,
     COMMON_BIND_ALL_IPV4,
     UNDEFINED_VALUE,
-    VALID_PORT,
   },
   trackLeaksInSpec,
 } = VitestSetup();
@@ -25,11 +22,9 @@ trackLeaksInSpec("listen.helper");
 
 const { LISTEN_POLL_INITIAL_INTERVAL } = TIMING_IN_MS;
 
-const { castAsType } = TypeHelper;
-
 const { tryListen, tryListenUntil } = ListenHelper;
 
-const { makeInstance, makeListen, ...TEST_DATA } = {
+const { makeListen, ...TEST_DATA } = {
   EADDRINUSE_ERROR: Object.assign(new Error("address already in use"), {
     code: "EADDRINUSE",
   }),
@@ -64,14 +59,6 @@ const { makeInstance, makeListen, ...TEST_DATA } = {
       },
     ];
   },
-  get makeInstance() {
-    return (listen: Mock): AppInstance =>
-      castAsType<AppInstance>({
-        appEnv: { bindAllIpv4: COMMON_BIND_ALL_IPV4, port: VALID_PORT },
-        listen,
-        log: { error: () => UNDEFINED_VALUE },
-      });
-  },
   get makeListen() {
     return (rejection: unknown): Mock =>
       rejection === UNDEFINED_VALUE
@@ -84,14 +71,16 @@ describe("ListenHelper", () => {
   describe("tryListen", (it) => {
     TEST_DATA.TRY_LISTEN_CASES.forEach(({ expected, name, rejection }) => {
       it(name, async ({ expect }) => {
-        const instance = makeInstance(makeListen(rejection));
+        const instance = createMockInstance({ listen: makeListen(rejection) });
 
         expect(await tryListen(instance)).toBe(expected);
       });
     });
 
     it("should rethrow an unexpected bind error", async ({ expect }) => {
-      const instance = makeInstance(makeListen(TEST_DATA.UNEXPECTED_ERROR));
+      const instance = createMockInstance({
+        listen: makeListen(TEST_DATA.UNEXPECTED_ERROR),
+      });
 
       await expect(tryListen(instance)).rejects.toBe(
         TEST_DATA.UNEXPECTED_ERROR,
@@ -103,7 +92,9 @@ describe("ListenHelper", () => {
     TEST_DATA.TRY_LISTEN_UNTIL_CASES.forEach(
       ({ expected, name, rejection, timeout }) => {
         it(name, async ({ expect }) => {
-          const instance = makeInstance(makeListen(rejection));
+          const instance = createMockInstance({
+            listen: makeListen(rejection),
+          });
 
           expect(await tryListenUntil(instance, timeout)).toBe(expected);
         });

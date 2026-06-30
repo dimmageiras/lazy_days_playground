@@ -10,10 +10,21 @@ import type { Port } from "@shared/types/app-env.type";
 
 import { KillHelper } from "./kill.helper";
 
+const { mockPortToPid } = vi.hoisted(() => ({
+  mockPortToPid: vi.fn(),
+}));
+
+vi.mock("pid-port", () => ({ portToPid: mockPortToPid }));
+
 const {
   createMockInstance,
-  sharedMock: { mockPortToPid },
-  sharedTestData: { BOOLEAN_FALSE, BOOLEAN_TRUE, NAN_VALUE, VALID_PORT },
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    EMPTY_ARRAY,
+    NAN_VALUE,
+    VALID_PORT,
+  },
   trackLeaksInSpec,
 } = VitestSetup();
 
@@ -147,6 +158,11 @@ describe("KillHelper", () => {
         TEST_DATA.SIGTERM,
       );
 
+      const selfKillCalls = killSpy.mock.calls.filter(
+        ([pid]) => pid === process.pid,
+      );
+
+      expect(selfKillCalls).toStrictEqual(EMPTY_ARRAY);
       expect(result).toStrictEqual({
         ok: BOOLEAN_FALSE,
         reason: TEST_DATA.SELF_PID,

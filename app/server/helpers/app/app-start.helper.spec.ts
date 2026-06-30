@@ -10,25 +10,25 @@ import type { AppInstance } from "@server/types/instance.type";
 import { TypeHelper } from "@shared/helpers/type.helper";
 
 import { AppStartHelper } from "./app-start.helper";
+import type * as EnvVarHelperModule from "./env-var.helper";
 
-const { mockBuild, mockIsEnvValidationError, mockValidateEnv } = vi.hoisted(
-  () => ({
-    mockBuild: vi.fn(),
-    mockIsEnvValidationError: vi.fn(),
-    mockValidateEnv: vi.fn(),
-  }),
-);
+const { mockBuild, mockValidateEnv } = vi.hoisted(() => ({
+  mockBuild: vi.fn(),
+  mockValidateEnv: vi.fn(),
+}));
 
 vi.mock("./app-build.helper", () => ({
   AppBuildHelper: { build: mockBuild },
 }));
 
-vi.mock("./env-var.helper", () => ({
-  EnvVarHelper: {
-    isEnvValidationError: mockIsEnvValidationError,
-    validateEnv: mockValidateEnv,
-  },
-}));
+vi.mock("./env-var.helper", async (importOriginal) => {
+  const actual = await importOriginal<typeof EnvVarHelperModule>();
+
+  return {
+    ...actual,
+    EnvVarHelper: { ...actual.EnvVarHelper, validateEnv: mockValidateEnv },
+  };
+});
 
 const {
   createMockInstance,
@@ -47,102 +47,108 @@ const { start } = AppStartHelper;
 
 let mockProcessExit: MockInstance<typeof process.exit>;
 
-const { instanceOf, makeEnv, makeInstance, makeModules, scenarioOf, ...TEST_DATA } =
-  {
-    BUILD_ERROR: new Error("Failed to build"),
-    CLAIM_ERROR: new Error("Port still in use"),
-    CLOSE_ERROR: new Error("Failed to close"),
-    CLOSE_FAILURE_MESSAGE:
-      "💥 Failed to close the server after a startup failure",
-    ENV_UNEXPECTED_ERROR: new Error("Unexpected boom"),
-    EXIT_ERROR: new Error("process.exit"),
-    HOT: castAsType<ImportMeta["hot"]>({}),
-    INSTANCE_KEY: "__appStartInstance",
-    REDACT_PATHS: ["password", "token"],
-    SCENARIO_KEY: "__appStartScenario",
-    START_FAILURE_MESSAGE: "💥 Failed to start the server",
-    UNEXPECTED_FAILURE_MESSAGE:
-      "💥 Unexpected error while validating the environment",
-    VALIDATION_FAILURE_MESSAGE: "💥 Failed to validate the environment",
-    get ENV_VALIDATION_ERROR() {
-      const error = new Error("Invalid environment");
+const {
+  instanceOf,
+  makeEnv,
+  makeInstance,
+  makeModules,
+  scenarioOf,
+  ...TEST_DATA
+} = {
+  BUILD_ERROR: new Error("Failed to build"),
+  CLAIM_ERROR: new Error("Port still in use"),
+  CLOSE_ERROR: new Error("Failed to close"),
+  CLOSE_FAILURE_MESSAGE:
+    "💥 Failed to close the server after a startup failure",
+  ENV_UNEXPECTED_ERROR: new Error("Unexpected boom"),
+  EXIT_ERROR: new Error("process.exit"),
+  HOT: castAsType<ImportMeta["hot"]>({}),
+  INSTANCE_KEY: "__appStartInstance",
+  REDACT_PATHS: ["password", "token"],
+  SCENARIO_KEY: "__appStartScenario",
+  START_FAILURE_MESSAGE: "💥 Failed to start the server",
+  UNEXPECTED_FAILURE_MESSAGE:
+    "💥 Unexpected error while validating the environment",
+  VALIDATION_FAILURE_MESSAGE: "💥 Failed to validate the environment",
+  get ENV_VALIDATION_ERROR() {
+    const error = new Error("Invalid environment");
 
-      error.name = ENV_VALIDATION_ERROR_NAME;
+    error.name = ENV_VALIDATION_ERROR_NAME;
 
-      return error;
-    },
-    get instanceOf() {
-      return (carrier: ImportMetaEnv): AppInstance =>
-        castAsType<AppInstance>(Reflect.get(carrier, this.INSTANCE_KEY));
-    },
-    get makeEnv() {
-      return (scenario: {
-        buildError?: Error;
-        closeError?: Error;
-        envError?: Error;
-      }): ImportMetaEnv => {
-        const env = castAsType<ImportMetaEnv>({});
+    return error;
+  },
+  get instanceOf() {
+    return (carrier: ImportMetaEnv): AppInstance =>
+      castAsType<AppInstance>(Reflect.get(carrier, this.INSTANCE_KEY));
+  },
+  get makeEnv() {
+    return (scenario: {
+      buildError?: Error;
+      closeError?: Error;
+      envError?: Error;
+    }): ImportMetaEnv => {
+      const env = castAsType<ImportMetaEnv>({});
 
-        Reflect.set(env, this.SCENARIO_KEY, scenario);
+      Reflect.set(env, this.SCENARIO_KEY, scenario);
 
-        return env;
+      return env;
+    };
+  },
+  get makeInstance() {
+    return (scenario: { closeError?: Error }): AppInstance => {
+      const instance = createMockInstance();
+
+      Reflect.set(
+        instance,
+        "close",
+        vi.fn(() =>
+          scenario.closeError
+            ? Promise.reject(scenario.closeError)
+            : Promise.resolve(),
+        ),
+      );
+
+      Reflect.set(
+        instance.log,
+        "flush",
+        vi.fn((callback: () => void) => {
+          callback();
+        }),
+      );
+
+      return instance;
+    };
+  },
+  get makeModules() {
+    return () => {
+      const fallbackFatal = vi.fn();
+      const buildFallbackLogger = vi.fn(() => ({ fatal: fallbackFatal }));
+      const buildLogger = vi.fn();
+      const claimPort = vi.fn();
+      const setupShutdown = vi.fn();
+
+      return {
+        buildLogger,
+        claimPort,
+        fallbackFatal,
+        modules: castAsType<Parameters<typeof start>[2]>({
+          logger: { buildFallbackLogger, buildLogger },
+          shutdown: { redactPaths: this.REDACT_PATHS, setupShutdown },
+          startup: { claimPort },
+        }),
+        setupShutdown,
       };
-    },
-    get makeInstance() {
-      return (scenario: { closeError?: Error }): AppInstance => {
-        const instance = createMockInstance();
-
-        Reflect.set(
-          instance,
-          "close",
-          vi.fn(() =>
-            scenario.closeError
-              ? Promise.reject(scenario.closeError)
-              : Promise.resolve(),
-          ),
-        );
-
-        Reflect.set(
-          instance.log,
-          "flush",
-          vi.fn((callback: () => void) => {
-            callback();
-          }),
-        );
-
-        return instance;
-      };
-    },
-    get makeModules() {
-      return () => {
-        const fallbackFatal = vi.fn();
-        const buildFallbackLogger = vi.fn(() => ({ fatal: fallbackFatal }));
-        const buildLogger = vi.fn();
-        const claimPort = vi.fn();
-        const setupShutdown = vi.fn();
-
-        return {
-          buildLogger,
-          claimPort,
-          fallbackFatal,
-          modules: castAsType<Parameters<typeof start>[2]>({
-            logger: { buildFallbackLogger, buildLogger },
-            shutdown: { redactPaths: this.REDACT_PATHS, setupShutdown },
-            startup: { claimPort },
-          }),
-          setupShutdown,
-        };
-      };
-    },
-    get scenarioOf() {
-      return (
-        carrier: ImportMetaEnv,
-      ): { buildError?: Error; closeError?: Error; envError?: Error } =>
-        castAsType<{ buildError?: Error; closeError?: Error; envError?: Error }>(
-          Reflect.get(carrier, this.SCENARIO_KEY),
-        );
-    },
-  } as const;
+    };
+  },
+  get scenarioOf() {
+    return (
+      carrier: ImportMetaEnv,
+    ): { buildError?: Error; closeError?: Error; envError?: Error } =>
+      castAsType<{ buildError?: Error; closeError?: Error; envError?: Error }>(
+        Reflect.get(carrier, this.SCENARIO_KEY),
+      );
+  },
+} as const;
 
 describe("AppStartHelper", () => {
   describe("start", (it) => {
@@ -161,10 +167,6 @@ describe("AppStartHelper", () => {
 
         return env;
       });
-      mockIsEnvValidationError.mockImplementation(
-        (error: unknown) =>
-          error instanceof Error && error.name === ENV_VALIDATION_ERROR_NAME,
-      );
       mockBuild.mockImplementation((env: ImportMetaEnv) => {
         const scenario = scenarioOf(env);
 
@@ -182,7 +184,6 @@ describe("AppStartHelper", () => {
 
     afterAll(() => {
       mockBuild.mockReset();
-      mockIsEnvValidationError.mockReset();
       mockValidateEnv.mockReset();
       mockProcessExit.mockRestore();
     });

@@ -20,13 +20,11 @@ const {
   mockBuildShutdownHandler,
   mockBuildShutdownOptions,
   mockCloseWithGrace,
-  mockUninstall,
 } = vi.hoisted(() => ({
   mockAcceptHotReload: vi.fn(),
   mockBuildShutdownHandler: vi.fn(),
   mockBuildShutdownOptions: vi.fn(),
   mockCloseWithGrace: vi.fn(),
-  mockUninstall: vi.fn(),
 }));
 
 vi.mock("close-with-grace", () => ({ default: mockCloseWithGrace }));
@@ -57,12 +55,7 @@ const { castAsType } = TypeHelper;
 const { redactPaths, setupShutdown } = ShutdownModule;
 
 const TEST_DATA = {
-  HANDLE: castAsType<ShutdownRouteOptions["handle"]>({
-    uninstall: mockUninstall,
-  }),
   ON_CLOSE: "onClose",
-  SHUTDOWN_HANDLER: castAsType<ShutdownHandler>(() => Promise.resolve()),
-  SHUTDOWN_OPTIONS: castAsType<ShutdownOptions>({}),
 } as const;
 
 describe("ShutdownModule", () => {
@@ -73,21 +66,13 @@ describe("ShutdownModule", () => {
   });
 
   describe("setupShutdown", (it) => {
-    const { beforeAll, afterAll } = it;
-
-    beforeAll(() => {
-      mockBuildShutdownOptions.mockReturnValue(TEST_DATA.SHUTDOWN_OPTIONS);
-      mockBuildShutdownHandler.mockReturnValue(TEST_DATA.SHUTDOWN_HANDLER);
-      mockCloseWithGrace.mockReturnValue(TEST_DATA.HANDLE);
-      mockAcceptHotReload.mockResolvedValue(UNDEFINED_VALUE);
-    });
+    const { afterAll } = it;
 
     afterAll(() => {
       mockAcceptHotReload.mockReset();
       mockBuildShutdownHandler.mockReset();
       mockBuildShutdownOptions.mockReset();
       mockCloseWithGrace.mockReset();
-      mockUninstall.mockReset();
     });
 
     it("should install close-with-grace, register an onClose hook that uninstalls the handle, accept hot reload, and register the routes", async ({
@@ -95,32 +80,49 @@ describe("ShutdownModule", () => {
     }) => {
       const addHook = vi.fn();
       const register = vi.fn().mockResolvedValue(UNDEFINED_VALUE);
+      const uninstall = vi.fn();
+      const handle = castAsType<ShutdownRouteOptions["handle"]>({ uninstall });
+      const options = castAsType<ShutdownOptions>({});
+      const handler = castAsType<ShutdownHandler>(() => Promise.resolve());
       const instance = createMockInstance();
 
       Reflect.set(instance, "addHook", addHook);
       Reflect.set(instance, "register", register);
 
+      mockBuildShutdownOptions.mockReturnValue(options);
+      mockBuildShutdownHandler.mockReturnValue(handler);
+      mockCloseWithGrace.mockReturnValue(handle);
+      mockAcceptHotReload.mockResolvedValue(UNDEFINED_VALUE);
+
       await setupShutdown(instance, UNDEFINED_VALUE);
 
-      expect(mockBuildShutdownOptions).toHaveBeenNthCalledWith(1, instance.log);
-      expect(mockBuildShutdownHandler).toHaveBeenNthCalledWith(1, instance);
-      expect(mockCloseWithGrace).toHaveBeenNthCalledWith(
-        1,
-        TEST_DATA.SHUTDOWN_OPTIONS,
-        TEST_DATA.SHUTDOWN_HANDLER,
-      );
+      expect(
+        mockBuildShutdownOptions.mock.calls.filter(
+          ([calledWith]) => calledWith === instance.log,
+        ),
+      ).toStrictEqual([[instance.log]]);
+      expect(
+        mockBuildShutdownHandler.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance]]);
+      expect(
+        mockCloseWithGrace.mock.calls.filter(
+          ([calledWith]) => calledWith === options,
+        ),
+      ).toStrictEqual([[options, handler]]);
       expect(addHook).toHaveBeenNthCalledWith(
         1,
         TEST_DATA.ON_CLOSE,
         expect.any(Function),
       );
-      expect(mockAcceptHotReload).toHaveBeenNthCalledWith(
-        1,
-        instance,
-        UNDEFINED_VALUE,
-      );
+      expect(
+        mockAcceptHotReload.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance, UNDEFINED_VALUE]]);
       expect(register).toHaveBeenNthCalledWith(1, routes, {
-        handle: TEST_DATA.HANDLE,
+        handle,
         prefix: API_INTERNAL,
       });
 
@@ -130,7 +132,7 @@ describe("ShutdownModule", () => {
 
       await onCloseHook();
 
-      expect(mockUninstall).toHaveBeenNthCalledWith(1);
+      expect(uninstall).toHaveBeenCalledTimes(1);
     });
   });
 });

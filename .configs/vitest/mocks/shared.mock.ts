@@ -1,28 +1,21 @@
-import type { Mock, Procedure } from "@vitest/spy";
+import type * as Axios from "axios";
 import { vi } from "vitest";
 
-const { mockAxiosPost, mockPortToPid } = vi.hoisted(() => ({
+const { mockAxiosPost } = vi.hoisted(() => ({
   mockAxiosPost: vi.fn(),
-  mockPortToPid: vi.fn(),
 }));
 
-vi.mock(
-  "axios",
-  (): ReturnType<Mock<Procedure>> => ({
-    default: { post: mockAxiosPost },
-  }),
-);
+vi.mock("axios", async (importOriginal) => {
+  const actual = await importOriginal<typeof Axios>();
 
-vi.mock(
-  "pid-port",
-  (): ReturnType<Mock<Procedure>> => ({
-    portToPid: mockPortToPid,
-  }),
-);
+  return {
+    ...actual,
+    default: Object.assign(actual.default, { post: mockAxiosPost }),
+  };
+});
 
 const SHARED_MOCK = Object.freeze({
   mockAxiosPost,
-  mockPortToPid,
 } as const);
 
 export { SHARED_MOCK };

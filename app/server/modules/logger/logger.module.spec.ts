@@ -53,7 +53,7 @@ describe("LoggerModule", () => {
       );
     });
 
-    it("should accept explicit redact paths", ({ expect }) => {
+    it("should build a logger when redact paths are supplied", ({ expect }) => {
       expect(
         buildLogger(TEST_DATA.PROD_APP_ENV, TEST_DATA.REDACT_PATHS).level,
       ).toBe(TEST_DATA.PROD_APP_ENV.logLevel);
