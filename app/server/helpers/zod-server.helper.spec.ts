@@ -22,7 +22,7 @@ const { castAsType } = TypeHelper;
 const { addCustomIssue, getFormattedZodIssueLines, getFormattedZodIssues } =
   ZodServerHelper;
 
-const { createdIssueContext, ...TEST_DATA } = {
+const { makeIssueContext, ...TEST_DATA } = {
   BAD_VALUE: "bad value",
   EMPTY: "empty",
   FIELD: "field",
@@ -175,9 +175,9 @@ const { createdIssueContext, ...TEST_DATA } = {
           }),
           castAsType<ZodIssue>({
             code: ISSUE_CODES.CUSTOM,
-            message: "empty",
+            message: this.EMPTY,
             params: { code: ISSUE_CODES.INVALID_VALUE },
-            path: ["service"],
+            path: [this.SERVICE],
           }),
         ],
         name: "should format every issue in the list",
@@ -210,7 +210,7 @@ const { createdIssueContext, ...TEST_DATA } = {
       },
     ];
   },
-  get createdIssueContext() {
+  get makeIssueContext() {
     return () => {
       const captured: Array<Parameters<CustomIssueContext["addIssue"]>[0]> = [
         ...EMPTY_ARRAY,
@@ -232,7 +232,7 @@ describe("ZodServerHelper", () => {
     TEST_DATA.ADD_CUSTOM_ISSUE_CASES.forEach(
       ({ code, expected, message, name }) => {
         it(name, ({ expect }) => {
-          const { captured, context } = createdIssueContext();
+          const { captured, context } = makeIssueContext();
 
           addCustomIssue(context, message, code);
 

@@ -45,7 +45,7 @@ const { castAsType } = TypeHelper;
 
 const { start } = AppStartHelper;
 
-let mockProcessExit: MockInstance<typeof process.exit>;
+let processExitSpy: MockInstance<typeof process.exit>;
 
 const {
   instanceOf,
@@ -155,7 +155,7 @@ describe("AppStartHelper", () => {
     const { afterAll, beforeAll } = it;
 
     beforeAll(() => {
-      mockProcessExit = vi.spyOn(process, "exit").mockImplementation(() => {
+      processExitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
         throw TEST_DATA.EXIT_ERROR;
       });
       mockValidateEnv.mockImplementation((env: ImportMetaEnv) => {
@@ -185,7 +185,7 @@ describe("AppStartHelper", () => {
     afterAll(() => {
       mockBuild.mockReset();
       mockValidateEnv.mockReset();
-      mockProcessExit.mockRestore();
+      processExitSpy.mockRestore();
     });
 
     it("should validate the env, build the app, claim the port, and not exit when startup succeeds", async ({

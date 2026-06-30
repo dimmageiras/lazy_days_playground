@@ -4,7 +4,7 @@ import { VitestSetup } from "@configs/vitest/setup";
 
 import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
 
-import { HTTP_STATUS } from "@shared/constants/http.constant";
+import { HTTP_METHODS, HTTP_STATUS } from "@shared/constants/http.constant";
 
 import { serverRoute } from "./server.route";
 
@@ -17,6 +17,7 @@ const {
 trackLeaksInSpec("server.route");
 
 const { SERVER } = API_HEALTH_ENDPOINTS;
+const { GET } = HTTP_METHODS.SAFE;
 const { OK } = HTTP_STATUS;
 
 const TEST_DATA = {
@@ -24,7 +25,7 @@ const TEST_DATA = {
 } as const;
 
 describe("serverRoute", () => {
-  describe(`GET ${TEST_DATA.SERVER_PATH}`, (it) => {
+  describe(`${GET} ${TEST_DATA.SERVER_PATH}`, (it) => {
     it("should report the service name and an ISO timestamp", async ({
       expect,
       onTestFinished,
@@ -35,7 +36,7 @@ describe("serverRoute", () => {
       await app.ready();
 
       const response = await app.inject({
-        method: "GET",
+        method: `${GET}`,
         url: TEST_DATA.SERVER_PATH,
       });
 

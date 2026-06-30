@@ -10,12 +10,14 @@ import { TypeHelper } from "./type.helper";
 
 const {
   sharedTestData: {
-    COMMON_NUMBER_PAIRS_ARRAY,
+    COMMON_NUMBER,
+    COMMON_NUMBER_DISTINCT_PAIRS_ARRAY,
     COMMON_STRING,
     COMMON_STRING_NUMBER_PAIRS_ARRAY,
     NUMBER_1,
     STRING_A,
     STRING_B,
+    STRING_C,
     UNDEFINED_VALUE,
   },
   trackLeaksInSpec,
@@ -41,12 +43,17 @@ const {
       name: "should return the value mapped to a present key",
     },
     {
+      expected: COMMON_NUMBER,
+      key: STRING_C,
+      name: "should return the value mapped to another present key",
+    },
+    {
       expected: undefined,
       key: STRING_B,
       name: "should return undefined for an absent key",
     },
   ],
-  MAP_ENTRIES: COMMON_STRING_NUMBER_PAIRS_ARRAY,
+  MAP_ENTRIES: [...COMMON_STRING_NUMBER_PAIRS_ARRAY, [STRING_C, COMMON_NUMBER]],
   TYPE_TEST: {
     FALLBACK: castAsType<string>("fallback"),
     KEY: castAsType<string>(STRING_A),
@@ -63,7 +70,7 @@ const {
       new Map<string, number | undefined>([[COMMON_STRING, UNDEFINED_VALUE]]);
   },
   get makeNumberMap() {
-    return () => new Map<number, number>(COMMON_NUMBER_PAIRS_ARRAY);
+    return () => new Map<number, number>(COMMON_NUMBER_DISTINCT_PAIRS_ARRAY);
   },
 } as const;
 
@@ -166,13 +173,13 @@ describe("MapHelper", () => {
       const map = makeNumberMap();
       const arbitraryKey: number = NUMBER_1;
 
-      expect(getMapValue(map, NUMBER_1)).toBe(NUMBER_1);
+      expect(getMapValue(map, NUMBER_1)).toBe(COMMON_NUMBER);
 
       expectTypeOf(getMapValue(map, NUMBER_1)).toEqualTypeOf<
         MapValue<typeof map>
       >();
 
-      expect(getMapValue(map, arbitraryKey)).toBe(NUMBER_1);
+      expect(getMapValue(map, arbitraryKey)).toBe(COMMON_NUMBER);
 
       expectTypeOf(getMapValue(map, arbitraryKey)).toEqualTypeOf<
         MapValue<typeof map> | undefined

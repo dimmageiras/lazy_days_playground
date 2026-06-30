@@ -20,9 +20,9 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - `app/shared/schemas/**` (declarative schemas with branded outputs and per-field messages)
 - `app/shared/constants/zod.constant.ts` (the frozen issue-code vocabulary)
 - `app/server/helpers/zod-server.helper.ts` and its spec (failure formatting, custom-issue attachment)
-- `app/server/helpers/env-var.helper.ts` and its spec (the env-validation entry the bootstrap calls)
+- `app/server/helpers/app/env-var.helper.ts` and its spec (the env-validation entry the bootstrap calls)
 - `app/server/types/zod.type.ts` (the issue-code union, custom-issue context, formatted-issue shape)
-- the bootstrap validation call site in `app/server/start.ts` (invocation and fail-fast handling only — broader bootstrap discipline stays with the server plan)
+- the bootstrap validation call site in `app/server/helpers/app/app-start.helper.ts` (invocation and fail-fast handling only — broader bootstrap discipline stays with the server plan)
 
 ## Required skills
 

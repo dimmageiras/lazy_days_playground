@@ -1,4 +1,7 @@
-import type { BuildLoggerFunction, Logger } from "@server/modules/logger";
+import type {
+  BuildFallbackLoggerFunction,
+  BuildLoggerFunction,
+} from "@server/modules/logger";
 import type {
   RedactPaths,
   SetupShutdownFunction,
@@ -20,7 +23,7 @@ const start = async (
   hot: ImportMeta["hot"],
   modules: {
     logger: {
-      buildFallbackLogger: () => Logger;
+      buildFallbackLogger: BuildFallbackLoggerFunction;
       buildLogger: BuildLoggerFunction;
     };
     shutdown: {

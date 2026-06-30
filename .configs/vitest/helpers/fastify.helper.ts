@@ -1,5 +1,6 @@
+import type { Mock } from "@vitest/spy";
 import Fastify from "fastify";
-import type { Mock, OnTestFinishedHandler } from "vitest";
+import type { OnTestFinishedHandler } from "vitest";
 import { vi } from "vitest";
 
 import type { AppInstance } from "@server/types/instance.type";

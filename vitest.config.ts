@@ -1,33 +1,32 @@
 import { mergeConfig } from "vite";
-import type { ViteUserConfig } from "vitest/config";
+import type {
+  TestProjectInlineConfiguration,
+  ViteUserConfig,
+} from "vitest/config";
 import { defineConfig } from "vitest/config";
 
-import serverConfig from "./.configs/vite/server.config";
 import sharedConfig from "./.configs/vite/shared.config";
 
 const vitestConfig = defineConfig(({ mode }) => {
-  // `extends: true` re-evaluates this config once per project with the default
-  // mode ("test"), dropping the CLI `--mode=debug` seen on the root pass. The
-  // root pass runs first in the same process, so persist the probe intent on
-  // `process.env` there and resolve the flag from it on every pass.
   if (mode === "debug") {
     process.env.DEBUG_TEST_POLLUTION = "1";
   }
 
+  const isPollutionProbeEnabled = process.env.DEBUG_TEST_POLLUTION === "1";
+
+  if (
+    (mode === "debug" || process.argv.includes("--mode=debug")) &&
+    !isPollutionProbeEnabled
+  ) {
+    throw new Error(
+      "Pollution probe requested via --mode=debug but DEBUG_TEST_POLLUTION did not resolve to enabled; the mode-to-env round-trip in vitest.config.ts likely broke under projects-mode re-evaluation.",
+    );
+  }
+
   return mergeConfig(sharedConfig, {
     test: {
-      // Kept `false` deliberately: under parallel hooks + concurrent tests,
-      // clearing shared mocks between tests would race siblings sharing the
-      // worker. Specs filter `mock.calls` by per-test identity instead, so
-      // cross-test accumulation is harmless.
       clearMocks: false,
-      // Root-only in projects mode — `coverage` cannot live on a project, so it
-      // stays here and spans both chunks. The other shared run options below
-      // reach each project through `extends: true`.
       coverage: {
-        // `**/index.ts` is excluded on the project-wide convention that
-        // barrels are pure re-exports. If a future `index.ts` grows
-        // executable logic, that file (or the convention) needs revisiting.
         exclude: [
           "**/*.constant.ts",
           "**/*.d.ts",
@@ -44,15 +43,9 @@ const vitestConfig = defineConfig(({ mode }) => {
         reportsDirectory: "logs/unit-tests-coverage",
       },
       env: {
-        DEBUG_TEST_POLLUTION:
-          process.env.DEBUG_TEST_POLLUTION === "1" ? "1" : "0",
+        DEBUG_TEST_POLLUTION: isPollutionProbeEnabled ? "1" : "0",
       },
       globals: false,
-      // `isolate: false` keeps a single worker context per file (faster startup).
-      // Test infra helpers must remain stateless dispatchers — any module-level
-      // state in `.configs/vitest/helpers/**` outlives every spec in the worker
-      // and will leak between files. Flip to `isolate: true` if that contract
-      // ever needs relaxing.
       isolate: false,
       pool: "threads",
       projects: [
@@ -63,15 +56,18 @@ const vitestConfig = defineConfig(({ mode }) => {
             include: ["app/shared/**/*.spec.{ts,tsx}"],
             name: "shared",
           },
-        },
-        mergeConfig(serverConfig, {
+        } satisfies TestProjectInlineConfiguration,
+        {
           extends: true,
+          resolve: {
+            conditions: ["node"],
+          },
           test: {
             environment: "node",
             include: ["app/server/**/*.spec.{ts,tsx}"],
             name: "server",
           },
-        }),
+        } satisfies TestProjectInlineConfiguration,
       ],
       sequence: {
         concurrent: true,

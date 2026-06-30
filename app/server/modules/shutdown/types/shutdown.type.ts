@@ -6,7 +6,7 @@ import type { AppInstance } from "@server/types/instance.type";
 type RedactPaths = ReadonlyArray<string>;
 
 type SetupShutdownFunction = (
-  instance: Readonly<AppInstance>,
+  instance: AppInstance,
   hot: ImportMeta["hot"],
 ) => Promise<void>;
 

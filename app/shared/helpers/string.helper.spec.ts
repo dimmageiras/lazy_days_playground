@@ -101,6 +101,16 @@ const TEST_DATA = {
       name: "should expand the German sharp s when uppercasing",
     },
     {
+      expected: "Σ",
+      input: "σ",
+      name: "should uppercase the Greek sigma",
+    },
+    {
+      expected: "I",
+      input: "i",
+      name: "should uppercase the Latin i to ASCII I",
+    },
+    {
       expected: EMPTY_STRING,
       input: EMPTY_STRING,
       name: "should return an empty string for empty input",

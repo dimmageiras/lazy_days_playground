@@ -1,2 +1,6 @@
 export { LoggerModule } from "./logger.module";
-export type { BuildLoggerFunction, Logger } from "./types/logger.type";
+export type {
+  BuildFallbackLoggerFunction,
+  BuildLoggerFunction,
+  Logger,
+} from "./types/logger.type";

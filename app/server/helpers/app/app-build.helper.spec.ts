@@ -59,8 +59,8 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
   FAILURE_MESSAGE: "💥 Failed to build the app",
   HOT: castAsType<ImportMeta["hot"]>({}),
   INSTANCE_KEY: "__appHelperInstance",
-  SCENARIO_KEY: "__appHelperScenario",
   REDACT_PATHS: ["password", "token"],
+  SCENARIO_KEY: "__appHelperScenario",
   get MODULES() {
     return {
       logger: { buildLogger: mockBuildLogger },

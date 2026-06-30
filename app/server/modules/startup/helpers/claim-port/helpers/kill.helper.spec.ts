@@ -3,6 +3,7 @@ import { describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
+import { SIGNALS } from "@server/constants/signals.constant";
 import type { KillFailureReason } from "@server/modules/startup/types/kill.type";
 
 import { TypeHelper } from "@shared/helpers/type.helper";
@@ -30,6 +31,8 @@ const {
 
 trackLeaksInSpec("kill.helper");
 
+const { SIGTERM } = SIGNALS;
+
 const { castAsType } = TypeHelper;
 
 const { killPortOwner } = KillHelper;
@@ -48,7 +51,6 @@ const { lookupPort, ...TEST_DATA } = {
   PORT_SELF_PID: castAsType<Port>(VALID_PORT + 5),
   PORT_SELF_PPID: castAsType<Port>(VALID_PORT + 6),
   SELF_PID: "self-pid",
-  SIGTERM: "SIGTERM",
   get FAILURE_CASES() {
     return castAsType<
       Array<{ name: string; port: Port; reason: KillFailureReason }>
@@ -135,7 +137,7 @@ describe("KillHelper", () => {
     }) => {
       const result = await killPortOwner(
         createMockInstance({ appEnv: { port: TEST_DATA.PORT_OK } }),
-        TEST_DATA.SIGTERM,
+        SIGTERM,
       );
 
       const killCalls = killSpy.mock.calls.filter(
@@ -145,7 +147,7 @@ describe("KillHelper", () => {
       expect(killCalls).toHaveLength(1);
       expect(killCalls[0]).toStrictEqual([
         TEST_DATA.FOREIGN_PID,
-        TEST_DATA.SIGTERM,
+        SIGTERM,
       ]);
       expect(result).toStrictEqual({ ok: BOOLEAN_TRUE });
     });
@@ -155,7 +157,7 @@ describe("KillHelper", () => {
     }) => {
       const result = await killPortOwner(
         createMockInstance({ appEnv: { port: TEST_DATA.PORT_SELF_PID } }),
-        TEST_DATA.SIGTERM,
+        SIGTERM,
       );
 
       const selfKillCalls = killSpy.mock.calls.filter(
@@ -173,7 +175,7 @@ describe("KillHelper", () => {
       it(name, async ({ expect }) => {
         const result = await killPortOwner(
           createMockInstance({ appEnv: { port } }),
-          TEST_DATA.SIGTERM,
+          SIGTERM,
         );
 
         expect(result).toStrictEqual({ ok: BOOLEAN_FALSE, reason });

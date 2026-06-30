@@ -41,7 +41,7 @@ describe("LoggerModule", () => {
     it("should expose the logger surface used at call sites", ({ expect }) => {
       const logger = buildFallbackLogger();
 
-      expect(typeof logger.info).toBe("function");
+      expect(typeof logger.fatal).toBe("function");
       expect(typeof logger.flush).toBe("function");
     });
   });

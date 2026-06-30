@@ -43,7 +43,7 @@ A decision whose consequences propagate beyond the file it lives in — changing
 
 ### Module
 
-A self-contained unit that encapsulates one runtime capability and owns the internals that capability needs — its constants, helpers, types, and any routes — exposing only a curated public surface to the **Composition root** that wires modules together. A module hides how it works; consumers depend on what it exposes, not on how it is built. Contrast with a helper, a flat namespace of stateless utility functions that encapsulates nothing: a module may contain helpers, but a helper is never a module. Cross-cutting data contracts and environment input are concerns of the **Composition layer**, not modules.
+A self-contained unit that encapsulates one runtime capability and owns the internals that capability needs — its constants, helpers, types, and any routes — exposing only a curated public surface to the **Composition root** (invoked by the **Composition layer**) that wires modules together. A module hides how it works; consumers depend on what it exposes, not on how it is built. Contrast with a helper, a flat namespace of stateless utility functions that encapsulates nothing: a module may contain helpers, but a helper is never a module. Cross-cutting data contracts and environment input are concerns of the **Composition layer**, not modules.
 
 ### Module-level singleton
 

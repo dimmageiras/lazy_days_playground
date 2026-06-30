@@ -138,7 +138,7 @@ describe("SetHelper", () => {
       expect(set.has(COMMON_STRING)).toBe(BOOLEAN_TRUE);
       expect(set.has(STRING_A)).toBe(BOOLEAN_TRUE);
       expect(set.has(STRING_B)).toBe(BOOLEAN_TRUE);
-      expect(set.size).toBe(3);
+      expect(set.size).toBe(TEST_DATA.MULTI_SET_ELEMENTS.length + 1);
     });
 
     it("should constrain the values to the set's element type", () => {
@@ -213,7 +213,7 @@ describe("SetHelper", () => {
 
       expect(set.has(STRING_A)).toBe(BOOLEAN_FALSE);
       expect(set.has(STRING_B)).toBe(BOOLEAN_TRUE);
-      expect(set.size).toBe(1);
+      expect(set.size).toBe(TEST_DATA.MULTI_SET_ELEMENTS.length - 1);
     });
 
     it("should constrain the values to the set's element type", () => {
