@@ -8,7 +8,10 @@ import type {
 } from "@server/modules/startup/types/kill.type";
 import type { AppInstance } from "@server/types/instance.type";
 
+import { NumberHelper } from "@shared/helpers/number.helper";
+
 const { normalizeError } = ErrorHelper;
+const { isInteger } = NumberHelper;
 
 const findPidOnPort = async (
   instance: AppInstance,
@@ -18,7 +21,7 @@ const findPidOnPort = async (
   try {
     const pid = await portToPid(port);
 
-    if (typeof pid === "number" && Number.isInteger(pid) && pid > 0) {
+    if (isInteger(pid) && pid >= 1) {
       return { found: true, pid };
     }
 

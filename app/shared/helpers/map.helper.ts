@@ -5,9 +5,9 @@ import type {
   MapValueAt,
 } from "@shared/types/app/utility-types";
 
-import { TypesHelper } from "./types.helper";
+import { TypeHelper } from "./type.helper";
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const getMapValue = <
   TMap extends AnyMap,

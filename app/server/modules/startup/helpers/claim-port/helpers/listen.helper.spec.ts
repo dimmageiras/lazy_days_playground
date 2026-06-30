@@ -1,0 +1,104 @@
+import type { Mock } from "vitest";
+import { describe, vi } from "vitest";
+
+import { VitestSetup } from "@configs/vitest/setup";
+
+import { TIMING_IN_MS } from "@server/modules/startup/constants/timing.constant";
+
+import { ListenHelper } from "./listen.helper";
+
+const {
+  createMockInstance,
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    COMMON_BIND_ALL_IPV4,
+    UNDEFINED_VALUE,
+  },
+  trackLeaksInSpec,
+} = VitestSetup();
+
+trackLeaksInSpec("listen.helper");
+
+const { LISTEN_POLL_INITIAL_INTERVAL } = TIMING_IN_MS;
+
+const { tryListen, tryListenUntil } = ListenHelper;
+
+const { makeListen, ...TEST_DATA } = {
+  EADDRINUSE_ERROR: Object.assign(new Error("address already in use"), {
+    code: "EADDRINUSE",
+  }),
+  UNEXPECTED_ERROR: new Error("an unexpected bind error"),
+  get TRY_LISTEN_CASES() {
+    return [
+      {
+        expected: BOOLEAN_TRUE,
+        name: "should resolve true when the port binds",
+        rejection: UNDEFINED_VALUE,
+      },
+      {
+        expected: BOOLEAN_FALSE,
+        name: "should resolve false when the address is already in use",
+        rejection: this.EADDRINUSE_ERROR,
+      },
+    ];
+  },
+  get TRY_LISTEN_UNTIL_CASES() {
+    return [
+      {
+        expected: BOOLEAN_TRUE,
+        name: "should resolve true as soon as the port binds",
+        rejection: UNDEFINED_VALUE,
+        timeout: LISTEN_POLL_INITIAL_INTERVAL,
+      },
+      {
+        expected: BOOLEAN_FALSE,
+        name: "should resolve false when the port never frees before the timeout",
+        rejection: this.EADDRINUSE_ERROR,
+        timeout: 1,
+      },
+    ];
+  },
+  get makeListen() {
+    return (rejection: unknown): Mock =>
+      rejection === UNDEFINED_VALUE
+        ? vi.fn().mockResolvedValue(COMMON_BIND_ALL_IPV4)
+        : vi.fn().mockRejectedValue(rejection);
+  },
+} as const;
+
+describe("ListenHelper", () => {
+  describe("tryListen", (it) => {
+    TEST_DATA.TRY_LISTEN_CASES.forEach(({ expected, name, rejection }) => {
+      it(name, async ({ expect }) => {
+        const instance = createMockInstance({ listen: makeListen(rejection) });
+
+        expect(await tryListen(instance)).toBe(expected);
+      });
+    });
+
+    it("should rethrow an unexpected bind error", async ({ expect }) => {
+      const instance = createMockInstance({
+        listen: makeListen(TEST_DATA.UNEXPECTED_ERROR),
+      });
+
+      await expect(tryListen(instance)).rejects.toBe(
+        TEST_DATA.UNEXPECTED_ERROR,
+      );
+    });
+  });
+
+  describe("tryListenUntil", (it) => {
+    TEST_DATA.TRY_LISTEN_UNTIL_CASES.forEach(
+      ({ expected, name, rejection, timeout }) => {
+        it(name, async ({ expect }) => {
+          const instance = createMockInstance({
+            listen: makeListen(rejection),
+          });
+
+          expect(await tryListenUntil(instance, timeout)).toBe(expected);
+        });
+      },
+    );
+  });
+});

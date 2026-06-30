@@ -6,80 +6,107 @@ import { VitestSetup } from "@configs/vitest/setup";
 import type { SetValue } from "@shared/types/app/utility-types";
 
 import { SetHelper } from "./set.helper";
-import { TypesHelper } from "./types.helper";
+import { TypeHelper } from "./type.helper";
 
-const { trackLeaksInSpec } = VitestSetup();
+const {
+  sharedTestData: {
+    BOOLEAN_FALSE,
+    BOOLEAN_TRUE,
+    COMMON_NUMBER_ARRAY,
+    COMMON_ONE_STRING_ARRAY,
+    COMMON_STRING,
+    COMMON_TWO_STRING_ARRAY,
+    EMPTY_ARRAY,
+    NUMBER_1,
+    STRING_A,
+    STRING_B,
+  },
+  trackLeaksInSpec,
+} = VitestSetup();
 
 trackLeaksInSpec("set.helper");
 
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
-const { makeImmutableSet, makeSet, ...TEST_DATA } = {
+const {
+  makeImmutableSet,
+  makeMultiSet,
+  makeNumberSet,
+  makeSet,
+  ...TEST_DATA
+} = {
   ADD_CASES: [
     {
-      expectedSize: 4,
+      expectedSize: 2,
       name: "should add a value absent from the set",
-      values: ["w"],
+      values: [STRING_B],
     },
     {
-      expectedSize: 3,
+      expectedSize: 1,
       name: "should keep an already-present value present without growing",
-      values: ["a"],
+      values: [STRING_A],
     },
     {
-      expectedSize: 5,
-      name: "should add several absent values in one call",
-      values: ["w", "x"],
+      expectedSize: 2,
+      name: "should add several values in one call",
+      values: [STRING_A, STRING_B],
     },
     {
-      expectedSize: 3,
+      expectedSize: 1,
       name: "should be a no-op for an empty values array",
-      values: [],
+      values: EMPTY_ARRAY,
     },
   ],
   DELETE_CASES: [
     {
-      expectedSize: 2,
+      expectedSize: 0,
       name: "should remove a value present in the set",
-      values: ["a"],
+      values: [STRING_A],
     },
     {
-      expectedSize: 3,
+      expectedSize: 1,
       name: "should be a no-op for a value absent from the set",
-      values: ["z"],
+      values: [STRING_B],
     },
     {
-      expectedSize: 2,
+      expectedSize: 0,
       name: "should remove the present value and ignore the absent one in the same call",
-      values: ["a", "z"],
+      values: [STRING_A, STRING_B],
     },
     {
-      expectedSize: 3,
+      expectedSize: 1,
       name: "should be a no-op for an empty values array",
-      values: [],
+      values: EMPTY_ARRAY,
     },
   ],
   MEMBERSHIP_CASES: [
     {
-      expected: true,
+      expected: BOOLEAN_TRUE,
       name: "should return true for a value present in the set",
-      value: "a",
+      value: STRING_A,
     },
     {
-      expected: false,
+      expected: BOOLEAN_FALSE,
       name: "should return false for a value absent from the set",
-      value: "d",
+      value: STRING_B,
     },
   ],
-  SET_ELEMENTS: ["a", "b", "c"],
+  MULTI_SET_ELEMENTS: COMMON_TWO_STRING_ARRAY,
+  SET_ELEMENTS: COMMON_ONE_STRING_ARRAY,
   TYPE_TEST: {
-    MEMBER: castAsType<string>("a"),
-    NON_MEMBER: castAsType<string>("x"),
+    MEMBER: castAsType<string>(STRING_A),
+    NON_MEMBER: castAsType<string>(STRING_B),
   },
   get makeImmutableSet() {
     return () => ImmutableSet<string>(this.SET_ELEMENTS);
+  },
+  get makeMultiSet() {
+    return () => new Set<string>(this.MULTI_SET_ELEMENTS);
+  },
+  get makeNumberSet() {
+    return () => new Set<number>(COMMON_NUMBER_ARRAY);
   },
   get makeSet() {
     return () => new Set<string>(this.SET_ELEMENTS);
@@ -95,10 +122,29 @@ describe("SetHelper", () => {
         addValuesInPlace(set, values);
 
         values.forEach((value) => {
-          expect(set.has(value)).toBe(true);
+          expect(set.has(value)).toBe(BOOLEAN_TRUE);
         });
         expect(set.size).toBe(expectedSize);
       });
+    });
+
+    it("should add the new value and leave existing members intact", ({
+      expect,
+    }) => {
+      const set = makeMultiSet();
+
+      addValuesInPlace(set, [COMMON_STRING]);
+
+      expect(set.has(COMMON_STRING)).toBe(BOOLEAN_TRUE);
+      expect(set.has(STRING_A)).toBe(BOOLEAN_TRUE);
+      expect(set.has(STRING_B)).toBe(BOOLEAN_TRUE);
+      expect(set.size).toBe(TEST_DATA.MULTI_SET_ELEMENTS.length + 1);
+    });
+
+    it("should constrain the values to the set's element type", () => {
+      expectTypeOf(addValuesInPlace<Set<string>>)
+        .parameter(1)
+        .toEqualTypeOf<ReadonlyArray<string>>();
     });
   });
 
@@ -112,15 +158,21 @@ describe("SetHelper", () => {
     it("should resolve membership for an immutable Set", ({ expect }) => {
       const immutableSet = makeImmutableSet();
 
-      expect(hasSetValue(immutableSet, "a")).toBe(true);
-      expect(hasSetValue(immutableSet, "d")).toBe(false);
+      expect(hasSetValue(immutableSet, STRING_A)).toBe(BOOLEAN_TRUE);
+      expect(hasSetValue(immutableSet, STRING_B)).toBe(BOOLEAN_FALSE);
+    });
+
+    it("should resolve membership for a number-element Set", ({ expect }) => {
+      const numberSet = makeNumberSet();
+
+      expect(hasSetValue(numberSet, NUMBER_1)).toBe(BOOLEAN_TRUE);
     });
 
     it("should accept any string at the call site (the element-base widening)", ({
       expect,
     }) => {
       expect(hasSetValue(makeSet(), TEST_DATA.TYPE_TEST.NON_MEMBER)).toBe(
-        false,
+        BOOLEAN_FALSE,
       );
     });
 
@@ -130,7 +182,7 @@ describe("SetHelper", () => {
       const { MEMBER } = TEST_DATA.TYPE_TEST;
       const set = makeSet();
 
-      expect(hasSetValue(set, MEMBER)).toBe(true);
+      expect(hasSetValue(set, MEMBER)).toBe(BOOLEAN_TRUE);
 
       if (hasSetValue(set, MEMBER)) {
         expectTypeOf(MEMBER).toEqualTypeOf<SetValue<typeof set>>();
@@ -146,33 +198,25 @@ describe("SetHelper", () => {
         stripValuesInPlace(set, values);
 
         values.forEach((value) => {
-          expect(set.has(value)).toBe(false);
-        });
-        const strippedValues: ReadonlyArray<string> = values;
-
-        TEST_DATA.SET_ELEMENTS.filter(
-          (element) => !strippedValues.includes(element),
-        ).forEach((survivor) => {
-          expect(set.has(survivor)).toBe(true);
+          expect(set.has(value)).toBe(BOOLEAN_FALSE);
         });
         expect(set.size).toBe(expectedSize);
       });
     });
 
-    it("should constrain both mutators to the set's element type at the call site", ({
+    it("should remove only the targeted values and leave the rest", ({
       expect,
     }) => {
-      const set = makeSet();
-      const { NON_MEMBER } = TEST_DATA.TYPE_TEST;
+      const set = makeMultiSet();
 
-      addValuesInPlace(set, [NON_MEMBER]);
-      stripValuesInPlace(set, [NON_MEMBER]);
+      stripValuesInPlace(set, [STRING_A]);
 
-      expect(set.size).toBe(TEST_DATA.SET_ELEMENTS.length);
+      expect(set.has(STRING_A)).toBe(BOOLEAN_FALSE);
+      expect(set.has(STRING_B)).toBe(BOOLEAN_TRUE);
+      expect(set.size).toBe(TEST_DATA.MULTI_SET_ELEMENTS.length - 1);
+    });
 
-      expectTypeOf(addValuesInPlace<Set<string>>)
-        .parameter(1)
-        .toEqualTypeOf<ReadonlyArray<string>>();
+    it("should constrain the values to the set's element type", () => {
       expectTypeOf(stripValuesInPlace<Set<string>>)
         .parameter(1)
         .toEqualTypeOf<ReadonlyArray<string>>();

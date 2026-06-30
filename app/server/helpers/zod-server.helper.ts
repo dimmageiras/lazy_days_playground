@@ -9,16 +9,18 @@ import type {
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
 import { ObjectHelper } from "@shared/helpers/object.helper";
 import { SetHelper } from "@shared/helpers/set.helper";
+import { StringHelper } from "@shared/helpers/string.helper";
 import type { ZodIssue } from "@shared/wrappers/zod.wrapper";
 import { zToDotPath } from "@shared/wrappers/zod.wrapper";
 
 const { getObjectValues } = ObjectHelper;
 const { hasSetValue } = SetHelper;
+const { isString } = StringHelper;
 
 const ISSUE_CODE_VALUES = Set(getObjectValues(ISSUE_CODES));
 
 const isIssueCode = (value: unknown): value is IssueCodes =>
-  typeof value === "string" && hasSetValue(ISSUE_CODE_VALUES, value);
+  isString(value) && hasSetValue(ISSUE_CODE_VALUES, value);
 
 const addCustomIssue = (
   context: CustomIssueContext,
@@ -53,8 +55,8 @@ const getFormattedZodIssueLines = (issues: ReadonlyArray<ZodIssue>): string =>
 
 const ZodServerHelper = Object.freeze({
   addCustomIssue,
-  getFormattedZodIssues,
   getFormattedZodIssueLines,
+  getFormattedZodIssues,
 } as const);
 
 export { ZodServerHelper };

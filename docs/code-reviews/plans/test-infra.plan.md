@@ -12,7 +12,8 @@ Project-specific testing conventions live in [`../../testing/README.md`](../../t
 
 These globs are **operational hints** — see the plans-index [`README.md`](./README.md#conventions) and [`CONTEXT.md`](../../../CONTEXT.md#operational-hint) for the canonical statement.
 
-- `.configs/vitest/setup.ts` (the setup module that exposes the helper bundle via a zero-arg factory)
+- `.configs/vitest/setup.ts` (the setup module that exposes the helper and shared-fixture bundles via a zero-arg factory)
+- `.configs/vitest/constants/shared-test-data.constant.ts` (the frozen cross-spec fixture bundle the factory exposes — runs once per worker, like every surface in this plan)
 - `.configs/vitest/fake-timer-registry.ts` (the cross-spec registry that records which files advanced the shared fake clock)
 - `.configs/vitest/helpers/**` (the stateless-dispatcher helper layer — state-probe / pollution-probe helper)
 - `.configs/vitest/helpers/index.ts` (the barrel that the setup module destructures from to build the helper bundle)
@@ -30,11 +31,19 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 ### Setup-factory contract
 
-- The setup module exports a single zero-arg factory whose return value is a frozen bundle of every helper namespace the project ships. Specs **destructure** from the factory return (`const { someHelper } = <Project>Setup();`); specs do not import helpers directly from the helpers folder.
+- The setup module exports a single zero-arg factory whose return value is a frozen bundle of every helper namespace the project ships, plus the shared test-data fixtures. Specs **destructure** both from the factory return (`const { someHelper } = <Project>Setup();`); specs do not import helpers or fixtures directly from their source modules.
 - The bundle's return type widens automatically as helpers are added — a `UnionToIntersection` over the helpers barrel's exports. Adding a new helper namespace must require no change to consuming specs.
 - The factory holds a single frozen value at module scope and returns the same reference on every call. Returning a fresh value per call wastes allocation and breaks reference-equality tests that may compare bundle handles.
 - The setup module is registered as a `setupFiles` entry in the runner config — the registration is a **belt** to the factory's **suspenders**. Removing the registration leaves the side-effects (matcher extensions, hijack installation, environment shims) unrun until the first spec calls the factory.
 - The three roles the factory plays are non-negotiable: it forces side-effect import order, it hosts cross-spec hijack installation, and it makes helper additions transparent to consumers. A proposal to drop or replace the factory must account for all three roles, not just the destructuring sugar.
+
+### Shared fixture bundle
+
+- The factory return also carries a single frozen object of broadly-reused primitive test values — common booleans, strings, numbers, and small collections; empty collections; the `null` / `undefined` / `NaN` sentinels; a valid-configuration fixture; and the sanctioned unknown-cast convenience. It runs once per worker before any spec, like every surface this plan owns.
+- The bundle is frozen (`as const` + `Object.freeze`) and holds **no mutable entry** — a concurrent sibling could otherwise mutate a shared value, the exact hazard this plan exists to catch.
+- It holds **no per-spec value**: only genuinely common primitives plus a small number of derived-but-stable fixtures. A spec-specific value added to the bundle is a finding.
+- Derived fixtures are composed from the bundle's own primitives — including by running a real schema or transform so they cannot drift from the contract they mirror — never by reaching into spec state.
+- Shared primitives keep their literal type (`as const` on each), because the spec-side type-level assertions assert against the literal; a widened primitive silently degrades those assertions into tautologies.
 
 ### Setup-owned state
 

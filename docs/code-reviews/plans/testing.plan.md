@@ -43,16 +43,16 @@ The first criterion the reviewer applies: where the upstream `vitest` skill and 
 - Specs live next to source, not under a separate top-level test tree.
 - The spec suffix is `.spec.ts(x)`; the runner glob targets only that suffix.
 - Specs open in this fixed order: **imports → setup-helper destructure → leak-tracker call → unit-under-test destructure → frozen `TEST_DATA` → `describe`**. Reordering these lines is a finding even when the spec still runs — the order is what makes a spec readable cold.
-- Module-level imports are reserved for symbols the test context does not expose. Lifecycle hooks (`beforeAll`, `beforeEach`, `afterAll`, `afterEach`) and the runner utility object have no context-scoped form by design — import them from the runner module. Any other module-level pull from the runner is usually a sign the context-scoped path was overlooked.
+- Module-level imports from the runner are reserved for what neither the suite collector nor the test context exposes: `describe` itself and the runner utility object (worker-global, not suite-scoped). The `describe` callback's suite collector _is_ the suite's `it` and carries its lifecycle hooks (`beforeAll`, `beforeEach`, `afterAll`, `afterEach`) — pull `it` and the hooks from it; the test context yields `expect` and the rest. A module-level `it`, lifecycle hook, or `expect` is a finding — the scoped form was overlooked.
 - Specs do **not** import helpers directly from the helpers folder — they go through the project setup factory's zero-arg call and destructure the helper bundle from its return value. The factory's identifier is a placeholder in this plan; the project setup module owns the actual identifier.
 
 ### `TEST_DATA` shape
 
 - Every spec that uses inputs, fixtures, or table-driven cases collects them into a **single** `TEST_DATA` object frozen with `as const`.
-- Keys are `SCREAMING_SNAKE_CASE` and describe the case group (`<GROUP>_CASES`) or the named value (`<NAME>_<UNIT>`).
+- Keys are `SCREAMING_SNAKE_CASE` and describe the case group (`<GROUP>_CASES`) or the named value (`<NAME>_<UNIT>`); the lone exception is a function getter, which is camelCase (see below).
 - Table-driven cases are arrays of objects shaped `{ name, …case-specific inputs, expected? }`. The `name` is what the runner's `it` receives. Per-case input keys are named after the parameter under test (`value` for predicates, `input` for transforms, `ms` for durations, etc.). An `expected` key is included whenever the spec asserts an exact value; predicates that assert `true`/`false` may omit it.
-- No mutation, no computed values that close over module state — everything inside `TEST_DATA` must be inspectable at a glance.
-- `TEST_DATA` is scoped to **one** spec. No cross-spec sharing; a fixture two specs need belongs in a fixture helper, not in a shared `TEST_DATA`.
+- No mutation and nothing closing over mutable module state. `TEST_DATA` carries inert literals plus two getter kinds. A **function getter** (camelCase, returns a builder/factory/mock implementation) is **rest-spread out** of the literal into its own binding so `TEST_DATA` holds no functions — the default; a function getter left on `TEST_DATA` is a finding. A **data getter** (`SCREAMING_SNAKE`, returns computed data reading sibling members via `this`) **stays on `TEST_DATA`**. Inert members are plain literals, inspectable at a glance.
+- Common, reusable primitive values live in a **single frozen cross-spec fixture bundle** exposed through the setup factory's return; per-spec `TEST_DATA` reuses and composes from that bundle rather than hand-rolling its own primitives. A primitive a spec hand-rolls that the bundle already provides is a finding; a one-off, spec-specific value pushed into the bundle is a finding. Case tables and any value meaningful to a single spec stay in that spec's `TEST_DATA`.
 
 ### Suite shape and assertion style
 

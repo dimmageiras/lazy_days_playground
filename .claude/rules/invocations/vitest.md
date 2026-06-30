@@ -12,7 +12,7 @@ Invoke the `vitest` skill when working on any test file (`*.spec.ts`, `*.spec.ts
 
 ## Pair with the project's testing documentation
 
-The `vitest` skill is the upstream Vitest reference. The project's own testing conventions (file layout, `TEST_DATA` structure, mock strategy, assertion style, concurrency rules, naming grammar) live in [`../../../docs/testing/README.md`](../../../docs/testing/README.md). **Read it first.** It captures decisions the upstream skill cannot know about.
+The `vitest` skill is the upstream Vitest reference. The project's own testing conventions (file layout, `TEST_DATA` structure and the shared cross-spec fixture bundle it composes from, mock strategy, assertion style, concurrency rules, naming grammar) live in [`../../../docs/testing/README.md`](../../../docs/testing/README.md). **Read it first.** It captures decisions the upstream skill cannot know about.
 
 Where the upstream skill and the project doc diverge, the **project doc wins**. The upstream skill teaches the API surface; the project doc teaches how this codebase uses it.
 

@@ -3,10 +3,10 @@ import type { KeyAsString, UnknownRecord, ValueOf } from "type-fest";
 import type { ObjectEntries } from "@shared/types/app/utility-types";
 
 import { ArrayHelper } from "./array.helper";
-import { TypesHelper } from "./types.helper";
+import { TypeHelper } from "./type.helper";
 
 const { isArray } = ArrayHelper;
-const { castAsType } = TypesHelper;
+const { castAsType } = TypeHelper;
 
 const getObjectEntries = <TObject extends Record<string, unknown>>(
   object: TObject,

@@ -84,5 +84,6 @@ This decision owns the module folder shape, the index-barrel discipline, the int
 - [`./0002-typescript-compiler-stance.md`](./0002-typescript-compiler-stance.md) — the compiler stance whose app/test file scoping reflects this module-vs-helper boundary.
 - [`./0005-test-runner-worker-model.md`](./0005-test-runner-worker-model.md) — the worker-model contract whose stateless-dispatcher rule applies this boundary to shared test helpers.
 - [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the server lifecycle this boundary situates, reached through its curated surface.
+- [`./0020-composition-root-is-a-helper.md`](./0020-composition-root-is-a-helper.md) — extends this ADR's helper test to the application composition root, classifying it as a helper; this ADR's reasoning stays in force, unchanged.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — canonical definitions of **Module** and helper that this decision operationalises.
 - [`./README.md`](./README.md) — ADR template, status, and lifecycle conventions.

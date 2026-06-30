@@ -13,6 +13,14 @@ The glossary is intentionally minimal at this stage. Add a term only when it has
 
 ## Terms
 
+### Composition layer
+
+The calling relationship at the top of the application — the process entry / bootstrap that invokes the assembled application — rather than an encapsulated construct of its own. It validates environment input and runs any post-assembly startup steps around its call to the **Composition root**.
+
+### Composition root
+
+The stateless unit that assembles the running application — instantiating the server, wiring the modules together, registering the routes, and installing the lifecycle — and yields the assembled application. It is a helper, not a **Module**: it owns no internals to hide, only other capabilities to wire, so it follows the helper convention rather than the module shape (see [`docs/adr/0020-composition-root-is-a-helper.md`](./docs/adr/0020-composition-root-is-a-helper.md)). Invoked by the **Composition layer**.
+
 ### Control-plane route
 
 A privileged operational route that acts on the running process itself — its lifecycle, configuration, or internals — rather than serving product or observable traffic, and that must never be reachable without passing a guard. Such routes sit under a reserved internal namespace whose path segment signals the privilege, but the namespace marks intent only: an app-layer guard, not the path, is the security boundary. Contrast with an **Observable route**, which is safe to expose and probe from anywhere. See also **Remote shutdown channel**.
@@ -35,7 +43,7 @@ A decision whose consequences propagate beyond the file it lives in — changing
 
 ### Module
 
-A self-contained unit that encapsulates one runtime capability and owns the internals that capability needs — its constants, helpers, types, and any routes — exposing only a curated public surface to the composition layer that wires modules together. A module hides how it works; consumers depend on what it exposes, not on how it is built. Contrast with a helper, a flat namespace of stateless utility functions that encapsulates nothing: a module may contain helpers, but a helper is never a module. Cross-cutting data contracts and environment input are composition-layer concerns, not modules.
+A self-contained unit that encapsulates one runtime capability and owns the internals that capability needs — its constants, helpers, types, and any routes — exposing only a curated public surface to the **Composition root** (invoked by the **Composition layer**) that wires modules together. A module hides how it works; consumers depend on what it exposes, not on how it is built. Contrast with a helper, a flat namespace of stateless utility functions that encapsulates nothing: a module may contain helpers, but a helper is never a module. Cross-cutting data contracts and environment input are concerns of the **Composition layer**, not modules.
 
 ### Module-level singleton
 
@@ -79,4 +87,4 @@ The contract every shared test helper follows: the helper module holds no state 
 
 ### Test data
 
-The single `TEST_DATA` constant at the top of every spec. See [`docs/testing/README.md`](./docs/testing/README.md#test-data--the-test_data-constant) for the canonical shape and conventions.
+The single `TEST_DATA` constant at the top of every spec. A per-spec `TEST_DATA` may reuse and compose from a shared, frozen cross-spec fixture bundle of common primitive values exposed through the setup factory. See [`docs/testing/README.md`](./docs/testing/README.md#test-data--the-test_data-constant) for the canonical shape, the shared-vs-per-spec dividing line, and the conventions.
