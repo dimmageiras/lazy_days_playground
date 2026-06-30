@@ -35,6 +35,7 @@ const vitestConfig = defineConfig(({ mode }) => {
           "**/*.type.ts",
           "**/*.wrapper.ts",
           "**/index.ts",
+          "**/start.ts",
         ],
         include: ["app/**/*.{ts,tsx}"],
         provider: "v8",
