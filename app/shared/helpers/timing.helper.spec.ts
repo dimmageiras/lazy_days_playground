@@ -22,7 +22,10 @@ const TEST_DATA = {
   PASSTHROUGH_CASES: [
     { ms: -1, name: "should forward -1 to setTimeout" },
     { ms: 0, name: "should forward 0 to setTimeout" },
-    { ms: NAN_VALUE, name: "should forward NaN to setTimeout" },
+    {
+      ms: NAN_VALUE,
+      name: "should forward NaN to setTimeout",
+    },
     {
       ms: Number.POSITIVE_INFINITY,
       name: "should forward Infinity to setTimeout",

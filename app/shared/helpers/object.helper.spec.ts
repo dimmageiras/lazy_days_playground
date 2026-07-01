@@ -52,16 +52,40 @@ const { makeObject, ...TEST_DATA } = {
   EXPECTED_KEYS: COMMON_TWO_STRING_ARRAY,
   EXPECTED_VALUES: [NUMBER_1, COMMON_NUMBER],
   NON_PLAIN_OBJECT_CASES: [
-    { name: "should return false for an array", value: EMPTY_ARRAY },
-    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
-    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
-    { name: "should return false for a string", value: COMMON_STRING },
-    { name: "should return false for a number", value: COMMON_NUMBER },
-    { name: "should return false for null", value: NULL_VALUE },
-    { name: "should return false for undefined", value: UNDEFINED_VALUE },
+    {
+      name: "should return false for an array",
+      value: EMPTY_ARRAY,
+    },
+    {
+      name: "should return false for a Map",
+      value: EMPTY_IMMUTABLE_MAP,
+    },
+    {
+      name: "should return false for a Set",
+      value: EMPTY_IMMUTABLE_SET,
+    },
+    {
+      name: "should return false for a string",
+      value: COMMON_STRING,
+    },
+    {
+      name: "should return false for a number",
+      value: COMMON_NUMBER,
+    },
+    {
+      name: "should return false for null",
+      value: NULL_VALUE,
+    },
+    {
+      name: "should return false for undefined",
+      value: UNDEFINED_VALUE,
+    },
   ],
   PLAIN_OBJECT_CASES: [
-    { name: "should return true for an empty object", value: EMPTY_OBJECT },
+    {
+      name: "should return true for an empty object",
+      value: EMPTY_OBJECT,
+    },
     {
       name: "should return true for a populated object",
       value: { [STRING_A]: NUMBER_1 },
@@ -69,7 +93,10 @@ const { makeObject, ...TEST_DATA } = {
   ],
   PRESENT_KEY: castAsType<string>(STRING_A),
   get makeObject() {
-    return () => ({ [STRING_A]: NUMBER_1, [STRING_B]: COMMON_NUMBER });
+    return () => ({
+      [STRING_A]: NUMBER_1,
+      [STRING_B]: COMMON_NUMBER,
+    });
   },
 } as const;
 

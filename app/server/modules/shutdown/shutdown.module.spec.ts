@@ -27,7 +27,9 @@ const {
   mockCloseWithGrace: vi.fn(),
 }));
 
-vi.mock("close-with-grace", () => ({ default: mockCloseWithGrace }));
+vi.mock("close-with-grace", () => ({
+  default: mockCloseWithGrace,
+}));
 
 vi.mock("./helpers/close-with-grace.helper", () => ({
   CloseWithGraceHelper: {
@@ -81,7 +83,9 @@ describe("ShutdownModule", () => {
       const addHook = vi.fn();
       const register = vi.fn().mockResolvedValue(UNDEFINED_VALUE);
       const uninstall = vi.fn();
-      const handle = castAsType<ShutdownRouteOptions["handle"]>({ uninstall });
+      const handle = castAsType<ShutdownRouteOptions["handle"]>({
+        uninstall,
+      });
       const options = castAsType<ShutdownOptions>({});
       const handler = castAsType<ShutdownHandler>(() => Promise.resolve());
       const instance = createMockInstance();

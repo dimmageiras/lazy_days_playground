@@ -57,7 +57,9 @@ const TEST_DATA = {
       expectedAccepted: BOOLEAN_FALSE,
       expectedStatus: UNAUTHORIZED,
       expectsClose: BOOLEAN_FALSE,
-      headers: { [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken },
+      headers: {
+        [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken,
+      },
       name: "should reject a valid token from a non-loopback address",
       remoteAddress: "203.0.113.1",
     },
@@ -65,7 +67,9 @@ const TEST_DATA = {
       expectedAccepted: BOOLEAN_TRUE,
       expectedStatus: ACCEPTED,
       expectsClose: BOOLEAN_TRUE,
-      headers: { [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken },
+      headers: {
+        [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken,
+      },
       name: "should accept a valid token from a loopback address",
       remoteAddress: LOOPBACK_HOST_V4,
     },
@@ -86,7 +90,10 @@ describe("shutdownRoute", () => {
       }) => {
         it(name, async ({ expect, onTestFinished }) => {
           const app = createTestApp(onTestFinished);
-          const handle = { close: vi.fn(), uninstall: vi.fn() };
+          const handle = {
+            close: vi.fn(),
+            uninstall: vi.fn(),
+          };
 
           await app.register(shutdownRoute, {
             handle: castAsType<ShutdownRouteOptions["handle"]>(handle),

@@ -20,7 +20,10 @@ const buildLoggerOptions = (
     base: { service: serviceName },
     level: logLevel,
     ...(redactPaths.length > 0 && {
-      redact: { censor: "[REDACTED]", paths: [...redactPaths] },
+      redact: {
+        censor: "[REDACTED]",
+        paths: [...redactPaths],
+      },
     }),
     ...(isDevelopment && { transport: PRETTY_TRANSPORT }),
   };

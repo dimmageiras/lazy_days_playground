@@ -122,9 +122,10 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
     return (
       carrier: ViteAppEnv,
     ): { closeError?: Error; registerError?: Error } =>
-      castAsType<{ closeError?: Error; registerError?: Error }>(
-        Reflect.get(carrier, this.SCENARIO_KEY),
-      );
+      castAsType<{
+        closeError?: Error;
+        registerError?: Error;
+      }>(Reflect.get(carrier, this.SCENARIO_KEY));
   },
 } as const;
 
@@ -173,7 +174,10 @@ describe("AppBuildHelper", () => {
       );
 
       expect(mockFastify.mock.calls.at(fastifyCallIndex)).toStrictEqual([
-        { loggerInstance: env, requestTimeout: SECONDS_TEN },
+        {
+          loggerInstance: env,
+          requestTimeout: SECONDS_TEN,
+        },
       ]);
       expect(instance.decorate).toHaveBeenNthCalledWith(1, "appEnv", env);
       expect(instance.register).toHaveBeenNthCalledWith(
@@ -195,7 +199,9 @@ describe("AppBuildHelper", () => {
     it("should log the failure, close the instance, and rethrow when a build step fails", async ({
       expect,
     }) => {
-      const env = makeEnv({ registerError: TEST_DATA.ERROR });
+      const env = makeEnv({
+        registerError: TEST_DATA.ERROR,
+      });
 
       await expect(build(env, TEST_DATA.HOT, TEST_DATA.MODULES)).rejects.toBe(
         TEST_DATA.ERROR,

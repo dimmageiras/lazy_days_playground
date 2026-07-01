@@ -43,7 +43,10 @@ Error and warning calls take a **structured object first, message second**:
 
 ```ts
 logger.error(
-  { error: error.message, stack: error.stack /*, …context */ },
+  {
+    error: error.message,
+    stack: error.stack /*, …context */,
+  },
   "💥 Failed to do the thing",
 );
 ```

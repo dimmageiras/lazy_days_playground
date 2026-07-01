@@ -29,19 +29,46 @@ const { isInteger, isNumber } = NumberHelper;
 const TEST_DATA = {
   DECIMAL: 3.14,
   NON_NUMBER_CASES: [
-    { name: "should return false for NaN", value: NAN_VALUE },
+    {
+      name: "should return false for NaN",
+      value: NAN_VALUE,
+    },
     {
       name: "should return false for Infinity",
       value: Number.POSITIVE_INFINITY,
     },
-    { name: "should return false for a string", value: COMMON_STRING },
-    { name: "should return false for a boolean", value: BOOLEAN_TRUE },
-    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
-    { name: "should return false for a plain object", value: EMPTY_OBJECT },
-    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
-    { name: "should return false for an array", value: EMPTY_ARRAY },
-    { name: "should return false for null", value: NULL_VALUE },
-    { name: "should return false for undefined", value: UNDEFINED_VALUE },
+    {
+      name: "should return false for a string",
+      value: COMMON_STRING,
+    },
+    {
+      name: "should return false for a boolean",
+      value: BOOLEAN_TRUE,
+    },
+    {
+      name: "should return false for a Map",
+      value: EMPTY_IMMUTABLE_MAP,
+    },
+    {
+      name: "should return false for a plain object",
+      value: EMPTY_OBJECT,
+    },
+    {
+      name: "should return false for a Set",
+      value: EMPTY_IMMUTABLE_SET,
+    },
+    {
+      name: "should return false for an array",
+      value: EMPTY_ARRAY,
+    },
+    {
+      name: "should return false for null",
+      value: NULL_VALUE,
+    },
+    {
+      name: "should return false for undefined",
+      value: UNDEFINED_VALUE,
+    },
   ],
   TYPE_TEST: {
     UNKNOWN_NUMBER: toUnknown(COMMON_NUMBER),

@@ -26,16 +26,18 @@ const shutdownRoute = async (
         "🚧 Rejected an unauthorized shutdown request",
       );
 
-      return reply
-        .status(UNAUTHORIZED)
-        .send({ accepted: false, timestamp: getCurrentISOTimestamp() });
+      return reply.status(UNAUTHORIZED).send({
+        accepted: false,
+        timestamp: getCurrentISOTimestamp(),
+      });
     }
 
     armShutdownOnResponse(reply, handle);
 
-    return reply
-      .status(ACCEPTED)
-      .send({ accepted: true, timestamp: getCurrentISOTimestamp() });
+    return reply.status(ACCEPTED).send({
+      accepted: true,
+      timestamp: getCurrentISOTimestamp(),
+    });
   });
 };
 

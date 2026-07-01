@@ -74,7 +74,9 @@ describe("CloseWithGraceHelper", () => {
     }) => {
       const instance = makeInstance();
 
-      await buildShutdownHandler(instance)({ err: TEST_DATA.ERROR });
+      await buildShutdownHandler(instance)({
+        err: TEST_DATA.ERROR,
+      });
 
       expect(instance.log.fatal).toHaveBeenNthCalledWith(
         1,

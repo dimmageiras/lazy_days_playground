@@ -10,7 +10,9 @@ vi.mock("axios", async (importOriginal) => {
 
   return {
     ...actual,
-    default: Object.assign(actual.default, { post: mockAxiosPost }),
+    default: Object.assign(actual.default, {
+      post: mockAxiosPost,
+    }),
   };
 });
 
