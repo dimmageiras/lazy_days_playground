@@ -13,9 +13,11 @@ type ServiceName = ViteAppEnv["VITE_APP_SERVICE_NAME"];
 type ShutdownToken = ViteAppEnv["VITE_APP_SHUTDOWN_TOKEN"];
 
 type AppEnv = {
-  readonly [Key in keyof ViteAppEnv as Key extends `VITE_APP_${infer Suffix}`
-    ? CamelCase<Suffix>
-    : never]: ViteAppEnv[Key];
+  readonly [
+    Key in keyof ViteAppEnv as Key extends `VITE_APP_${infer Suffix}`
+      ? CamelCase<Suffix>
+      : never
+  ]: ViteAppEnv[Key];
 };
 
 export type {

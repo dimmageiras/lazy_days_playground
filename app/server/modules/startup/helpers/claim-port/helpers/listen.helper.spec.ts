@@ -71,7 +71,9 @@ describe("ListenHelper", () => {
   describe("tryListen", (it) => {
     TEST_DATA.TRY_LISTEN_CASES.forEach(({ expected, name, rejection }) => {
       it(name, async ({ expect }) => {
-        const instance = createMockInstance({ listen: makeListen(rejection) });
+        const instance = createMockInstance({
+          listen: makeListen(rejection),
+        });
 
         expect(await tryListen(instance)).toBe(expected);
       });

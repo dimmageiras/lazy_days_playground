@@ -32,7 +32,10 @@ const TEST_DATA = {
   FALLBACK_OPTIONS: { level: COMMON_LOG_LEVEL },
   OPTIONS_CASES: [
     {
-      expected: { base: { service: COMMON_STRING }, level: COMMON_LOG_LEVEL },
+      expected: {
+        base: { service: COMMON_STRING },
+        level: COMMON_LOG_LEVEL,
+      },
       isDevelopment: BOOLEAN_FALSE,
       name: "should build minimal options for production without redact paths",
       withRedaction: BOOLEAN_FALSE,
@@ -51,7 +54,10 @@ const TEST_DATA = {
       expected: {
         base: { service: COMMON_STRING },
         level: COMMON_LOG_LEVEL,
-        redact: { censor: "[REDACTED]", paths: [...COMMON_STRING_ARRAY] },
+        redact: {
+          censor: "[REDACTED]",
+          paths: [...COMMON_STRING_ARRAY],
+        },
       },
       isDevelopment: BOOLEAN_FALSE,
       name: "should censor the given redact paths",
@@ -61,7 +67,10 @@ const TEST_DATA = {
       expected: {
         base: { service: COMMON_STRING },
         level: COMMON_LOG_LEVEL,
-        redact: { censor: "[REDACTED]", paths: [...COMMON_STRING_ARRAY] },
+        redact: {
+          censor: "[REDACTED]",
+          paths: [...COMMON_STRING_ARRAY],
+        },
         transport: PRETTY_TRANSPORT,
       },
       isDevelopment: BOOLEAN_TRUE,

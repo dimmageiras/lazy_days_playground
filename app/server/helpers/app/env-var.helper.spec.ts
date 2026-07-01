@@ -36,13 +36,34 @@ const TEST_DATA = {
   },
   MISSING_ENV: castAsType<ImportMetaEnv>(EMPTY_OBJECT),
   REJECTED_PORT_FORMAT_CASES: [
-    { name: "should reject an empty port string", port: EMPTY_STRING },
-    { name: "should reject a whitespace-padded port", port: ` ${VALID_PORT} ` },
-    { name: "should reject a hex literal port", port: "0x100" },
-    { name: "should reject a scientific-notation port", port: "1e3" },
-    { name: "should reject a signed port", port: `+${VALID_PORT}` },
-    { name: "should reject a negative-signed port", port: `-${VALID_PORT}` },
-    { name: "should reject a decimal port", port: `${VALID_PORT}.0` },
+    {
+      name: "should reject an empty port string",
+      port: EMPTY_STRING,
+    },
+    {
+      name: "should reject a whitespace-padded port",
+      port: ` ${VALID_PORT} `,
+    },
+    {
+      name: "should reject a hex literal port",
+      port: "0x100",
+    },
+    {
+      name: "should reject a scientific-notation port",
+      port: "1e3",
+    },
+    {
+      name: "should reject a signed port",
+      port: `+${VALID_PORT}`,
+    },
+    {
+      name: "should reject a negative-signed port",
+      port: `-${VALID_PORT}`,
+    },
+    {
+      name: "should reject a decimal port",
+      port: `${VALID_PORT}.0`,
+    },
   ],
   VALID_ENV: VALID_RAW_DEV_ENV,
 } as const;

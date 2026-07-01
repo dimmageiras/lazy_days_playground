@@ -26,7 +26,10 @@ vi.mock("./env-var.helper", async (importOriginal) => {
 
   return {
     ...actual,
-    EnvVarHelper: { ...actual.EnvVarHelper, validateEnv: mockValidateEnv },
+    EnvVarHelper: {
+      ...actual.EnvVarHelper,
+      validateEnv: mockValidateEnv,
+    },
   };
 });
 
@@ -122,7 +125,9 @@ const {
   get makeModules() {
     return () => {
       const fallbackFatal = vi.fn();
-      const buildFallbackLogger = vi.fn(() => ({ fatal: fallbackFatal }));
+      const buildFallbackLogger = vi.fn(() => ({
+        fatal: fallbackFatal,
+      }));
       const buildLogger = vi.fn();
       const claimPort = vi.fn();
       const setupShutdown = vi.fn();
@@ -133,7 +138,10 @@ const {
         fallbackFatal,
         modules: castAsType<Parameters<typeof start>[2]>({
           logger: { buildFallbackLogger, buildLogger },
-          shutdown: { redactPaths: this.REDACT_PATHS, setupShutdown },
+          shutdown: {
+            redactPaths: this.REDACT_PATHS,
+            setupShutdown,
+          },
           startup: { claimPort },
         }),
         setupShutdown,
@@ -143,10 +151,16 @@ const {
   get scenarioOf() {
     return (
       carrier: ImportMetaEnv,
-    ): { buildError?: Error; closeError?: Error; envError?: Error } =>
-      castAsType<{ buildError?: Error; closeError?: Error; envError?: Error }>(
-        Reflect.get(carrier, this.SCENARIO_KEY),
-      );
+    ): {
+      buildError?: Error;
+      closeError?: Error;
+      envError?: Error;
+    } =>
+      castAsType<{
+        buildError?: Error;
+        closeError?: Error;
+        envError?: Error;
+      }>(Reflect.get(carrier, this.SCENARIO_KEY));
   },
 } as const;
 
@@ -212,7 +226,10 @@ describe("AppStartHelper", () => {
           TEST_DATA.HOT,
           {
             logger: { buildLogger },
-            shutdown: { redactPaths: TEST_DATA.REDACT_PATHS, setupShutdown },
+            shutdown: {
+              redactPaths: TEST_DATA.REDACT_PATHS,
+              setupShutdown,
+            },
           },
         ],
       ]);
@@ -224,7 +241,9 @@ describe("AppStartHelper", () => {
     it("should log the validation-error message and exit when the environment is invalid", async ({
       expect,
     }) => {
-      const env = makeEnv({ envError: TEST_DATA.ENV_VALIDATION_ERROR });
+      const env = makeEnv({
+        envError: TEST_DATA.ENV_VALIDATION_ERROR,
+      });
       const { fallbackFatal, modules } = makeModules();
 
       await expect(start(env, TEST_DATA.HOT, modules)).rejects.toBe(
@@ -244,7 +263,9 @@ describe("AppStartHelper", () => {
     it("should log the unexpected-error message and exit when validation throws unexpectedly", async ({
       expect,
     }) => {
-      const env = makeEnv({ envError: TEST_DATA.ENV_UNEXPECTED_ERROR });
+      const env = makeEnv({
+        envError: TEST_DATA.ENV_UNEXPECTED_ERROR,
+      });
       const { fallbackFatal, modules } = makeModules();
 
       await expect(start(env, TEST_DATA.HOT, modules)).rejects.toBe(
@@ -264,7 +285,9 @@ describe("AppStartHelper", () => {
     it("should log via the fallback logger and exit when building the app fails", async ({
       expect,
     }) => {
-      const env = makeEnv({ buildError: TEST_DATA.BUILD_ERROR });
+      const env = makeEnv({
+        buildError: TEST_DATA.BUILD_ERROR,
+      });
       const { claimPort, fallbackFatal, modules } = makeModules();
 
       await expect(start(env, TEST_DATA.HOT, modules)).rejects.toBe(
@@ -305,7 +328,9 @@ describe("AppStartHelper", () => {
     it("should also log the close failure when closing the instance fails after a startup failure", async ({
       expect,
     }) => {
-      const env = makeEnv({ closeError: TEST_DATA.CLOSE_ERROR });
+      const env = makeEnv({
+        closeError: TEST_DATA.CLOSE_ERROR,
+      });
       const { claimPort, modules } = makeModules();
 
       claimPort.mockRejectedValue(TEST_DATA.CLAIM_ERROR);

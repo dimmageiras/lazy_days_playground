@@ -34,19 +34,52 @@ const TEST_DATA = {
       name: "should return true for a populated array",
       value: COMMON_NUMBER_ARRAY,
     },
-    { name: "should return true for an empty array", value: EMPTY_ARRAY },
+    {
+      name: "should return true for an empty array",
+      value: EMPTY_ARRAY,
+    },
   ],
   NON_ARRAY_CASES: [
-    { name: "should return false for a boolean", value: BOOLEAN_TRUE },
-    { name: "should return false for a Map", value: EMPTY_IMMUTABLE_MAP },
-    { name: "should return false for a number", value: COMMON_NUMBER },
-    { name: "should return false for a plain object", value: EMPTY_OBJECT },
-    { name: "should return false for a Set", value: EMPTY_IMMUTABLE_SET },
-    { name: "should return false for a string", value: COMMON_STRING },
-    { name: "should return false for a Uint8Array", value: new Uint8Array() },
-    { name: "should return false for NaN", value: NAN_VALUE },
-    { name: "should return false for null", value: NULL_VALUE },
-    { name: "should return false for undefined", value: UNDEFINED_VALUE },
+    {
+      name: "should return false for a boolean",
+      value: BOOLEAN_TRUE,
+    },
+    {
+      name: "should return false for a Map",
+      value: EMPTY_IMMUTABLE_MAP,
+    },
+    {
+      name: "should return false for a number",
+      value: COMMON_NUMBER,
+    },
+    {
+      name: "should return false for a plain object",
+      value: EMPTY_OBJECT,
+    },
+    {
+      name: "should return false for a Set",
+      value: EMPTY_IMMUTABLE_SET,
+    },
+    {
+      name: "should return false for a string",
+      value: COMMON_STRING,
+    },
+    {
+      name: "should return false for a Uint8Array",
+      value: new Uint8Array(),
+    },
+    {
+      name: "should return false for NaN",
+      value: NAN_VALUE,
+    },
+    {
+      name: "should return false for null",
+      value: NULL_VALUE,
+    },
+    {
+      name: "should return false for undefined",
+      value: UNDEFINED_VALUE,
+    },
     {
       name: "should return false for an arguments object",
       value: (function () {

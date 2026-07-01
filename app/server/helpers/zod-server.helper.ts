@@ -27,7 +27,11 @@ const addCustomIssue = (
   message: string,
   code: IssueCodes,
 ): void => {
-  context.addIssue({ code: ISSUE_CODES.CUSTOM, message, params: { code } });
+  context.addIssue({
+    code: ISSUE_CODES.CUSTOM,
+    message,
+    params: { code },
+  });
 };
 
 const getFormattedZodIssues = (

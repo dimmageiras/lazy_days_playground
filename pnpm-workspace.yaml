@@ -24,4 +24,4 @@ managePackageManagerVersions: true
 minimumReleaseAge: 0
 
 patchedDependencies:
-  '@types/eslint-plugin-security@3.0.1': .configs/pnpm/patches/@types__eslint-plugin-security@3.0.1.patch
+  "@types/eslint-plugin-security@3.0.1": .configs/pnpm/patches/@types__eslint-plugin-security@3.0.1.patch

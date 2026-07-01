@@ -104,7 +104,9 @@ describe("CooperativeShutdownHelper", () => {
       expect,
     }) => {
       const result = await requestCooperativeShutdown(
-        createMockInstance({ appEnv: { port: castAsType<Port>(VALID_PORT) } }),
+        createMockInstance({
+          appEnv: { port: castAsType<Port>(VALID_PORT) },
+        }),
       );
 
       const shutdownCalls = mockAxiosPost.mock.calls.filter(
@@ -116,7 +118,9 @@ describe("CooperativeShutdownHelper", () => {
         TEST_DATA.URL,
         EMPTY_OBJECT,
         expect.objectContaining({
-          headers: { [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken },
+          headers: {
+            [SHUTDOWN_TOKEN]: VALID_DEV_APP_ENV.shutdownToken,
+          },
         }),
       ]);
       expect(result).toBe(BOOLEAN_TRUE);

@@ -115,7 +115,10 @@ const { makeInstance, scenarioOf, ...TEST_DATA } = {
           killPortOwner: this.FORCE_KILLED,
           requestCooperativeShutdown: [BOOLEAN_TRUE, BOOLEAN_FALSE],
           tryListen: [BOOLEAN_FALSE],
-          tryListenUntil: { cooperative: BOOLEAN_FALSE, force: BOOLEAN_FALSE },
+          tryListenUntil: {
+            cooperative: BOOLEAN_FALSE,
+            force: BOOLEAN_FALSE,
+          },
         },
       },
     ];
@@ -153,7 +156,10 @@ const { makeInstance, scenarioOf, ...TEST_DATA } = {
           killPortOwner: this.FORCE_KILLED,
           requestCooperativeShutdown: [BOOLEAN_TRUE, BOOLEAN_FALSE],
           tryListen: [BOOLEAN_FALSE],
-          tryListenUntil: { cooperative: BOOLEAN_FALSE, force: BOOLEAN_TRUE },
+          tryListenUntil: {
+            cooperative: BOOLEAN_FALSE,
+            force: BOOLEAN_TRUE,
+          },
         },
       },
     ];
@@ -163,7 +169,10 @@ const { makeInstance, scenarioOf, ...TEST_DATA } = {
       killPortOwner?: KillPortOwnerResult;
       requestCooperativeShutdown: ReadonlyArray<boolean>;
       tryListen: ReadonlyArray<boolean>;
-      tryListenUntil: { cooperative?: boolean; force?: boolean };
+      tryListenUntil: {
+        cooperative?: boolean;
+        force?: boolean;
+      };
     }): AppInstance => {
       const instance = createMockInstance();
 
@@ -183,7 +192,10 @@ const { makeInstance, scenarioOf, ...TEST_DATA } = {
         killPortOwner: KillPortOwnerResult | undefined;
         requestCooperativeShutdown: Array<boolean>;
         tryListen: Array<boolean>;
-        tryListenUntil: { cooperative?: boolean; force?: boolean };
+        tryListenUntil: {
+          cooperative?: boolean;
+          force?: boolean;
+        };
       }>(Reflect.get(instance, this.SCENARIO_KEY));
   },
 } as const;

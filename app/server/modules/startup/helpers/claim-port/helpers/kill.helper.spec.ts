@@ -53,7 +53,11 @@ const { lookupPort, ...TEST_DATA } = {
   SELF_PID: "self-pid",
   get FAILURE_CASES() {
     return castAsType<
-      Array<{ name: string; port: Port; reason: KillFailureReason }>
+      Array<{
+        name: string;
+        port: Port;
+        reason: KillFailureReason;
+      }>
     >([
       {
         name: "should fail with self-pid when the owner is this process",
@@ -136,7 +140,9 @@ describe("KillHelper", () => {
       expect,
     }) => {
       const result = await killPortOwner(
-        createMockInstance({ appEnv: { port: TEST_DATA.PORT_OK } }),
+        createMockInstance({
+          appEnv: { port: TEST_DATA.PORT_OK },
+        }),
         SIGTERM,
       );
 
@@ -145,10 +151,7 @@ describe("KillHelper", () => {
       );
 
       expect(killCalls).toHaveLength(1);
-      expect(killCalls[0]).toStrictEqual([
-        TEST_DATA.FOREIGN_PID,
-        SIGTERM,
-      ]);
+      expect(killCalls[0]).toStrictEqual([TEST_DATA.FOREIGN_PID, SIGTERM]);
       expect(result).toStrictEqual({ ok: BOOLEAN_TRUE });
     });
 
@@ -156,7 +159,9 @@ describe("KillHelper", () => {
       expect,
     }) => {
       const result = await killPortOwner(
-        createMockInstance({ appEnv: { port: TEST_DATA.PORT_SELF_PID } }),
+        createMockInstance({
+          appEnv: { port: TEST_DATA.PORT_SELF_PID },
+        }),
         SIGTERM,
       );
 
@@ -178,7 +183,10 @@ describe("KillHelper", () => {
           SIGTERM,
         );
 
-        expect(result).toStrictEqual({ ok: BOOLEAN_FALSE, reason });
+        expect(result).toStrictEqual({
+          ok: BOOLEAN_FALSE,
+          reason,
+        });
       });
     });
   });

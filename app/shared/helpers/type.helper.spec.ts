@@ -24,13 +24,34 @@ const { castAsType } = TypeHelper;
 
 const TEST_DATA = {
   IDENTITY_CASES: [
-    { name: "should return a string unchanged", value: COMMON_STRING },
-    { name: "should return a number unchanged", value: COMMON_NUMBER },
-    { name: "should return a boolean unchanged", value: BOOLEAN_TRUE },
-    { name: "should return the same object reference", value: EMPTY_OBJECT },
-    { name: "should return the same array reference", value: EMPTY_ARRAY },
-    { name: "should return null unchanged", value: NULL_VALUE },
-    { name: "should return undefined unchanged", value: UNDEFINED_VALUE },
+    {
+      name: "should return a string unchanged",
+      value: COMMON_STRING,
+    },
+    {
+      name: "should return a number unchanged",
+      value: COMMON_NUMBER,
+    },
+    {
+      name: "should return a boolean unchanged",
+      value: BOOLEAN_TRUE,
+    },
+    {
+      name: "should return the same object reference",
+      value: EMPTY_OBJECT,
+    },
+    {
+      name: "should return the same array reference",
+      value: EMPTY_ARRAY,
+    },
+    {
+      name: "should return null unchanged",
+      value: NULL_VALUE,
+    },
+    {
+      name: "should return undefined unchanged",
+      value: UNDEFINED_VALUE,
+    },
   ],
   TYPE_TEST: {
     UNKNOWN_NUMBER: toUnknown(COMMON_NUMBER),

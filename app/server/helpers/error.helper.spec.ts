@@ -53,12 +53,16 @@ const TEST_DATA = {
   ERRNO_CASES: [
     {
       expected: BOOLEAN_TRUE,
-      input: Object.assign(new Error(COMMON_STRING), { code: COMMON_STRING }),
+      input: Object.assign(new Error(COMMON_STRING), {
+        code: COMMON_STRING,
+      }),
       name: "should accept an Error carrying a string code",
     },
     {
       expected: BOOLEAN_FALSE,
-      input: Object.assign(new Error(COMMON_STRING), { code: COMMON_NUMBER }),
+      input: Object.assign(new Error(COMMON_STRING), {
+        code: COMMON_NUMBER,
+      }),
       name: "should reject an Error whose code is not a string",
     },
     {
@@ -91,7 +95,9 @@ describe("ErrorHelper", () => {
       expect,
     }) => {
       const error = toUnknown(
-        Object.assign(new Error(COMMON_STRING), { code: COMMON_STRING }),
+        Object.assign(new Error(COMMON_STRING), {
+          code: COMMON_STRING,
+        }),
       );
 
       expect(isErrnoException(error)).toBe(BOOLEAN_TRUE);
@@ -148,7 +154,9 @@ describe("ErrorHelper", () => {
     it("should pass through an undefined stack", ({ expect }) => {
       const error = new Error(COMMON_STRING);
 
-      Object.defineProperty(error, "stack", { value: UNDEFINED_VALUE });
+      Object.defineProperty(error, "stack", {
+        value: UNDEFINED_VALUE,
+      });
 
       expect(normalizeError(error)).toStrictEqual({
         error: COMMON_STRING,

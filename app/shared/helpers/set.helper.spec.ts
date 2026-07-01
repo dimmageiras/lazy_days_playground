@@ -30,88 +30,83 @@ const { castAsType } = TypeHelper;
 
 const { addValuesInPlace, hasSetValue, stripValuesInPlace } = SetHelper;
 
-const {
-  makeImmutableSet,
-  makeMultiSet,
-  makeNumberSet,
-  makeSet,
-  ...TEST_DATA
-} = {
-  ADD_CASES: [
-    {
-      expectedSize: 2,
-      name: "should add a value absent from the set",
-      values: [STRING_B],
+const { makeImmutableSet, makeMultiSet, makeNumberSet, makeSet, ...TEST_DATA } =
+  {
+    ADD_CASES: [
+      {
+        expectedSize: 2,
+        name: "should add a value absent from the set",
+        values: [STRING_B],
+      },
+      {
+        expectedSize: 1,
+        name: "should keep an already-present value present without growing",
+        values: [STRING_A],
+      },
+      {
+        expectedSize: 2,
+        name: "should add several values in one call",
+        values: [STRING_A, STRING_B],
+      },
+      {
+        expectedSize: 1,
+        name: "should be a no-op for an empty values array",
+        values: EMPTY_ARRAY,
+      },
+    ],
+    DELETE_CASES: [
+      {
+        expectedSize: 0,
+        name: "should remove a value present in the set",
+        values: [STRING_A],
+      },
+      {
+        expectedSize: 1,
+        name: "should be a no-op for a value absent from the set",
+        values: [STRING_B],
+      },
+      {
+        expectedSize: 0,
+        name: "should remove the present value and ignore the absent one in the same call",
+        values: [STRING_A, STRING_B],
+      },
+      {
+        expectedSize: 1,
+        name: "should be a no-op for an empty values array",
+        values: EMPTY_ARRAY,
+      },
+    ],
+    MEMBERSHIP_CASES: [
+      {
+        expected: BOOLEAN_TRUE,
+        name: "should return true for a value present in the set",
+        value: STRING_A,
+      },
+      {
+        expected: BOOLEAN_FALSE,
+        name: "should return false for a value absent from the set",
+        value: STRING_B,
+      },
+    ],
+    MULTI_SET_ELEMENTS: COMMON_TWO_STRING_ARRAY,
+    SET_ELEMENTS: COMMON_ONE_STRING_ARRAY,
+    TYPE_TEST: {
+      MEMBER: castAsType<string>(STRING_A),
+      NON_MEMBER: castAsType<string>(STRING_B),
     },
-    {
-      expectedSize: 1,
-      name: "should keep an already-present value present without growing",
-      values: [STRING_A],
+    get makeImmutableSet() {
+      return () => ImmutableSet<string>(this.SET_ELEMENTS);
     },
-    {
-      expectedSize: 2,
-      name: "should add several values in one call",
-      values: [STRING_A, STRING_B],
+    get makeMultiSet() {
+      return () => new Set<string>(this.MULTI_SET_ELEMENTS);
     },
-    {
-      expectedSize: 1,
-      name: "should be a no-op for an empty values array",
-      values: EMPTY_ARRAY,
+    get makeNumberSet() {
+      return () => new Set<number>(COMMON_NUMBER_ARRAY);
     },
-  ],
-  DELETE_CASES: [
-    {
-      expectedSize: 0,
-      name: "should remove a value present in the set",
-      values: [STRING_A],
+    get makeSet() {
+      return () => new Set<string>(this.SET_ELEMENTS);
     },
-    {
-      expectedSize: 1,
-      name: "should be a no-op for a value absent from the set",
-      values: [STRING_B],
-    },
-    {
-      expectedSize: 0,
-      name: "should remove the present value and ignore the absent one in the same call",
-      values: [STRING_A, STRING_B],
-    },
-    {
-      expectedSize: 1,
-      name: "should be a no-op for an empty values array",
-      values: EMPTY_ARRAY,
-    },
-  ],
-  MEMBERSHIP_CASES: [
-    {
-      expected: BOOLEAN_TRUE,
-      name: "should return true for a value present in the set",
-      value: STRING_A,
-    },
-    {
-      expected: BOOLEAN_FALSE,
-      name: "should return false for a value absent from the set",
-      value: STRING_B,
-    },
-  ],
-  MULTI_SET_ELEMENTS: COMMON_TWO_STRING_ARRAY,
-  SET_ELEMENTS: COMMON_ONE_STRING_ARRAY,
-  TYPE_TEST: {
-    MEMBER: castAsType<string>(STRING_A),
-    NON_MEMBER: castAsType<string>(STRING_B),
-  },
-  get makeImmutableSet() {
-    return () => ImmutableSet<string>(this.SET_ELEMENTS);
-  },
-  get makeMultiSet() {
-    return () => new Set<string>(this.MULTI_SET_ELEMENTS);
-  },
-  get makeNumberSet() {
-    return () => new Set<number>(COMMON_NUMBER_ARRAY);
-  },
-  get makeSet() {
-    return () => new Set<string>(this.SET_ELEMENTS);
-  },
-} as const;
+  } as const;
 
 describe("SetHelper", () => {
   describe("addValuesInPlace", (it) => {

@@ -45,8 +45,7 @@ type SetValue<TSet extends AnySet> =
       : never;
 
 type SetValueInput<TSet extends AnySet> =
-  | SetValue<TSet>
-  | LiteralToPrimitive<SetValue<TSet>>;
+  SetValue<TSet> | LiteralToPrimitive<SetValue<TSet>>;
 
 export type {
   AnyMap,
