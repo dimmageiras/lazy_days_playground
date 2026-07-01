@@ -1,7 +1,7 @@
 # 0020. The application composition root is a helper
 
-- **Status:** Proposed
-- **Date:** 2026-06-26
+- **Status:** Accepted
+- **Date:** 2026-06-30
 
 ## Context
 
