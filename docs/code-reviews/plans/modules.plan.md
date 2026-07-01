@@ -25,6 +25,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 | ------------------------------- | -------------------------------------------------------------------------------------------------- |
 | `code-review-and-quality`       | Multi-axis baseline                                                                                |
 | `improve-codebase-architecture` | Module boundaries, encapsulation depth, the helper-vs-module call, cross-module coupling, cohesion |
+| `codebase-design`               | Deep-module vocabulary — interface vs implementation, seam placement, deepening opportunities      |
 
 Invoke conditionally, by what the module under review contains:
 
