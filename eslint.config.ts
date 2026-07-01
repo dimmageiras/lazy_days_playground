@@ -2,6 +2,7 @@ import pluginJS from "@eslint/js";
 import tsParser from "@typescript-eslint/parser";
 import type { Linter } from "eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
+import configPrettier from "eslint-config-prettier";
 import pluginSecurity from "eslint-plugin-security";
 import pluginSimpleImportSort from "eslint-plugin-simple-import-sort";
 import { configs as pluginSonarjsConfigs } from "eslint-plugin-sonarjs";
@@ -12,7 +13,7 @@ import tsEslint from "typescript-eslint";
 
 const tsconfigRootDir = path.dirname(fileURLToPath(import.meta.url));
 
-export default defineConfig([
+const eslintConfig = defineConfig([
   globalIgnores([".claude", ".tsc-cache", "logs"]),
   {
     extends: [
@@ -20,6 +21,7 @@ export default defineConfig([
       tsEslint.configs.recommended,
       pluginSonarjsConfigs.recommended,
       pluginSecurity.configs.recommended,
+      configPrettier,
     ],
     languageOptions: {
       ecmaVersion: "latest",
@@ -105,14 +107,34 @@ export default defineConfig([
       "no-use-before-define": "error",
       "padding-line-between-statements": [
         "error",
-        { blankLine: "always", prev: "*", next: "block-like" },
+        {
+          blankLine: "always",
+          prev: "*",
+          next: "block-like",
+        },
         { blankLine: "always", prev: "*", next: "block" },
         { blankLine: "always", prev: "*", next: "return" },
-        { blankLine: "always", prev: "block-like", next: "*" },
+        {
+          blankLine: "always",
+          prev: "block-like",
+          next: "*",
+        },
         { blankLine: "always", prev: "block", next: "*" },
-        { blankLine: "always", prev: ["const", "let", "var"], next: "*" },
-        { blankLine: "any", prev: "case", next: ["case", "default"] },
-        { blankLine: "any", prev: ["case", "default"], next: "break" },
+        {
+          blankLine: "always",
+          prev: ["const", "let", "var"],
+          next: "*",
+        },
+        {
+          blankLine: "any",
+          prev: "case",
+          next: ["case", "default"],
+        },
+        {
+          blankLine: "any",
+          prev: ["case", "default"],
+          next: "break",
+        },
         {
           blankLine: "any",
           prev: ["const", "let", "var"],
@@ -161,3 +183,5 @@ export default defineConfig([
     },
   },
 ]) satisfies Array<Linter.Config>;
+
+export default eslintConfig;
