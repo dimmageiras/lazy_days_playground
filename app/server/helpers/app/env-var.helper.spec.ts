@@ -15,7 +15,7 @@ const {
     EMPTY_OBJECT,
     EMPTY_STRING,
     MIN_PORT,
-    VALID_PORT,
+    VALID_PORT_1,
     VALID_RAW_DEV_ENV,
     VALID_VITE_APP_ENV,
   },
@@ -43,7 +43,7 @@ const TEST_DATA = {
     },
     {
       name: "should reject a whitespace-padded port",
-      port: ` ${VALID_PORT} `,
+      port: ` ${VALID_PORT_1} `,
     },
     {
       name: "should reject a hex literal port",
@@ -55,15 +55,15 @@ const TEST_DATA = {
     },
     {
       name: "should reject a signed port",
-      port: `+${VALID_PORT}`,
+      port: `+${VALID_PORT_1}`,
     },
     {
       name: "should reject a negative-signed port",
-      port: `-${VALID_PORT}`,
+      port: `-${VALID_PORT_1}`,
     },
     {
       name: "should reject a decimal port",
-      port: `${VALID_PORT}.0`,
+      port: `${VALID_PORT_1}.0`,
     },
   ],
   VALID_ENV: VALID_RAW_DEV_ENV,

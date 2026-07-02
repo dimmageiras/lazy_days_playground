@@ -24,7 +24,7 @@ const {
     MAX_PORT,
     MIN_PORT,
     VALID_DEV_APP_ENV,
-    VALID_PORT,
+    VALID_PORT_1,
   },
   trackLeaksInSpec,
 } = VitestSetup();
@@ -53,7 +53,7 @@ const { respondToPost, ...TEST_DATA } = {
     {
       expected: BOOLEAN_FALSE,
       name: "should resolve false when the shutdown request fails",
-      port: VALID_PORT + 1,
+      port: VALID_PORT_1 + 1,
     },
     {
       expected: BOOLEAN_FALSE,
@@ -66,10 +66,10 @@ const { respondToPost, ...TEST_DATA } = {
       port: MAX_PORT + 1,
     },
   ]),
-  URL: `${HTTP}://${LOOPBACK_HOST_V4}:${VALID_PORT}${API_INTERNAL}/${SHUTDOWN}`,
+  URL: `${HTTP}://${LOOPBACK_HOST_V4}:${VALID_PORT_1}${API_INTERNAL}/${SHUTDOWN}`,
   get respondToPost() {
     return async (url: string) => {
-      if (url.includes(`:${VALID_PORT + 1}`)) {
+      if (url.includes(`:${VALID_PORT_1 + 1}`)) {
         throw TEST_DATA.CONNECTION_REFUSED;
       }
 
@@ -105,7 +105,7 @@ describe("CooperativeShutdownHelper", () => {
     }) => {
       const result = await requestCooperativeShutdown(
         createMockInstance({
-          appEnv: { port: castAsType<Port>(VALID_PORT) },
+          appEnv: { port: castAsType<Port>(VALID_PORT_1) },
         }),
       );
 

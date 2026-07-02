@@ -1,4 +1,5 @@
 const API_HEALTH_ENDPOINTS = Object.freeze({
+  DB: "db",
   SERVER: "server",
 } as const);
 

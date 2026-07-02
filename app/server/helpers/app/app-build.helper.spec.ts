@@ -17,12 +17,14 @@ const {
   mockBuildAppEnv,
   mockBuildLogger,
   mockFastify,
+  mockSetupDb,
   mockSetupShutdown,
 } = vi.hoisted(() => ({
   mockApiHealthRoutes: vi.fn(),
   mockBuildAppEnv: vi.fn(),
   mockBuildLogger: vi.fn(),
   mockFastify: vi.fn(),
+  mockSetupDb: vi.fn(),
   mockSetupShutdown: vi.fn(),
 }));
 
@@ -63,6 +65,7 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
   SCENARIO_KEY: "__appHelperScenario",
   get MODULES() {
     return {
+      db: { setupDb: mockSetupDb },
       logger: { buildLogger: mockBuildLogger },
       shutdown: {
         redactPaths: this.REDACT_PATHS,
@@ -152,6 +155,7 @@ describe("AppBuildHelper", () => {
       mockBuildAppEnv.mockReset();
       mockBuildLogger.mockReset();
       mockFastify.mockReset();
+      mockSetupDb.mockReset();
       mockSetupShutdown.mockReset();
     });
 
@@ -180,6 +184,11 @@ describe("AppBuildHelper", () => {
         },
       ]);
       expect(instance.decorate).toHaveBeenNthCalledWith(1, "appEnv", env);
+      expect(
+        mockSetupDb.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance]]);
       expect(instance.register).toHaveBeenNthCalledWith(
         1,
         mockApiHealthRoutes,
