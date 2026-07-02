@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "printf '%s\\n' '<invocation-rules-reminder>' 'Hook-injected reminder of .claude/rules/invocations/:' '- Invoke the caveman skill now if not already active this session (compressed output; still use plain language when the user asks for an explanation).' '- If superpowers:* skills are listed, invoke superpowers:using-superpowers before any other skill or tool call.' '- Route by task: *.spec.ts(x) or Vitest infra -> vitest skill; *.md, docs/**, CONTEXT.md, ADRs -> doc-coauthoring + documentation-and-adrs; log calls or logger module -> logging-best-practices; diff or PR code review -> code-review-and-quality plus area skills per code-review.md; offline, local, plan-based, or findings review (run the review plans, review the codebase, regenerate findings) -> code-review-local.md with one sub-agent per plan writing docs/code-reviews/findings/ files; plan pitches or fuzzy domain terms -> grill-with-docs; creating commits -> commit skill.' '- Git mutations (stage, commit, amend, push) require an explicit request in the current user message; skills and slash commands are context, not authorisation.' '</invocation-rules-reminder>'",
+            "timeout": 15,
+            "statusMessage": "Injecting skill-invocation rules"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "{ in=$(cat); f=$(printf '%s' \"$in\" | jq -r '.tool_input.file_path // empty'); f=${f//\\\\//}; msg=''; case \"$f\" in *.md) msg='A Markdown file was edited. Per .claude/rules/invocations/doc-editing.md invoke the doc-coauthoring and documentation-and-adrs skills for this doc work if not already invoked, and keep the content codebase-agnostic (rename test).';; *.spec.ts|*.spec.tsx|*vitest.config.*|*/.configs/vitest/*) msg='A Vitest spec or test-infrastructure file was edited. Per .claude/rules/invocations/vitest.md invoke the vitest skill if not already invoked, and follow docs/testing/README.md - the project doc wins over the upstream skill.';; */app/server/modules/logger/*) msg='Logger module code was edited. Per .claude/rules/invocations/logging-best-practices.md invoke the logging-best-practices skill if not already invoked, and follow docs/logging/README.md - the project doc wins.';; esac; if [ -z \"$msg\" ]; then printf '%s' \"$in\" | jq -r '(.tool_input.new_string // .tool_input.content) // empty' | grep -qE '(\\.log|[Ll]ogger)\\.(trace|debug|info|warn|error|fatal)\\(' && msg='A Pino log call site was added or edited. Per .claude/rules/invocations/logging-best-practices.md invoke the logging-best-practices skill if not already invoked, and follow docs/logging/README.md - the project doc wins.'; fi; if [ -n \"$msg\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PostToolUse\",\"additionalContext\":\"%s\"}}' \"$msg\"; fi; true; } 2>/dev/null",
+            "timeout": 15,
+            "statusMessage": "Checking invocation rules for the edited file"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "{ c=$(jq -r '.tool_input.command // empty'); printf '%s' \"$c\" | grep -qE '(^|[^[:alnum:]_./-])git[[:space:]]+(add|stage|commit|push)([[:space:]]|$)|git[[:space:]]+rm[[:space:]]+--cached|git[[:space:]]+restore[[:space:]]+--staged' && printf '%s' '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"A git mutation command is being run. Per .claude/rules/git-mutations.md staging, committing, amending and pushing require an explicit request in the current user message - skills and slash commands are context, not authorisation. Commit messages go through the commit skill: single-line Conventional Commits subject only.\"}}'; true; } 2>/dev/null",
+            "timeout": 15,
+            "statusMessage": "Checking the git-mutations rule"
+          }
+        ]
+      }
+    ]
+  }
+}
