@@ -62,4 +62,5 @@ Several forces constrain the answer:
 - [`./0015-remote-shutdown-channel.md`](./0015-remote-shutdown-channel.md) — the route that consumes the branded credential this contract admits.
 - [`./0016-cooperative-port-handover.md`](./0016-cooperative-port-handover.md) — the handover client that presents the branded credential and dials loopback to reach the locally-bound instance.
 - [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the internal namespace the credential-bearing requests travel over.
+- [`./0021-database-connection-contract.md`](./0021-database-connection-contract.md) — extends this decision's single premise-bound prefixed secret into a category, admitting the database admin credential on the same server-only premise and revisit tripwire.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — **Load-bearing decision** and the **Rename test** this ADR is written to survive.
