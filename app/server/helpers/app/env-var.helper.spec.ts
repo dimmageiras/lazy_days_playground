@@ -3,6 +3,7 @@ import { describe, expectTypeOf } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { TypeHelper } from "@shared/helpers/type.helper";
+import { appEnvSchema } from "@shared/schemas/app-env.schema";
 
 import { EnvVarHelper } from "./env-var.helper";
 
@@ -88,6 +89,11 @@ describe("EnvVarHelper", () => {
     });
 
     it("should join one line per missing required variable", ({ expect }) => {
+      const missingEnvResult = appEnvSchema.safeParse(TEST_DATA.MISSING_ENV);
+      const expectedIssueCount = missingEnvResult.success
+        ? 0
+        : missingEnvResult.error.issues.length;
+
       let message: string = EMPTY_STRING;
 
       try {
@@ -100,7 +106,7 @@ describe("EnvVarHelper", () => {
         .split("\n")
         .filter((line) => line.startsWith("- "));
 
-      expect(issueLines).toHaveLength(4);
+      expect(issueLines).toHaveLength(expectedIssueCount);
     });
 
     TEST_DATA.REJECTED_PORT_FORMAT_CASES.forEach(({ name, port }) => {

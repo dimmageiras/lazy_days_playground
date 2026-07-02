@@ -1,4 +1,4 @@
-import type { CamelCase } from "type-fest";
+import type { CamelCase, Replace } from "type-fest";
 import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
@@ -11,6 +11,8 @@ const {
     BOOLEAN_TRUE,
     COMMON_NUMBER,
     COMMON_STRING,
+    COMMON_STRING_CAMELCASE,
+    COMMON_STRING_UPPERCASE,
     EMPTY_ARRAY,
     EMPTY_IMMUTABLE_MAP,
     EMPTY_IMMUTABLE_SET,
@@ -18,6 +20,9 @@ const {
     EMPTY_STRING,
     NAN_VALUE,
     NULL_VALUE,
+    STRING_A,
+    STRING_B,
+    STRING_C,
     UNDEFINED_VALUE,
     toUnknown,
   },
@@ -26,15 +31,10 @@ const {
 
 trackLeaksInSpec("string.helper");
 
-const { isString, toCamelCase, toUpperCase } = StringHelper;
+const { isString, replace, toCamelCase, toUpperCase } = StringHelper;
 
 const TEST_DATA = {
   CAMEL_CASES: [
-    {
-      expected: "helloWorld",
-      input: "hello world",
-      name: "should convert space-separated words to camelCase",
-    },
     {
       expected: "userId",
       input: "user_id",
@@ -46,14 +46,14 @@ const TEST_DATA = {
       name: "should convert kebab-case to camelCase",
     },
     {
-      expected: "alreadyCamel",
-      input: "alreadyCamel",
+      expected: COMMON_STRING_CAMELCASE,
+      input: COMMON_STRING_CAMELCASE,
       name: "should leave an already-camelCased string unchanged",
     },
     {
-      expected: COMMON_STRING,
+      expected: COMMON_STRING_CAMELCASE,
       input: COMMON_STRING,
-      name: "should leave a single lowercase word unchanged",
+      name: "should convert to camelCase",
     },
     {
       expected: EMPTY_STRING,
@@ -99,6 +99,43 @@ const TEST_DATA = {
       value: UNDEFINED_VALUE,
     },
   ],
+  REPLACE_CASES: [
+    {
+      expected: COMMON_STRING_UPPERCASE,
+      input: COMMON_STRING,
+      name: "should substitute a matched substring",
+      replacement: COMMON_STRING_UPPERCASE,
+      search: COMMON_STRING,
+    },
+    {
+      expected: `${STRING_B}${STRING_C}`,
+      input: `${STRING_A}${STRING_B}${STRING_C}`,
+      name: "should strip a matched prefix when the replacement is empty",
+      replacement: EMPTY_STRING,
+      search: STRING_A,
+    },
+    {
+      expected: `${STRING_C}${STRING_B}${STRING_A}`,
+      input: `${STRING_A}${STRING_B}${STRING_A}`,
+      name: "should replace only the first occurrence",
+      replacement: STRING_C,
+      search: STRING_A,
+    },
+    {
+      expected: COMMON_STRING,
+      input: COMMON_STRING,
+      name: "should leave the string unchanged when there is no match",
+      replacement: STRING_B,
+      search: STRING_A,
+    },
+    {
+      expected: EMPTY_STRING,
+      input: EMPTY_STRING,
+      name: "should return an empty string for empty input",
+      replacement: STRING_B,
+      search: STRING_A,
+    },
+  ],
   STRING_CASES: [
     {
       name: "should return true for a populated string",
@@ -114,14 +151,9 @@ const TEST_DATA = {
   },
   UPPER_CASES: [
     {
-      expected: "HELLO WORLD",
-      input: "hello world",
-      name: "should uppercase space-separated words",
-    },
-    {
-      expected: "HELLO",
+      expected: COMMON_STRING_UPPERCASE,
       input: COMMON_STRING,
-      name: "should uppercase a lowercase word",
+      name: "should uppercase a lowercase word or phrase",
     },
     {
       expected: "MIXED",
@@ -176,6 +208,32 @@ describe("StringHelper", () => {
     });
   });
 
+  describe("replace", (it) => {
+    TEST_DATA.REPLACE_CASES.forEach(
+      ({ name, input, search, replacement, expected }) => {
+        it(name, ({ expect }) => {
+          expect(replace(input, search, replacement)).toBe(expected);
+        });
+      },
+    );
+
+    it("should type the result as Replace of the input", ({ expect }) => {
+      expect(
+        replace(COMMON_STRING, COMMON_STRING, COMMON_STRING_UPPERCASE),
+      ).toBe(COMMON_STRING_UPPERCASE);
+
+      expectTypeOf(
+        replace(COMMON_STRING, COMMON_STRING, COMMON_STRING_UPPERCASE),
+      ).toEqualTypeOf<
+        Replace<
+          typeof COMMON_STRING,
+          typeof COMMON_STRING,
+          typeof COMMON_STRING_UPPERCASE
+        >
+      >();
+    });
+  });
+
   describe("toCamelCase", (it) => {
     TEST_DATA.CAMEL_CASES.forEach(({ name, input, expected }) => {
       it(name, ({ expect }) => {
@@ -184,7 +242,7 @@ describe("StringHelper", () => {
     });
 
     it("should type the result as CamelCase of the input", ({ expect }) => {
-      expect(toCamelCase(COMMON_STRING)).toBe(COMMON_STRING);
+      expect(toCamelCase(COMMON_STRING)).toBe(COMMON_STRING_CAMELCASE);
 
       expectTypeOf(toCamelCase(COMMON_STRING)).toEqualTypeOf<
         CamelCase<typeof COMMON_STRING>
@@ -200,7 +258,7 @@ describe("StringHelper", () => {
     });
 
     it("should type the result as Uppercase of the input", ({ expect }) => {
-      expect(toUpperCase(COMMON_STRING)).toBe("HELLO");
+      expect(toUpperCase(COMMON_STRING)).toBe(COMMON_STRING_UPPERCASE);
 
       expectTypeOf(toUpperCase(COMMON_STRING)).toEqualTypeOf<
         Uppercase<typeof COMMON_STRING>

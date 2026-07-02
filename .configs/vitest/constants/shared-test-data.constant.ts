@@ -19,7 +19,7 @@ const BOOLEAN_TRUE = true as const;
 const COMMON_BIND_ALL_IPV4 = "0.0.0.0" as const;
 const COMMON_LOG_LEVEL = "info" as const;
 const COMMON_NUMBER = 42 as const;
-const COMMON_STRING = "hello" as const;
+const COMMON_STRING = "hello world" as const;
 
 const NUMBER_1 = 1 as const;
 const NUMBER_2 = 2 as const;
@@ -36,6 +36,7 @@ const VALID_BASE64_TOKEN =
 const VALID_PORT = 3000 as const;
 const VALID_RAW_DEV_ENV = castAsType<ImportMetaEnv>({
   VITE_APP_BIND_ALL_IPV4: COMMON_BIND_ALL_IPV4,
+  VITE_APP_DB_NAME: COMMON_STRING,
   VITE_APP_IS_DEVELOPMENT: STRING_TRUE,
   VITE_APP_LOG_LEVEL: COMMON_LOG_LEVEL,
   VITE_APP_PORT: `${VALID_PORT}`,
@@ -75,7 +76,9 @@ const SHARED_TEST_DATA = deepFreeze({
   COMMON_ONE_STRING_ARRAY: [STRING_A],
   COMMON_STRING,
   COMMON_STRING_ARRAY: [STRING_A, STRING_B, STRING_C],
+  COMMON_STRING_CAMELCASE: "helloWorld",
   COMMON_STRING_NUMBER_PAIRS_ARRAY: [[STRING_A, NUMBER_1]],
+  COMMON_STRING_UPPERCASE: "HELLO WORLD",
   COMMON_TWO_STRING_ARRAY: [STRING_A, STRING_B],
   EMPTY_ARRAY: [],
   EMPTY_IMMUTABLE_MAP: ImmutableMap(),
@@ -97,7 +100,7 @@ const SHARED_TEST_DATA = deepFreeze({
   VALID_DEV_APP_ENV: castAsType<AppEnv>(
     Object.fromEntries(
       getObjectEntries(VALID_VITE_APP_ENV).map(([key, value]) => [
-        toCamelCase(replace(key, /^VITE_APP_/, "")),
+        toCamelCase(replace(key, "VITE_APP_", "")),
         value,
       ]),
     ),

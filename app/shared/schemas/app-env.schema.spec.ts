@@ -61,6 +61,7 @@ const TEST_DATA = {
   ],
   UNKNOWN_KEY: "VITE_APP_EXTRA",
   VITE_APP_BIND_ALL_IPV4: "VITE_APP_BIND_ALL_IPV4",
+  VITE_APP_DB_NAME: "VITE_APP_DB_NAME",
   VITE_APP_IS_DEVELOPMENT: "VITE_APP_IS_DEVELOPMENT",
   VITE_APP_LOG_LEVEL: "VITE_APP_LOG_LEVEL",
   VITE_APP_PORT: "VITE_APP_PORT",
@@ -72,6 +73,10 @@ const TEST_DATA = {
       {
         key: this.VITE_APP_BIND_ALL_IPV4,
         name: "should reject a non-string bind-all address",
+      },
+      {
+        key: this.VITE_APP_DB_NAME,
+        name: "should reject a non-string DB name",
       },
       {
         key: this.VITE_APP_PORT,
@@ -102,6 +107,13 @@ const TEST_DATA = {
         input: this.IPV6_ADDRESS,
         key: this.VITE_APP_BIND_ALL_IPV4,
         name: "should reject an IPv6 bind address",
+      },
+      {
+        expectedCode: ISSUE_CODES.TOO_SMALL,
+        expectedMessage: "Must not be empty",
+        input: EMPTY_STRING,
+        key: this.VITE_APP_DB_NAME,
+        name: "should reject an empty DB name",
       },
       {
         expectedMessage: "Must be 'true' or 'false'",
@@ -180,6 +192,10 @@ const TEST_DATA = {
       {
         key: this.VITE_APP_BIND_ALL_IPV4,
         name: "should reject a missing bind-all address",
+      },
+      {
+        key: this.VITE_APP_DB_NAME,
+        name: "should reject a missing DB name",
       },
       {
         key: this.VITE_APP_PORT,

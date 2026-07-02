@@ -34,6 +34,13 @@ const bindAllIpv4Schema = brandedIpSchema<"BindAllIpv4">(
   IPV4_ADDRESS_MESSAGE,
 );
 
+const dbNameSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .min(1, { error: "Must not be empty" })
+  .brand<"DbName">();
+
 const isDevelopmentSchema = zStringbool({
   error: "Must be 'true' or 'false'",
   falsy: ["false"],
@@ -79,6 +86,7 @@ const shutdownTokenSchema = zString({
 
 const appEnvSchema = zObject({
   VITE_APP_BIND_ALL_IPV4: bindAllIpv4Schema,
+  VITE_APP_DB_NAME: dbNameSchema,
   VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
   VITE_APP_LOG_LEVEL: logLevelSchema,
   VITE_APP_PORT: portSchema,
