@@ -15,7 +15,7 @@ The skill keeps `CONTEXT.md` and `docs/adr/` in sync with the conversation as de
 
 ## Boundaries with other skills
 
-- **Bug fixing** → `diagnose`, not this skill.
+- **Bug fixing** → `diagnosing-bugs`, not this skill.
 - **Pure code refactors with no domain shift** → `improve-codebase-architecture`.
 - **Authoring docs where the decisions are already settled** → `doc-editing` rule (`doc-coauthoring` + `documentation-and-adrs`).
 
