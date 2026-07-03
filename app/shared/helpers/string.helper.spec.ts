@@ -1,4 +1,3 @@
-import type { CamelCase, Replace } from "type-fest";
 import { describe, expectTypeOf } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
@@ -34,33 +33,10 @@ trackLeaksInSpec("string.helper");
 const { isString, replace, toCamelCase, toUpperCase } = StringHelper;
 
 const TEST_DATA = {
-  CAMEL_CASES: [
-    {
-      expected: "userId",
-      input: "user_id",
-      name: "should convert snake_case to camelCase",
-    },
-    {
-      expected: "userId",
-      input: "user-id",
-      name: "should convert kebab-case to camelCase",
-    },
-    {
-      expected: COMMON_STRING_CAMELCASE,
-      input: COMMON_STRING_CAMELCASE,
-      name: "should leave an already-camelCased string unchanged",
-    },
-    {
-      expected: COMMON_STRING_CAMELCASE,
-      input: COMMON_STRING,
-      name: "should convert to camelCase",
-    },
-    {
-      expected: EMPTY_STRING,
-      input: EMPTY_STRING,
-      name: "should return an empty string for empty input",
-    },
-  ],
+  CAMELCASE_USER_ID: "userId",
+  IN: "in",
+  IT: "it",
+  N: "n",
   NON_STRING_CASES: [
     {
       name: "should return false for a boolean",
@@ -135,7 +111,22 @@ const TEST_DATA = {
       replacement: STRING_B,
       search: STRING_A,
     },
+    {
+      expected: `${STRING_C}${STRING_A}${STRING_B}${STRING_C}`,
+      input: `${STRING_A}${STRING_B}${STRING_C}`,
+      name: "should insert the replacement at the start for an empty search",
+      replacement: STRING_C,
+      search: EMPTY_STRING,
+    },
+    {
+      expected: `$&${STRING_B}${STRING_C}`,
+      input: `${STRING_A}${STRING_B}${STRING_C}`,
+      name: "should treat a $-token replacement literally",
+      replacement: "$&",
+      search: STRING_A,
+    },
   ],
+  SNAKE_CASE_USER_ID: "user_id",
   STRING_CASES: [
     {
       name: "should return true for a populated string",
@@ -146,6 +137,7 @@ const TEST_DATA = {
       value: EMPTY_STRING,
     },
   ],
+  T: "t",
   TYPE_TEST: {
     UNKNOWN_STRING: toUnknown(COMMON_STRING),
   },
@@ -181,6 +173,41 @@ const TEST_DATA = {
       name: "should return an empty string for empty input",
     },
   ],
+  UPPERCASE_IT: "IT",
+  get CAMEL_CASES() {
+    return [
+      {
+        expected: this.CAMELCASE_USER_ID,
+        input: this.SNAKE_CASE_USER_ID,
+        name: "should convert snake_case to camelCase",
+      },
+      {
+        expected: this.CAMELCASE_USER_ID,
+        input: this.CAMELCASE_USER_ID,
+        name: "should convert kebab-case to camelCase",
+      },
+      {
+        expected: COMMON_STRING_CAMELCASE,
+        input: COMMON_STRING_CAMELCASE,
+        name: "should leave an already-camelCased string unchanged",
+      },
+      {
+        expected: COMMON_STRING_CAMELCASE,
+        input: COMMON_STRING,
+        name: "should convert to camelCase",
+      },
+      {
+        expected: "version123",
+        input: "version1.2.3",
+        name: "should drop punctuation and merge digits (lodash runtime diverges from the CamelCase type, which keeps them as 'version1.2.3')",
+      },
+      {
+        expected: EMPTY_STRING,
+        input: EMPTY_STRING,
+        name: "should return an empty string for empty input",
+      },
+    ];
+  },
 } as const;
 
 describe("StringHelper", () => {
@@ -218,19 +245,13 @@ describe("StringHelper", () => {
     );
 
     it("should type the result as Replace of the input", ({ expect }) => {
-      expect(
-        replace(COMMON_STRING, COMMON_STRING, COMMON_STRING_UPPERCASE),
-      ).toBe(COMMON_STRING_UPPERCASE);
+      expect(replace(TEST_DATA.IN, TEST_DATA.N, TEST_DATA.T)).toBe(
+        TEST_DATA.IT,
+      );
 
       expectTypeOf(
-        replace(COMMON_STRING, COMMON_STRING, COMMON_STRING_UPPERCASE),
-      ).toEqualTypeOf<
-        Replace<
-          typeof COMMON_STRING,
-          typeof COMMON_STRING,
-          typeof COMMON_STRING_UPPERCASE
-        >
-      >();
+        replace(TEST_DATA.IN, TEST_DATA.N, TEST_DATA.T),
+      ).toEqualTypeOf<typeof TEST_DATA.IT>();
     });
   });
 
@@ -242,10 +263,12 @@ describe("StringHelper", () => {
     });
 
     it("should type the result as CamelCase of the input", ({ expect }) => {
-      expect(toCamelCase(COMMON_STRING)).toBe(COMMON_STRING_CAMELCASE);
+      expect(toCamelCase(TEST_DATA.SNAKE_CASE_USER_ID)).toBe(
+        TEST_DATA.CAMELCASE_USER_ID,
+      );
 
-      expectTypeOf(toCamelCase(COMMON_STRING)).toEqualTypeOf<
-        CamelCase<typeof COMMON_STRING>
+      expectTypeOf(toCamelCase(TEST_DATA.SNAKE_CASE_USER_ID)).toEqualTypeOf<
+        typeof TEST_DATA.CAMELCASE_USER_ID
       >();
     });
   });
@@ -258,10 +281,10 @@ describe("StringHelper", () => {
     });
 
     it("should type the result as Uppercase of the input", ({ expect }) => {
-      expect(toUpperCase(COMMON_STRING)).toBe(COMMON_STRING_UPPERCASE);
+      expect(toUpperCase(TEST_DATA.IT)).toBe(TEST_DATA.UPPERCASE_IT);
 
-      expectTypeOf(toUpperCase(COMMON_STRING)).toEqualTypeOf<
-        Uppercase<typeof COMMON_STRING>
+      expectTypeOf(toUpperCase(TEST_DATA.IT)).toEqualTypeOf<
+        typeof TEST_DATA.UPPERCASE_IT
       >();
     });
   });

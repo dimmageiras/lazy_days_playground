@@ -46,6 +46,7 @@ const build = async (
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
+    disableRequestLogging: true,
     loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
   });

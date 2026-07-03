@@ -48,8 +48,6 @@ const { castAsType } = TypeHelper;
 
 const { start } = AppStartHelper;
 
-let processExitSpy: MockInstance<typeof process.exit>;
-
 const {
   instanceOf,
   makeEnv,
@@ -170,6 +168,8 @@ const {
 describe("AppStartHelper", () => {
   describe("start", (it) => {
     const { afterAll, beforeAll } = it;
+
+    let processExitSpy: MockInstance<typeof process.exit>;
 
     beforeAll(() => {
       processExitSpy = vi.spyOn(process, "exit").mockImplementation(() => {

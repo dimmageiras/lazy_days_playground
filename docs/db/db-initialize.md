@@ -15,13 +15,21 @@ Both Docker Compose and Vite auto-load a file named `.env` from the project root
 
 Copy the template and set a real `VITE_APP_DB_PASSWORD`:
 
+**PowerShell / cmd:**
+
 ```
 copy sample.env .env
 ```
 
+**Bash / zsh:**
+
+```
+cp sample.env .env
+```
+
 ## 2) Required variables
 
-Every database entry is named `VITE_APP_DB_*` — the app reads only variables under the `VITE_APP_` prefix (see [ADR-0021](../adr/0021-database-connection-contract.md)). One `.env` serves three consumers, each reading it its own way:
+Every database entry is named `VITE_APP_DB_*` — the app reads only variables under the `VITE_APP_` prefix (established by [ADR-0009](../adr/0009-environment-validation-gate.md), extended to the database fields by [ADR-0021](../adr/0021-database-connection-contract.md)). One `.env` serves three consumers, each reading it its own way:
 
 - **Docker Compose** interpolates `${VITE_APP_DB_*}` and maps the values onto the container's native `GEL_SERVER_*` names — the names needn't match, so the prefix is harmless here.
 - **The app** reads the validated values and passes them to the Gel client explicitly.
@@ -29,15 +37,15 @@ Every database entry is named `VITE_APP_DB_*` — the app reads only variables u
 
 `.env` must define:
 
-| Variable                          | Read by           | Purpose                                                                                                                                                                            |
-| --------------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `VITE_APP_DB_PASSWORD`            | Compose, app, CLI | Admin password. Compose maps it to the container's `GEL_SERVER_PASSWORD`; the CLI reads it as `GEL_PASSWORD`.                                                                      |
-| `VITE_APP_DB_PORT`                | Compose, app, CLI | Host port published as `${VITE_APP_DB_PORT}:5656` (the container always listens on 5656 internally). The CLI reads it as `GEL_PORT`.                                               |
-| `VITE_APP_DB_SERVER_SECURITY`     | Compose           | Server enforcement mode, mapped to the container's `GEL_SERVER_SECURITY`. `insecure_dev_mode` relaxes TLS and loopback password auth for local dev; other value: `strict`.         |
-| `VITE_APP_DB_HOST`                | app, CLI          | Where the client connects. The CLI reads it as `GEL_HOST`.                                                                                                                         |
-| `VITE_APP_DB_BRANCH`              | app, CLI          | Branch to connect to. A **branch** is Gel's unit of schema/data isolation, similar to a database (older Gel/EdgeDB docs may call it a database). The CLI reads it as `GEL_BRANCH`. |
-| `VITE_APP_DB_CLIENT_TLS_SECURITY` | app, CLI          | Client cert verification. Use `insecure` to accept the self-signed cert produced in dev mode. The CLI reads it as `GEL_CLIENT_TLS_SECURITY`.                                       |
-| `VITE_APP_DB_NAME`                | app               | Logging label only — not part of the connection.                                                                                                                                   |
+| Variable                          | Read by           | Purpose                                                                                                                                                                    |
+| --------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `VITE_APP_DB_PASSWORD`            | Compose, app, CLI | Admin password. Compose maps it to the container's `GEL_SERVER_PASSWORD`; the CLI reads it as `GEL_PASSWORD`.                                                              |
+| `VITE_APP_DB_PORT`                | Compose, app, CLI | Host port published as `${VITE_APP_DB_PORT}:5656` (the container always listens on 5656 internally). The CLI reads it as `GEL_PORT`.                                       |
+| `VITE_APP_DB_SERVER_SECURITY`     | Compose           | Server enforcement mode, mapped to the container's `GEL_SERVER_SECURITY`. `insecure_dev_mode` relaxes TLS and loopback password auth for local dev; other value: `strict`. |
+| `VITE_APP_DB_HOST`                | app, CLI          | Where the client connects. The CLI reads it as `GEL_HOST`.                                                                                                                 |
+| `VITE_APP_DB_BRANCH`              | app, CLI          | Branch to connect to (see [Branch (Gel)](../../CONTEXT.md#branch-gel)). The CLI reads it as `GEL_BRANCH`.                                                                  |
+| `VITE_APP_DB_CLIENT_TLS_SECURITY` | app, CLI          | Client cert verification. Use `insecure` to accept the self-signed cert produced in dev mode. The CLI reads it as `GEL_CLIENT_TLS_SECURITY`.                               |
+| `VITE_APP_DB_NAME`                | app               | Logging label only — not part of the connection.                                                                                                                           |
 
 Leave values unquoted unless they contain whitespace or special characters — Compose and the CLI handle quotes differently, so the two sides can end up with different strings.
 
@@ -110,8 +118,8 @@ docker compose up -d gel_db
 **`The "VITE_APP_DB_PASSWORD" variable is not set`**
 The variable is missing from `.env`, or Compose was run from a directory other than the project root (it auto-loads `.env` from the working directory).
 
-**Orphan `full_stack` container**
-Left over from the previous project setup. Remove it:
+**Orphan `full_stack` container** (only relevant if you set up the repo before the Gel migration)
+Left over from the previous project setup. Once no one is carrying that container forward, this entry is safe to delete. Remove it:
 
 ```
 docker compose down --remove-orphans

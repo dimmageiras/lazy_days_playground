@@ -16,16 +16,19 @@ const { HTTP } = HTTP_SCHEMES;
 
 const IPV4_ADDRESS_MESSAGE = "Must be a valid IPv4 address";
 const IS_REQUIRED_MESSAGE = "Is required";
+const MAX_PORT = 65535;
+const MIN_PORT = 1;
 const MUST_BE_STRING_MESSAGE = "Must be a string";
-const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
+const PORT_RANGE_MESSAGE = `Must be between ${MIN_PORT} and ${MAX_PORT}`;
 
+const hostUrlSchema = zUrl();
 const ipv4Schema = zIpv4();
 
 const isHost = (value: string): boolean => {
   const candidate = `${HTTP}://${value}`;
 
   return (
-    zUrl().safeParse(candidate).success &&
+    hostUrlSchema.safeParse(candidate).success &&
     new URL(candidate).hostname === value
   );
 };
@@ -34,21 +37,12 @@ const isIpv4 = (value: string): boolean => {
   return ipv4Schema.safeParse(value).success;
 };
 
-const brandedIpSchema = <Brand extends string>(
-  isIp: (value: string) => boolean,
-  message: string,
-) =>
-  zString({
-    error: (issue) =>
-      issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
-  })
-    .refine(isIp, { error: message })
-    .brand<Brand>();
-
-const bindAllIpv4Schema = brandedIpSchema<"BindAllIpv4">(
-  isIpv4,
-  IPV4_ADDRESS_MESSAGE,
-);
+const bindAllIpv4Schema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .refine(isIpv4, { error: IPV4_ADDRESS_MESSAGE })
+  .brand<"BindAllIpv4">();
 
 const dbBranchSchema = zString({
   error: (issue) =>
@@ -58,7 +52,10 @@ const dbBranchSchema = zString({
   .brand<"DbBranch">();
 
 const dbClientTlsSecuritySchema = zEnum(DB_CLIENT_TLS_SECURITY.toArray(), {
-  error: "Must be a known TLS security mode",
+  error: (issue) =>
+    issue.input === undefined
+      ? IS_REQUIRED_MESSAGE
+      : "Must be a known TLS security mode",
 }).brand<"DbClientTlsSecurity">();
 
 const dbHostSchema = zString({
@@ -97,19 +94,24 @@ const logLevelSchema = zEnum(LOG_LEVEL.toArray(), {
   .default("info")
   .brand<"LogLevel">();
 
-const portSchema = zString({
-  error: (issue) =>
-    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
-})
-  .regex(/^\d+$/, { error: "Must be a string of digits" })
-  .transform(Number)
-  .pipe(
-    zNumber({ error: "Must be a number" })
-      .int({ error: "Must be an integer" })
-      .min(1, { error: PORT_RANGE_MESSAGE })
-      .max(65535, { error: PORT_RANGE_MESSAGE }),
-  )
-  .brand<"Port">();
+const portSchemaFor = <Brand extends string>() =>
+  zString({
+    error: (issue) =>
+      issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+  })
+    .regex(/^\d+$/, { error: "Must be a string of digits" })
+    .transform(Number)
+    .pipe(
+      zNumber({ error: "Must be a number" })
+        .int({ error: "Must be an integer" })
+        .min(MIN_PORT, { error: PORT_RANGE_MESSAGE })
+        .max(MAX_PORT, { error: PORT_RANGE_MESSAGE }),
+    )
+    .brand<Brand>();
+
+const dbPortSchema = portSchemaFor<"DbPort">();
+
+const portSchema = portSchemaFor<"Port">();
 
 const serviceNameSchema = zString({
   error: (issue) =>
@@ -133,7 +135,7 @@ const appEnvSchema = zObject({
   VITE_APP_DB_HOST: dbHostSchema,
   VITE_APP_DB_NAME: dbNameSchema,
   VITE_APP_DB_PASSWORD: dbPasswordSchema,
-  VITE_APP_DB_PORT: portSchema,
+  VITE_APP_DB_PORT: dbPortSchema,
   VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
   VITE_APP_LOG_LEVEL: logLevelSchema,
   VITE_APP_PORT: portSchema,

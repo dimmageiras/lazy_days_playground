@@ -40,7 +40,7 @@ vi.mock("./app-env.helper", () => ({
 
 const {
   createMockInstance,
-  sharedTestData: { UNDEFINED_VALUE },
+  sharedTestData: { BOOLEAN_TRUE, UNDEFINED_VALUE },
   trackLeaksInSpec,
 } = VitestSetup();
 
@@ -179,6 +179,7 @@ describe("AppBuildHelper", () => {
 
       expect(mockFastify.mock.calls.at(fastifyCallIndex)).toStrictEqual([
         {
+          disableRequestLogging: BOOLEAN_TRUE,
           loggerInstance: env,
           requestTimeout: SECONDS_TEN,
         },

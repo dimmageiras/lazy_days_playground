@@ -13,6 +13,10 @@ The glossary is intentionally minimal at this stage. Add a term only when it has
 
 ## Terms
 
+### Branch (Gel)
+
+The database's unit of schema and data isolation — a named, independently-migratable line of schema together with its data, analogous to a database in other systems (older Gel/EdgeDB material may call it a "database"). Distinct from a **git branch**: a Gel branch is a runtime connection target the client selects, not a version-control line. The connection configuration names the one branch the client connects to.
+
 ### Composition layer
 
 The calling relationship at the top of the application — the process entry / bootstrap that invokes the assembled application — rather than an encapsulated construct of its own. It validates environment input and runs any post-assembly startup steps around its call to the **Composition root**.

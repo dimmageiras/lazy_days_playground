@@ -8,6 +8,12 @@ import { ObjectHelper } from "@shared/helpers/object.helper";
 import { TypeHelper } from "@shared/helpers/type.helper";
 import type {
   BindAllIpv4,
+  DbBranch,
+  DbClientTlsSecurity,
+  DbHost,
+  DbName,
+  DbPassword,
+  DbPort,
   IsDevelopment,
   LogLevel,
   Port,
@@ -56,7 +62,6 @@ const TEST_DATA = {
   IS_REQUIRED_MESSAGE: "Is required",
   LOOSE_TRUTHY_FLAG: `${NUMBER_1}`,
   MUST_BE_STRING_MESSAGE: "Must be a string",
-  PORT_FORMAT_MESSAGE: "Must be a string of digits",
   PORT_BOUNDARY_CASES: [
     {
       expected: MIN_PORT,
@@ -69,6 +74,7 @@ const TEST_DATA = {
       port: `${MAX_PORT}`,
     },
   ],
+  PORT_FORMAT_MESSAGE: "Must be a string of digits",
   UNKNOWN_KEY: "VITE_APP_EXTRA",
   WRONG_CASE_LOG_LEVEL: "INFO",
   ...castAsType<{ [Key in keyof ViteAppEnv]: Key }>(
@@ -250,6 +256,10 @@ const TEST_DATA = {
         name: "should reject a missing DB branch",
       },
       {
+        key: this.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        name: "should reject a missing DB TLS security mode",
+      },
+      {
         key: this.VITE_APP_DB_HOST,
         name: "should reject a missing DB host",
       },
@@ -302,6 +312,29 @@ describe("appEnvSchema", () => {
         expectTypeOf(
           result.data.VITE_APP_BIND_ALL_IPV4,
         ).toEqualTypeOf<BindAllIpv4>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_BRANCH,
+        ).not.toEqualTypeOf<string>();
+        expectTypeOf(result.data.VITE_APP_DB_BRANCH).toEqualTypeOf<DbBranch>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        ).not.toEqualTypeOf<string>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        ).toEqualTypeOf<DbClientTlsSecurity>();
+        expectTypeOf(result.data.VITE_APP_DB_HOST).not.toEqualTypeOf<string>();
+        expectTypeOf(result.data.VITE_APP_DB_HOST).toEqualTypeOf<DbHost>();
+        expectTypeOf(result.data.VITE_APP_DB_NAME).not.toEqualTypeOf<string>();
+        expectTypeOf(result.data.VITE_APP_DB_NAME).toEqualTypeOf<DbName>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_PASSWORD,
+        ).not.toEqualTypeOf<string>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_PASSWORD,
+        ).toEqualTypeOf<DbPassword>();
+        expectTypeOf(result.data.VITE_APP_DB_PORT).not.toEqualTypeOf<number>();
+        expectTypeOf(result.data.VITE_APP_DB_PORT).not.toEqualTypeOf<Port>();
+        expectTypeOf(result.data.VITE_APP_DB_PORT).toEqualTypeOf<DbPort>();
         expectTypeOf(
           result.data.VITE_APP_IS_DEVELOPMENT,
         ).not.toEqualTypeOf<boolean>();

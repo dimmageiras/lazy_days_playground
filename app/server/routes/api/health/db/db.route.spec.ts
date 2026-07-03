@@ -16,9 +16,9 @@ const {
   trackLeaksInSpec,
 } = VitestSetup();
 
-const { castAsType } = TypeHelper;
-
 trackLeaksInSpec("db.route");
+
+const { castAsType } = TypeHelper;
 
 const { DB } = API_HEALTH_ENDPOINTS;
 const { GET } = HTTP_METHODS.SAFE;

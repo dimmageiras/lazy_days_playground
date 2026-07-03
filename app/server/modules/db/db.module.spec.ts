@@ -3,13 +3,10 @@ import { describe, vi } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { TypeHelper } from "@shared/helpers/type.helper";
+import type { DbHost } from "@shared/types/app-env.type";
 
 import { DbModule } from "./db.module";
 import type { DbClient } from "./types/db.type";
-
-const { mockClose } = vi.hoisted(() => ({
-  mockClose: vi.fn(),
-}));
 
 const {
   createMockInstance,
@@ -23,6 +20,8 @@ trackLeaksInSpec("db.module");
 const { castAsType } = TypeHelper;
 
 const { setupDb } = DbModule;
+
+const mockClose = vi.fn();
 
 const TEST_DATA = {
   DB_CLIENT_KEY: "dbClient",
@@ -41,10 +40,11 @@ describe("DbModule", () => {
     it("should build a client from the validated env, decorate it, and register an onClose hook that closes it", async ({
       expect,
     }) => {
+      const dbHost = castAsType<DbHost>("db-module-spec.local");
       const addHook = vi.fn();
       const decorate = vi.fn();
       const client = castAsType<DbClient>({ close: mockClose });
-      const instance = createMockInstance();
+      const instance = createMockInstance({ appEnv: { dbHost } });
 
       Reflect.set(instance, "addHook", addHook);
       Reflect.set(instance, "decorate", decorate);
@@ -54,7 +54,7 @@ describe("DbModule", () => {
 
       setupDb(instance);
 
-      const { dbBranch, dbClientTlsSecurity, dbHost, dbPassword, dbPort } =
+      const { dbBranch, dbClientTlsSecurity, dbPassword, dbPort } =
         instance.appEnv;
 
       const createClientCalls = mockGelCreateClient.mock.calls.filter(

@@ -20,7 +20,7 @@ const replace = <
   replacement: TReplacement,
 ): Replace<TString, TSearch, TReplacement> => {
   return castAsType<Replace<TString, TSearch, TReplacement>>(
-    lodashReplace(str, search, replacement),
+    lodashReplace(str, search, () => replacement),
   );
 };
 

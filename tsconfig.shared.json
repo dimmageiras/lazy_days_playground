@@ -3,17 +3,17 @@
   "compilerOptions": {
     /* Projects */
     "composite": true,
-    "tsBuildInfoFile": "./.tsc-cache/app/tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "./.tsc-cache/shared/tsconfig.tsbuildinfo",
 
     /* Language and Environment */
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["node"],
+    "types": [],
 
     /* Emit */
     "emitDeclarationOnly": true,
     "noEmit": false,
-    "outDir": "./.tsc-cache/app"
+    "outDir": "./.tsc-cache/shared"
   },
-  "include": ["app/**/*.ts", "app/**/*.tsx"],
+  "include": ["app/shared/**/*.ts", "app/shared/**/*.tsx"],
   "exclude": ["**/*.spec.ts", "**/*.spec.tsx"]
 }

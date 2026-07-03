@@ -16,7 +16,8 @@
 !/pnpm-workspace.yaml
 !/README.md
 !/sample.env
-!/tsconfig.app.json
 !/tsconfig.json
+!/tsconfig.server.json
+!/tsconfig.shared.json
 !/tsconfig.test.json
 !/vitest.config.ts

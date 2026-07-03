@@ -42,7 +42,8 @@
   "files": [],
   "include": ["eslint.config.ts", "knip.config.ts"],
   "references": [
-    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.server.json" },
+    { "path": "./tsconfig.shared.json" },
     { "path": "./tsconfig.test.json" }
   ]
 }

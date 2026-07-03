@@ -120,15 +120,13 @@ describe("KillHelper", () => {
     beforeAll(() => {
       mockPortToPid.mockImplementation(lookupPort);
 
-      killSpy = vi
-        .spyOn(process, "kill")
-        .mockImplementation((pid: number): true => {
-          if (pid === TEST_DATA.KILL_THROW_PID) {
-            throw TEST_DATA.KILL_FAILED;
-          }
+      killSpy = vi.spyOn(process, "kill").mockImplementation((pid: number) => {
+        if (pid === TEST_DATA.KILL_THROW_PID) {
+          throw TEST_DATA.KILL_FAILED;
+        }
 
-          return true;
-        });
+        return BOOLEAN_TRUE;
+      });
     });
 
     afterAll(() => {

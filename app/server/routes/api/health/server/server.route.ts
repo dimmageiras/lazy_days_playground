@@ -8,10 +8,12 @@ const { SERVER } = API_HEALTH_ENDPOINTS;
 const { getCurrentISOTimestamp } = DateHelper;
 
 const serverRoute = async (instance: AppInstance): Promise<void> => {
-  instance.get(`/${SERVER}`, () => ({
+  const readServerHealth = () => ({
     service: instance.appEnv.serviceName,
     timestamp: getCurrentISOTimestamp(),
-  }));
+  });
+
+  instance.get(`/${SERVER}`, readServerHealth);
 };
 
 export { serverRoute };

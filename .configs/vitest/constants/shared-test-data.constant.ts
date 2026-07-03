@@ -1,16 +1,16 @@
 import { Map as ImmutableMap, Set as ImmutableSet } from "immutable";
-import { camelCase } from "lodash-es";
-import replace from "lodash-es/replace";
 
 import { DB_CLIENT_TLS_SECURITY } from "@shared/constants/db-client.constant";
 import { ArrayHelper } from "@shared/helpers/array.helper";
 import { ObjectHelper } from "@shared/helpers/object.helper";
+import { StringHelper } from "@shared/helpers/string.helper";
 import { TypeHelper } from "@shared/helpers/type.helper";
 import { appEnvSchema } from "@shared/schemas/app-env.schema";
 import type { AppEnv } from "@shared/types/app-env.type";
 
 const { isArray } = ArrayHelper;
 const { isPlainObject } = ObjectHelper;
+const { replace, toCamelCase } = StringHelper;
 
 const { castAsType } = TypeHelper;
 
@@ -110,7 +110,7 @@ const SHARED_TEST_DATA = deepFreeze({
   VALID_DEV_APP_ENV: castAsType<AppEnv>(
     Object.fromEntries(
       Object.entries(VALID_VITE_APP_ENV).map(([key, value]) => [
-        camelCase(replace(key, "VITE_APP_", "")),
+        toCamelCase(replace(key, "VITE_APP_", "")),
         value,
       ]),
     ),
