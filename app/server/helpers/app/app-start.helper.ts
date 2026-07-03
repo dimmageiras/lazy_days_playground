@@ -1,3 +1,4 @@
+import type { SetupDbFunction } from "@server/modules/db";
 import type {
   BuildFallbackLoggerFunction,
   BuildLoggerFunction,
@@ -22,6 +23,9 @@ const start = async (
   env: ImportMetaEnv,
   hot: ImportMeta["hot"],
   modules: {
+    db: {
+      setupDb: SetupDbFunction;
+    };
     logger: {
       buildFallbackLogger: BuildFallbackLoggerFunction;
       buildLogger: BuildLoggerFunction;
@@ -36,6 +40,7 @@ const start = async (
   },
 ): Promise<void> => {
   const {
+    db: { setupDb },
     logger: { buildFallbackLogger, buildLogger },
     shutdown: { redactPaths, setupShutdown },
     startup: { claimPort },
@@ -67,6 +72,7 @@ const start = async (
 
   try {
     instance = await build(validatedEnv, hot, {
+      db: { setupDb },
       logger: { buildLogger },
       shutdown: { redactPaths, setupShutdown },
     });

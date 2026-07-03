@@ -4,8 +4,16 @@ import { describe, expectTypeOf } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { ISSUE_CODES } from "@shared/constants/zod.constant";
+import { ObjectHelper } from "@shared/helpers/object.helper";
+import { TypeHelper } from "@shared/helpers/type.helper";
 import type {
   BindAllIpv4,
+  DbBranch,
+  DbClientTlsSecurity,
+  DbHost,
+  DbName,
+  DbPassword,
+  DbPort,
   IsDevelopment,
   LogLevel,
   Port,
@@ -23,6 +31,7 @@ const {
     COMMON_LOG_LEVEL,
     COMMON_STRING,
     EMPTY_STRING,
+    LOCALHOST,
     MAX_PORT,
     MIN_PORT,
     NAN_VALUE,
@@ -30,7 +39,8 @@ const {
     STRING_TRUE,
     UNDEFINED_VALUE,
     VALID_BASE64_TOKEN,
-    VALID_PORT,
+    VALID_PORT_1,
+    VALID_PORT_2,
     VALID_RAW_DEV_ENV,
     VALID_VITE_APP_ENV,
   },
@@ -39,14 +49,19 @@ const {
 
 trackLeaksInSpec("app-env.schema");
 
+const { getObjectKeys } = ObjectHelper;
+const { castAsType } = TypeHelper;
+
+const getEnvKeys = getObjectKeys(VALID_RAW_DEV_ENV);
+
 const TEST_DATA = {
   ALPHABETIC_PORT: COMMON_STRING,
-  DECIMAL_PORT: `${VALID_PORT}.0`,
+  DECIMAL_PORT: `${VALID_PORT_1}.0`,
+  HOST_WITH_PORT: `${LOCALHOST}:${VALID_PORT_2}`,
   IPV6_ADDRESS: "::1",
   IS_REQUIRED_MESSAGE: "Is required",
   LOOSE_TRUTHY_FLAG: `${NUMBER_1}`,
   MUST_BE_STRING_MESSAGE: "Must be a string",
-  PORT_FORMAT_MESSAGE: "Must be a string of digits",
   PORT_BOUNDARY_CASES: [
     {
       expected: MIN_PORT,
@@ -59,19 +74,33 @@ const TEST_DATA = {
       port: `${MAX_PORT}`,
     },
   ],
+  PORT_FORMAT_MESSAGE: "Must be a string of digits",
   UNKNOWN_KEY: "VITE_APP_EXTRA",
-  VITE_APP_BIND_ALL_IPV4: "VITE_APP_BIND_ALL_IPV4",
-  VITE_APP_IS_DEVELOPMENT: "VITE_APP_IS_DEVELOPMENT",
-  VITE_APP_LOG_LEVEL: "VITE_APP_LOG_LEVEL",
-  VITE_APP_PORT: "VITE_APP_PORT",
-  VITE_APP_SERVICE_NAME: "VITE_APP_SERVICE_NAME",
-  VITE_APP_SHUTDOWN_TOKEN: "VITE_APP_SHUTDOWN_TOKEN",
   WRONG_CASE_LOG_LEVEL: "INFO",
+  ...castAsType<{ [Key in keyof ViteAppEnv]: Key }>(
+    Object.fromEntries(getEnvKeys.map((key) => [key, key])),
+  ),
   get REJECTED_TYPE_CASES() {
     return [
       {
         key: this.VITE_APP_BIND_ALL_IPV4,
         name: "should reject a non-string bind-all address",
+      },
+      {
+        key: this.VITE_APP_DB_BRANCH,
+        name: "should reject a non-string DB branch",
+      },
+      {
+        key: this.VITE_APP_DB_HOST,
+        name: "should reject a non-string DB host",
+      },
+      {
+        key: this.VITE_APP_DB_NAME,
+        name: "should reject a non-string DB name",
+      },
+      {
+        key: this.VITE_APP_DB_PASSWORD,
+        name: "should reject a non-string DB password",
       },
       {
         key: this.VITE_APP_PORT,
@@ -102,6 +131,47 @@ const TEST_DATA = {
         input: this.IPV6_ADDRESS,
         key: this.VITE_APP_BIND_ALL_IPV4,
         name: "should reject an IPv6 bind address",
+      },
+      {
+        expectedCode: ISSUE_CODES.TOO_SMALL,
+        expectedMessage: "Must not be empty",
+        input: EMPTY_STRING,
+        key: this.VITE_APP_DB_NAME,
+        name: "should reject an empty DB name",
+      },
+      {
+        expectedCode: ISSUE_CODES.TOO_SMALL,
+        expectedMessage: "Must not be empty",
+        input: EMPTY_STRING,
+        key: this.VITE_APP_DB_BRANCH,
+        name: "should reject an empty DB branch",
+      },
+      {
+        expectedCode: ISSUE_CODES.TOO_SMALL,
+        expectedMessage: "Must not be empty",
+        input: EMPTY_STRING,
+        key: this.VITE_APP_DB_PASSWORD,
+        name: "should reject an empty DB password",
+      },
+      {
+        expectedCode: ISSUE_CODES.CUSTOM,
+        expectedMessage: "Must be a valid IPv4 address or hostname",
+        input: COMMON_STRING,
+        key: this.VITE_APP_DB_HOST,
+        name: "should reject a DB host that is not a valid host",
+      },
+      {
+        expectedCode: ISSUE_CODES.CUSTOM,
+        expectedMessage: "Must be a valid IPv4 address or hostname",
+        input: this.HOST_WITH_PORT,
+        key: this.VITE_APP_DB_HOST,
+        name: "should reject a DB host that includes a port",
+      },
+      {
+        expectedMessage: "Must be a known TLS security mode",
+        input: COMMON_STRING,
+        key: this.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        name: "should reject an unknown DB TLS security mode",
       },
       {
         expectedMessage: "Must be 'true' or 'false'",
@@ -182,6 +252,26 @@ const TEST_DATA = {
         name: "should reject a missing bind-all address",
       },
       {
+        key: this.VITE_APP_DB_BRANCH,
+        name: "should reject a missing DB branch",
+      },
+      {
+        key: this.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        name: "should reject a missing DB TLS security mode",
+      },
+      {
+        key: this.VITE_APP_DB_HOST,
+        name: "should reject a missing DB host",
+      },
+      {
+        key: this.VITE_APP_DB_NAME,
+        name: "should reject a missing DB name",
+      },
+      {
+        key: this.VITE_APP_DB_PASSWORD,
+        name: "should reject a missing DB password",
+      },
+      {
         key: this.VITE_APP_PORT,
         name: "should reject a missing port",
       },
@@ -223,6 +313,29 @@ describe("appEnvSchema", () => {
           result.data.VITE_APP_BIND_ALL_IPV4,
         ).toEqualTypeOf<BindAllIpv4>();
         expectTypeOf(
+          result.data.VITE_APP_DB_BRANCH,
+        ).not.toEqualTypeOf<string>();
+        expectTypeOf(result.data.VITE_APP_DB_BRANCH).toEqualTypeOf<DbBranch>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        ).not.toEqualTypeOf<string>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_CLIENT_TLS_SECURITY,
+        ).toEqualTypeOf<DbClientTlsSecurity>();
+        expectTypeOf(result.data.VITE_APP_DB_HOST).not.toEqualTypeOf<string>();
+        expectTypeOf(result.data.VITE_APP_DB_HOST).toEqualTypeOf<DbHost>();
+        expectTypeOf(result.data.VITE_APP_DB_NAME).not.toEqualTypeOf<string>();
+        expectTypeOf(result.data.VITE_APP_DB_NAME).toEqualTypeOf<DbName>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_PASSWORD,
+        ).not.toEqualTypeOf<string>();
+        expectTypeOf(
+          result.data.VITE_APP_DB_PASSWORD,
+        ).toEqualTypeOf<DbPassword>();
+        expectTypeOf(result.data.VITE_APP_DB_PORT).not.toEqualTypeOf<number>();
+        expectTypeOf(result.data.VITE_APP_DB_PORT).not.toEqualTypeOf<Port>();
+        expectTypeOf(result.data.VITE_APP_DB_PORT).toEqualTypeOf<DbPort>();
+        expectTypeOf(
           result.data.VITE_APP_IS_DEVELOPMENT,
         ).not.toEqualTypeOf<boolean>();
         expectTypeOf(
@@ -261,6 +374,19 @@ describe("appEnvSchema", () => {
 
       if (result.success) {
         expect(result.data.VITE_APP_IS_DEVELOPMENT).toBe(BOOLEAN_TRUE);
+      }
+    });
+
+    it("should normalize the DB host to lower case", ({ expect }) => {
+      const result = appEnvSchema.safeParse({
+        ...VALID_RAW_DEV_ENV,
+        VITE_APP_DB_HOST: LOCALHOST.toUpperCase(),
+      });
+
+      expect(result.success).toBe(BOOLEAN_TRUE);
+
+      if (result.success) {
+        expect(result.data.VITE_APP_DB_HOST).toBe(LOCALHOST);
       }
     });
 

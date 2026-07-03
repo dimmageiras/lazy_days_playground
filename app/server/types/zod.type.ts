@@ -4,7 +4,7 @@ type IssueCodes = (typeof ISSUE_CODES)[keyof typeof ISSUE_CODES];
 
 interface CustomIssueContext {
   addIssue: (issue: {
-    code: "custom";
+    code: (typeof ISSUE_CODES)["CUSTOM"];
     message: string;
     params: { code: IssueCodes };
   }) => void;

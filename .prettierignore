@@ -1,6 +1,23 @@
-.claude
-.sonarlint
-.tsc-cache
-logs
-node_modules
-pnpm-lock.yaml
+# Ignore everything by default
+/*
+
+# Re-include the files Prettier formats
+!/.configs
+!/.github
+!/.prettierrc
+!/app
+!/CLAUDE.md
+!/CONTEXT.md
+!/docker-compose.yaml
+!/docs
+!/eslint.config.ts
+!/knip.config.ts
+!/package.json
+!/pnpm-workspace.yaml
+!/README.md
+!/sample.env
+!/tsconfig.json
+!/tsconfig.server.json
+!/tsconfig.shared.json
+!/tsconfig.test.json
+!/vitest.config.ts

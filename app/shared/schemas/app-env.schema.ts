@@ -1,3 +1,5 @@
+import { DB_CLIENT_TLS_SECURITY } from "@shared/constants/db-client.constant";
+import { HTTP_SCHEMES } from "@shared/constants/http.constant";
 import { LOG_LEVEL } from "@shared/constants/log-level.constant";
 import {
   zBase64,
@@ -7,32 +9,76 @@ import {
   zObject,
   zString,
   zStringbool,
+  zUrl,
 } from "@shared/wrappers/zod.wrapper";
+
+const { HTTP } = HTTP_SCHEMES;
 
 const IPV4_ADDRESS_MESSAGE = "Must be a valid IPv4 address";
 const IS_REQUIRED_MESSAGE = "Is required";
+const MAX_PORT = 65535;
+const MIN_PORT = 1;
 const MUST_BE_STRING_MESSAGE = "Must be a string";
-const PORT_RANGE_MESSAGE = "Must be between 1 and 65535";
+const PORT_RANGE_MESSAGE = `Must be between ${MIN_PORT} and ${MAX_PORT}`;
 
+const hostUrlSchema = zUrl();
 const ipv4Schema = zIpv4();
 
-const isIpv4 = (value: string): boolean => ipv4Schema.safeParse(value).success;
+const isHost = (value: string): boolean => {
+  const candidate = `${HTTP}://${value}`;
 
-const brandedIpSchema = <Brand extends string>(
-  isIp: (value: string) => boolean,
-  message: string,
-) =>
-  zString({
-    error: (issue) =>
-      issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
-  })
-    .refine(isIp, { error: message })
-    .brand<Brand>();
+  return (
+    hostUrlSchema.safeParse(candidate).success &&
+    new URL(candidate).hostname === value
+  );
+};
 
-const bindAllIpv4Schema = brandedIpSchema<"BindAllIpv4">(
-  isIpv4,
-  IPV4_ADDRESS_MESSAGE,
-);
+const isIpv4 = (value: string): boolean => {
+  return ipv4Schema.safeParse(value).success;
+};
+
+const bindAllIpv4Schema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .refine(isIpv4, { error: IPV4_ADDRESS_MESSAGE })
+  .brand<"BindAllIpv4">();
+
+const dbBranchSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .min(1, { error: "Must not be empty" })
+  .brand<"DbBranch">();
+
+const dbClientTlsSecuritySchema = zEnum(DB_CLIENT_TLS_SECURITY.toArray(), {
+  error: (issue) =>
+    issue.input === undefined
+      ? IS_REQUIRED_MESSAGE
+      : "Must be a known TLS security mode",
+}).brand<"DbClientTlsSecurity">();
+
+const dbHostSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .transform((value) => value.toLowerCase())
+  .refine(isHost, { error: "Must be a valid IPv4 address or hostname" })
+  .brand<"DbHost">();
+
+const dbNameSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .min(1, { error: "Must not be empty" })
+  .brand<"DbName">();
+
+const dbPasswordSchema = zString({
+  error: (issue) =>
+    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+})
+  .min(1, { error: "Must not be empty" })
+  .brand<"DbPassword">();
 
 const isDevelopmentSchema = zStringbool({
   error: "Must be 'true' or 'false'",
@@ -48,19 +94,24 @@ const logLevelSchema = zEnum(LOG_LEVEL.toArray(), {
   .default("info")
   .brand<"LogLevel">();
 
-const portSchema = zString({
-  error: (issue) =>
-    issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
-})
-  .regex(/^\d+$/, { error: "Must be a string of digits" })
-  .transform(Number)
-  .pipe(
-    zNumber({ error: "Must be a number" })
-      .int({ error: "Must be an integer" })
-      .min(1, { error: PORT_RANGE_MESSAGE })
-      .max(65535, { error: PORT_RANGE_MESSAGE }),
-  )
-  .brand<"Port">();
+const portSchemaFor = <Brand extends string>() =>
+  zString({
+    error: (issue) =>
+      issue.input === undefined ? IS_REQUIRED_MESSAGE : MUST_BE_STRING_MESSAGE,
+  })
+    .regex(/^\d+$/, { error: "Must be a string of digits" })
+    .transform(Number)
+    .pipe(
+      zNumber({ error: "Must be a number" })
+        .int({ error: "Must be an integer" })
+        .min(MIN_PORT, { error: PORT_RANGE_MESSAGE })
+        .max(MAX_PORT, { error: PORT_RANGE_MESSAGE }),
+    )
+    .brand<Brand>();
+
+const dbPortSchema = portSchemaFor<"DbPort">();
+
+const portSchema = portSchemaFor<"Port">();
 
 const serviceNameSchema = zString({
   error: (issue) =>
@@ -79,6 +130,12 @@ const shutdownTokenSchema = zString({
 
 const appEnvSchema = zObject({
   VITE_APP_BIND_ALL_IPV4: bindAllIpv4Schema,
+  VITE_APP_DB_BRANCH: dbBranchSchema,
+  VITE_APP_DB_CLIENT_TLS_SECURITY: dbClientTlsSecuritySchema,
+  VITE_APP_DB_HOST: dbHostSchema,
+  VITE_APP_DB_NAME: dbNameSchema,
+  VITE_APP_DB_PASSWORD: dbPasswordSchema,
+  VITE_APP_DB_PORT: dbPortSchema,
   VITE_APP_IS_DEVELOPMENT: isDevelopmentSchema,
   VITE_APP_LOG_LEVEL: logLevelSchema,
   VITE_APP_PORT: portSchema,

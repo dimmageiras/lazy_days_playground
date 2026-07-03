@@ -48,8 +48,6 @@ const { castAsType } = TypeHelper;
 
 const { start } = AppStartHelper;
 
-let processExitSpy: MockInstance<typeof process.exit>;
-
 const {
   instanceOf,
   makeEnv,
@@ -130,6 +128,7 @@ const {
       }));
       const buildLogger = vi.fn();
       const claimPort = vi.fn();
+      const setupDb = vi.fn();
       const setupShutdown = vi.fn();
 
       return {
@@ -137,6 +136,7 @@ const {
         claimPort,
         fallbackFatal,
         modules: castAsType<Parameters<typeof start>[2]>({
+          db: { setupDb },
           logger: { buildFallbackLogger, buildLogger },
           shutdown: {
             redactPaths: this.REDACT_PATHS,
@@ -144,6 +144,7 @@ const {
           },
           startup: { claimPort },
         }),
+        setupDb,
         setupShutdown,
       };
     };
@@ -167,6 +168,8 @@ const {
 describe("AppStartHelper", () => {
   describe("start", (it) => {
     const { afterAll, beforeAll } = it;
+
+    let processExitSpy: MockInstance<typeof process.exit>;
 
     beforeAll(() => {
       processExitSpy = vi.spyOn(process, "exit").mockImplementation(() => {
@@ -206,8 +209,14 @@ describe("AppStartHelper", () => {
       expect,
     }) => {
       const env = makeEnv({});
-      const { buildLogger, claimPort, fallbackFatal, modules, setupShutdown } =
-        makeModules();
+      const {
+        buildLogger,
+        claimPort,
+        fallbackFatal,
+        modules,
+        setupDb,
+        setupShutdown,
+      } = makeModules();
 
       claimPort.mockResolvedValue(UNDEFINED_VALUE);
 
@@ -225,6 +234,7 @@ describe("AppStartHelper", () => {
           env,
           TEST_DATA.HOT,
           {
+            db: { setupDb },
             logger: { buildLogger },
             shutdown: {
               redactPaths: TEST_DATA.REDACT_PATHS,

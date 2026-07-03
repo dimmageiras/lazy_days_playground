@@ -3,6 +3,7 @@ import { describe, expectTypeOf } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { TypeHelper } from "@shared/helpers/type.helper";
+import { appEnvSchema } from "@shared/schemas/app-env.schema";
 
 import { EnvVarHelper } from "./env-var.helper";
 
@@ -14,7 +15,7 @@ const {
     EMPTY_OBJECT,
     EMPTY_STRING,
     MIN_PORT,
-    VALID_PORT,
+    VALID_PORT_1,
     VALID_RAW_DEV_ENV,
     VALID_VITE_APP_ENV,
   },
@@ -42,7 +43,7 @@ const TEST_DATA = {
     },
     {
       name: "should reject a whitespace-padded port",
-      port: ` ${VALID_PORT} `,
+      port: ` ${VALID_PORT_1} `,
     },
     {
       name: "should reject a hex literal port",
@@ -54,15 +55,15 @@ const TEST_DATA = {
     },
     {
       name: "should reject a signed port",
-      port: `+${VALID_PORT}`,
+      port: `+${VALID_PORT_1}`,
     },
     {
       name: "should reject a negative-signed port",
-      port: `-${VALID_PORT}`,
+      port: `-${VALID_PORT_1}`,
     },
     {
       name: "should reject a decimal port",
-      port: `${VALID_PORT}.0`,
+      port: `${VALID_PORT_1}.0`,
     },
   ],
   VALID_ENV: VALID_RAW_DEV_ENV,
@@ -88,6 +89,11 @@ describe("EnvVarHelper", () => {
     });
 
     it("should join one line per missing required variable", ({ expect }) => {
+      const missingEnvResult = appEnvSchema.safeParse(TEST_DATA.MISSING_ENV);
+      const expectedIssueCount = missingEnvResult.success
+        ? 0
+        : missingEnvResult.error.issues.length;
+
       let message: string = EMPTY_STRING;
 
       try {
@@ -100,7 +106,7 @@ describe("EnvVarHelper", () => {
         .split("\n")
         .filter((line) => line.startsWith("- "));
 
-      expect(issueLines).toHaveLength(4);
+      expect(issueLines).toHaveLength(expectedIssueCount);
     });
 
     TEST_DATA.REJECTED_PORT_FORMAT_CASES.forEach(({ name, port }) => {

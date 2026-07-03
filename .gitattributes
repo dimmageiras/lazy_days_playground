@@ -1,0 +1,4 @@
+# Normalize all text files to LF in the repository and check them out as LF on
+# every platform, so line endings do not depend on each developer's
+# core.autocrlf setting. Binary files are auto-detected and left untouched.
+* text=auto eol=lf

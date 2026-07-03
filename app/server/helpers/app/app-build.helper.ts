@@ -2,6 +2,7 @@ import fastify from "fastify";
 
 import { BASE_URLS } from "@server/constants/base-urls.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
+import type { SetupDbFunction } from "@server/modules/db";
 import type { BuildLoggerFunction } from "@server/modules/logger";
 import type {
   RedactPaths,
@@ -25,6 +26,9 @@ const build = async (
   env: ViteAppEnv,
   hot: ImportMeta["hot"],
   modules: {
+    db: {
+      setupDb: SetupDbFunction;
+    };
     logger: {
       buildLogger: BuildLoggerFunction;
     };
@@ -35,18 +39,22 @@ const build = async (
   },
 ): Promise<AppInstance> => {
   const {
+    db: { setupDb },
     logger: { buildLogger },
     shutdown: { redactPaths, setupShutdown },
   } = modules;
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
+    disableRequestLogging: true,
     loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
   });
 
   try {
     instance.decorate("appEnv", appEnv);
+
+    setupDb(instance);
 
     await instance.register(apiHealthRoutes, {
       prefix: API_HEALTH,
