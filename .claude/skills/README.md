@@ -89,6 +89,30 @@ When deleting a skill from `.claude/skills/<skill-name>/`, also remove every ref
 
 The pre-commit check: if `git status` shows the skill folder removed but `git grep '<skill-name>'` still finds matches outside the deletion itself, the cleanup is incomplete.
 
+## Versioning
+
+Changes to the skill set are recorded in [`changelog.md`](./changelog.md), versioned with semantic versioning applied to the set **as a whole**:
+
+- **MAJOR** — a skill is removed or renamed (breaking: invocation rules and cross-references must change).
+- **MINOR** — a skill is added (backward-compatible: existing references keep working).
+- **PATCH** — a skill's content is refreshed from upstream or modified locally, or a broken reference is fixed — with no change to set membership.
+
+This set-level version is distinct from the per-skill **Version** column in the table above, which is the upstream skill's own declared version.
+
+Each changelog entry labels its changes by source, so it is clear whether a change came from upstream or from us:
+
+- **From upstream:**
+  - **Skills Added** — a skill vendored in.
+  - **Skills Updated** — refreshed to a newer upstream version.
+- **From us:**
+  - **Skills Removed** — dropped from the set.
+  - **Skills Renamed** — a skill's local name changed (e.g. following an upstream rename); breaking, like a removal.
+  - **Skills Frozen** — pinned to a fixed upstream SHA because upstream no longer exists, so it can no longer be refreshed.
+  - **Local divergences from upstream** — a skill changed _away from its upstream value_ (`upstream → ours`); the divergences a future refresh must re-apply rather than revert.
+  - **Local modifications** — a later local-only edit to our own, already-diverged content (`ours → ours`), not measured against upstream.
+
+Each entry's **Version** and **Last edit** are the upstream values _as of that release_, so historical entries can differ from the current table above. Vendored skills are also formatted locally, so raw diffs against upstream show formatting noise; the changelog's **Local divergences from upstream** and **Local modifications** entries cover only deliberate content changes, not formatting.
+
 ## Column meaning
 
 - **Skill** — the folder name under `.claude/skills/`, which is also the name Claude Code uses when invoking the skill. The link points to the upstream source on GitHub.
