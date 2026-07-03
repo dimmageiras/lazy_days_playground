@@ -31,7 +31,7 @@ const TEST_DATA = {
 
 describe("dbRoute", () => {
   describe(`${GET} ${TEST_DATA.DB_PATH}`, (it) => {
-    it("should report the DB name and an ISO timestamp when the client connects", async ({
+    it("should report the branch and an ISO timestamp when the client connects", async ({
       expect,
       onTestFinished,
     }) => {
@@ -54,7 +54,7 @@ describe("dbRoute", () => {
 
       expect(response.statusCode).toBe(OK);
       expect(response.json()).toStrictEqual({
-        db: VALID_DEV_APP_ENV.dbName,
+        branch: VALID_DEV_APP_ENV.dbBranch,
         timestamp: expect.any(String),
       });
     });

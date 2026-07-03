@@ -70,10 +70,10 @@ Expect ~10 seconds on a warm image, ~1 minute on the first pull.
 ## 4) Confirm the server is ready
 
 ```
-curl.exe -k https://localhost:5656/server/status/ready
+curl.exe -k https://localhost:<VITE_APP_DB_PORT>/server/status/ready
 ```
 
-`HTTP 200` means it's accepting connections. `-k` skips cert validation since the cert is self-signed. Use `curl.exe`, not bare `curl` — in PowerShell 5.1, `curl` is an alias for `Invoke-WebRequest`, which doesn't accept `-k`.
+Use the host port you published in `VITE_APP_DB_PORT` — `5656` is only the container-internal listener (see section 2), so a hardcoded `5656` gives a false "not ready" signal whenever you publish a different host port. `HTTP 200` means it's accepting connections. `-k` skips cert validation since the cert is self-signed. Use `curl.exe`, not bare `curl` — in PowerShell 5.1, `curl` is an alias for `Invoke-WebRequest`, which doesn't accept `-k`.
 
 ## 5) Confirm host-side authentication
 

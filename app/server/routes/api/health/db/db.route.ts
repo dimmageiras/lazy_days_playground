@@ -12,7 +12,7 @@ const dbRoute = async (instance: AppInstance): Promise<void> => {
     await instance.dbClient.ensureConnected();
 
     return {
-      db: instance.appEnv.dbName,
+      branch: instance.appEnv.dbBranch,
       timestamp: getCurrentISOTimestamp(),
     };
   };
