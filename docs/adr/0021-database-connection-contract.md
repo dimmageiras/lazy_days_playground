@@ -1,7 +1,7 @@
 # 0021. The database connection contract: connection configuration and a second prefixed secret on the validated surface
 
-- **Status:** Proposed
-- **Date:** 2026-07-02
+- **Status:** Accepted
+- **Date:** 2026-07-03
 
 ## Context
 
