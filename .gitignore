@@ -6,6 +6,7 @@
 !/.claude/rules
 !/.claude/skills
 !/.configs
+!/.gitattributes
 !/.github
 !/.gitignore
 !/.prettierignore
