@@ -13,9 +13,12 @@
 
 | Skill                         | Version   | Last edit  |
 | ----------------------------- | --------- | ---------- |
+| caveman                       | 1.9.1     | 03/07/2026 |
 | grill-with-docs               | —         | 31/05/2026 |
 | improve-codebase-architecture | —         | 31/05/2026 |
 | tdd                           | —         | 03/07/2026 |
+
+caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstream was deleted) and no longer frozen; the new skill adds intensity levels (`lite`/`full`/`ultra`, `wenyan-*`).
 
 ### Skills Renamed
 
@@ -23,12 +26,13 @@
 
 ### Local divergences from upstream
 
+- **caveman** — dead `README.md` link `../../README.md` repointed to the upstream `README.md`.
+- **code-review-and-quality** — dead `## See Also` links to `references/*.md`.
 - **grill-with-docs** — frontmatter `disable-model-invocation`: `true` → `false`.
 - **improve-codebase-architecture** — frontmatter `disable-model-invocation`: `true` → `false`.
-- **tdd** — review-stage reference: `code-review` → `code-review-and-quality`.
-- **code-review-and-quality** — dead `## See Also` links to `references/*.md`.
-- **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files.
 - **react-best-practices** — `AGENTS.md` cross-links repointed to `./rules/…`.
+- **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files.
+- **tdd** — review-stage reference: `code-review` → `code-review-and-quality`.
 
 ## [2.0.0] - 2026-07-01
 
@@ -116,8 +120,8 @@
 
 ### Local divergences from upstream
 
-- **react-best-practices** — frontmatter `name`: `vercel-react-best-practices` → `react-best-practices` (vendor prefix dropped to match the local folder).
-- **composition-patterns** — frontmatter `name`: `vercel-composition-patterns` → `composition-patterns` (vendor prefix dropped).
-- **zustand** — frontmatter `name`: `react-zustand` → `zustand` (vendor prefix dropped; folder renamed from upstream `react-zustand`).
-- **react-hook-form-writer** — frontmatter `name`: `dust-react-hook-form-writer` → `react-hook-form-writer` (vendor prefix dropped; folder renamed from upstream `dust-react-hook-form-writer`).
 - **commit** — adapted from the upstream `.ts` skill blob into `SKILL.md`: `description` rewritten to a trigger-style ("Use when…"), the `## Usage` section dropped, the commit-type descriptions expanded, and a `metadata.source` link added.
+- **composition-patterns** — frontmatter `name`: `vercel-composition-patterns` → `composition-patterns` (vendor prefix dropped).
+- **react-best-practices** — frontmatter `name`: `vercel-react-best-practices` → `react-best-practices` (vendor prefix dropped to match the local folder).
+- **react-hook-form-writer** — frontmatter `name`: `dust-react-hook-form-writer` → `react-hook-form-writer` (vendor prefix dropped; folder renamed from upstream `dust-react-hook-form-writer`).
+- **zustand** — frontmatter `name`: `react-zustand` → `zustand` (vendor prefix dropped; folder renamed from upstream `react-zustand`).
