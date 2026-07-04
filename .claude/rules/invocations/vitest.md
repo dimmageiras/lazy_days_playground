@@ -20,4 +20,4 @@ Where the upstream skill and the project doc diverge, the **project doc wins**. 
 
 - **Cross-cutting code review** → also invoke `code-review-and-quality` per [`./code-review.md`](./code-review.md).
 - **Editing the testing documentation itself** → also invoke the `doc-editing` rule ([`./doc-editing.md`](./doc-editing.md)).
-- **Bug in a test or test infrastructure** → also invoke `diagnose`.
+- **Bug in a test or test infrastructure** → also invoke `diagnosing-bugs`.

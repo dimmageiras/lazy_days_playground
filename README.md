@@ -39,7 +39,7 @@ Depending on what you're doing:
 - **Writing or reviewing code** → read [`CLAUDE.md`](./CLAUDE.md) and the rules it links under [`.claude/rules/`](./.claude/rules/).
 - **Adding or changing a test** → read [`docs/testing/README.md`](./docs/testing/README.md). The worker model is opinionated; the conventions are non-obvious without it.
 - **Running a code review** → pick the relevant plan under [`docs/code-reviews/plans/`](./docs/code-reviews/plans/). The plan tells you which skills to invoke and what to look for.
-- **Making an architectural decision** → record it as an ADR under [`docs/adr/`](./docs/adr/); see [`docs/adr/README.md`](./docs/adr/README.md) for the template (the `grill-with-docs` skill in `.claude/skills/` documents the expected shape).
+- **Making an architectural decision** → record it as an ADR under [`docs/adr/`](./docs/adr/); see [`docs/adr/README.md`](./docs/adr/README.md) for the template (the `domain-modeling` skill in `.claude/skills/` documents the expected shape).
 - **Looking up a term** → [`CONTEXT.md`](./CONTEXT.md). If a term is missing from the glossary but already in use, add it as part of the change that uses it.
 
 ## Convention summary

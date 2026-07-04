@@ -35,7 +35,7 @@ The skill performs multi-axis review (correctness, security, performance, readab
 | TypeScript generics, conditional/mapped types, `any` removal                                                 | `typescript-magician`                                                                                     |
 | Test-first / red-green-refactor commits                                                                      | `tdd`                                                                                                     |
 | Module-boundary or deepening opportunity changes                                                             | `improve-codebase-architecture`, `codebase-design`                                                        |
-| Bug-fix changes claiming to resolve a regression                                                             | `diagnose`                                                                                                |
+| Bug-fix changes claiming to resolve a regression                                                             | `diagnosing-bugs`                                                                                         |
 | `*.md`, `docs/**`, `CONTEXT.md`, `docs/adr/**`                                                               | `doc-coauthoring`, `documentation-and-adrs`                                                               |
 | Inline code comments, JSDoc blocks                                                                           | (no skill) — apply [`../code-comments.md`](../code-comments.md) as review criteria                        |
 
