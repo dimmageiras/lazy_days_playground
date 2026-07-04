@@ -1,6 +1,6 @@
 # Skills changelog
 
-## [3.0.0] - 2026-07-03
+## [3.0.0] - 2026-07-04
 
 ### Skills Added
 
@@ -34,7 +34,7 @@ caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstrea
 - **grill-with-docs** — frontmatter `disable-model-invocation`: `true` → `false`; body gutted to a two-line composition delegating to `grilling` and `domain-modeling` (with `ADR-FORMAT.md` / `CONTEXT-FORMAT.md` relocated into `domain-modeling/`); `description` given a `Use when…` trigger to disambiguate from `grilling`.
 - **improve-codebase-architecture** — frontmatter `disable-model-invocation`: `true` → `false`; `description` given a `Use when…` trigger; self-reference wording `this command` → `this skill`.
 - **react-best-practices** — `AGENTS.md` cross-links repointed to `./rules/…`.
-- **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files, and the `Rule Categories by Priority` table counts corrected to match; inaccurate `(Prefix: …)` labels dropped from the Parallel Queries and Offline Support headers (their members don't carry the prefix).
+- **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files, and the `Rule Categories by Priority` table counts corrected to match.
 - **tdd** — review-stage reference: `code-review` → `code-review-and-quality`.
 
 ## [2.0.0] - 2026-07-01
