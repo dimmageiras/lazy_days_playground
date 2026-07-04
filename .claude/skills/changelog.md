@@ -29,11 +29,13 @@ caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstrea
 
 ### Local divergences from upstream
 
-- **caveman** — dead `README.md` link `../../README.md` repointed to the upstream `README.md`.
-- **code-review-and-quality** — dead `## See Also` links to `references/*.md`.
+- **caveman** — dead `README.md` link `../../README.md` repointed to the upstream `README.md`; `README.md` `ultra` intensity row and example realigned to `SKILL.md`'s spec (no invented abbreviations, no causal arrows); `README.md` invocation example `/caveman wenyan` corrected to the defined `/caveman wenyan-full` level.
+- **code-review-and-quality** — dead `## See Also` links to `references/*.md` removed (the skill already points readers to the `performance-optimization` and `security-and-hardening` skills inline).
 - **grill-with-docs** — frontmatter `disable-model-invocation`: `true` → `false`; body gutted to a two-line composition delegating to `grilling` and `domain-modeling` (with `ADR-FORMAT.md` / `CONTEXT-FORMAT.md` relocated into `domain-modeling/`); `description` given a `Use when…` trigger to disambiguate from `grilling`.
 - **improve-codebase-architecture** — frontmatter `disable-model-invocation`: `true` → `false`; `description` given a `Use when…` trigger; self-reference wording `this command` → `this skill`.
+- **performance-optimization** — `## See Also` pointer `references/performance-checklist.md` repointed to `../../references/performance-checklist.md` (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill).
 - **react-best-practices** — `AGENTS.md` cross-links repointed to `./rules/…`.
+- **security-and-hardening** — `references/security-checklist.md` pointers (OWASP section and `## See Also`) repointed to `../../references/security-checklist.md` (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill).
 - **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files, and the `Rule Categories by Priority` table counts corrected to match.
 - **tdd** — review-stage reference: `code-review` → `code-review-and-quality`.
 
