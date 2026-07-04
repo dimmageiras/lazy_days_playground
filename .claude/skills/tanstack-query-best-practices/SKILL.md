@@ -21,14 +21,14 @@ Comprehensive guidelines for implementing TanStack Query (React Query) patterns 
 | Priority | Category         | Rules   | Impact                                       |
 | -------- | ---------------- | ------- | -------------------------------------------- |
 | CRITICAL | Query Keys       | 5 rules | Prevents cache bugs and data inconsistencies |
-| CRITICAL | Caching          | 5 rules | Optimizes performance and data freshness     |
-| HIGH     | Mutations        | 6 rules | Ensures data integrity and UI consistency    |
-| HIGH     | Error Handling   | 3 rules | Prevents poor user experiences               |
-| MEDIUM   | Prefetching      | 4 rules | Improves perceived performance               |
+| CRITICAL | Caching          | 4 rules | Optimizes performance and data freshness     |
+| HIGH     | Mutations        | 3 rules | Ensures data integrity and UI consistency    |
+| HIGH     | Error Handling   | 1 rule  | Prevents poor user experiences               |
+| MEDIUM   | Prefetching      | 1 rule  | Improves perceived performance               |
 | MEDIUM   | Parallel Queries | 2 rules | Enables dynamic parallel fetching            |
-| MEDIUM   | Infinite Queries | 3 rules | Prevents pagination bugs                     |
-| MEDIUM   | SSR Integration  | 4 rules | Enables proper hydration                     |
-| LOW      | Performance      | 4 rules | Reduces unnecessary re-renders               |
+| MEDIUM   | Infinite Queries | 1 rule  | Prevents pagination bugs                     |
+| MEDIUM   | SSR Integration  | 1 rule  | Enables proper hydration                     |
+| LOW      | Performance      | 1 rule  | Reduces unnecessary re-renders               |
 | LOW      | Offline Support  | 2 rules | Enables offline-first patterns               |
 
 ## Quick Reference

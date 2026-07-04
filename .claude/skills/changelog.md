@@ -8,17 +8,20 @@
 | ----------------------------- | --------- | ---------- |
 | domain-modeling               | —         | 17/06/2026 |
 | grilling                      | —         | 03/07/2026 |
+| performance-optimization      | —         | 08/04/2026 |
+| security-and-hardening        | —         | 07/06/2026 |
 
 ### Skills Updated
 
 | Skill                         | Version   | Last edit  |
 | ----------------------------- | --------- | ---------- |
-| caveman                       | 1.9.1     | 03/07/2026 |
+| caveman                       | —         | 03/07/2026 |
+| diagnosing-bugs               | —         | 17/06/2026 |
 | grill-with-docs               | —         | 31/05/2026 |
 | improve-codebase-architecture | —         | 31/05/2026 |
 | tdd                           | —         | 03/07/2026 |
 
-caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstream was deleted) and no longer frozen; the new skill adds intensity levels (`lite`/`full`/`ultra`, `wenyan-*`).
+caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstream was deleted) and no longer frozen; the new skill adds intensity levels (`lite`/`full`/`ultra`, `wenyan-*`). It is listed under Skills Updated (rather than a dedicated re-source category) because the set-level vocabulary has no separate bucket; the note above records the re-source and un-freeze. **diagnosing-bugs** also appears under Skills Renamed below — the same release both renamed it (from `diagnose`) and refreshed its body to a newer upstream version.
 
 ### Skills Renamed
 
@@ -28,10 +31,10 @@ caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstrea
 
 - **caveman** — dead `README.md` link `../../README.md` repointed to the upstream `README.md`.
 - **code-review-and-quality** — dead `## See Also` links to `references/*.md`.
-- **grill-with-docs** — frontmatter `disable-model-invocation`: `true` → `false`.
-- **improve-codebase-architecture** — frontmatter `disable-model-invocation`: `true` → `false`.
+- **grill-with-docs** — frontmatter `disable-model-invocation`: `true` → `false`; body gutted to a two-line composition delegating to `grilling` and `domain-modeling` (with `ADR-FORMAT.md` / `CONTEXT-FORMAT.md` relocated into `domain-modeling/`); `description` given a `Use when…` trigger to disambiguate from `grilling`.
+- **improve-codebase-architecture** — frontmatter `disable-model-invocation`: `true` → `false`; `description` given a `Use when…` trigger; self-reference wording `this command` → `this skill`.
 - **react-best-practices** — `AGENTS.md` cross-links repointed to `./rules/…`.
-- **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files.
+- **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files, and the `Rule Categories by Priority` table counts corrected to match; inaccurate `(Prefix: …)` labels dropped from the Parallel Queries and Offline Support headers (their members don't carry the prefix).
 - **tdd** — review-stage reference: `code-review` → `code-review-and-quality`.
 
 ## [2.0.0] - 2026-07-01
