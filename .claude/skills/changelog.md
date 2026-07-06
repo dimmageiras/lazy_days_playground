@@ -10,7 +10,7 @@
 
 ### Local divergences from upstream
 
-- **observability-and-instrumentation** — checklist pointer `references/observability-checklist.md` repointed to `../../references/observability-checklist.md` and rendered as a clickable markdown link (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill; both the repointed path and the link form match `performance-optimization` / `security-and-hardening`); dead cross-skill reference `debugging-and-error-recovery` repointed to the installed `diagnosing-bugs` (its equivalent here); `shipping-and-launch` references (the SKILL.md "NOT for" bullet and the checklist's Pre-Launch Gate footer) reworded to drop the skill name, as no equivalent skill is installed.
+- **observability-and-instrumentation** — checklist pointer `references/observability-checklist.md` repointed to `../../references/observability-checklist.md`; dead cross-skill reference `debugging-and-error-recovery` repointed to the installed `diagnosing-bugs` (its equivalent here); `shipping-and-launch` references (the SKILL.md "NOT for" bullet and the checklist's Pre-Launch Gate footer) reworded to drop the skill name, as no equivalent skill is installed.
 
 ## [3.0.0] - 2026-07-04
 
@@ -33,7 +33,7 @@
 | improve-codebase-architecture | —         | 31/05/2026 |
 | tdd                           | —         | 03/07/2026 |
 
-caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstream was deleted) and no longer frozen; the new skill adds intensity levels (`lite`/`full`/`ultra`, `wenyan-*`). It is listed under Skills Updated (rather than a dedicated re-source category) because the set-level vocabulary has no separate bucket; the note above records the re-source and un-freeze. **diagnosing-bugs** also appears under Skills Renamed below — the same release both renamed it (from `diagnose`) and refreshed its body to a newer upstream version.
+- **caveman** re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstream was deleted) and no longer frozen.
 
 ### Skills Renamed
 
@@ -45,9 +45,9 @@ caveman re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstrea
 - **code-review-and-quality** — dead `## See Also` links to `references/*.md` removed (the skill already points readers to the `performance-optimization` and `security-and-hardening` skills inline).
 - **grill-with-docs** — frontmatter `disable-model-invocation`: `true` → `false`; body gutted to a two-line composition delegating to `grilling` and `domain-modeling` (with `ADR-FORMAT.md` / `CONTEXT-FORMAT.md` relocated into `domain-modeling/`); `description` given a `Use when…` trigger to disambiguate from `grilling`.
 - **improve-codebase-architecture** — frontmatter `disable-model-invocation`: `true` → `false`; `description` given a `Use when…` trigger; self-reference wording `this command` → `this skill`.
-- **performance-optimization** — `## See Also` pointer `references/performance-checklist.md` repointed to `../../references/performance-checklist.md` (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill).
+- **performance-optimization** — `## See Also` pointer `references/performance-checklist.md` repointed to `../../references/performance-checklist.md`.
 - **react-best-practices** — `AGENTS.md` cross-links repointed to `./rules/…`.
-- **security-and-hardening** — `references/security-checklist.md` pointers (OWASP section and `## See Also`) repointed to `../../references/security-checklist.md` (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill).
+- **security-and-hardening** — `references/security-checklist.md` pointers (OWASP section and `## See Also`) repointed to `../../references/security-checklist.md`.
 - **tanstack-query-best-practices** — Quick Reference trimmed to the 21 rules with backing files, and the `Rule Categories by Priority` table counts corrected to match.
 - **tdd** — review-stage reference: `code-review` → `code-review-and-quality`.
 
