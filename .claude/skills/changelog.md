@@ -10,7 +10,7 @@
 
 ### Local divergences from upstream
 
-- **observability-and-instrumentation** — checklist pointer `references/observability-checklist.md` repointed to `../../references/observability-checklist.md` (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill, matching `performance-optimization` / `security-and-hardening`); dead cross-skill reference `debugging-and-error-recovery` repointed to the installed `diagnosing-bugs` (its equivalent here); `shipping-and-launch` references (the SKILL.md "NOT for" bullet and the checklist's Pre-Launch Gate footer) reworded to drop the skill name, as no equivalent skill is installed.
+- **observability-and-instrumentation** — checklist pointer `references/observability-checklist.md` repointed to `../../references/observability-checklist.md` and rendered as a clickable markdown link (the checklist is vendored at the shared `.claude/references/`, not co-located with the skill; both the repointed path and the link form match `performance-optimization` / `security-and-hardening`); dead cross-skill reference `debugging-and-error-recovery` repointed to the installed `diagnosing-bugs` (its equivalent here); `shipping-and-launch` references (the SKILL.md "NOT for" bullet and the checklist's Pre-Launch Gate footer) reworded to drop the skill name, as no equivalent skill is installed.
 
 ## [3.0.0] - 2026-07-04
 
