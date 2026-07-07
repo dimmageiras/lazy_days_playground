@@ -1,6 +1,6 @@
 # 0022. Route schema validation and OpenAPI documentation: one schema validates traffic and describes it, docs served dev-only
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-07-07
 
 ## Context
