@@ -1,8 +1,5 @@
 import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
-import type {
-  OpenApiSchema,
-  OpenApiTypeProvider,
-} from "@server/modules/openapi";
+import type { OpenApiSchema } from "@server/modules/openapi";
 import type { AppInstance } from "@server/types/instance.type";
 
 import { HTTP_STATUS } from "@shared/constants/http.constant";
@@ -21,7 +18,7 @@ const serverRoute = async (instance: AppInstance): Promise<void> => {
     timestamp: getCurrentISOTimestamp(),
   });
 
-  instance.withTypeProvider<OpenApiTypeProvider>().get(
+  instance.get(
     `/${SERVER}`,
     {
       schema: {

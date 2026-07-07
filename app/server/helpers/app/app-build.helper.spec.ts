@@ -104,6 +104,12 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
     }): AppInstance => {
       const instance = createMockInstance();
 
+      Reflect.set(
+        instance,
+        "withTypeProvider",
+        vi.fn(() => instance),
+      );
+
       Reflect.set(instance, "decorate", vi.fn());
 
       Reflect.set(

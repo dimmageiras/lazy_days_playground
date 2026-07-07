@@ -5,6 +5,7 @@ import { ErrorHelper } from "@server/helpers/error.helper";
 import type { SetupDbFunction } from "@server/modules/db";
 import type { BuildLoggerFunction } from "@server/modules/logger";
 import type {
+  OpenApiTypeProvider,
   SetupDocsFunction,
   SetupValidationFunction,
 } from "@server/modules/openapi";
@@ -58,7 +59,7 @@ const build = async (
     disableRequestLogging: true,
     loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
-  });
+  }).withTypeProvider<OpenApiTypeProvider>();
 
   try {
     instance.decorate("appEnv", appEnv);

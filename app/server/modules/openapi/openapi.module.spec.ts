@@ -13,7 +13,7 @@ import { zObject, zString } from "@shared/wrappers/zod.wrapper";
 
 import { OPENAPI_OPTIONS } from "./constants/openapi.constant";
 import { OpenApiModule } from "./openapi.module";
-import type { OpenApiSchema, OpenApiTypeProvider } from "./types/openapi.type";
+import type { OpenApiSchema } from "./types/openapi.type";
 
 const {
   createTestApp,
@@ -43,7 +43,7 @@ const { registerEchoRoute, ...TEST_DATA } = {
     return (instance: AppInstance): void => {
       const echoBodySchema = zObject({ name: zString() });
 
-      instance.withTypeProvider<OpenApiTypeProvider>().post(
+      instance.post(
         this.ECHO_PATH,
         {
           schema: {
