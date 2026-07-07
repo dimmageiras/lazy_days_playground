@@ -21,6 +21,7 @@ interface CreateMockInstanceOptions {
 }
 
 interface CreateTestAppOptions {
+  appEnv?: Partial<AppEnv>;
   mocksToReset?: Array<Mock>;
   resetFn?: () => Promise<void> | void;
 }
@@ -31,7 +32,7 @@ const createMockInstance = (
   const { appEnv, listen } = options ?? {};
 
   return castAsType<AppInstance>({
-    appEnv: { ...VALID_DEV_APP_ENV, ...appEnv },
+    appEnv: Object.freeze({ ...VALID_DEV_APP_ENV, ...appEnv }),
     listen: listen ?? vi.fn(),
     log: Object.fromEntries(
       LOG_LEVEL.toArray().map((level) => [level, vi.fn()]),
@@ -45,9 +46,9 @@ const createTestApp = (
 ): AppInstance => {
   const app = Fastify({ logger: false });
 
-  app.decorate("appEnv", VALID_DEV_APP_ENV);
+  const { appEnv, mocksToReset, resetFn } = options ?? {};
 
-  const { mocksToReset, resetFn } = options ?? {};
+  app.decorate("appEnv", Object.freeze({ ...VALID_DEV_APP_ENV, ...appEnv }));
 
   onTestFinished(async () => {
     for (const mock of mocksToReset ?? []) {

@@ -11,6 +11,7 @@ Sub-areas:
 - **Issue-code vocabulary** — the frozen constant enumerating the library's issue codes and the type derived from it, shared so both the schema side and the failure-formatting side name codes the same way.
 - **Failure formatting and custom issues** — the runtime-side helpers that turn raw validation issues into a stable, reportable shape and that attach project-specific custom issues.
 - **Startup gate** — the bootstrap invocation that validates the environment surface against a schema and aborts the process on failure, before any framework instance exists.
+- **Route schemas** — the per-route declarative shapes that validate request and response payloads at the framework edge, authored through the same wrapper seam, and that double as the source of the generated API description. The seam that binds these schemas to the framework's validator and serialiser compilers, and the development-only exposure of the generated document, are the runtime-side wiring this sub-area covers.
 
 ## Files currently in scope
 
@@ -23,6 +24,8 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - `app/server/helpers/app/env-var.helper.ts` and its spec (the env-validation entry the bootstrap calls)
 - `app/server/types/zod.type.ts` (the issue-code union, custom-issue context, formatted-issue shape)
 - the bootstrap validation call site in `app/server/helpers/app/app-start.helper.ts` (invocation and fail-fast handling only — broader bootstrap discipline stays with the server plan)
+- `app/server/routes/**/schemas/**` (per-route request/response schemas, co-located with the route they describe)
+- `app/server/modules/openapi/**` (the seam binding route schemas to the framework's validator/serialiser compilers and the development-only docs surface — the module's shape and encapsulation are the modules plan's concern; the validation contract is reviewed here)
 
 ## Required skills
 
@@ -48,6 +51,15 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - Coercion from a string input to another primitive is explicit (a transform feeding a piped target schema), and the target schema re-validates the coerced value rather than trusting the transform. The order matters: validate the source type, transform, then validate the target type.
 - Per-field error messages are present, are sentences in the project's message style (capitalised, no trailing period, present tense), and distinguish the "missing" case from the "wrong type" case where both are reachable.
 - A schema describes a shape, not a consumer. Its name and field names describe the value being validated, not the module that happens to validate there.
+
+### Route schema validation and the generated API surface
+
+- A route that accepts or returns a structured payload declares its shape as a schema authored through the wrapper. A route reaching past the wrapper to the raw library, or hand-writing the framework's native schema format inline, is a finding — it bypasses the configuration seam and splits the validation vocabulary.
+- The same schema is both the runtime validator and the source of the route's documentation fragment. A second, hand-maintained description of the same shape is a finding: the two drift the moment one side changes.
+- Runtime validation is installed unconditionally; only the human-facing documentation surface is gated to development. A change that gates validation itself on the runtime, or that mounts the documentation surface in a non-development environment, is a finding — validation is a correctness and security boundary, not a dev affordance.
+- A response schema describes the success shape the route actually returns — neither looser than the handler (a field the handler always returns is not optional in the schema) nor tighter (the handler must not return a field the serialiser would strip).
+- Per-field descriptions and examples on a route schema follow the project's message style, and the schema name describes the payload, not the route that happens to use it (the rename test applies).
+- The seam module's structural properties — its curated surface, barrel, and internal layout — are the modules plan's concern; this plan covers only that the route's validation contract is correct and routed through the wrapper.
 
 ### Issue-code vocabulary
 
@@ -93,6 +105,8 @@ A PR that:
 - Changes the failure-formatting helper, the custom-issue channel, or their specs.
 - Changes how the bootstrap invokes environment validation or how it handles a validation failure.
 - Bumps the schema library's major version (the issue-code surface and the custom-issue channel are the likely break points).
+- Adds or changes a route's request/response schema, or changes how a route declares its shape.
+- Changes the seam that binds route schemas to the framework's validator/serialiser compilers, or the gating that keeps the documentation surface development-only.
 
 ## Related
 
@@ -100,6 +114,8 @@ A PR that:
 - [`./helpers.plan.md`](./helpers.plan.md) — the namespace and purity rules the runtime-side validation helpers also satisfy; this plan sharpens the validation-specific criteria on top.
 - [`./server.plan.md`](./server.plan.md) — the bootstrap discipline that surrounds the startup gate; that plan delegates the schema/wrapper layer and the validation invocation here.
 - [`../../adr/0009-environment-validation-gate.md`](../../adr/0009-environment-validation-gate.md) — the decision to validate the environment against a schema at startup and fail fast, which the startup-gate criteria enforce.
+- [`../../adr/0022-route-schema-validation-and-openapi.md`](../../adr/0022-route-schema-validation-and-openapi.md) — the decision that one route schema validates traffic and generates the API description, with the documentation surface development-only, which the route-schema criteria enforce.
+- [`./modules.plan.md`](./modules.plan.md) — the structural and encapsulation review of the schema-binding module; this plan delegates the module's shape there and keeps only the route validation contract.
 
 ## Output
 

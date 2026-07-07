@@ -13,6 +13,10 @@ The glossary is intentionally minimal at this stage. Add a term only when it has
 
 ## Terms
 
+### API documentation surface
+
+The generated description of the server's HTTP contract together with the interactive explorer served from it. It is derived, not hand-written: each route's **Route schema** contributes its fragment, so the surface is always a faithful projection of what the routes actually validate. It is a development-only affordance — a deployed process does not mount it, so the description and explorer exist only where a developer needs them — and it sits under its own reserved namespace beside the health and internal namespaces. Contrast the runtime validation the same schemas drive, which is unconditional and present in every environment.
+
 ### Branch (Gel)
 
 The database's unit of schema and data isolation — a named, independently-migratable line of schema together with its data, analogous to a database in other systems (older Gel/EdgeDB material may call it a "database"). Distinct from a **git branch**: a Gel branch is a runtime connection target the client selects, not a version-control line. The connection configuration names the one branch the client connects to.
@@ -76,6 +80,10 @@ An authenticated, loopback-only, single-shot HTTP route that lets a co-located c
 ### Rename test
 
 The codebase-agnostic check applied to documentation: if every file in the repo were renamed and reorganised tomorrow, would the doc still read correctly? Failing the rename test means the doc is over-coupled to current implementation and will rot at the next refactor.
+
+### Route schema
+
+The single declarative shape attached to a route that describes its request and response payloads. It does double duty: the framework validates traffic against it at runtime — rejecting a malformed request before the handler runs and constraining the response — and the **API documentation surface** is generated from it. Because one schema is both the validator and the documented contract, the two cannot drift apart. Route schemas are authored through the same validation wrapper seam every other schema uses, so no route reaches the raw schema library. See [`docs/adr/0022-route-schema-validation-and-openapi.md`](./docs/adr/0022-route-schema-validation-and-openapi.md).
 
 ### Scoped store
 

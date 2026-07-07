@@ -23,5 +23,8 @@ managePackageManagerVersions: true
 # defence; revisit before any external release.
 minimumReleaseAge: 0
 
+overrides:
+  "@fastify/swagger-ui": 6.0.0
+
 patchedDependencies:
   "@types/eslint-plugin-security@3.0.1": .configs/pnpm/patches/@types__eslint-plugin-security@3.0.1.patch

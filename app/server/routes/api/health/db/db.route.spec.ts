@@ -4,6 +4,7 @@ import { VitestSetup } from "@configs/vitest/setup";
 
 import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
 import type { DbClient } from "@server/modules/db";
+import { OpenApiModule } from "@server/modules/openapi";
 
 import { HTTP_METHODS, HTTP_STATUS } from "@shared/constants/http.constant";
 import { TypeHelper } from "@shared/helpers/type.helper";
@@ -19,6 +20,8 @@ const {
 trackLeaksInSpec("db.route");
 
 const { castAsType } = TypeHelper;
+
+const { setupValidation } = OpenApiModule;
 
 const { DB } = API_HEALTH_ENDPOINTS;
 const { GET } = HTTP_METHODS.SAFE;
@@ -44,6 +47,7 @@ describe("dbRoute", () => {
         }),
       );
 
+      await setupValidation(app);
       await app.register(dbRoute);
       await app.ready();
 

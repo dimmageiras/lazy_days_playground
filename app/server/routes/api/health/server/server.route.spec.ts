@@ -3,6 +3,7 @@ import { describe } from "vitest";
 import { VitestSetup } from "@configs/vitest/setup";
 
 import { API_HEALTH_ENDPOINTS } from "@server/constants/endpoints.constant";
+import { OpenApiModule } from "@server/modules/openapi";
 
 import { HTTP_METHODS, HTTP_STATUS } from "@shared/constants/http.constant";
 
@@ -15,6 +16,8 @@ const {
 } = VitestSetup();
 
 trackLeaksInSpec("server.route");
+
+const { setupValidation } = OpenApiModule;
 
 const { SERVER } = API_HEALTH_ENDPOINTS;
 const { GET } = HTTP_METHODS.SAFE;
@@ -32,6 +35,7 @@ describe("serverRoute", () => {
     }) => {
       const app = createTestApp(onTestFinished);
 
+      await setupValidation(app);
       await app.register(serverRoute);
       await app.ready();
 

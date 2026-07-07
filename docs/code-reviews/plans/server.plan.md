@@ -11,7 +11,7 @@ The Fastify HTTP server slice — bootstrap, the typed framework-instance alias,
 
 The bootstrap validates required environment variables against a schema before constructing the instance, and the values it consumes (the listen port, the service identity) flow from environment variables rather than from literals. Other values (the route prefix, the request timeout) are literal/constant-sourced — expected today, not defects.
 
-Routes return plain object literals with no response schema attached, and the framework's default logger is configured by setting the `logger` flag to `true`. The typed instance alias names the logger slot so a logger swap stays a one-line change. Handler return types are inferred. None of these are absent-defect findings.
+Routes declare their request and response shapes as **Route schemas** — validated at runtime and projected into the API description; the schema conventions themselves (wrapper-authored, not raw-library; the runtime-vs-docs split) are delegated to [`./validation.plan.md`](./validation.plan.md). The framework's default logger is configured by setting the `logger` flag to `true`; the typed instance alias names the logger slot so a logger swap stays a one-line change; and handler return types are inferred. None of the latter three are absent-defect findings.
 
 ## Files currently in scope
 
@@ -47,6 +47,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 
 - The slice exposes **one** typed alias for the framework instance. Every route, plugin, and helper consuming the instance imports the alias rather than re-parameterising the generic at the call site.
 - The alias pre-stages every generic slot the framework exposes: server type, incoming-message type, response type, logger type, and type-provider type. Each slot's argument is the project's chosen pairing for that slot, not the framework's default.
+- The type-provider slot is established once, where the instance is constructed, and every route inherits it through the alias. A route that re-declares the provider at its own call site is the call-site re-parameterisation this rule forbids — the schema it attaches is interpreted through the alias's provider, so re-declaring it is redundant and a finding.
 - The logger slot is named even though the project uses the framework's default logger — it holds the type position so a logger swap doesn't break consumers.
 - Alias drift is a regression: two files declaring near-identical aliases with different slot orderings will type-check today and silently diverge at the next framework major. The single-alias rule is the guard.
 - Generic-arity changes between framework majors are version-pinned, not version-floating — a major bump that adds a new generic slot is an explicit update to the alias, not an inferred one.
@@ -58,6 +59,7 @@ These globs are **operational hints** — see the plans-index [`README.md`](./RE
 - No inline route handlers in the bootstrap. The bootstrap registers plugins; plugins register handlers. The boundary keeps the bootstrap diffable and the plugin loadable into tests in isolation.
 - Plugins are async, even when the body is synchronous, so a plugin that needs to `await` doesn't force a signature change.
 - Each handler is a named arrow or function passed to the route method, not an inline lambda — easier to unit-test, easier to stack-trace.
+- A route attaches its request/response **Route schema** through the shared validation wrapper. Whether that schema is correct — its field shapes, its descriptions, and the runtime-validation-vs-development-docs split — is delegated to [`./validation.plan.md`](./validation.plan.md); this plan covers only that the route is organised and registered correctly and inherits the type provider from the alias. Surface schema-content observations under Out of scope; a PR touching both runs both plans.
 
 ### Server-only constants
 

@@ -1,3 +1,4 @@
+import type { Mock, Procedure } from "@vitest/spy";
 import { describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
@@ -18,14 +19,18 @@ const {
   mockBuildLogger,
   mockFastify,
   mockSetupDb,
+  mockSetupDocs,
   mockSetupShutdown,
+  mockSetupValidation,
 } = vi.hoisted(() => ({
   mockApiHealthRoutes: vi.fn(),
   mockBuildAppEnv: vi.fn(),
   mockBuildLogger: vi.fn(),
   mockFastify: vi.fn(),
   mockSetupDb: vi.fn(),
+  mockSetupDocs: vi.fn(),
   mockSetupShutdown: vi.fn(),
+  mockSetupValidation: vi.fn(),
 }));
 
 vi.mock("fastify", () => ({ default: mockFastify }));
@@ -67,6 +72,10 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
     return {
       db: { setupDb: mockSetupDb },
       logger: { buildLogger: mockBuildLogger },
+      openapi: {
+        setupDocs: mockSetupDocs,
+        setupValidation: mockSetupValidation,
+      },
       shutdown: {
         redactPaths: this.REDACT_PATHS,
         setupShutdown: mockSetupShutdown,
@@ -95,6 +104,12 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
       registerError?: Error;
     }): AppInstance => {
       const instance = createMockInstance();
+
+      Reflect.set(
+        instance,
+        "withTypeProvider",
+        vi.fn(() => instance),
+      );
 
       Reflect.set(instance, "decorate", vi.fn());
 
@@ -148,7 +163,9 @@ describe("AppBuildHelper", () => {
           return instance;
         },
       );
+      mockSetupDocs.mockResolvedValue(UNDEFINED_VALUE);
       mockSetupShutdown.mockResolvedValue(UNDEFINED_VALUE);
+      mockSetupValidation.mockResolvedValue(UNDEFINED_VALUE);
     });
 
     afterAll(() => {
@@ -156,7 +173,9 @@ describe("AppBuildHelper", () => {
       mockBuildLogger.mockReset();
       mockFastify.mockReset();
       mockSetupDb.mockReset();
+      mockSetupDocs.mockReset();
       mockSetupShutdown.mockReset();
+      mockSetupValidation.mockReset();
     });
 
     it("should build the app, wire the collaborators, and return the configured instance", async ({
@@ -190,6 +209,16 @@ describe("AppBuildHelper", () => {
           ([calledWith]) => calledWith === instance,
         ),
       ).toStrictEqual([[instance]]);
+      expect(
+        mockSetupValidation.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance]]);
+      expect(
+        mockSetupDocs.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance]]);
       expect(instance.register).toHaveBeenNthCalledWith(
         1,
         mockApiHealthRoutes,
@@ -197,6 +226,28 @@ describe("AppBuildHelper", () => {
           prefix: API_HEALTH,
         },
       );
+      const registerCallOrder = castAsType<number>(
+        castAsType<Mock<Procedure>>(
+          instance.register,
+        ).mock.invocationCallOrder.at(0),
+      );
+      const setupValidationCallOrder = castAsType<number>(
+        mockSetupValidation.mock.invocationCallOrder.at(
+          mockSetupValidation.mock.calls.findIndex(
+            ([calledWith]) => calledWith === instance,
+          ),
+        ),
+      );
+      const setupDocsCallOrder = castAsType<number>(
+        mockSetupDocs.mock.invocationCallOrder.at(
+          mockSetupDocs.mock.calls.findIndex(
+            ([calledWith]) => calledWith === instance,
+          ),
+        ),
+      );
+
+      expect(setupValidationCallOrder).toBeLessThan(registerCallOrder);
+      expect(setupDocsCallOrder).toBeLessThan(registerCallOrder);
       expect(
         mockSetupShutdown.mock.calls.filter(
           ([calledWith]) => calledWith === instance,

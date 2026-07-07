@@ -5,6 +5,11 @@ import { ErrorHelper } from "@server/helpers/error.helper";
 import type { SetupDbFunction } from "@server/modules/db";
 import type { BuildLoggerFunction } from "@server/modules/logger";
 import type {
+  OpenApiTypeProvider,
+  SetupDocsFunction,
+  SetupValidationFunction,
+} from "@server/modules/openapi";
+import type {
   RedactPaths,
   SetupShutdownFunction,
 } from "@server/modules/shutdown";
@@ -32,6 +37,10 @@ const build = async (
     logger: {
       buildLogger: BuildLoggerFunction;
     };
+    openapi: {
+      setupDocs: SetupDocsFunction;
+      setupValidation: SetupValidationFunction;
+    };
     shutdown: {
       redactPaths: RedactPaths;
       setupShutdown: SetupShutdownFunction;
@@ -41,6 +50,7 @@ const build = async (
   const {
     db: { setupDb },
     logger: { buildLogger },
+    openapi: { setupDocs, setupValidation },
     shutdown: { redactPaths, setupShutdown },
   } = modules;
   const appEnv = buildAppEnv(env);
@@ -49,12 +59,15 @@ const build = async (
     disableRequestLogging: true,
     loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
-  });
+  }).withTypeProvider<OpenApiTypeProvider>();
 
   try {
     instance.decorate("appEnv", appEnv);
 
     setupDb(instance);
+
+    await setupValidation(instance);
+    await setupDocs(instance);
 
     await instance.register(apiHealthRoutes, {
       prefix: API_HEALTH,

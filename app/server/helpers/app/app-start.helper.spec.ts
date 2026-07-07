@@ -129,7 +129,9 @@ const {
       const buildLogger = vi.fn();
       const claimPort = vi.fn();
       const setupDb = vi.fn();
+      const setupDocs = vi.fn();
       const setupShutdown = vi.fn();
+      const setupValidation = vi.fn();
 
       return {
         buildLogger,
@@ -138,6 +140,7 @@ const {
         modules: castAsType<Parameters<typeof start>[2]>({
           db: { setupDb },
           logger: { buildFallbackLogger, buildLogger },
+          openapi: { setupDocs, setupValidation },
           shutdown: {
             redactPaths: this.REDACT_PATHS,
             setupShutdown,
@@ -145,7 +148,9 @@ const {
           startup: { claimPort },
         }),
         setupDb,
+        setupDocs,
         setupShutdown,
+        setupValidation,
       };
     };
   },
@@ -215,7 +220,9 @@ describe("AppStartHelper", () => {
         fallbackFatal,
         modules,
         setupDb,
+        setupDocs,
         setupShutdown,
+        setupValidation,
       } = makeModules();
 
       claimPort.mockResolvedValue(UNDEFINED_VALUE);
@@ -236,6 +243,7 @@ describe("AppStartHelper", () => {
           {
             db: { setupDb },
             logger: { buildLogger },
+            openapi: { setupDocs, setupValidation },
             shutdown: {
               redactPaths: TEST_DATA.REDACT_PATHS,
               setupShutdown,
