@@ -3,6 +3,7 @@ import {
   base64,
   enum as zodEnum,
   ipv4,
+  iso,
   number,
   object,
   string,
@@ -22,6 +23,7 @@ type ZodIssue = $ZodIssue;
 const zBase64 = base64;
 const zEnum = zodEnum;
 const zIpv4 = ipv4;
+const zIsoDateTime = iso.datetime;
 const zNumber = number;
 const zObject = object;
 const zString = string;
@@ -34,6 +36,7 @@ export {
   zBase64,
   zEnum,
   zIpv4,
+  zIsoDateTime,
   zNumber,
   zObject,
   zString,
