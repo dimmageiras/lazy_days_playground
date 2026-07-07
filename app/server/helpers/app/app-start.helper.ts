@@ -4,6 +4,10 @@ import type {
   BuildLoggerFunction,
 } from "@server/modules/logger";
 import type {
+  SetupDocsFunction,
+  SetupValidationFunction,
+} from "@server/modules/openapi";
+import type {
   RedactPaths,
   SetupShutdownFunction,
 } from "@server/modules/shutdown";
@@ -30,6 +34,10 @@ const start = async (
       buildFallbackLogger: BuildFallbackLoggerFunction;
       buildLogger: BuildLoggerFunction;
     };
+    openapi: {
+      setupDocs: SetupDocsFunction;
+      setupValidation: SetupValidationFunction;
+    };
     shutdown: {
       redactPaths: RedactPaths;
       setupShutdown: SetupShutdownFunction;
@@ -42,6 +50,7 @@ const start = async (
   const {
     db: { setupDb },
     logger: { buildFallbackLogger, buildLogger },
+    openapi: { setupDocs, setupValidation },
     shutdown: { redactPaths, setupShutdown },
     startup: { claimPort },
   } = modules;
@@ -74,6 +83,7 @@ const start = async (
     instance = await build(validatedEnv, hot, {
       db: { setupDb },
       logger: { buildLogger },
+      openapi: { setupDocs, setupValidation },
       shutdown: { redactPaths, setupShutdown },
     });
 

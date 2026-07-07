@@ -18,14 +18,18 @@ const {
   mockBuildLogger,
   mockFastify,
   mockSetupDb,
+  mockSetupDocs,
   mockSetupShutdown,
+  mockSetupValidation,
 } = vi.hoisted(() => ({
   mockApiHealthRoutes: vi.fn(),
   mockBuildAppEnv: vi.fn(),
   mockBuildLogger: vi.fn(),
   mockFastify: vi.fn(),
   mockSetupDb: vi.fn(),
+  mockSetupDocs: vi.fn(),
   mockSetupShutdown: vi.fn(),
+  mockSetupValidation: vi.fn(),
 }));
 
 vi.mock("fastify", () => ({ default: mockFastify }));
@@ -67,6 +71,10 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
     return {
       db: { setupDb: mockSetupDb },
       logger: { buildLogger: mockBuildLogger },
+      openapi: {
+        setupDocs: mockSetupDocs,
+        setupValidation: mockSetupValidation,
+      },
       shutdown: {
         redactPaths: this.REDACT_PATHS,
         setupShutdown: mockSetupShutdown,
@@ -148,7 +156,9 @@ describe("AppBuildHelper", () => {
           return instance;
         },
       );
+      mockSetupDocs.mockResolvedValue(UNDEFINED_VALUE);
       mockSetupShutdown.mockResolvedValue(UNDEFINED_VALUE);
+      mockSetupValidation.mockResolvedValue(UNDEFINED_VALUE);
     });
 
     afterAll(() => {
@@ -156,7 +166,9 @@ describe("AppBuildHelper", () => {
       mockBuildLogger.mockReset();
       mockFastify.mockReset();
       mockSetupDb.mockReset();
+      mockSetupDocs.mockReset();
       mockSetupShutdown.mockReset();
+      mockSetupValidation.mockReset();
     });
 
     it("should build the app, wire the collaborators, and return the configured instance", async ({
@@ -187,6 +199,16 @@ describe("AppBuildHelper", () => {
       expect(instance.decorate).toHaveBeenNthCalledWith(1, "appEnv", env);
       expect(
         mockSetupDb.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance]]);
+      expect(
+        mockSetupValidation.mock.calls.filter(
+          ([calledWith]) => calledWith === instance,
+        ),
+      ).toStrictEqual([[instance]]);
+      expect(
+        mockSetupDocs.mock.calls.filter(
           ([calledWith]) => calledWith === instance,
         ),
       ).toStrictEqual([[instance]]);
