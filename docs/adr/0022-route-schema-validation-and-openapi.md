@@ -53,7 +53,3 @@ The server's routes accept and return structured payloads, and two artifacts des
 - [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the sibling value-validation surface that gates startup on the environment; this ADR is its runtime-traffic counterpart.
 - [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the exact-pin and release-age treatment the new dependencies inherit.
 - [`../code-reviews/plans/validation.plan.md`](../code-reviews/plans/validation.plan.md) — the review plan whose route-schema sub-area enforces this decision.
-
-```
-
-```

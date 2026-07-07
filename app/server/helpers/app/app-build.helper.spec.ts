@@ -1,3 +1,4 @@
+import type { Mock, Procedure } from "@vitest/spy";
 import { describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
@@ -225,6 +226,28 @@ describe("AppBuildHelper", () => {
           prefix: API_HEALTH,
         },
       );
+      const registerCallOrder = castAsType<number>(
+        castAsType<Mock<Procedure>>(
+          instance.register,
+        ).mock.invocationCallOrder.at(0),
+      );
+      const setupValidationCallOrder = castAsType<number>(
+        mockSetupValidation.mock.invocationCallOrder.at(
+          mockSetupValidation.mock.calls.findIndex(
+            ([calledWith]) => calledWith === instance,
+          ),
+        ),
+      );
+      const setupDocsCallOrder = castAsType<number>(
+        mockSetupDocs.mock.invocationCallOrder.at(
+          mockSetupDocs.mock.calls.findIndex(
+            ([calledWith]) => calledWith === instance,
+          ),
+        ),
+      );
+
+      expect(setupValidationCallOrder).toBeLessThan(registerCallOrder);
+      expect(setupDocsCallOrder).toBeLessThan(registerCallOrder);
       expect(
         mockSetupShutdown.mock.calls.filter(
           ([calledWith]) => calledWith === instance,

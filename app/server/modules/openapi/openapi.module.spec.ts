@@ -32,13 +32,35 @@ const { SWAGGER } = API_DOCS_ENDPOINTS;
 
 const { GET } = HTTP_METHODS.SAFE;
 const { POST } = HTTP_METHODS.UNSAFE;
-const { BAD_REQUEST, NOT_FOUND, OK } = HTTP_STATUS;
+const { BAD_REQUEST, INTERNAL_SERVER_ERROR, NOT_FOUND, OK } = HTTP_STATUS;
 
-const { registerEchoRoute, ...TEST_DATA } = {
+const { registerDriftingRoute, registerEchoRoute, ...TEST_DATA } = {
   DOCS_JSON_PATH: `${API_DOCS}/${SWAGGER}/json`,
+  DRIFT_PATH: "/drift",
   ECHO_PATH: "/echo",
   INVALID_BODY: { name: NUMBER_1 },
   VALID_BODY: { name: COMMON_STRING },
+  get registerDriftingRoute() {
+    return (instance: AppInstance): void => {
+      const driftResponseSchema = zObject({ name: zString() });
+
+      instance.post(
+        this.DRIFT_PATH,
+        {
+          schema: {
+            response: {
+              [OK]: {
+                content: {
+                  "application/json": { schema: driftResponseSchema },
+                },
+              },
+            },
+          } satisfies OpenApiSchema,
+        },
+        () => castAsType<{ name: string }>(this.INVALID_BODY),
+      );
+    };
+  },
   get registerEchoRoute() {
     return (instance: AppInstance): void => {
       const echoBodySchema = zObject({ name: zString() });
@@ -104,6 +126,26 @@ describe("OpenApiModule", () => {
 
       expect(response.statusCode).toBe(OK);
       expect(response.json()).toStrictEqual(TEST_DATA.VALID_BODY);
+    });
+
+    it("should reject a response that fails the zod schema", async ({
+      expect,
+      onTestFinished,
+    }) => {
+      const app = createTestApp(onTestFinished);
+
+      await setupValidation(app);
+
+      registerDriftingRoute(app);
+
+      await app.ready();
+
+      const response = await app.inject({
+        method: `${POST}`,
+        url: TEST_DATA.DRIFT_PATH,
+      });
+
+      expect(response.statusCode).toBe(INTERNAL_SERVER_ERROR);
     });
   });
 
