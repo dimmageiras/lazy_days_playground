@@ -40,6 +40,7 @@ Depending on what you're doing:
 - **Adding or changing a test** → read [`docs/testing/README.md`](./docs/testing/README.md). The worker model is opinionated; the conventions are non-obvious without it.
 - **Running a code review** → pick the relevant plan under [`docs/code-reviews/plans/`](./docs/code-reviews/plans/). The plan tells you which skills to invoke and what to look for.
 - **Making an architectural decision** → record it as an ADR under [`docs/adr/`](./docs/adr/); see [`docs/adr/README.md`](./docs/adr/README.md) for the template (the `domain-modeling` skill in `.claude/skills/` documents the expected shape).
+- **Exploring the HTTP API** → in development the server serves an interactive API explorer, generated from each route's schema so the description always matches what the routes validate; it is not mounted in a deployed process. See [ADR-0022](./docs/adr/0022-route-schema-validation-and-openapi.md) for the contract and why the docs are development-only.
 - **Looking up a term** → [`CONTEXT.md`](./CONTEXT.md). If a term is missing from the glossary but already in use, add it as part of the change that uses it.
 
 ## Convention summary
