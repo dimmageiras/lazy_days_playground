@@ -128,7 +128,9 @@ const TodoList = () => {
     <>
       <button onClick={() => dispatch(addTodo("New"))}>Add</button>
       {todos.map((t) => (
-        <div key={t.id} onClick={() => dispatch(toggleTodo(t.id))}>
+        <div
+          key={t.id}
+          onClick={() => dispatch(toggleTodo(t.id))}>
           {t.text}
         </div>
       ))}
@@ -151,7 +153,9 @@ const TodoList = () => {
     <>
       <button onClick={() => addTodo("New")}>Add</button>
       {todos.map((t) => (
-        <div key={t.id} onClick={() => toggleTodo(t.id)}>
+        <div
+          key={t.id}
+          onClick={() => toggleTodo(t.id)}>
           {t.text}
         </div>
       ))}

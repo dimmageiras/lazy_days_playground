@@ -103,7 +103,10 @@ function ProductList({ page }: { page: number }) {
   return (
     <div className={isPlaceholderData ? "opacity-70" : ""}>
       {data?.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <ProductCard
+          key={product.id}
+          product={product}
+        />
       ))}
       {isPlaceholderData && <LoadingOverlay />}
     </div>

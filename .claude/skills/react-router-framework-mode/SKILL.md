@@ -74,7 +74,9 @@ These are the most important patterns to follow. Load the relevant reference for
 const fetcher = useFetcher();
 const optimistic = fetcher.formData?.get("favorite") === "true" ?? isFavorite;
 
-<fetcher.Form method="post" action={`/favorites/${id}`}>
+<fetcher.Form
+  method='post'
+  action={`/favorites/${id}`}>
   <button>{optimistic ? "★" : "☆"}</button>
 </fetcher.Form>;
 ```

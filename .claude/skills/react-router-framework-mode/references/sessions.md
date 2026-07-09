@@ -154,15 +154,25 @@ export async function action({ request }: Route.ActionArgs) {
 export default function Login({ loaderData }: Route.ComponentProps) {
   return (
     <div>
-      {loaderData.error && <p className="error">{loaderData.error}</p>}
-      <Form method="post">
+      {loaderData.error && <p className='error'>{loaderData.error}</p>}
+      <Form method='post'>
         <label>
-          Email: <input type="email" name="email" required />
+          Email:{" "}
+          <input
+            type='email'
+            name='email'
+            required
+          />
         </label>
         <label>
-          Password: <input type="password" name="password" required />
+          Password:{" "}
+          <input
+            type='password'
+            name='password'
+            required
+          />
         </label>
-        <button type="submit">Log In</button>
+        <button type='submit'>Log In</button>
       </Form>
     </div>
   );
@@ -191,10 +201,10 @@ export default function Logout() {
   return (
     <div>
       <p>Are you sure you want to log out?</p>
-      <Form method="post">
-        <button type="submit">Log Out</button>
+      <Form method='post'>
+        <button type='submit'>Log Out</button>
       </Form>
-      <Link to="/">Cancel</Link>
+      <Link to='/'>Cancel</Link>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 /*
 
 # Re-include the files Prettier formats
+!/.claude
 !/.configs
 !/.github
 !/.prettierrc

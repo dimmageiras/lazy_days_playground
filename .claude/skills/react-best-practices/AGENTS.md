@@ -662,7 +662,10 @@ function EditorButton({ onClick }: { onClick: () => void }) {
   };
 
   return (
-    <button onMouseEnter={preload} onFocus={preload} onClick={onClick}>
+    <button
+      onMouseEnter={preload}
+      onFocus={preload}
+      onClick={onClick}>
       Open Editor
     </button>
   );
@@ -795,7 +798,10 @@ RSC→client serialization deduplicates by object reference, not value. Same ref
 
 ```tsx
 // RSC: sends 6 strings (2 arrays × 3 items)
-<ClientList usernames={usernames} usernamesOrdered={usernames.toSorted()} />
+<ClientList
+  usernames={usernames}
+  usernamesOrdered={usernames.toSorted()}
+/>
 ```
 
 **Correct: sends 3 strings**
@@ -1784,8 +1790,14 @@ function Stats({ followers, posts }: { followers: number; posts: number }) {
 function UserProfile({ user, theme }) {
   return (
     <div>
-      <Avatar src={user.avatarUrl} theme={theme} />
-      <Stats followers={user.followers} posts={user.posts} />
+      <Avatar
+        src={user.avatarUrl}
+        theme={theme}
+      />
+      <Stats
+        followers={user.followers}
+        posts={user.posts}
+      />
     </div>
   );
 }
@@ -2065,7 +2077,13 @@ function TodoList() {
     setItems(items.filter((item) => item.id !== id));
   }, []); // ❌ Missing items dependency - will use stale items!
 
-  return <ItemsEditor items={items} onAdd={addItems} onRemove={removeItem} />;
+  return (
+    <ItemsEditor
+      items={items}
+      onAdd={addItems}
+      onRemove={removeItem}
+    />
+  );
 }
 ```
 
@@ -2087,7 +2105,13 @@ function TodoList() {
     setItems((curr) => curr.filter((item) => item.id !== id));
   }, []); // ✅ Safe and stable
 
-  return <ItemsEditor items={items} onAdd={addItems} onRemove={removeItem} />;
+  return (
+    <ItemsEditor
+      items={items}
+      onAdd={addItems}
+      onRemove={removeItem}
+    />
+  );
 }
 ```
 
@@ -2136,7 +2160,12 @@ function FilteredList({ items }: { items: Item[] }) {
   const [query, setQuery] = useState("");
 
   // When query changes, buildSearchIndex runs again unnecessarily
-  return <SearchResults index={searchIndex} query={query} />;
+  return (
+    <SearchResults
+      index={searchIndex}
+      query={query}
+    />
+  );
 }
 
 function UserProfile() {
@@ -2145,7 +2174,12 @@ function UserProfile() {
     JSON.parse(localStorage.getItem("settings") || "{}"),
   );
 
-  return <SettingsForm settings={settings} onChange={setSettings} />;
+  return (
+    <SettingsForm
+      settings={settings}
+      onChange={setSettings}
+    />
+  );
 }
 ```
 
@@ -2157,7 +2191,12 @@ function FilteredList({ items }: { items: Item[] }) {
   const [searchIndex, setSearchIndex] = useState(() => buildSearchIndex(items));
   const [query, setQuery] = useState("");
 
-  return <SearchResults index={searchIndex} query={query} />;
+  return (
+    <SearchResults
+      index={searchIndex}
+      query={query}
+    />
+  );
 }
 
 function UserProfile() {
@@ -2167,7 +2206,12 @@ function UserProfile() {
     return stored ? JSON.parse(stored) : {};
   });
 
-  return <SettingsForm settings={settings} onChange={setSettings} />;
+  return (
+    <SettingsForm
+      settings={settings}
+      onChange={setSettings}
+    />
+  );
 }
 ```
 
@@ -2226,7 +2270,10 @@ function Search({ items }: { items: Item[] }) {
 
   return (
     <>
-      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <ResultsList results={filtered} />
     </>
   );
@@ -2247,7 +2294,10 @@ function Search({ items }: { items: Item[] }) {
 
   return (
     <>
-      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <div style={{ opacity: isStale ? 0.7 : 1 }}>
         <ResultsList results={filtered} />
       </div>
@@ -2356,8 +2406,17 @@ Many browsers don't have hardware acceleration for CSS3 animations on SVG elemen
 ```tsx
 function LoadingSpinner() {
   return (
-    <svg className="animate-spin" width="24" height="24" viewBox="0 0 24 24">
-      <circle cx="12" cy="12" r="10" stroke="currentColor" />
+    <svg
+      className='animate-spin'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'>
+      <circle
+        cx='12'
+        cy='12'
+        r='10'
+        stroke='currentColor'
+      />
     </svg>
   );
 }
@@ -2368,9 +2427,17 @@ function LoadingSpinner() {
 ```tsx
 function LoadingSpinner() {
   return (
-    <div className="animate-spin">
-      <svg width="24" height="24" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" stroke="currentColor" />
+    <div className='animate-spin'>
+      <svg
+        width='24'
+        height='24'
+        viewBox='0 0 24 24'>
+        <circle
+          cx='12'
+          cy='12'
+          r='10'
+          stroke='currentColor'
+        />
       </svg>
     </div>
   );
@@ -2399,9 +2466,11 @@ Apply `content-visibility: auto` to defer off-screen rendering.
 ```tsx
 function MessageList({ messages }: { messages: Message[] }) {
   return (
-    <div className="overflow-y-auto h-screen">
+    <div className='overflow-y-auto h-screen'>
       {messages.map((msg) => (
-        <div key={msg.id} className="message-item">
+        <div
+          key={msg.id}
+          className='message-item'>
           <Avatar user={msg.author} />
           <div>{msg.content}</div>
         </div>
@@ -2423,7 +2492,7 @@ Extract static JSX outside components to avoid re-creation.
 
 ```tsx
 function LoadingSkeleton() {
-  return <div className="animate-pulse h-20 bg-gray-200" />;
+  return <div className='animate-pulse h-20 bg-gray-200' />;
 }
 
 function Container() {
@@ -2434,7 +2503,7 @@ function Container() {
 **Correct: reuses same element**
 
 ```tsx
-const loadingSkeleton = <div className="animate-pulse h-20 bg-gray-200" />;
+const loadingSkeleton = <div className='animate-pulse h-20 bg-gray-200' />;
 
 function Container() {
   return <div>{loading && loadingSkeleton}</div>;
@@ -2514,7 +2583,7 @@ Component first renders with default value (`light`), then updates after hydrati
 function ThemeWrapper({ children }: { children: ReactNode }) {
   return (
     <>
-      <div id="theme-wrapper">{children}</div>
+      <div id='theme-wrapper'>{children}</div>
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -2600,8 +2669,8 @@ export default function Document() {
   return (
     <html>
       <head>
-        <script src="https://example.com/analytics.js" />
-        <script src="/scripts/utils.js" />
+        <script src='https://example.com/analytics.js' />
+        <script src='/scripts/utils.js' />
       </head>
       <body>{/* content */}</body>
     </html>
@@ -2618,10 +2687,13 @@ export default function Page() {
   return (
     <>
       <Script
-        src="https://example.com/analytics.js"
-        strategy="afterInteractive"
+        src='https://example.com/analytics.js'
+        strategy='afterInteractive'
       />
-      <Script src="/scripts/utils.js" strategy="beforeInteractive" />
+      <Script
+        src='/scripts/utils.js'
+        strategy='beforeInteractive'
+      />
     </>
   );
 }
@@ -2641,7 +2713,7 @@ Use explicit ternary operators (`? :`) instead of `&&` for conditional rendering
 
 ```tsx
 function Badge({ count }: { count: number }) {
-  return <div>{count && <span className="badge">{count}</span>}</div>;
+  return <div>{count && <span className='badge'>{count}</span>}</div>;
 }
 
 // When count = 0, renders: <div>0</div>
@@ -2652,7 +2724,7 @@ function Badge({ count }: { count: number }) {
 
 ```tsx
 function Badge({ count }: { count: number }) {
-  return <div>{count > 0 ? <span className="badge">{count}</span> : null}</div>;
+  return <div>{count > 0 ? <span className='badge'>{count}</span> : null}</div>;
 }
 
 // When count = 0, renders: <div></div>
@@ -2726,7 +2798,9 @@ function Navigation() {
 
   return (
     <nav>
-      <a href="/dashboard" onMouseEnter={preloadDashboard}>
+      <a
+        href='/dashboard'
+        onMouseEnter={preloadDashboard}>
         Dashboard
       </a>
     </nav>

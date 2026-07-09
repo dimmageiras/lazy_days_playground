@@ -72,7 +72,7 @@ import { NavLink } from "react-router";
 
 function Nav() {
   return (
-    <NavLink to="/dashboard">
+    <NavLink to='/dashboard'>
       {({ isPending }) => <span>Dashboard {isPending && <Spinner />}</span>}
     </NavLink>
   );
@@ -83,9 +83,8 @@ Or use className:
 
 ```tsx
 <NavLink
-  to="/dashboard"
-  className={({ isPending }) => (isPending ? "pending" : "")}
->
+  to='/dashboard'
+  className={({ isPending }) => (isPending ? "pending" : "")}>
   Dashboard
 </NavLink>
 ```
@@ -104,7 +103,9 @@ function LikeButton({ postId, liked }) {
   const isPending = fetcher.state !== "idle";
 
   return (
-    <fetcher.Form method="post" action={`/posts/${postId}/like`}>
+    <fetcher.Form
+      method='post'
+      action={`/posts/${postId}/like`}>
       <button disabled={isPending}>
         {isPending ? "..." : liked ? "Unlike" : "Like"}
       </button>
@@ -135,8 +136,14 @@ function LikeButton({ postId, initialLiked }) {
     : initialLiked;
 
   return (
-    <fetcher.Form method="post" action={`/posts/${postId}/like`}>
-      <input type="hidden" name="liked" value={String(!liked)} />
+    <fetcher.Form
+      method='post'
+      action={`/posts/${postId}/like`}>
+      <input
+        type='hidden'
+        name='liked'
+        value={String(!liked)}
+      />
       <button>{liked ? "❤️" : "🤍"}</button>
     </fetcher.Form>
   );
@@ -160,10 +167,16 @@ function RatingStars({ itemId, currentRating }) {
   const isSubmitting = fetcher.state !== "idle";
 
   return (
-    <fetcher.Form method="post" action={`/items/${itemId}/rate`}>
+    <fetcher.Form
+      method='post'
+      action={`/items/${itemId}/rate`}>
       <div style={{ opacity: isSubmitting ? 0.5 : 1 }}>
         {[1, 2, 3, 4, 5].map((star) => (
-          <button key={star} type="submit" name="rating" value={star}>
+          <button
+            key={star}
+            type='submit'
+            name='rating'
+            value={star}>
             {star <= displayRating ? "★" : "☆"}
           </button>
         ))}
@@ -194,8 +207,11 @@ function NewProjectForm() {
   const isSubmitting = navigation.state === "submitting";
 
   return (
-    <Form method="post">
-      <input type="text" name="title" />
+    <Form method='post'>
+      <input
+        type='text'
+        name='title'
+      />
       <button disabled={isSubmitting}>
         {isSubmitting ? "Creating..." : "Create"}
       </button>
@@ -246,9 +262,15 @@ function ContactForm() {
   const isSubmitting = navigation.state === "submitting";
 
   return (
-    <Form method="post">
-      <input type="text" name="message" disabled={isSubmitting} />
-      <button type="submit" disabled={isSubmitting}>
+    <Form method='post'>
+      <input
+        type='text'
+        name='message'
+        disabled={isSubmitting}
+      />
+      <button
+        type='submit'
+        disabled={isSubmitting}>
         {isSubmitting ? "Sending..." : "Send"}
       </button>
     </Form>

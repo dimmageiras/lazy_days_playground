@@ -107,10 +107,15 @@ const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 return (
   <div>
     {allPosts.map((post) => (
-      <PostCard key={post.id} post={post} />
+      <PostCard
+        key={post.id}
+        post={post}
+      />
     ))}
     {hasNextPage && (
-      <button onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+      <button
+        onClick={() => fetchNextPage()}
+        disabled={isFetchingNextPage}>
         {isFetchingNextPage ? "Loading..." : "Load More"}
       </button>
     )}

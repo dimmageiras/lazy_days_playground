@@ -116,9 +116,9 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function NewItem() {
   return (
-    <Form method="post">
-      <input name="title" />
-      <button type="submit">Create</button>
+    <Form method='post'>
+      <input name='title' />
+      <button type='submit'>Create</button>
     </Form>
   );
 }
@@ -372,9 +372,12 @@ export default function Team({ loaderData, actionData }: Route.ComponentProps) {
       <title>{loaderData.team.name}</title>
       <h1>{loaderData.team.name}</h1>
       {actionData?.success && <p>Updated!</p>}
-      <Form method="post">
-        <input name="name" defaultValue={loaderData.team.name} />
-        <button type="submit">Update</button>
+      <Form method='post'>
+        <input
+          name='name'
+          defaultValue={loaderData.team.name}
+        />
+        <button type='submit'>Update</button>
       </Form>
     </div>
   );

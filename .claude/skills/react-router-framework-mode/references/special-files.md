@@ -48,10 +48,13 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 export default function App() {
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet='utf-8' />
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1'
+        />
         <Meta />
         <Links />
       </head>
@@ -74,10 +77,13 @@ import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet='utf-8' />
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1'
+        />
         <Meta />
         <Links />
       </head>
@@ -120,15 +126,21 @@ import "./app.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta charSet='utf-8' />
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1'
+        />
         {/* Global fonts go in root.tsx, not layout components */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
-          rel="stylesheet"
+          rel='preconnect'
+          href='https://fonts.googleapis.com'
+        />
+        <link
+          href='https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap'
+          rel='stylesheet'
         />
         <Meta />
         <Links />
@@ -147,35 +159,33 @@ export default function App() {
   const isNavigating = navigation.state !== "idle";
 
   return (
-    <div className="app-layout">
+    <div className='app-layout'>
       {/* Global loading indicator */}
       {isNavigating && <ProgressBar />}
 
       {/* Global navigation */}
-      <header className="app-header">
-        <nav className="app-nav">
+      <header className='app-header'>
+        <nav className='app-nav'>
           <NavLink
-            to="/"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
+            to='/'
+            className={({ isActive }) => (isActive ? "active" : "")}>
             Home
           </NavLink>
           <NavLink
-            to="/products"
-            className={({ isActive }) => (isActive ? "active" : "")}
-          >
+            to='/products'
+            className={({ isActive }) => (isActive ? "active" : "")}>
             Products
           </NavLink>
         </nav>
       </header>
 
       {/* Page content */}
-      <main className="app-main">
+      <main className='app-main'>
         <Outlet />
       </main>
 
       {/* Global footer */}
-      <footer className="app-footer">
+      <footer className='app-footer'>
         © {new Date().getFullYear()} My App
       </footer>
     </div>
@@ -335,7 +345,10 @@ export default function handleRequest(
 ) {
   return new Promise((resolve, reject) => {
     const { pipe, abort } = renderToPipeableStream(
-      <ServerRouter context={routerContext} url={request.url} />,
+      <ServerRouter
+        context={routerContext}
+        url={request.url}
+      />,
       {
         onShellReady() {
           responseHeaders.set("Content-Type", "text/html");
