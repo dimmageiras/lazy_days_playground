@@ -6,7 +6,7 @@ const OPENAPI_OPTIONS = Object.freeze({
     title: "Lazy Days Playground API",
     version: "1.0.0",
   },
-  openapi: "3.1.2",
+  openapi: "3.2.0",
 } as const satisfies Partial<OpenAPIV3_1.Document>);
 
 export { OPENAPI_OPTIONS };
