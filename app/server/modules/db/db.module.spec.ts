@@ -21,8 +21,6 @@ const { castAsType } = TypeHelper;
 
 const { setupDb } = DbModule;
 
-const mockClose = vi.fn();
-
 const TEST_DATA = {
   DB_CLIENT_KEY: "dbClient",
   ON_CLOSE: "onClose",
@@ -33,7 +31,6 @@ describe("DbModule", () => {
     const { afterAll } = it;
 
     afterAll(() => {
-      mockClose.mockReset();
       mockGelCreateClient.mockReset();
     });
 
@@ -43,6 +40,7 @@ describe("DbModule", () => {
       const dbHost = castAsType<DbHost>("db-module-spec.local");
       const addHook = vi.fn();
       const decorate = vi.fn();
+      const mockClose = vi.fn();
       const client = castAsType<DbClient>({ close: mockClose });
       const instance = createMockInstance({ appEnv: { dbHost } });
 

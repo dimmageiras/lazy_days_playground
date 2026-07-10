@@ -70,6 +70,7 @@ const TEST_DATA = {
       name: "should offset by one day",
     },
   ],
+  INVALID_DATE_INPUT: "nonsense",
 } as const;
 
 describe("DateHelper", ({ afterAll, beforeAll }) => {
@@ -87,7 +88,7 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
     it("should get the current date", ({ expect }) => {
       const result = getCurrentDate();
 
-      expect(result.toISOString()).toStrictEqual(TEST_DATA.DATE_AS_ISO);
+      expect(result.toISOString()).toBe(TEST_DATA.DATE_AS_ISO);
     });
   });
 
@@ -95,7 +96,7 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
     it("should get the current ISO timestamp", ({ expect }) => {
       const result = getCurrentISOTimestamp();
 
-      expect(result).toStrictEqual(TEST_DATA.DATE_AS_ISO);
+      expect(result).toBe(TEST_DATA.DATE_AS_ISO);
     });
   });
 
@@ -105,7 +106,7 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
     }) => {
       const result = getCurrentTimestamp();
 
-      expect(result).toStrictEqual(testDate.getTime());
+      expect(result).toBe(testDate.getTime());
     });
   });
 
@@ -114,7 +115,7 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
       it(name, ({ expect }) => {
         const result = getFutureDate(maxAgeSeconds).toISOString();
 
-        expect(result).toStrictEqual(expected);
+        expect(result).toBe(expected);
       });
     });
   });
@@ -124,8 +125,12 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
       it(name, ({ expect }) => {
         const result = toDisplayHour(date);
 
-        expect(result).toStrictEqual(expected);
+        expect(result).toBe(expected);
       });
+    });
+
+    it("should return Invalid Date for an unparseable input", ({ expect }) => {
+      expect(toDisplayHour(TEST_DATA.INVALID_DATE_INPUT)).toBe("Invalid Date");
     });
   });
 
@@ -133,7 +138,7 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
     it("should format the timestamp for display", ({ expect }) => {
       const result = toDisplayTimestamp(testDate);
 
-      expect(result).toStrictEqual(TEST_DATA.EXPECTED_FORMATTED_TIMESTAMP);
+      expect(result).toBe(TEST_DATA.EXPECTED_FORMATTED_TIMESTAMP);
     });
   });
 
@@ -141,7 +146,13 @@ describe("DateHelper", ({ afterAll, beforeAll }) => {
     it("should convert a date to an ISO timestamp", ({ expect }) => {
       const result = toISOTimestamp(testDate);
 
-      expect(result).toStrictEqual(TEST_DATA.DATE_AS_ISO);
+      expect(result).toBe(TEST_DATA.DATE_AS_ISO);
+    });
+
+    it("should throw a RangeError for an unparseable input", ({ expect }) => {
+      expect(() => toISOTimestamp(TEST_DATA.INVALID_DATE_INPUT)).toThrow(
+        RangeError,
+      );
     });
   });
 

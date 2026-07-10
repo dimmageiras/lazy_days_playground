@@ -6,7 +6,7 @@
     "tsBuildInfoFile": "./.tsc-cache/server/tsconfig.tsbuildinfo",
 
     /* Language and Environment */
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "lib": ["ESNext"],
     "types": ["node", "vite/client"],
 
     /* Emit */

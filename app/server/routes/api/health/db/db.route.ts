@@ -27,7 +27,7 @@ const dbRoute = async (instance: AppInstance): Promise<void> => {
     {
       schema: {
         description:
-          "Confirms the database connection and returns the connected branch with an ISO timestamp.",
+          "Confirms the database connection and returns the connected branch with an ISO timestamp",
         response: {
           [OK]: {
             content: {

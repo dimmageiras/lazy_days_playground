@@ -1,16 +1,16 @@
-import { ZOD } from "@server/constants/zod.constant";
+import { ENV_VALIDATION } from "@server/constants/env-validation.constant";
 
 import { appEnvSchema } from "@shared/schemas/app-env.schema";
 import type { ViteAppEnv } from "@shared/types/app-env.type";
 
 import { ZodServerHelper } from "../zod-server.helper";
 
-const { ENV_VALIDATION_ERROR_NAME } = ZOD;
+const { ERROR_NAME } = ENV_VALIDATION;
 
 const { getFormattedZodIssueLines } = ZodServerHelper;
 
 const isEnvValidationError = (error: unknown): error is Error =>
-  error instanceof Error && error.name === ENV_VALIDATION_ERROR_NAME;
+  error instanceof Error && error.name === ERROR_NAME;
 
 const validateEnv = (env: ImportMetaEnv): ViteAppEnv => {
   const result = appEnvSchema.safeParse(env);
@@ -23,7 +23,7 @@ const validateEnv = (env: ImportMetaEnv): ViteAppEnv => {
     `Environment variables:\n${getFormattedZodIssueLines(result.error.issues)}`,
   );
 
-  error.name = ENV_VALIDATION_ERROR_NAME;
+  error.name = ERROR_NAME;
 
   throw error;
 };

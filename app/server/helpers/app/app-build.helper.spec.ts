@@ -63,7 +63,6 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
   CLOSE_ERROR: new Error("Failed to close"),
   CLOSE_FAILURE_MESSAGE: "💥 Failed to close the app after a build failure",
   ERROR: new Error("Failed to build"),
-  FAILURE_MESSAGE: "💥 Failed to build the app",
   HOT: castAsType<ImportMeta["hot"]>({}),
   INSTANCE_KEY: "__appHelperInstance",
   REDACT_PATHS: ["password", "token"],
@@ -257,7 +256,7 @@ describe("AppBuildHelper", () => {
       expect(instance.log.error).not.toHaveBeenCalled();
     });
 
-    it("should log the failure, close the instance, and rethrow when a build step fails", async ({
+    it("should close the instance and rethrow without logging when a build step fails", async ({
       expect,
     }) => {
       const env = makeEnv({
@@ -270,15 +269,11 @@ describe("AppBuildHelper", () => {
 
       const instance = instanceOf(env);
 
-      expect(instance.log.error).toHaveBeenNthCalledWith(
-        1,
-        normalizeError(TEST_DATA.ERROR),
-        TEST_DATA.FAILURE_MESSAGE,
-      );
+      expect(instance.log.error).not.toHaveBeenCalled();
       expect(instance.close).toHaveBeenCalledTimes(1);
     });
 
-    it("should also log the close failure when closing after a build failure fails", async ({
+    it("should log only the close failure when closing after a build failure fails", async ({
       expect,
     }) => {
       const env = makeEnv({
@@ -294,14 +289,10 @@ describe("AppBuildHelper", () => {
 
       expect(instance.log.error).toHaveBeenNthCalledWith(
         1,
-        normalizeError(TEST_DATA.ERROR),
-        TEST_DATA.FAILURE_MESSAGE,
-      );
-      expect(instance.log.error).toHaveBeenNthCalledWith(
-        2,
         normalizeError(TEST_DATA.CLOSE_ERROR),
         TEST_DATA.CLOSE_FAILURE_MESSAGE,
       );
+      expect(instance.log.error).toHaveBeenCalledTimes(1);
       expect(instance.close).toHaveBeenCalledTimes(1);
     });
   });

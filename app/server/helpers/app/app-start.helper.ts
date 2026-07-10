@@ -11,6 +11,7 @@ import type {
   RedactPaths,
   SetupShutdownFunction,
 } from "@server/modules/shutdown";
+import type { ClaimPortFunction } from "@server/modules/startup";
 import type { AppInstance } from "@server/types/instance.type";
 
 import type { ViteAppEnv } from "@shared/types/app-env.type";
@@ -43,7 +44,7 @@ const start = async (
       setupShutdown: SetupShutdownFunction;
     };
     startup: {
-      claimPort: (instance: AppInstance) => Promise<void>;
+      claimPort: ClaimPortFunction;
     };
   },
 ): Promise<void> => {

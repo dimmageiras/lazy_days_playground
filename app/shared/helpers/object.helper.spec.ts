@@ -113,6 +113,14 @@ describe("ObjectHelper", () => {
         ObjectEntries<typeof object>
       >();
     });
+
+    it("should return an empty array for an empty object", ({ expect }) => {
+      expect(getObjectEntries(EMPTY_OBJECT)).toStrictEqual(EMPTY_ARRAY);
+
+      expectTypeOf(getObjectEntries(EMPTY_OBJECT)).toEqualTypeOf<
+        ObjectEntries<typeof EMPTY_OBJECT>
+      >();
+    });
   });
 
   describe("getObjectKeys", (it) => {
@@ -125,6 +133,14 @@ describe("ObjectHelper", () => {
         Array<KeyAsString<typeof object>>
       >();
     });
+
+    it("should return an empty array for an empty object", ({ expect }) => {
+      expect(getObjectKeys(EMPTY_OBJECT)).toStrictEqual(EMPTY_ARRAY);
+
+      expectTypeOf(getObjectKeys(EMPTY_OBJECT)).toEqualTypeOf<
+        Array<KeyAsString<typeof EMPTY_OBJECT>>
+      >();
+    });
   });
 
   describe("getObjectValues", (it) => {
@@ -135,6 +151,14 @@ describe("ObjectHelper", () => {
 
       expectTypeOf(getObjectValues(object)).toEqualTypeOf<
         Array<ValueOf<typeof object>>
+      >();
+    });
+
+    it("should return an empty array for an empty object", ({ expect }) => {
+      expect(getObjectValues(EMPTY_OBJECT)).toStrictEqual(EMPTY_ARRAY);
+
+      expectTypeOf(getObjectValues(EMPTY_OBJECT)).toEqualTypeOf<
+        Array<ValueOf<typeof EMPTY_OBJECT>>
       >();
     });
   });

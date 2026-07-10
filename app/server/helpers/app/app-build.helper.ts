@@ -79,8 +79,6 @@ const build = async (
   } catch (rawError) {
     const error = toError(rawError);
 
-    instance.log.error(normalizeError(error), "💥 Failed to build the app");
-
     try {
       await instance.close();
     } catch (rawCloseError) {

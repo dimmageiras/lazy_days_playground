@@ -1,14 +1,14 @@
+const isFiniteNumber = (value: unknown): value is number => {
+  return Number.isFinite(value);
+};
+
 const isInteger = (value: unknown): value is number => {
   return Number.isInteger(value);
 };
 
-const isNumber = (value: unknown): value is number => {
-  return Number.isFinite(value);
-};
-
 const NumberHelper = Object.freeze({
+  isFiniteNumber,
   isInteger,
-  isNumber,
 } as const);
 
 export { NumberHelper };

@@ -48,7 +48,7 @@ const {
       name: "should return the value mapped to another present key",
     },
     {
-      expected: undefined,
+      expected: UNDEFINED_VALUE,
       key: STRING_B,
       name: "should return undefined for an absent key",
     },

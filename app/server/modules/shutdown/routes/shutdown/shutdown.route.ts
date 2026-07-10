@@ -19,26 +19,32 @@ const shutdownRoute = async (
   instance: AppInstance,
   { handle }: ShutdownRouteOptions,
 ): Promise<void> => {
-  instance.post(`/${SHUTDOWN}`, (request, reply) => {
-    if (!isAuthorizedShutdownRequest(request, instance.appEnv.shutdownToken)) {
-      request.log.warn(
-        { ip: request.ip },
-        "🚧 Rejected an unauthorized shutdown request",
-      );
+  instance.post(
+    `/${SHUTDOWN}`,
+    { schema: { hide: true } },
+    (request, reply) => {
+      if (
+        !isAuthorizedShutdownRequest(request, instance.appEnv.shutdownToken)
+      ) {
+        request.log.warn(
+          { ip: request.ip },
+          "🚧 Rejected an unauthorized shutdown request",
+        );
 
-      return reply.status(UNAUTHORIZED).send({
-        accepted: false,
+        return reply.status(UNAUTHORIZED).send({
+          accepted: false,
+          timestamp: getCurrentISOTimestamp(),
+        });
+      }
+
+      armShutdownOnResponse(reply, handle);
+
+      return reply.status(ACCEPTED).send({
+        accepted: true,
         timestamp: getCurrentISOTimestamp(),
       });
-    }
-
-    armShutdownOnResponse(reply, handle);
-
-    return reply.status(ACCEPTED).send({
-      accepted: true,
-      timestamp: getCurrentISOTimestamp(),
-    });
-  });
+    },
+  );
 };
 
 export { shutdownRoute };
