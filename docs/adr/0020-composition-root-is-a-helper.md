@@ -37,6 +37,6 @@ The composition root is **not** promoted to a module — there is no capability 
 
 ## Related
 
-- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module-vs-helper boundary and universal helper-namespace convention this ADR extends; it defines the helper test applied here and names "the composition layer" this ADR situates. ADR-0008's reasoning body stays in force, unedited; the cross-reference is reciprocal — recorded only as a `Related` link on both sides, which the ADR lifecycle treats as distinct from a reasoning-body edit.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the wrapper convention: the only sanctioned bare per-symbol export style, which the composition root is explicitly **not**.
+- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module-vs-helper boundary and universal helper-namespace convention this ADR extends; it defines the helper test applied here and names "the composition layer" this ADR situates. ADR-0008's reasoning body stays in force, unedited; the cross-reference is reciprocal — recorded only as a `Related` link on both sides, which the ADR lifecycle treats as distinct from a reasoning-body edit.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — canonical definitions of **Module** and helper that ADR-0008 operationalises and this ADR leans on.

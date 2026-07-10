@@ -120,10 +120,10 @@ Rejected: the library's level option accepts plain strings and the env-driven le
 
 ## Related
 
-- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast validation gate whose branded output the factory consumes, and one of the two failures the fallback logger reports.
-- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the build-step readiness boundary that defines the pre-instance vs post-instance split governing which logger and which exit form a failure uses.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the library-wrapper seam pattern; the logger module follows the same curated-surface-over-library discipline.
 - [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the logger lives behind: the pure options builder and the error helper are internal helpers, the factory is the curated surface.
+- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast validation gate whose branded output the factory consumes, and one of the two failures the fallback logger reports.
+- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the build-step readiness boundary that defines the pre-instance vs post-instance split governing which logger and which exit form a failure uses.
 - [`./0012-lint-stance.md`](./0012-lint-stance.md) — the type-assertion ban that rules out the per-call-site cast alternative for reaching library extras.
 - [`../logging/README.md`](../logging/README.md) — the canonical project logging conventions: level vocabulary, context-object-first signature, emoji prefixes, redaction discipline, and the flush-before-exit rule with its synchronous-destination exception.
 - [`../code-reviews/plans/logging.plan.md`](../code-reviews/plans/logging.plan.md) — the review plan that treats a fatal-then-exit path with no flush as a finding.

@@ -54,13 +54,13 @@ Several forces constrain the answer:
 
 ## Related
 
+- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the route, its authorization, credential-compare, and arming helpers sit behind.
+- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the validated, branded contract the credential enters through, so the route compares a proven value rather than a raw primitive.
+- [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the redaction discipline that censors the credential header and the normalization the warn-on-reject line flows through.
+- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the single listener this route registers on, and the application-layer isolation it pushed downstream that this route realises as a namespace plus guard.
 - [`./0014-graceful-shutdown-lifecycle.md`](./0014-graceful-shutdown-lifecycle.md) — the teardown lifecycle this route hands control to once it arms; the close funnel the single-shot flag fires exactly once.
 - [`./0016-cooperative-port-handover.md`](./0016-cooperative-port-handover.md) — the handover protocol that depends on this route acknowledging before it tears down, so a successor can confirm the incumbent is yielding.
 - [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the env-contract extension that admits and brands the credential this route compares.
 - [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the reserved internal namespace this privileged route registers under, distinct from the observable health namespace.
-- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the single listener this route registers on, and the application-layer isolation it pushed downstream that this route realises as a namespace plus guard.
-- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the validated, branded contract the credential enters through, so the route compares a proven value rather than a raw primitive.
-- [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the redaction discipline that censors the credential header and the normalization the warn-on-reject line flows through.
-- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the route, its authorization, credential-compare, and arming helpers sit behind.
 - [`../logging/README.md`](../logging/README.md) — the redaction-path discipline this route's censored header depends on.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — **Load-bearing decision**, **Module**, and the **Rename test** this ADR is written to survive.

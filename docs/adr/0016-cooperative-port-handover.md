@@ -67,13 +67,13 @@ The reclaim composes against the authenticated remote-shutdown route, the valida
 
 ## Related
 
+- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the exact-pin posture the runtime dependencies this protocol adds follow.
+- [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the wrapper-seam discipline this protocol's direct HTTP-client use knowingly diverges from at one call site.
+- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the claim ladder and its helpers sit behind.
+- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast-then-abort ethos the protocol's unrecoverable rungs follow.
+- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the single-validated-port topology that leaves no failover port, so reclaiming the exact port is the only option; this protocol replaces the bare listen between build and a successful bind.
 - [`./0014-graceful-shutdown-lifecycle.md`](./0014-graceful-shutdown-lifecycle.md) — the shutdown lifecycle whose cooperative-close contract the incumbent honours when it steps down for the handover.
 - [`./0015-remote-shutdown-channel.md`](./0015-remote-shutdown-channel.md) — the authenticated route the cooperative rung calls and whose acceptance contract the protocol depends on.
 - [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the validated, branded credential this protocol presents; its dial target is loopback, not the bind address that contract adds.
 - [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the internal control-plane namespace the cooperative shutdown route lives under, separating it from product routes.
-- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the single-validated-port topology that leaves no failover port, so reclaiming the exact port is the only option; this protocol replaces the bare listen between build and a successful bind.
-- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast-then-abort ethos the protocol's unrecoverable rungs follow.
-- [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the wrapper-seam discipline this protocol's direct HTTP-client use knowingly diverges from at one call site.
-- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the exact-pin posture the runtime dependencies this protocol adds follow.
-- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the claim ladder and its helpers sit behind.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — **Load-bearing decision**, **Module**, and the **Rename test** this ADR is written to survive.

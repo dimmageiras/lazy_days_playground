@@ -62,14 +62,14 @@ The readiness boundary, the validated record the instance was built from, the de
 
 ## Related
 
+- [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the dev runtime hosting the process that receives the signals, and the hot-reload cycle the in-memory handover coordinates.
+- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the shutdown capability sits behind, exposing a curated surface over its internal helpers.
+- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast ethos and the validated record the instance was built from before teardown could matter.
+- [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the destination-driven flush-before-exit rule every teardown exit form obeys, and the caught-value normalization every teardown log line flows through.
+- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the build-step readiness boundary and forked cleanup ownership this teardown unwinds; the orchestrator is installed inside that build step rather than as a bare readiness await.
 - [`./0015-remote-shutdown-channel.md`](./0015-remote-shutdown-channel.md) — the authenticated operator-triggered stop that drives this funnel's manual cause, draining after its own response rather than mid-request.
 - [`./0016-cooperative-port-handover.md`](./0016-cooperative-port-handover.md) — the startup-side handover whose budgets are separately tuned from this teardown grace budget; the two waits must not share a constant.
 - [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the validated record extensions the manual-trigger path reads from, carried on the same frozen environment the instance was built from.
 - [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the internal namespace the manual-trigger surface lives behind, separated from the public route surface this teardown drains.
-- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the build-step readiness boundary and forked cleanup ownership this teardown unwinds; the orchestrator is installed inside that build step rather than as a bare readiness await.
-- [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the destination-driven flush-before-exit rule every teardown exit form obeys, and the caught-value normalization every teardown log line flows through.
-- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the fail-fast ethos and the validated record the instance was built from before teardown could matter.
-- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the shutdown capability sits behind, exposing a curated surface over its internal helpers.
-- [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the dev runtime hosting the process that receives the signals, and the hot-reload cycle the in-memory handover coordinates.
 - [`../logging/README.md`](../logging/README.md) — the level vocabulary and flush-before-exit rule the teardown log lines and final exit must stay consistent with.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — **Load-bearing decision**, **Module**, and the **Rename test** this ADR is written to survive.
