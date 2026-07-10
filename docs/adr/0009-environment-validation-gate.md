@@ -62,12 +62,13 @@ A single validation schema owns the configuration contract end to end, brands it
 ## Related
 
 - [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the dev runtime whose bundler-injected env object is the raw input read once at this gate.
+- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the install-time fail-fast and visibility discipline this startup gate complements at a different layer.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the project-owned validation wrapper that builds the schema, supplies its input/output and branding type helpers, and owns the issue-code formatting behind the report-all-issues message.
 - [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the fallback logger this gate reports failure through before the real instance exists, the branded log-level output's meeting with the logger's level concern, and the error normalization the failure path uses.
 - [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the build/listen steps that run only after this gate passes; owns the readiness boundary the validated record feeds.
 - [`./0012-lint-stance.md`](./0012-lint-stance.md) — the assertion ban and single sanctioned cast governing the rare escape hatch for minting a branded value without parsing.
-- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the install-time fail-fast and visibility discipline this startup gate complements at a different layer.
 - [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — relaxes this ADR's secrets-stay-unprefixed convention for the first prefixed secret, on a server-only-runtime premise.
 - [`./0021-database-connection-contract.md`](./0021-database-connection-contract.md) — extends that relaxation into a category of prefixed secrets on the same premise.
+- [`./0022-route-schema-validation-and-openapi.md`](./0022-route-schema-validation-and-openapi.md) — the runtime-traffic counterpart to this environment gate, applying the same wrapper-built validation to route request/response shapes.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — domain glossary, including **Load-bearing decision** and the **Rename test**.
 - [`../../.claude/rules/state-management.md`](../../.claude/rules/state-management.md) — the client/server state lanes; environment input is a composition-layer concern, distinct from either lane.

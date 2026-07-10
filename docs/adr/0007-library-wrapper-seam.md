@@ -64,4 +64,5 @@ The validation library is reached only through a project-owned **wrapper shim** 
 - [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — sibling error-normalisation concern that shapes failures for output.
 - [`./0012-lint-stance.md`](./0012-lint-stance.md) — the broader lint configuration; this ADR owns only the single rule that forces custom issues through the typed helper.
 - [`./0013-client-state-lanes.md`](./0013-client-state-lanes.md) — client-state libraries are likewise reached only through a wrapper, the same indirection convention applied to a different library.
+- [`./0022-route-schema-validation-and-openapi.md`](./0022-route-schema-validation-and-openapi.md) — extends this wrapper seam to route request/response schemas, authoring them through the same re-exported builders.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — domain glossary, including **Load-bearing decision** and **Rename test**.

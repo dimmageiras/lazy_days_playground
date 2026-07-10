@@ -49,6 +49,8 @@ export default defineConfig({
 });
 ```
 
+> **Caveat — the typecheck gate has a blind spot here.** The built-in tsconfig-paths opt-in is an experimental flag, and the type-checker and the bundler resolve the `paths` block through independent resolvers — a green `tsc` does **not** prove the bundler is resolving aliases. On a bundler upgrade, re-verify alias resolution with a runtime smoke check (boot the dev runner and confirm a module imported via an alias actually resolves), rather than trusting the typecheck.
+
 ### Server config
 
 Drives `vite-node` in development. Imports the base and adds Node-specific resolve on top.
@@ -59,15 +61,16 @@ import { defineConfig, mergeConfig } from "vite";
 
 import sharedConfig from "./shared.config";
 
-export default mergeConfig(
-  sharedConfig,
-  defineConfig({
+export default defineConfig(
+  mergeConfig(sharedConfig, {
     resolve: {
       conditions: ["node"],
     },
-  }),
+  } satisfies UserConfig),
 );
 ```
+
+`defineConfig` wraps the outer `mergeConfig` call, and the override literal carries `satisfies UserConfig` — that keeps the narrow literal `mergeConfig` needs while catching nested-key typos, and a lint rule that forbids `as`-style assertions makes the looser `as UserConfig` form unwritable.
 
 ## Dev runtime — the server through `vite-node`
 

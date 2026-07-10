@@ -47,9 +47,9 @@ The server's routes accept and return structured payloads, and two artifacts des
 
 ## Related
 
+- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the exact-pin and release-age treatment the new dependencies inherit.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the validation wrapper route schemas are authored through; this ADR extends its use from environment and shared schemas to route shapes.
 - [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module shape and curated-surface discipline the schema-binding capability follows.
-- [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the namespace-per-concern precedent the documentation namespace follows.
 - [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the sibling value-validation surface that gates startup on the environment; this ADR is its runtime-traffic counterpart.
-- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the exact-pin and release-age treatment the new dependencies inherit.
+- [`./0018-internal-control-plane-namespace.md`](./0018-internal-control-plane-namespace.md) — the namespace-per-concern precedent the documentation namespace follows.
 - [`../code-reviews/plans/validation.plan.md`](../code-reviews/plans/validation.plan.md) — the review plan whose route-schema sub-area enforces this decision.
