@@ -1,39 +1,24 @@
 name: Accept merged ADRs
 
-# When a PR that touched a Proposed ADR is merged into ANY branch, open a
-# follow-up PR against that same base branch flipping those ADRs to Accepted.
-# The follow-up is a PR (not an auto-commit) so a human still ratifies it:
-# merge it if the decision is in force, or close it if the ADR is
-# forward-looking (see docs/adr/README.md lifecycle).
-#
-# Fork note: the `pull_request` event hands a read-only token to PRs from
-# forks, so a merged fork PR will not produce a follow-up PR (the push /
-# `gh pr create` would 403). That is intentional for the simplest same-repo
-# setup; covering forks would need a separately-scoped token design.
-
 on:
   pull_request:
     types: [closed]
 
-# Serialise runs for the same source PR, so the "already exists" guard below
-# cannot be raced by a re-run / duplicate event into opening two follow-up PRs.
 concurrency:
   group: accept-adrs-${{ github.event.pull_request.number }}
   cancel-in-progress: false
 
-# No workflow-wide access; the single job opts into exactly the scopes it needs.
 permissions: {}
 
 jobs:
   accept-adrs:
-    # Only on real merges, and never on the follow-up PRs this workflow opens.
     if: >-
       github.event.pull_request.merged == true &&
       !startsWith(github.event.pull_request.head.ref, 'adr/accept-pr-')
     runs-on: ubuntu-latest
     permissions:
-      contents: write # push the follow-up branch
-      pull-requests: write # open the follow-up PR
+      contents: write
+      pull-requests: write
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       BASE_REF: ${{ github.event.pull_request.base.ref }}
@@ -43,6 +28,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.base.ref }}
+          persist-credentials: false
 
       - name: Flip touched Proposed ADRs to Accepted
         id: flip
@@ -53,21 +39,13 @@ jobs:
 
           : > /tmp/accepted-adrs.txt
 
-          # Materialise the PR's file list first so a `gh` failure fails the job
-          # (a process substitution would let it pass silently under `set -e`).
-          # Use the paginating REST endpoint: `gh pr view --json files` caps at the
-          # first 100 files and would silently skip an ADR that sorts past it.
           gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files" \
             --jq '.[].filename' > /tmp/pr-files.txt
 
-          # Keep only numbered ADRs the PR touched that still exist and are still Proposed.
           while IFS= read -r file; do
             [[ -z "$file" ]] && continue
-            [[ "$file" == docs/adr/*.md ]] || continue
-            [[ "$file" == "docs/adr/README.md" ]] && continue
+            [[ "$file" =~ ^docs/adr/[0-9]{4}-.*\.md$ ]] || continue
             [[ -f "$file" ]] || continue
-            # Skip on "no match" (grep exit 1); let a real grep error (exit 2+)
-            # fail the job instead of being swallowed by `|| continue`.
             rc=0
             grep -qE '^- \*\*Status:\*\* Proposed' "$file" || rc=$?
             [[ "$rc" -eq 1 ]] && continue
@@ -96,10 +74,6 @@ jobs:
 
           branch="adr/accept-pr-${PR_NUMBER}"
 
-          # Skip if a follow-up for THIS source PR already exists (open OR closed),
-          # so a deliberately-closed acceptance is never resurrected on a re-run.
-          # `--head` is an exact server-side match, so this is reliable no matter
-          # how many PRs the repo has (no pagination cap).
           if [[ -n "$(gh pr list --state all --head "$branch" --json number --jq '.[0].number // empty')" ]]; then
             echo "A follow-up PR for source #${PR_NUMBER} already exists — skipping."
             exit 0
@@ -110,7 +84,6 @@ jobs:
           git switch -c "$branch"
           git add docs/adr/
 
-          # Defensive: never fail the job on an empty commit.
           if git diff --cached --quiet; then
             echo "No staged ADR changes — nothing to commit."
             exit 0
@@ -118,11 +91,9 @@ jobs:
 
           git commit -m "docs(adr): accept ADRs merged in #${PR_NUMBER}"
 
-          # Force is safe: the concurrency group serialises runs for this source PR,
-          # the branch is a dedicated bot namespace, and the guard above proved no PR
-          # (open or closed) references it — so this only ever replaces a stale branch
-          # left by a prior run that pushed but failed before opening its PR.
-          git push --force origin "$branch"
+          git push --force \
+            "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "$branch"
 
           {
             echo "Auto-generated after #${PR_NUMBER} merged into \`${BASE_REF}\`."
