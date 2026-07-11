@@ -47,8 +47,7 @@ function PostList({ posts }: { posts: Post[] }) {
           <Link
             to={`/posts/${post.id}`}
             onMouseEnter={() => handlePrefetch(post.id)}
-            onFocus={() => handlePrefetch(post.id)}
-          >
+            onFocus={() => handlePrefetch(post.id)}>
             {post.title}
           </Link>
         </li>
@@ -70,9 +69,9 @@ function PostList({ posts }: { posts: Post[] }) {
       {posts.map((post) => (
         <li key={post.id}>
           <Link
-            to="/posts/$postId"
+            to='/posts/$postId'
             params={{ postId: post.id }}
-            preload="intent" // Prefetch on hover/focus
+            preload='intent' // Prefetch on hover/focus
           >
             {post.title}
           </Link>
@@ -114,8 +113,7 @@ function PostLink({ post }: { post: Post }) {
     <Link
       to={`/posts/${post.id}`}
       onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+      onMouseLeave={handleMouseLeave}>
       {post.title}
     </Link>
   );

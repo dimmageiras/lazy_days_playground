@@ -23,7 +23,7 @@ const serverRoute = async (instance: AppInstance): Promise<void> => {
     {
       schema: {
         description:
-          "Returns the health status of the server for monitoring and load balancers.",
+          "Returns the health status of the server for monitoring and load balancers",
         response: {
           [OK]: {
             content: {

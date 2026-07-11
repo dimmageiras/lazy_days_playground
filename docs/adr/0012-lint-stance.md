@@ -55,9 +55,9 @@ Accepted negatives:
 
 - [`./0002-typescript-compiler-stance.md`](./0002-typescript-compiler-stance.md) — the strictness compiler flags; the assertion ban is the lint-side complement to that type-system-side stance.
 - [`./0003-path-alias-scheme.md`](./0003-path-alias-scheme.md) — owns the alias depth cap and the import-sort grouping; those rules live in the same config but are not decided here.
+- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the install-time supply-chain gates this static-analysis stance sits beside as a sibling control surface.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — a sibling lint rule that funnels a different unsafe operation (raw custom-issue codes) through one sanctioned call, the same one-reviewable-seam shape.
 - [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the frozen-namespace helper convention the cast helper is packaged under and the curated module surface the default-export ban protects.
-- [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the install-time supply-chain gates this static-analysis stance sits beside as a sibling control surface.
 - [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the validation gate that relies on the assertion ban and single sanctioned cast this stance owns.
 - [`./0010-logging-and-error-handling.md`](./0010-logging-and-error-handling.md) — the logger type surface that relies on the assertion ban ruling out per-call-site casts.
 - [`../../.claude/rules/code-comments.md`](../../.claude/rules/code-comments.md) — the comment and JSDoc conventions reviewed alongside lint output.

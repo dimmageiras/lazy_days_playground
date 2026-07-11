@@ -24,7 +24,7 @@ const {
 
 trackLeaksInSpec("number.helper");
 
-const { isInteger, isNumber } = NumberHelper;
+const { isFiniteNumber, isInteger } = NumberHelper;
 
 const TEST_DATA = {
   DECIMAL: 3.14,
@@ -76,6 +76,36 @@ const TEST_DATA = {
 } as const;
 
 describe("NumberHelper", () => {
+  describe("isFiniteNumber", (it) => {
+    it("should return true for a finite number", ({ expect }) => {
+      const result = isFiniteNumber(COMMON_NUMBER);
+
+      expect(result).toBe(BOOLEAN_TRUE);
+    });
+
+    it("should return true for a decimal number", ({ expect }) => {
+      const result = isFiniteNumber(TEST_DATA.DECIMAL);
+
+      expect(result).toBe(BOOLEAN_TRUE);
+    });
+
+    TEST_DATA.NON_NUMBER_CASES.forEach(({ name, value }) => {
+      it(name, ({ expect }) => {
+        expect(isFiniteNumber(value)).toBe(BOOLEAN_FALSE);
+      });
+    });
+
+    it("should narrow the value to number when true", ({ expect }) => {
+      const { UNKNOWN_NUMBER } = TEST_DATA.TYPE_TEST;
+
+      expect(isFiniteNumber(UNKNOWN_NUMBER)).toBe(BOOLEAN_TRUE);
+
+      if (isFiniteNumber(UNKNOWN_NUMBER)) {
+        expectTypeOf(UNKNOWN_NUMBER).toEqualTypeOf<number>();
+      }
+    });
+  });
+
   describe("isInteger", (it) => {
     it("should return true for an integer", ({ expect }) => {
       const result = isInteger(COMMON_NUMBER);
@@ -101,36 +131,6 @@ describe("NumberHelper", () => {
       expect(isInteger(UNKNOWN_NUMBER)).toBe(BOOLEAN_TRUE);
 
       if (isInteger(UNKNOWN_NUMBER)) {
-        expectTypeOf(UNKNOWN_NUMBER).toEqualTypeOf<number>();
-      }
-    });
-  });
-
-  describe("isNumber", (it) => {
-    it("should return true for a finite number", ({ expect }) => {
-      const result = isNumber(COMMON_NUMBER);
-
-      expect(result).toBe(BOOLEAN_TRUE);
-    });
-
-    it("should return true for a decimal number", ({ expect }) => {
-      const result = isNumber(TEST_DATA.DECIMAL);
-
-      expect(result).toBe(BOOLEAN_TRUE);
-    });
-
-    TEST_DATA.NON_NUMBER_CASES.forEach(({ name, value }) => {
-      it(name, ({ expect }) => {
-        expect(isNumber(value)).toBe(BOOLEAN_FALSE);
-      });
-    });
-
-    it("should narrow the value to number when true", ({ expect }) => {
-      const { UNKNOWN_NUMBER } = TEST_DATA.TYPE_TEST;
-
-      expect(isNumber(UNKNOWN_NUMBER)).toBe(BOOLEAN_TRUE);
-
-      if (isNumber(UNKNOWN_NUMBER)) {
         expectTypeOf(UNKNOWN_NUMBER).toEqualTypeOf<number>();
       }
     });

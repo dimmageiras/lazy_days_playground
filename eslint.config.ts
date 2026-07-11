@@ -26,7 +26,6 @@ const eslintConfig = defineConfig([
     languageOptions: {
       ecmaVersion: "latest",
       globals: {
-        ...globals.browser,
         ...globals.es2025,
         ...globals.node,
       },

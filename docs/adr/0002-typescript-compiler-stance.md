@@ -72,8 +72,8 @@ The compiler defines what code may express; a type-aware lint layer reinforces t
 
 - [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the type-stripping dev runtime and the no-production-build posture this compiler stance is decoupled from and aligned to.
 - [`./0003-path-alias-scheme.md`](./0003-path-alias-scheme.md) — the path-alias scheme and shared/server split that the project scopes here build on.
+- [`./0005-test-runner-worker-model.md`](./0005-test-runner-worker-model.md) — the test runner whose composite test project consumes this stance's project-reference split and declaration-only outputs.
 - [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module-vs-helper boundary the app/test file scoping reflects.
 - [`./0012-lint-stance.md`](./0012-lint-stance.md) — the assertion ban and type-aware lint stack (no-unsafe family, explicit-module-boundary-types, consistent-type-imports) that reinforce these compiler guarantees at call sites.
-- [`./0005-test-runner-worker-model.md`](./0005-test-runner-worker-model.md) — the test runner whose composite test project consumes this stance's project-reference split and declaration-only outputs.
 - [`../../.claude/rules/code-comments.md`](../../.claude/rules/code-comments.md) — the stance that well-typed code carries the WHAT, which this strictness underwrites.
 - [`./README.md`](./README.md) — ADR template, status, and lifecycle conventions.

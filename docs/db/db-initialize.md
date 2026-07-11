@@ -9,7 +9,7 @@ Bring up a fresh local Gel database for development. Run all commands from the p
 
 ## About the env file
 
-Both Docker Compose and Vite auto-load a file named `.env` from the project root, so a single `.env` is the source of truth for the `gel_db` container, the app, and — once loaded as shown in section 5 — the host Gel CLI. No `--env-file` flag needed. The repo ignores everything except an explicit allowlist (see `.gitignore`), so `.env` is never tracked.
+Both Docker Compose and Vite auto-load a file named `.env` from the project root, so a single `.env` is the source of truth for the `gel_db` container, the app, and — once loaded as shown in section 5 — the host Gel CLI. No `--env-file` flag needed. The repo ignores everything except an explicit allowlist (see `.gitignore`), so `.env` is never tracked. The app's dev process additionally layers a `.env.dev.local` on top of this `.env` when present (the pattern the project README describes for dev-only overrides); the root `.env` on its own is enough to bring everything up.
 
 ## 1) Create your env file
 

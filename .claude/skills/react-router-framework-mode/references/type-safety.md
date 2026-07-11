@@ -105,8 +105,12 @@ function RatingForm({ itemId }: { itemId: string }) {
   const fetcher = useFetcher<typeof action>();
 
   return (
-    <fetcher.Form method="post" action={`/items/${itemId}/rate`}>
-      <button name="rating" value="5">
+    <fetcher.Form
+      method='post'
+      action={`/items/${itemId}/rate`}>
+      <button
+        name='rating'
+        value='5'>
         ⭐⭐⭐⭐⭐
       </button>
       {fetcher.data?.success && <span>Saved!</span>}
@@ -123,8 +127,10 @@ function FavoriteButton({ itemId }: { itemId: string }) {
   const fetcher = useFetcher<ActionData>();
 
   return (
-    <fetcher.Form method="post" action={`/favorites/${itemId}`}>
-      <button type="submit">Favorite</button>
+    <fetcher.Form
+      method='post'
+      action={`/favorites/${itemId}`}>
+      <button type='submit'>Favorite</button>
     </fetcher.Form>
   );
 }

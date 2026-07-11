@@ -73,7 +73,7 @@ function TodoItem({ todo }: { todo: Todo }) {
   return (
     <div>
       <input
-        type="checkbox"
+        type='checkbox'
         checked={displayCompleted}
         disabled={mutation.isPending}
         onChange={() => mutation.mutate(todo.id)}

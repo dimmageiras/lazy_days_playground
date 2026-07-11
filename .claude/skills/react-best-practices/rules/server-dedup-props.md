@@ -15,7 +15,10 @@ RSC→client serialization deduplicates by object reference, not value. Same ref
 
 ```tsx
 // RSC: sends 6 strings (2 arrays × 3 items)
-<ClientList usernames={usernames} usernamesOrdered={usernames.toSorted()} />
+<ClientList
+  usernames={usernames}
+  usernamesOrdered={usernames.toSorted()}
+/>
 ```
 
 **Correct (sends 3 strings):**

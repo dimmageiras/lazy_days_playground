@@ -34,8 +34,8 @@ function SearchForm() {
 
   return (
     <form onSubmit={onSubmit}>
-      <input name="q" />
-      <button type="submit">Search</button>
+      <input name='q' />
+      <button type='submit'>Search</button>
     </form>
   );
 }
@@ -43,9 +43,9 @@ function SearchForm() {
 // ✅ DO: Use Form with method="get" - handles search params automatically
 function SearchForm() {
   return (
-    <Form method="get">
-      <input name="q" />
-      <button type="submit">Search</button>
+    <Form method='get'>
+      <input name='q' />
+      <button type='submit'>Search</button>
     </Form>
   );
 }
@@ -55,7 +55,9 @@ function SearchForm() {
 // ❌ DON'T: Use Form for inline mutations (causes full navigation)
 function RatingButton({ itemId }) {
   return (
-    <Form method="post" action={`/items/${itemId}/rate`}>
+    <Form
+      method='post'
+      action={`/items/${itemId}/rate`}>
       <button>Rate</button>
     </Form>
   );
@@ -71,8 +73,14 @@ function RatingButton({ itemId, currentRating }) {
     : currentRating;
 
   return (
-    <fetcher.Form method="post" action={`/items/${itemId}/rate`}>
-      <input type="hidden" name="rating" value={optimisticRating + 1} />
+    <fetcher.Form
+      method='post'
+      action={`/items/${itemId}/rate`}>
+      <input
+        type='hidden'
+        name='rating'
+        value={optimisticRating + 1}
+      />
       <button>⭐ {optimisticRating}</button>
     </fetcher.Form>
   );
@@ -94,9 +102,13 @@ export default function SearchPage() {
 
   return (
     <div>
-      <Form method="get">
-        <input type="text" name="q" defaultValue={query} />
-        <button type="submit">Search</button>
+      <Form method='get'>
+        <input
+          type='text'
+          name='q'
+          defaultValue={query}
+        />
+        <button type='submit'>Search</button>
       </Form>
       {/* Results render here */}
     </div>
@@ -162,9 +174,13 @@ import { Form } from "react-router";
 
 export default function NewProject() {
   return (
-    <Form method="post">
-      <input type="text" name="title" required />
-      <button type="submit">Create</button>
+    <Form method='post'>
+      <input
+        type='text'
+        name='title'
+        required
+      />
+      <button type='submit'>Create</button>
     </Form>
   );
 }
@@ -177,7 +193,9 @@ export default function NewProject() {
 - `navigate` - Set to `false` to prevent navigation after submission
 
 ```tsx
-<Form method="post" action="/projects/new">
+<Form
+  method='post'
+  action='/projects/new'>
   {/* ... */}
 </Form>
 ```
@@ -218,7 +236,9 @@ function LikeButton({ postId }) {
   const isLiking = fetcher.state === "submitting";
 
   return (
-    <fetcher.Form method="post" action={`/posts/${postId}/like`}>
+    <fetcher.Form
+      method='post'
+      action={`/posts/${postId}/like`}>
       <button disabled={isLiking}>{isLiking ? "Liking..." : "Like"}</button>
     </fetcher.Form>
   );
@@ -241,8 +261,14 @@ function FavoriteButton({ itemId, isFavorite }) {
     : isFavorite;
 
   return (
-    <fetcher.Form method="post" action={`/items/${itemId}/favorite`}>
-      <input type="hidden" name="favorite" value={String(!optimistic)} />
+    <fetcher.Form
+      method='post'
+      action={`/items/${itemId}/favorite`}>
+      <input
+        type='hidden'
+        name='favorite'
+        value={String(!optimistic)}
+      />
       <button>{optimistic ? "★" : "☆"}</button>
     </fetcher.Form>
   );
@@ -295,10 +321,13 @@ function SignupForm() {
   const errors = fetcher.data?.errors;
 
   return (
-    <fetcher.Form method="post">
-      <input type="email" name="email" />
+    <fetcher.Form method='post'>
+      <input
+        type='email'
+        name='email'
+      />
       {errors?.email && <span>{errors.email}</span>}
-      <button type="submit">Sign Up</button>
+      <button type='submit'>Sign Up</button>
     </fetcher.Form>
   );
 }
@@ -352,11 +381,15 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 // In component
-<Form method="post">
-  <button name="intent" value="update">
+<Form method='post'>
+  <button
+    name='intent'
+    value='update'>
     Save
   </button>
-  <button name="intent" value="delete">
+  <button
+    name='intent'
+    value='delete'>
     Delete
   </button>
 </Form>;

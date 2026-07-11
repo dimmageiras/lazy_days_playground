@@ -55,8 +55,7 @@ function App() {
       persistOptions={{
         persister,
         maxAge: 1000 * 60 * 60 * 24, // 24 hours max
-      }}
-    >
+      }}>
       <MyApp />
     </PersistQueryClientProvider>
   );
@@ -86,8 +85,7 @@ function App() {
         persister,
         maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
         buster: APP_VERSION, // Bust cache on app updates
-      }}
-    >
+      }}>
       <MyApp />
     </PersistQueryClientProvider>
   );
@@ -153,8 +151,7 @@ function App() {
       onSuccess={() => {
         // Cache restored successfully
         console.log("Cache restored");
-      }}
-    >
+      }}>
       {/* Show loading while restoring */}
       <PersistQueryClientProvider.Consumer>
         {({ isRestoring }) => (isRestoring ? <SplashScreen /> : <MainApp />)}

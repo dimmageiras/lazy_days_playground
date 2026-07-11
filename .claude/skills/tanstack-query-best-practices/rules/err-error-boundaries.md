@@ -19,8 +19,7 @@ function ErrorBoundary({ children }: { children: React.ReactNode }) {
           <button onClick={resetErrorBoundary}>Try again</button>
           {/* resetErrorBoundary alone doesn't reset query state */}
         </div>
-      )}
-    >
+      )}>
       {children}
     </ReactErrorBoundary>
   );
@@ -42,13 +41,12 @@ function QueryErrorBoundary({ children }: { children: React.ReactNode }) {
     <ErrorBoundary
       onReset={reset}
       fallbackRender={({ error, resetErrorBoundary }) => (
-        <div className="error-container">
+        <div className='error-container'>
           <h2>Something went wrong</h2>
           <pre>{error.message}</pre>
           <button onClick={resetErrorBoundary}>Try again</button>
         </div>
-      )}
-    >
+      )}>
       {children}
     </ErrorBoundary>
   );
@@ -97,8 +95,7 @@ export const Route = createFileRoute("/posts")({
           onClick={() => {
             resetQuery();
             reset();
-          }}
-        >
+          }}>
           Retry
         </button>
       </div>
@@ -115,7 +112,7 @@ export const Route = createFileRoute("/posts")({
 // Granular error boundaries for isolated failures
 function Dashboard() {
   return (
-    <div className="dashboard">
+    <div className='dashboard'>
       {/* Each section can fail independently */}
       <QueryErrorBoundary>
         <Suspense fallback={<Skeleton />}>

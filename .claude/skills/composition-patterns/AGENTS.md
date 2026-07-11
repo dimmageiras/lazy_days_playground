@@ -237,7 +237,10 @@ const Composer = {
 **Usage:**
 
 ```tsx
-<Composer.Provider state={state} actions={actions} meta={meta}>
+<Composer.Provider
+  state={state}
+  actions={actions}
+  meta={meta}>
   <Composer.Frame>
     <Composer.Header />
     <Composer.Input />
@@ -308,8 +311,7 @@ function ChannelProvider({
     <Composer.Provider
       state={state}
       actions={{ update, submit }}
-      meta={{ inputRef }}
-    >
+      meta={{ inputRef }}>
       {children}
     </Composer.Provider>
   );
@@ -349,8 +351,7 @@ function ForwardMessageProvider({ children }) {
   return (
     <Composer.Provider
       state={state}
-      actions={{ update: setState, submit: forwardMessage }}
-    >
+      actions={{ update: setState, submit: forwardMessage }}>
       {children}
     </Composer.Provider>
   );
@@ -361,7 +362,9 @@ function ChannelProvider({ channelId, children }) {
   const { state, update, submit } = useGlobalChannel(channelId);
 
   return (
-    <Composer.Provider state={state} actions={{ update, submit }}>
+    <Composer.Provider
+      state={state}
+      actions={{ update, submit }}>
       {children}
     </Composer.Provider>
   );
@@ -394,7 +397,12 @@ dependency-injectable.
 function ComposerInput() {
   // Tightly coupled to a specific hook
   const { input, setInput } = useChannelComposerState();
-  return <TextInput value={input} onChangeText={setInput} />;
+  return (
+    <TextInput
+      value={input}
+      onChangeText={setInput}
+    />
+  );
 }
 ```
 
@@ -462,8 +470,7 @@ function ForwardMessageProvider({ children }: { children: React.ReactNode }) {
         state,
         actions: { update: setState, submit },
         meta: { inputRef },
-      }}
-    >
+      }}>
       {children}
     </ComposerContext>
   );
@@ -480,8 +487,7 @@ function ChannelProvider({ channelId, children }: Props) {
         state,
         actions: { update, submit },
         meta: { inputRef },
-      }}
-    >
+      }}>
       {children}
     </ComposerContext>
   );
@@ -548,7 +554,12 @@ function ForwardButton() {
 // This preview lives OUTSIDE Composer.Frame but can read composer's state!
 function MessagePreview() {
   const { state } = use(ComposerContext);
-  return <Preview message={state.input} attachments={state.attachments} />;
+  return (
+    <Preview
+      message={state.input}
+      attachments={state.attachments}
+    />
+  );
 }
 ```
 
@@ -655,8 +666,7 @@ function ForwardMessageProvider({ children }: { children: React.ReactNode }) {
     <Composer.Provider
       state={state}
       actions={{ update: setState, submit: forwardMessage }}
-      meta={{ inputRef }}
-    >
+      meta={{ inputRef }}>
       {children}
     </Composer.Provider>
   );
@@ -723,7 +733,7 @@ itself.
 <Composer
   isThread
   isEditing={false}
-  channelId="abc"
+  channelId='abc'
   showAttachments
   showFormatting={false}
 />
@@ -862,7 +872,7 @@ function ComposerFrame({ children }: { children: React.ReactNode }) {
 }
 
 function ComposerFooter({ children }: { children: React.ReactNode }) {
-  return <footer className="flex">{children}</footer>;
+  return <footer className='flex'>{children}</footer>;
 }
 
 // Usage is flexible
@@ -885,7 +895,12 @@ return (
 // Render props work well when you need to pass data back
 <List
   data={items}
-  renderItem={({ item, index }) => <Item item={item} index={index} />}
+  renderItem={({ item, index }) => (
+    <Item
+      item={item}
+      index={index}
+    />
+  )}
 />
 ```
 
@@ -913,7 +928,12 @@ In React 19, `ref` is now a regular prop (no `forwardRef` wrapper needed), and `
 
 ```tsx
 const ComposerInput = forwardRef<TextInput, Props>((props, ref) => {
-  return <TextInput ref={ref} {...props} />;
+  return (
+    <TextInput
+      ref={ref}
+      {...props}
+    />
+  );
 });
 ```
 
@@ -924,7 +944,12 @@ function ComposerInput({
   ref,
   ...props
 }: Props & { ref?: React.Ref<TextInput> }) {
-  return <TextInput ref={ref} {...props} />;
+  return (
+    <TextInput
+      ref={ref}
+      {...props}
+    />
+  );
 }
 ```
 

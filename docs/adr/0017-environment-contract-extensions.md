@@ -53,11 +53,11 @@ Several forces constrain the answer:
 
 ## Related
 
-- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the prefixed contract, branded outputs, and secrets-stay-unprefixed convention this ADR extends and, for the secret, knowingly tensions.
-- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the "configuration stays minimal / no bind-address field" facet this ADR partially supersedes by adding the address dimension.
 - [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the multi-target build whose current server-only runtime is the premise that makes prefixing the secret safe.
 - [`./0004-pnpm-dependency-stance.md`](./0004-pnpm-dependency-stance.md) — the precedent of a premise-bound relaxation carrying a revisit tripwire rather than a permanent exception.
 - [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the validation wrapper that supplies the new brand and the address validator.
+- [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the prefixed contract, branded outputs, and secrets-stay-unprefixed convention this ADR extends and, for the secret, knowingly tensions.
+- [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the "configuration stays minimal / no bind-address field" facet this ADR partially supersedes by adding the address dimension.
 - [`./0014-graceful-shutdown-lifecycle.md`](./0014-graceful-shutdown-lifecycle.md) — the shutdown lifecycle this contract's secret and bind address serve.
 - [`./0015-remote-shutdown-channel.md`](./0015-remote-shutdown-channel.md) — the route that consumes the branded credential this contract admits.
 - [`./0016-cooperative-port-handover.md`](./0016-cooperative-port-handover.md) — the handover client that presents the branded credential and dials loopback to reach the locally-bound instance.

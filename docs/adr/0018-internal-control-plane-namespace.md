@@ -44,10 +44,10 @@ Several forces constrain the answer:
 
 ## Related
 
+- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the namespaced routes register behind.
 - [`./0011-single-port-server-lifecycle.md`](./0011-single-port-server-lifecycle.md) — the single-listener, no-port-isolation decision whose accepted app-layer-isolation consequence this namespace convention realises.
 - [`./0014-graceful-shutdown-lifecycle.md`](./0014-graceful-shutdown-lifecycle.md) — the shutdown lifecycle whose control surface this namespace hosts.
 - [`./0015-remote-shutdown-channel.md`](./0015-remote-shutdown-channel.md) — the first privileged route the internal namespace hosts and the guard that enforces its isolation.
 - [`./0016-cooperative-port-handover.md`](./0016-cooperative-port-handover.md) — the handover that addresses the privileged endpoint through this same namespace.
 - [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the environment inputs the privileged route's guard reads.
-- [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module/helper boundary the namespaced routes register behind.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — **Load-bearing decision**, **Module**, and the **Rename test** this ADR is written to survive.

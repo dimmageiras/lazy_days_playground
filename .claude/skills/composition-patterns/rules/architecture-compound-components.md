@@ -97,7 +97,10 @@ const Composer = {
 **Usage:**
 
 ```tsx
-<Composer.Provider state={state} actions={actions} meta={meta}>
+<Composer.Provider
+  state={state}
+  actions={actions}
+  meta={meta}>
   <Composer.Frame>
     <Composer.Header />
     <Composer.Input />

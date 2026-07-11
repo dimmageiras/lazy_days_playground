@@ -43,8 +43,8 @@ Standing up a database client behind the server pulls a cluster of connection se
 
 ## Related
 
+- [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the current server-only runtime that is the premise making the prefixed secret safe.
+- [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the validation wrapper that supplies the brands and the host validator.
 - [`./0009-environment-validation-gate.md`](./0009-environment-validation-gate.md) — the prefixed contract, branded outputs, non-strict schema, and secrets-stay-unprefixed convention this ADR extends.
 - [`./0017-environment-contract-extensions.md`](./0017-environment-contract-extensions.md) — the first premise-bound prefixed secret; this ADR turns that single-field relaxation into a category on the same server-only premise and revisit tripwire.
-- [`./0007-library-wrapper-seam.md`](./0007-library-wrapper-seam.md) — the validation wrapper that supplies the brands and the host validator.
-- [`./0001-vite-multi-target-and-dev-runtime.md`](./0001-vite-multi-target-and-dev-runtime.md) — the current server-only runtime that is the premise making the prefixed secret safe.
 - [`../db/db-initialize.md`](../db/db-initialize.md) — the local-development runbook that documents the three-consumer bridge in operational terms.

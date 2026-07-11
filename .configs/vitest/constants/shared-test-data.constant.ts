@@ -120,7 +120,7 @@ const SHARED_TEST_DATA = deepFreeze({
   VALID_RAW_DEV_ENV,
   VALID_VITE_APP_ENV,
   get toUnknown() {
-    return (value: unknown): unknown => castAsType<unknown>(value);
+    return (value: unknown): unknown => value;
   },
 } as const);
 

@@ -18,9 +18,9 @@ import { Link } from "react-router";
 function Nav() {
   return (
     <nav>
-      <Link to="/">Home</Link>
-      <Link to="/about">About</Link>
-      <Link to="/products/123">Product</Link>
+      <Link to='/'>Home</Link>
+      <Link to='/about'>About</Link>
+      <Link to='/products/123'>Product</Link>
     </nav>
   );
 }
@@ -34,7 +34,11 @@ function Nav() {
 - `prefetch` - `"none"`, `"intent"`, `"render"`, `"viewport"`
 
 ```tsx
-<Link to="/dashboard" replace state={{ from: "home" }} prefetch="intent">
+<Link
+  to='/dashboard'
+  replace
+  state={{ from: "home" }}
+  prefetch='intent'>
   Dashboard
 </Link>
 ```
@@ -50,19 +54,17 @@ function Nav() {
   return (
     <nav>
       <NavLink
-        to="/"
+        to='/'
         end
-        className={({ isActive }) => (isActive ? "active" : "")}
-      >
+        className={({ isActive }) => (isActive ? "active" : "")}>
         Home
       </NavLink>
 
       <NavLink
-        to="/products"
+        to='/products'
         className={({ isActive, isPending }) =>
           isPending ? "pending" : isActive ? "active" : ""
-        }
-      >
+        }>
         Products
       </NavLink>
     </nav>
@@ -78,7 +80,7 @@ function Nav() {
 - `children` - Can be a function receiving `{ isActive, isPending }`
 
 ```tsx
-<NavLink to="/messages">
+<NavLink to='/messages'>
   {({ isActive, isPending }) => (
     <span>Messages {isPending && <Spinner />}</span>
   )}
@@ -165,9 +167,14 @@ import { Form } from "react-router";
 
 function SearchForm() {
   return (
-    <Form method="get" action="/search">
-      <input type="text" name="q" />
-      <button type="submit">Search</button>
+    <Form
+      method='get'
+      action='/search'>
+      <input
+        type='text'
+        name='q'
+      />
+      <button type='submit'>Search</button>
     </Form>
   );
 }
@@ -219,7 +226,9 @@ function Checkout() {
 Prevent scroll reset on specific links:
 
 ```tsx
-<Link to="/products" preventScrollReset>
+<Link
+  to='/products'
+  preventScrollReset>
   Products
 </Link>
 ```

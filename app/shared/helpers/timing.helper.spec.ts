@@ -18,7 +18,7 @@ const { castAsType } = TypeHelper;
 
 const { delay } = TimingHelper;
 
-const TEST_DATA = {
+const { stubSetTimeout, ...TEST_DATA } = {
   PASSTHROUGH_CASES: [
     { ms: -1, name: "should forward -1 to setTimeout" },
     { ms: 0, name: "should forward 0 to setTimeout" },
@@ -33,9 +33,10 @@ const TEST_DATA = {
   ],
   RESOLVE_MARKER_MS: -1001,
   RESOLVE_PENDING_MARKER_MS: -1002,
+  get stubSetTimeout() {
+    return castAsType<typeof setTimeout>(() => 0);
+  },
 } as const;
-
-const stubSetTimeout = castAsType<typeof setTimeout>(() => 0);
 
 describe("TimingHelper", () => {
   describe("delay", (it) => {

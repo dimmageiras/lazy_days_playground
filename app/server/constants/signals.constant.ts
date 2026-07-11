@@ -1,6 +1,6 @@
 import type { Signals } from "close-with-grace";
 
-const SIGNALS: Readonly<Record<Signals, Signals>> = Object.freeze({
+const SIGNALS = Object.freeze({
   SIGABRT: "SIGABRT",
   SIGBUS: "SIGBUS",
   SIGFPE: "SIGFPE",
@@ -12,6 +12,6 @@ const SIGNALS: Readonly<Record<Signals, Signals>> = Object.freeze({
   SIGTERM: "SIGTERM",
   SIGTRAP: "SIGTRAP",
   SIGUSR2: "SIGUSR2",
-} as const);
+} as const satisfies Record<Signals, Signals>);
 
 export { SIGNALS };

@@ -198,9 +198,12 @@ function SignupForm() {
   const errors = fetcher.data?.errors;
 
   return (
-    <fetcher.Form method="post">
-      <input type="email" name="email" />
-      {errors?.email && <span className="error">{errors.email}</span>}
+    <fetcher.Form method='post'>
+      <input
+        type='email'
+        name='email'
+      />
+      {errors?.email && <span className='error'>{errors.email}</span>}
       <button>Sign Up</button>
     </fetcher.Form>
   );

@@ -59,10 +59,14 @@ logger.error(
 
 ### Normalize the error first
 
-A `catch` binding is `unknown`. Normalize before reading `.message` / `.stack`:
+A `catch` binding is `unknown`. Route it through the project's error-normalization
+helper before reading `.message` / `.stack`. The helper coerces any `unknown` to an
+`Error` with a total, throw-free string conversion — use `String(value)`, never
+template-literal interpolation (`` `${value}` `` throws a `TypeError` on a `symbol`):
 
 ```ts
-const error = rawError instanceof Error ? rawError : new Error(`${rawError}`);
+const error =
+  rawError instanceof Error ? rawError : new Error(String(rawError));
 ```
 
 ### Informational and lifecycle calls

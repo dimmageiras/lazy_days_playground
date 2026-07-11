@@ -16,22 +16,22 @@
 
 ### Skills Added
 
-| Skill                         | Version   | Last edit  |
-| ----------------------------- | --------- | ---------- |
-| domain-modeling               | —         | 17/06/2026 |
-| grilling                      | —         | 03/07/2026 |
-| performance-optimization      | —         | 08/04/2026 |
-| security-and-hardening        | —         | 07/06/2026 |
+| Skill                    | Version | Last edit  |
+| ------------------------ | ------- | ---------- |
+| domain-modeling          | —       | 17/06/2026 |
+| grilling                 | —       | 03/07/2026 |
+| performance-optimization | —       | 08/04/2026 |
+| security-and-hardening   | —       | 07/06/2026 |
 
 ### Skills Updated
 
-| Skill                         | Version   | Last edit  |
-| ----------------------------- | --------- | ---------- |
-| caveman                       | —         | 03/07/2026 |
-| diagnosing-bugs               | —         | 17/06/2026 |
-| grill-with-docs               | —         | 31/05/2026 |
-| improve-codebase-architecture | —         | 31/05/2026 |
-| tdd                           | —         | 03/07/2026 |
+| Skill                         | Version | Last edit  |
+| ----------------------------- | ------- | ---------- |
+| caveman                       | —       | 03/07/2026 |
+| diagnosing-bugs               | —       | 17/06/2026 |
+| grill-with-docs               | —       | 31/05/2026 |
+| improve-codebase-architecture | —       | 31/05/2026 |
+| tdd                           | —       | 03/07/2026 |
 
 - **caveman** re-sourced from `JuliusBrussee/caveman` (the previous mattpocock upstream was deleted) and no longer frozen.
 
@@ -55,18 +55,18 @@
 
 ### Skills Added
 
-| Skill                         | Version   | Last edit  |
-| ----------------------------- | --------- | ---------- |
-| codebase-design               | —         | 17/06/2026 |
+| Skill           | Version | Last edit  |
+| --------------- | ------- | ---------- |
+| codebase-design | —       | 17/06/2026 |
 
 ### Skills Updated
 
-| Skill                         | Version   | Last edit  |
-| ----------------------------- | --------- | ---------- |
-| code-review-and-quality       | —         | 21/06/2026 |
-| pnpm                          | 2026.6.22 | 23/06/2026 |
-| tdd                           | —         | 30/06/2026 |
-| vitest                        | 2026.6.22 | 23/06/2026 |
+| Skill                   | Version   | Last edit  |
+| ----------------------- | --------- | ---------- |
+| code-review-and-quality | —         | 21/06/2026 |
+| pnpm                    | 2026.6.22 | 23/06/2026 |
+| tdd                     | —         | 30/06/2026 |
+| vitest                  | 2026.6.22 | 23/06/2026 |
 
 ### Skills Removed
 
@@ -86,18 +86,18 @@
 
 ### Skills Added
 
-| Skill                         | Version   | Last edit  |
-| ----------------------------- | --------- | ---------- |
-| logging-best-practices        | —         | 07/06/2026 |
+| Skill                  | Version | Last edit  |
+| ---------------------- | ------- | ---------- |
+| logging-best-practices | —       | 07/06/2026 |
 
 ## [1.0.2] - 2026-06-04
 
 ### Skills Updated
 
-| Skill                         | Version   | Last edit  |
-| ----------------------------- | --------- | ---------- |
-| grill-with-docs               | —         | 28/05/2026 |
-| improve-codebase-architecture | —         | 20/05/2026 |
+| Skill                         | Version | Last edit  |
+| ----------------------------- | ------- | ---------- |
+| grill-with-docs               | —       | 28/05/2026 |
+| improve-codebase-architecture | —       | 20/05/2026 |
 
 ## [1.0.1] - 2026-05-15
 

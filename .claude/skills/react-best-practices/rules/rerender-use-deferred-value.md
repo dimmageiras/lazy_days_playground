@@ -18,7 +18,10 @@ function Search({ items }: { items: Item[] }) {
 
   return (
     <>
-      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <ResultsList results={filtered} />
     </>
   );
@@ -39,7 +42,10 @@ function Search({ items }: { items: Item[] }) {
 
   return (
     <>
-      <input value={query} onChange={(e) => setQuery(e.target.value)} />
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
       <div style={{ opacity: isStale ? 0.7 : 1 }}>
         <ResultsList results={filtered} />
       </div>

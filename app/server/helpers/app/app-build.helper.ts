@@ -1,4 +1,4 @@
-import fastify from "fastify";
+import fastify, { LogController } from "fastify";
 
 import { BASE_URLS } from "@server/constants/base-urls.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
@@ -56,7 +56,7 @@ const build = async (
   const appEnv = buildAppEnv(env);
 
   const instance: AppInstance = fastify({
-    disableRequestLogging: true,
+    logController: new LogController({ disableRequestLogging: true }),
     loggerInstance: buildLogger(appEnv, [...redactPaths]),
     requestTimeout: SECONDS_TEN,
   }).withTypeProvider<OpenApiTypeProvider>();
@@ -78,8 +78,6 @@ const build = async (
     return instance;
   } catch (rawError) {
     const error = toError(rawError);
-
-    instance.log.error(normalizeError(error), "💥 Failed to build the app");
 
     try {
       await instance.close();

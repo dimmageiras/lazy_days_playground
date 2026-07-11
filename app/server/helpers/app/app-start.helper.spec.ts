@@ -3,7 +3,7 @@ import { describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
 
-import { ZOD } from "@server/constants/zod.constant";
+import { ENV_VALIDATION } from "@server/constants/env-validation.constant";
 import { ErrorHelper } from "@server/helpers/error.helper";
 import type { AppInstance } from "@server/types/instance.type";
 
@@ -41,7 +41,7 @@ const {
 
 trackLeaksInSpec("app-start.helper");
 
-const { ENV_VALIDATION_ERROR_NAME } = ZOD;
+const { ERROR_NAME } = ENV_VALIDATION;
 
 const { normalizeError } = ErrorHelper;
 const { castAsType } = TypeHelper;
@@ -74,7 +74,7 @@ const {
   get ENV_VALIDATION_ERROR() {
     const error = new Error("Invalid environment");
 
-    error.name = ENV_VALIDATION_ERROR_NAME;
+    error.name = ERROR_NAME;
 
     return error;
   },

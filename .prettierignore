@@ -2,6 +2,7 @@
 /*
 
 # Re-include the files Prettier formats
+!/.claude
 !/.configs
 !/.github
 !/.prettierrc
@@ -17,7 +18,4 @@
 !/README.md
 !/sample.env
 !/tsconfig.json
-!/tsconfig.server.json
-!/tsconfig.shared.json
-!/tsconfig.test.json
 !/vitest.config.ts
