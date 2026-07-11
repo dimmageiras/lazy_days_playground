@@ -208,6 +208,17 @@ const { makeIssueContext, ...TEST_DATA } = {
         ],
         name: "should render one dash-prefixed line per issue joined by newlines",
       },
+      {
+        expected: `- (root): ${this.INVALID_INPUT}`,
+        issues: [
+          castAsType<ZodIssue>({
+            code: ISSUE_CODES.INVALID_TYPE,
+            message: this.INVALID_INPUT,
+            path: [],
+          }),
+        ],
+        name: "should label a root-level issue with an empty path as (root)",
+      },
     ];
   },
   get makeIssueContext() {
