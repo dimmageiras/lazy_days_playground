@@ -1,4 +1,4 @@
-import type { OpenAPIV3_1 } from "openapi-types";
+import type { oas32 } from "zod-openapi";
 
 const OPENAPI_OPTIONS = Object.freeze({
   info: {
@@ -7,6 +7,6 @@ const OPENAPI_OPTIONS = Object.freeze({
     version: "1.0.0",
   },
   openapi: "3.2.0",
-} as const satisfies Partial<OpenAPIV3_1.Document>);
+} as const satisfies Partial<oas32.OpenAPIObject>);
 
 export { OPENAPI_OPTIONS };
