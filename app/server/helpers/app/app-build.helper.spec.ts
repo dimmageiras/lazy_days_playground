@@ -1,4 +1,5 @@
 import type { Mock, Procedure } from "@vitest/spy";
+import { LogController } from "fastify";
 import { describe, vi } from "vitest";
 
 import { VitestSetup } from "@configs/vitest/setup";
@@ -17,7 +18,6 @@ const {
   mockApiHealthRoutes,
   mockBuildAppEnv,
   mockBuildLogger,
-  mockFastify,
   mockSetupDb,
   mockSetupDocs,
   mockSetupShutdown,
@@ -26,14 +26,11 @@ const {
   mockApiHealthRoutes: vi.fn(),
   mockBuildAppEnv: vi.fn(),
   mockBuildLogger: vi.fn(),
-  mockFastify: vi.fn(),
   mockSetupDb: vi.fn(),
   mockSetupDocs: vi.fn(),
   mockSetupShutdown: vi.fn(),
   mockSetupValidation: vi.fn(),
 }));
-
-vi.mock("fastify", () => ({ default: mockFastify }));
 
 vi.mock("@server/routes/api/health", () => ({
   apiHealthRoutes: mockApiHealthRoutes,
@@ -45,6 +42,7 @@ vi.mock("./app-env.helper", () => ({
 
 const {
   createMockInstance,
+  sharedMock: { mockFastify },
   sharedTestData: { BOOLEAN_TRUE, UNDEFINED_VALUE },
   trackLeaksInSpec,
 } = VitestSetup();
@@ -59,7 +57,14 @@ const { castAsType } = TypeHelper;
 
 const { build } = AppBuildHelper;
 
-const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
+const {
+  installFastifyMockOnce,
+  instanceOf,
+  makeEnv,
+  makeInstance,
+  scenarioOf,
+  ...TEST_DATA
+} = {
   CLOSE_ERROR: new Error("Failed to close"),
   CLOSE_FAILURE_MESSAGE: "💥 Failed to close the app after a build failure",
   ERROR: new Error("Failed to build"),
@@ -79,6 +84,19 @@ const { instanceOf, makeEnv, makeInstance, scenarioOf, ...TEST_DATA } = {
         redactPaths: this.REDACT_PATHS,
         setupShutdown: mockSetupShutdown,
       },
+    };
+  },
+  get installFastifyMockOnce() {
+    return (): void => {
+      mockFastify.mockImplementationOnce(
+        (options: { loggerInstance: ViteAppEnv }) => {
+          const instance = makeInstance(scenarioOf(options.loggerInstance));
+
+          Reflect.set(options.loggerInstance, TEST_DATA.INSTANCE_KEY, instance);
+
+          return instance;
+        },
+      );
     };
   },
   get instanceOf() {
@@ -153,15 +171,6 @@ describe("AppBuildHelper", () => {
     beforeAll(() => {
       mockBuildAppEnv.mockImplementation((env: ViteAppEnv) => env);
       mockBuildLogger.mockImplementation((appEnv: ViteAppEnv) => appEnv);
-      mockFastify.mockImplementation(
-        (options: { loggerInstance: ViteAppEnv }) => {
-          const instance = makeInstance(scenarioOf(options.loggerInstance));
-
-          Reflect.set(options.loggerInstance, TEST_DATA.INSTANCE_KEY, instance);
-
-          return instance;
-        },
-      );
       mockSetupDocs.mockResolvedValue(UNDEFINED_VALUE);
       mockSetupShutdown.mockResolvedValue(UNDEFINED_VALUE);
       mockSetupValidation.mockResolvedValue(UNDEFINED_VALUE);
@@ -170,7 +179,6 @@ describe("AppBuildHelper", () => {
     afterAll(() => {
       mockBuildAppEnv.mockReset();
       mockBuildLogger.mockReset();
-      mockFastify.mockReset();
       mockSetupDb.mockReset();
       mockSetupDocs.mockReset();
       mockSetupShutdown.mockReset();
@@ -181,6 +189,8 @@ describe("AppBuildHelper", () => {
       expect,
     }) => {
       const env = makeEnv({});
+
+      installFastifyMockOnce();
 
       const instance = await build(env, TEST_DATA.HOT, TEST_DATA.MODULES);
 
@@ -197,7 +207,9 @@ describe("AppBuildHelper", () => {
 
       expect(mockFastify.mock.calls.at(fastifyCallIndex)).toStrictEqual([
         {
-          disableRequestLogging: BOOLEAN_TRUE,
+          logController: new LogController({
+            disableRequestLogging: BOOLEAN_TRUE,
+          }),
           loggerInstance: env,
           requestTimeout: SECONDS_TEN,
         },
@@ -263,6 +275,8 @@ describe("AppBuildHelper", () => {
         registerError: TEST_DATA.ERROR,
       });
 
+      installFastifyMockOnce();
+
       await expect(build(env, TEST_DATA.HOT, TEST_DATA.MODULES)).rejects.toBe(
         TEST_DATA.ERROR,
       );
@@ -280,6 +294,8 @@ describe("AppBuildHelper", () => {
         closeError: TEST_DATA.CLOSE_ERROR,
         registerError: TEST_DATA.ERROR,
       });
+
+      installFastifyMockOnce();
 
       await expect(build(env, TEST_DATA.HOT, TEST_DATA.MODULES)).rejects.toBe(
         TEST_DATA.ERROR,
