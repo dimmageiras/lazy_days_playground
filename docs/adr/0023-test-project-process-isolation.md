@@ -1,6 +1,6 @@
 # 0023. Test projects run in separate processes
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-07-11
 
 ## Context
