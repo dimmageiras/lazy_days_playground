@@ -18,7 +18,4 @@
 !/README.md
 !/sample.env
 !/tsconfig.json
-!/tsconfig.server.json
-!/tsconfig.shared.json
-!/tsconfig.test.json
 !/vitest.config.ts
