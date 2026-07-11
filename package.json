@@ -19,8 +19,8 @@
     "test:cov:server": "pnpm test:server --coverage --coverage.include='app/server/**/*.{ts,tsx}' --coverage.reportsDirectory=logs/unit-tests-coverage-server --reporter=blob --outputFile=logs/unit-tests-blob/server.json",
     "test:cov:shared": "pnpm test:shared --coverage --coverage.include='app/shared/**/*.{ts,tsx}' --coverage.reportsDirectory=logs/unit-tests-coverage-shared --reporter=blob --outputFile=logs/unit-tests-blob/shared.json",
     "test:pollution": "pnpm --parallel run \"/^test:pollution:(server|shared)$/\"",
-    "test:pollution:server": "pnpm test:server --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.server.log 2>&1",
-    "test:pollution:shared": "pnpm test:shared --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.shared.log 2>&1",
+    "test:pollution:server": "pnpm test:server --bail=1 --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.server.log 2>&1",
+    "test:pollution:shared": "pnpm test:shared --bail=1 --reporter=verbose --mode=debug > logs/unit-tests/pollution-probe.shared.log 2>&1",
     "test:server": "vitest run --project server",
     "test:shared": "vitest run --project shared",
     "typecheck": "tsc -b"
