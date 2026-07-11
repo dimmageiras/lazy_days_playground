@@ -32,6 +32,7 @@ Implications you must internalise:
 - **Helpers under `.configs/vitest/helpers/**` are stateless dispatchers.\*\* Module-level state in a helper outlives every spec in the worker and leaks across files. If a helper needs per-spec state, scope it inside the function the helper exports — never inside the module body.
 - **Advancing the shared fake clock from a `.concurrent` test is forbidden.** Fake clocks are global to the worker; sibling tests in the same file share them. Installing a fixed clock with `vi.setSystemTime` and restoring real timers in cleanup (Pattern A) is permitted under concurrent execution — sibling tests converge on the same fixed instant. Calling `vi.useFakeTimers()` and then advancing the clock (Pattern B) breaks siblings' pending timers; hoist the clock to `beforeAll`/`afterAll` or use a deterministic-clock pattern that does not advance the shared fake timer.
 - **No reliance on test order.** Inside a file, between files, or between runs.
+- **Each project runs as its own process — never co-resident in one runner invocation.** The test scripts launch one process per project (through the package manager's parallel-run selector). A single runner invocation with no project filter — including watch mode — co-locates the projects in one process, and under `isolate: false` the worker-global module mocks then apply unreliably: a spec can bind to the real dependency instead of its mock. Scope watch and any ad-hoc run to a single project. See [ADR-0023](../adr/0023-test-project-process-isolation.md).
 
 ## Coverage
 
@@ -170,5 +171,7 @@ Every rule above exists because of a documented trade-off. Before deviating:
 - [ADR-0005](../adr/0005-test-runner-worker-model.md) — the runner posture (worker model, concurrency, mock-clearing) the conventions in this README rest on
 - [ADR-0006](../adr/0006-test-setup-and-pollution-probe.md) — the setup factory and gated pollution probe whose consumption pattern, output semantics, and reverify checklist this README elaborates
 - [ADR-0019](../adr/0019-mock-state-leak-detection.md) — the mock-state leak surfaces (shared-mock implementations, installed spies) and the teardown-placement and reset-not-clear conventions they impose
+- [ADR-0023](../adr/0023-test-project-process-isolation.md) — why the suite runs each project as a separate process rather than co-resident in one runner invocation
+- [`./stress-testing.md`](./stress-testing.md) — repeat-run loops for flushing out flakes and pollution under shuffle
 - [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream `vitest` skill, and the precedence rule with this README

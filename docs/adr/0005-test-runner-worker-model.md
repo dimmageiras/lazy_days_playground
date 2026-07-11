@@ -74,6 +74,7 @@ The runner trades isolation and determinism for startup speed, and every piece o
 - [`./0006-test-setup-and-pollution-probe.md`](./0006-test-setup-and-pollution-probe.md) — the setup factory that owns the cross-spec state helpers may not hold, plus the gated state-diff probe and fake-timer registry that detect the leakage this posture permits.
 - [`./0008-module-and-helper-organization.md`](./0008-module-and-helper-organization.md) — the module-vs-helper boundary the stateless-dispatcher rule applies to.
 - [`./0019-mock-state-leak-detection.md`](./0019-mock-state-leak-detection.md) — the mock-state leak surfaces the probe gained to detect another flavour of leakage this posture permits.
+- [`./0023-test-project-process-isolation.md`](./0023-test-project-process-isolation.md) — the per-process consequence of this non-isolated worker model: more than one project sharing a process makes shared module mocks unreliable, so the suite runs each project separately.
 - [`../testing/README.md`](../testing/README.md) — the canonical testing conventions that elaborate and enforce this posture.
 - [`../../CONTEXT.md`](../../CONTEXT.md) — defines **Spec** and **Stateless dispatcher**, the terms this decision leans on.
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the `vitest` skill and the precedence of the testing README over it.

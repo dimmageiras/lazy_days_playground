@@ -73,6 +73,7 @@ Specs reach shared infrastructure through a single **zero-argument setup factory
 
 - [`./0005-test-runner-worker-model.md`](./0005-test-runner-worker-model.md) — the single-worker, non-isolated, concurrent, shuffled pool (and the `clearMocks: false` posture) whose persistence rule makes both the state-ownership asymmetry and the probe necessary.
 - [`./0019-mock-state-leak-detection.md`](./0019-mock-state-leak-detection.md) — extends this probe with the shared-mock-implementation and installed-spy leak surfaces, and the teardown-placement and reset-not-clear conventions they impose.
+- [`./0023-test-project-process-isolation.md`](./0023-test-project-process-isolation.md) — running each project in its own process keeps the worker-global module mocks this setup installs reliable, which co-resident projects would undermine.
 - [`../testing/README.md`](../testing/README.md) — the canonical testing conventions: the setup-factory consumption pattern and the shared test-data fixture bundle it exposes, the stateless-dispatcher and state-ownership rules, the probe's output semantics, the Pattern-A/B rule, and the major-bump reverify checklist.
 - [`../code-reviews/plans/testing.plan.md`](../code-reviews/plans/testing.plan.md) — review checklist for changes to testing infrastructure or specs.
 - [`../../.claude/rules/invocations/vitest.md`](../../.claude/rules/invocations/vitest.md) — when to invoke the upstream test-runner skill and its precedence rule with the project testing doc.
